@@ -1,0 +1,1107 @@
+{
+  "version": 1,
+  "categories": {
+    "exec_comm": {
+      "label": "Executive communication",
+      "description": "Bottom line first for senior leaders; business impact over technical detail.",
+      "great": "Headline in the first sentence, one or two facts in business terms, then a clear decision or ask."
+    },
+    "tech_translation": {
+      "label": "Technical translation",
+      "description": "Explaining complex technology to non-technical or skeptical audiences.",
+      "great": "One vivid analogy, why it matters to this listener, zero unexplained jargon, an honest limit."
+    },
+    "discovery": {
+      "label": "Customer discovery",
+      "description": "Finding the real problem behind the request, scoping, defining success.",
+      "great": "Curious, names the questions you would ask, reframes the symptom into the root problem, defines measurable success."
+    },
+    "pushback": {
+      "label": "Saying no & scope control",
+      "description": "Declining or reshaping requests while protecting the relationship.",
+      "great": "Acknowledge the need, name the trade-off plainly, offer a real alternative, keep the door open."
+    },
+    "crisis": {
+      "label": "Incidents & bad news",
+      "description": "Outages, failures, slips and bad news delivered under pressure.",
+      "great": "Own it early; facts, impact, what is being done, when they hear next. Calm pace, no blame."
+    },
+    "influence": {
+      "label": "Influence without authority",
+      "description": "Moving product, engineering, research, sales and security teams you do not manage.",
+      "great": "Customer evidence, a framing that serves their goals too, and one specific ask."
+    },
+    "prioritization": {
+      "label": "Prioritization & trade-offs",
+      "description": "Choosing under constraint and explaining what you will not do.",
+      "great": "Explicit criteria, a decisive choice, what gets dropped and how you will tell people."
+    },
+    "ownership": {
+      "label": "Ownership & failure",
+      "description": "Behavioral stories and moments of accountability.",
+      "great": "Specific story (situation, action, result, lesson), owns their part without self-flagellation, shows the change made."
+    },
+    "trust_ethics": {
+      "label": "Trust, security & ethics",
+      "description": "Data, safety, honesty and policy lines with customers and colleagues.",
+      "great": "A clear principled line, transparent reasoning, protects the customer and the company, offers a safe path forward."
+    },
+    "leadership": {
+      "label": "Leadership & vision",
+      "description": "Leading teams, mentoring, morale and a point of view on the FDE craft.",
+      "great": "A clear stance, a concrete example, and words that would make a team want to follow."
+    },
+    "commercial": {
+      "label": "Commercial & negotiation",
+      "description": "Value, renewals, pricing pressure and expansion conversations.",
+      "great": "Anchor on measured value, trade rather than concede, end with a concrete next step."
+    },
+    "ambiguity": {
+      "label": "Ambiguity & judgment calls",
+      "description": "Unclear requirements, broken environments and decisions with incomplete information.",
+      "great": "States assumptions, makes a call, says how they will validate it and when they will revisit."
+    }
+  },
+  "frameworks": {
+    "roleplay": "Acknowledge → Reframe → Recommend → Next step",
+    "explain": "Headline → Analogy → Why it matters to them",
+    "opinion": "Point → Reason → Example → Point",
+    "story": "Situation → Action → Result → Lesson",
+    "pitch": "Problem → Solution → Proof → Ask"
+  },
+  "constraints": [
+    {
+      "text": "Lead with your recommendation in the first sentence.",
+      "formats": [
+        "roleplay",
+        "opinion",
+        "pitch"
+      ]
+    },
+    {
+      "text": "No jargon: your listener is non-technical.",
+      "formats": [
+        "roleplay",
+        "explain",
+        "pitch"
+      ]
+    },
+    {
+      "text": "Use exactly three points, and say “three” up front.",
+      "formats": [
+        "opinion",
+        "explain",
+        "pitch",
+        "roleplay"
+      ]
+    },
+    {
+      "text": "Include one specific number or metric.",
+      "formats": [
+        "roleplay",
+        "pitch",
+        "story",
+        "opinion"
+      ]
+    },
+    {
+      "text": "End with a clear ask or next step.",
+      "formats": [
+        "roleplay",
+        "pitch",
+        "explain"
+      ]
+    },
+    {
+      "text": "Acknowledge their perspective before you give yours.",
+      "formats": [
+        "roleplay"
+      ]
+    },
+    {
+      "text": "Finish in 45 seconds, then stop and hold the silence.",
+      "formats": [
+        "roleplay",
+        "opinion",
+        "explain",
+        "pitch",
+        "story"
+      ]
+    },
+    {
+      "text": "Do not apologize more than once.",
+      "formats": [
+        "roleplay"
+      ]
+    },
+    {
+      "text": "Name one risk and how you will manage it.",
+      "formats": [
+        "roleplay",
+        "opinion",
+        "pitch"
+      ]
+    },
+    {
+      "text": "Use one analogy.",
+      "formats": [
+        "explain",
+        "roleplay",
+        "pitch"
+      ]
+    },
+    {
+      "text": "Speak as if the CEO just joined the call.",
+      "formats": [
+        "roleplay",
+        "explain",
+        "opinion"
+      ]
+    },
+    {
+      "text": "Name the lesson in one sentence at the end.",
+      "formats": [
+        "story"
+      ]
+    },
+    {
+      "text": "Tell it in under 30 seconds of setup, then spend the rest on what you did.",
+      "formats": [
+        "story"
+      ]
+    },
+    {
+      "text": "State the one assumption you are making, then commit.",
+      "formats": [
+        "opinion",
+        "roleplay"
+      ]
+    }
+  ],
+  "questions": [
+    {
+      "id": "EXE-01",
+      "category": "exec_comm",
+      "difficulty": 1,
+      "format": "pitch",
+      "text": "In one minute, tell a VP of Operations what a Forward Deployed Engineer does and why she should want one on her project."
+    },
+    {
+      "id": "EXE-02",
+      "category": "exec_comm",
+      "difficulty": 1,
+      "format": "pitch",
+      "text": "Summarize the last project you worked on for a CEO who has 60 seconds between meetings."
+    },
+    {
+      "id": "EXE-03",
+      "category": "exec_comm",
+      "difficulty": 2,
+      "format": "roleplay",
+      "text": "The customer’s COO asks you in the elevator: “Is this AI project actually going to save us money, or is it a science experiment?” Answer her."
+    },
+    {
+      "id": "EXE-04",
+      "category": "exec_comm",
+      "difficulty": 2,
+      "format": "explain",
+      "text": "Give a status update to your executive sponsor: the project is on track, but one integration is at risk."
+    },
+    {
+      "id": "EXE-05",
+      "category": "exec_comm",
+      "difficulty": 3,
+      "format": "roleplay",
+      "text": "You are presenting results to the customer’s leadership. The CFO interrupts on slide two: “Skip to the part where you tell me the ROI.” You don’t have a hard ROI number yet. Respond."
+    },
+    {
+      "id": "EXE-06",
+      "category": "exec_comm",
+      "difficulty": 3,
+      "format": "roleplay",
+      "text": "Your executive sponsor asks you to present to their board next week and to “make it sound further along than it is.” Respond to the sponsor."
+    },
+    {
+      "id": "EXE-07",
+      "category": "exec_comm",
+      "difficulty": 3,
+      "format": "pitch",
+      "text": "Your pilot succeeded with one team. Make the case to the CIO for rolling it out to five more teams next quarter."
+    },
+    {
+      "id": "EXE-08",
+      "category": "exec_comm",
+      "difficulty": 4,
+      "format": "roleplay",
+      "text": "Halfway through the quarterly review, the customer’s CEO says: “Honestly, my people don’t use this. Why should I renew?” Respond in the room."
+    },
+    {
+      "id": "EXE-09",
+      "category": "exec_comm",
+      "difficulty": 4,
+      "format": "roleplay",
+      "text": "You have one minute with a new CTO who inherited your project and is skeptical of every vendor her predecessor chose. Win her attention."
+    },
+    {
+      "id": "EXE-10",
+      "category": "exec_comm",
+      "difficulty": 5,
+      "format": "roleplay",
+      "text": "At an all-hands with 200 of the customer’s employees, someone asks: “Is this AI going to replace our jobs?” The executive who invited you turns to you. Answer."
+    },
+    {
+      "id": "EXE-11",
+      "category": "exec_comm",
+      "difficulty": 5,
+      "format": "roleplay",
+      "text": "The customer’s CEO calls you directly, bypassing your leadership, and asks for your honest opinion on whether your company’s roadmap will meet their needs. You have real doubts. Respond."
+    },
+    {
+      "id": "TEC-01",
+      "category": "tech_translation",
+      "difficulty": 1,
+      "format": "explain",
+      "text": "Explain what an API is to a hospital administrator who has never written code."
+    },
+    {
+      "id": "TEC-02",
+      "category": "tech_translation",
+      "difficulty": 1,
+      "format": "explain",
+      "text": "Explain the difference between a pilot and a production deployment to a business stakeholder."
+    },
+    {
+      "id": "TEC-03",
+      "category": "tech_translation",
+      "difficulty": 2,
+      "format": "explain",
+      "text": "Explain why the AI model sometimes gives confident but wrong answers to a customer service manager whose team will use it every day."
+    },
+    {
+      "id": "TEC-04",
+      "category": "tech_translation",
+      "difficulty": 2,
+      "format": "roleplay",
+      "text": "A procurement lead asks why the integration will take six weeks when “it’s just connecting two systems.” Explain."
+    },
+    {
+      "id": "TEC-05",
+      "category": "tech_translation",
+      "difficulty": 3,
+      "format": "explain",
+      "text": "Explain to a skeptical legal team how their data flows through the system: what is stored, where, and for how long, without drowning them in detail."
+    },
+    {
+      "id": "TEC-06",
+      "category": "tech_translation",
+      "difficulty": 3,
+      "format": "explain",
+      "text": "The head of sales asks why the model can’t “just learn from our CRM overnight.” Explain retrieval, fine-tuning and prompting in plain language."
+    },
+    {
+      "id": "TEC-07",
+      "category": "tech_translation",
+      "difficulty": 3,
+      "format": "roleplay",
+      "text": "An operations director says: “Your system is 94% accurate. That means it’s wrong 6% of the time. Why would I trust it?” Respond."
+    },
+    {
+      "id": "TEC-08",
+      "category": "tech_translation",
+      "difficulty": 4,
+      "format": "explain",
+      "text": "Explain latency versus cost trade-offs to a CFO who wants the fastest and the cheapest option at the same time."
+    },
+    {
+      "id": "TEC-09",
+      "category": "tech_translation",
+      "difficulty": 4,
+      "format": "roleplay",
+      "text": "A board member with no technical background asks you to explain, in one minute, how you know the AI system is safe to use with customer data. Answer him."
+    },
+    {
+      "id": "TEC-10",
+      "category": "tech_translation",
+      "difficulty": 5,
+      "format": "roleplay",
+      "text": "Mid-demo, the customer’s most senior engineer says loudly: “This is just a wrapper around someone else’s model. What’s actually hard here?” The room goes quiet. Answer him."
+    },
+    {
+      "id": "TEC-11",
+      "category": "tech_translation",
+      "difficulty": 5,
+      "format": "explain",
+      "text": "Explain to a room of tired, skeptical nurses why they should trust an AI tool that summarizes patient notes, and what they should never trust it to do."
+    },
+    {
+      "id": "DIS-01",
+      "category": "discovery",
+      "difficulty": 1,
+      "format": "opinion",
+      "text": "What are the first three questions you ask when you meet a new customer, and why those three?"
+    },
+    {
+      "id": "DIS-02",
+      "category": "discovery",
+      "difficulty": 1,
+      "format": "explain",
+      "text": "How do you figure out what a customer actually needs when what they ask for is a specific feature?"
+    },
+    {
+      "id": "DIS-03",
+      "category": "discovery",
+      "difficulty": 2,
+      "format": "roleplay",
+      "text": "A customer says: “We want a chatbot.” Walk them toward the real problem they are trying to solve, out loud, in your own words."
+    },
+    {
+      "id": "DIS-04",
+      "category": "discovery",
+      "difficulty": 2,
+      "format": "roleplay",
+      "text": "The executive sponsor gives you a vague goal: “Make our analysts more productive with AI.” Turn it into something measurable, speaking to the sponsor."
+    },
+    {
+      "id": "DIS-05",
+      "category": "discovery",
+      "difficulty": 3,
+      "format": "roleplay",
+      "text": "The customer’s team lead insists the problem is the model. Your early data says the real problem is messy source data owned by another department. Tell her."
+    },
+    {
+      "id": "DIS-06",
+      "category": "discovery",
+      "difficulty": 3,
+      "format": "opinion",
+      "text": "The customer has defined success as “users like it.” Explain why that is risky and propose better success criteria."
+    },
+    {
+      "id": "DIS-07",
+      "category": "discovery",
+      "difficulty": 3,
+      "format": "roleplay",
+      "text": "Two customer departments want your time and each claims their use case is the priority. In a joint meeting, facilitate how you will decide."
+    },
+    {
+      "id": "DIS-08",
+      "category": "discovery",
+      "difficulty": 4,
+      "format": "roleplay",
+      "text": "Three weeks into discovery, you realize the use case the customer bought the product for won’t deliver meaningful value. Tell the executive sponsor."
+    },
+    {
+      "id": "DIS-09",
+      "category": "discovery",
+      "difficulty": 4,
+      "format": "roleplay",
+      "text": "Frontline users tell you privately that the workflow leadership described doesn’t match how work actually gets done. Raise it with leadership without throwing the users under the bus."
+    },
+    {
+      "id": "DIS-10",
+      "category": "discovery",
+      "difficulty": 5,
+      "format": "roleplay",
+      "text": "The customer’s VP says: “We don’t have time for discovery. Just build what we asked for.” You believe that will fail. Respond."
+    },
+    {
+      "id": "DIS-11",
+      "category": "discovery",
+      "difficulty": 5,
+      "format": "roleplay",
+      "text": "At kickoff, the customer’s CIO and CISO openly disagree about whether the project should exist at all. They ask for your view. Respond."
+    },
+    {
+      "id": "PSH-01",
+      "category": "pushback",
+      "difficulty": 1,
+      "format": "opinion",
+      "text": "How do you say no to a customer without damaging the relationship? Give your approach."
+    },
+    {
+      "id": "PSH-02",
+      "category": "pushback",
+      "difficulty": 1,
+      "format": "story",
+      "text": "Tell me about a time you pushed back on a request. What happened?"
+    },
+    {
+      "id": "PSH-03",
+      "category": "pushback",
+      "difficulty": 2,
+      "format": "roleplay",
+      "text": "A customer asks for “just one more small feature” two days before go-live. Respond."
+    },
+    {
+      "id": "PSH-04",
+      "category": "pushback",
+      "difficulty": 2,
+      "format": "roleplay",
+      "text": "A customer engineer asks you to give his team admin access to your company’s internal tools “to move faster.” Decline and offer a path."
+    },
+    {
+      "id": "PSH-05",
+      "category": "pushback",
+      "difficulty": 3,
+      "format": "roleplay",
+      "text": "Your executive sponsor asks you to commit to a launch date that your engineers say is impossible. Respond in the meeting."
+    },
+    {
+      "id": "PSH-06",
+      "category": "pushback",
+      "difficulty": 3,
+      "format": "roleplay",
+      "text": "Your own sales team promised a customer a capability the product doesn’t have. The customer brings it up with you. Respond to the customer."
+    },
+    {
+      "id": "PSH-07",
+      "category": "pushback",
+      "difficulty": 3,
+      "format": "roleplay",
+      "text": "The customer wants the product customized so heavily it would become a one-off fork nobody can maintain. Say no and redirect them."
+    },
+    {
+      "id": "PSH-08",
+      "category": "pushback",
+      "difficulty": 4,
+      "format": "roleplay",
+      "text": "A customer threatens to escalate to your CEO unless you commit your team to weekend work for a non-critical feature. Respond."
+    },
+    {
+      "id": "PSH-09",
+      "category": "pushback",
+      "difficulty": 4,
+      "format": "roleplay",
+      "text": "Your manager asks you to take on a third customer deployment. You’re already at capacity and quality is slipping. Respond to your manager."
+    },
+    {
+      "id": "PSH-10",
+      "category": "pushback",
+      "difficulty": 5,
+      "format": "roleplay",
+      "text": "In front of her team, the customer’s CEO says: “Your competitor said they could do this in half the time. Why can’t you?” You know their promise is unrealistic. Respond without trashing them."
+    },
+    {
+      "id": "PSH-11",
+      "category": "pushback",
+      "difficulty": 5,
+      "format": "roleplay",
+      "text": "A major customer asks you to disable a safety filter because it is “blocking legitimate work.” Some of their examples are valid; some are not. Respond."
+    },
+    {
+      "id": "CRI-01",
+      "category": "crisis",
+      "difficulty": 1,
+      "format": "opinion",
+      "text": "What is your first move when something breaks in production at a customer site?"
+    },
+    {
+      "id": "CRI-02",
+      "category": "crisis",
+      "difficulty": 1,
+      "format": "story",
+      "text": "Tell me about a time you had to deliver bad news. How did you do it?"
+    },
+    {
+      "id": "CRI-03",
+      "category": "crisis",
+      "difficulty": 2,
+      "format": "roleplay",
+      "text": "A bug in your deployment sent incorrect summaries to 30 users this morning. Say, out loud, your first message to the customer’s project lead."
+    },
+    {
+      "id": "CRI-04",
+      "category": "crisis",
+      "difficulty": 2,
+      "format": "roleplay",
+      "text": "The demo you’re giving to the customer’s leadership crashes in the first minute. Say what you say next."
+    },
+    {
+      "id": "CRI-05",
+      "category": "crisis",
+      "difficulty": 3,
+      "format": "roleplay",
+      "text": "An outage has blocked the customer’s support team for three hours during their busiest week. Their director calls you, angry. Respond."
+    },
+    {
+      "id": "CRI-06",
+      "category": "crisis",
+      "difficulty": 3,
+      "format": "roleplay",
+      "text": "You discover a data pipeline you built has silently dropped 10% of records for two weeks. Nobody has noticed yet. Tell the customer."
+    },
+    {
+      "id": "CRI-07",
+      "category": "crisis",
+      "difficulty": 3,
+      "format": "roleplay",
+      "text": "The go-live you have promised for a month is going to slip two weeks. Tell the executive sponsor."
+    },
+    {
+      "id": "CRI-08",
+      "category": "crisis",
+      "difficulty": 4,
+      "format": "roleplay",
+      "text": "The AI system gave one of the customer’s end users harmful advice, and a screenshot is circulating inside the customer. Their head of communications is on the phone. Respond."
+    },
+    {
+      "id": "CRI-09",
+      "category": "crisis",
+      "difficulty": 4,
+      "format": "roleplay",
+      "text": "You’re on-site. The customer’s VP pulls you aside: “If this outage happens again, we’re done.” Your team doesn’t know the root cause yet. Respond."
+    },
+    {
+      "id": "CRI-10",
+      "category": "crisis",
+      "difficulty": 5,
+      "format": "roleplay",
+      "text": "A critical incident was caused by a configuration change you made. In the post-mortem with the customer’s executives, the CTO asks: “Whose fault is this?” Answer."
+    },
+    {
+      "id": "CRI-11",
+      "category": "crisis",
+      "difficulty": 5,
+      "format": "roleplay",
+      "text": "On a live incident call with 20 people, including the customer’s CIO, your own engineering lead contradicts what you just told the customer. Respond on the call."
+    },
+    {
+      "id": "INF-01",
+      "category": "influence",
+      "difficulty": 1,
+      "format": "opinion",
+      "text": "How do you get engineers who don’t report to you to prioritize your customer’s problem?"
+    },
+    {
+      "id": "INF-02",
+      "category": "influence",
+      "difficulty": 1,
+      "format": "explain",
+      "text": "Explain why feedback from the field should shape a product roadmap."
+    },
+    {
+      "id": "INF-03",
+      "category": "influence",
+      "difficulty": 2,
+      "format": "pitch",
+      "text": "Pitch your product team, in one minute, on building a feature three of your customers keep asking for."
+    },
+    {
+      "id": "INF-04",
+      "category": "influence",
+      "difficulty": 2,
+      "format": "roleplay",
+      "text": "A research team built a model improvement, but they don’t see why your customer’s edge case matters. Convince them."
+    },
+    {
+      "id": "INF-05",
+      "category": "influence",
+      "difficulty": 3,
+      "format": "roleplay",
+      "text": "Your product manager says your customer’s request is “too niche.” You believe it signals a pattern across the market. Make the case."
+    },
+    {
+      "id": "INF-06",
+      "category": "influence",
+      "difficulty": 3,
+      "format": "roleplay",
+      "text": "You need the security team to fast-track a review that normally takes six weeks, or the deal stalls. Ask them."
+    },
+    {
+      "id": "INF-07",
+      "category": "influence",
+      "difficulty": 3,
+      "format": "roleplay",
+      "text": "Two senior engineers disagree about the architecture for a customer deployment and it is blocking progress. Get them aligned."
+    },
+    {
+      "id": "INF-08",
+      "category": "influence",
+      "difficulty": 4,
+      "format": "roleplay",
+      "text": "Leadership is about to deprioritize a product area your biggest customer depends on. You get one minute in the meeting. Make your case."
+    },
+    {
+      "id": "INF-09",
+      "category": "influence",
+      "difficulty": 4,
+      "format": "roleplay",
+      "text": "Sales wants you to commit engineering time to a prospect you believe is a poor fit. The sales VP outranks you. Respond to him."
+    },
+    {
+      "id": "INF-10",
+      "category": "influence",
+      "difficulty": 5,
+      "format": "roleplay",
+      "text": "In a leadership meeting, a senior executive dismisses field feedback as “anecdotes.” You have strong evidence. Respond without making it personal."
+    },
+    {
+      "id": "INF-11",
+      "category": "influence",
+      "difficulty": 5,
+      "format": "roleplay",
+      "text": "Your research team wants to feature your customer’s deployment as a public case study. The customer hasn’t agreed and is sensitive about it. Speak to the research lead."
+    },
+    {
+      "id": "PRI-01",
+      "category": "prioritization",
+      "difficulty": 1,
+      "format": "opinion",
+      "text": "How do you decide what to work on first when everything seems urgent?"
+    },
+    {
+      "id": "PRI-02",
+      "category": "prioritization",
+      "difficulty": 1,
+      "format": "explain",
+      "text": "Walk through how you plan your first week at a new customer site."
+    },
+    {
+      "id": "PRI-03",
+      "category": "prioritization",
+      "difficulty": 2,
+      "format": "roleplay",
+      "text": "You have two days before a demo and three unfinished features. Tell your customer contact which one you’re cutting and why."
+    },
+    {
+      "id": "PRI-04",
+      "category": "prioritization",
+      "difficulty": 2,
+      "format": "opinion",
+      "text": "Is it better to ship a rough solution this week or a polished one next month? Take a side, using a real customer scenario."
+    },
+    {
+      "id": "PRI-05",
+      "category": "prioritization",
+      "difficulty": 3,
+      "format": "roleplay",
+      "text": "Two customers escalate on the same afternoon: one has a production bug, the other has an executive demo tomorrow. You can handle one personally. Decide and explain it to the other."
+    },
+    {
+      "id": "PRI-06",
+      "category": "prioritization",
+      "difficulty": 3,
+      "format": "opinion",
+      "text": "A customer wants 12 use cases in the first quarter. Explain how you would pick the first two."
+    },
+    {
+      "id": "PRI-07",
+      "category": "prioritization",
+      "difficulty": 3,
+      "format": "roleplay",
+      "text": "Your manager asks why you spent a week on internal tooling instead of customer features. Defend it or concede it; decide."
+    },
+    {
+      "id": "PRI-08",
+      "category": "prioritization",
+      "difficulty": 4,
+      "format": "roleplay",
+      "text": "Your biggest customer wants a feature that would pull your only other engineer off a smaller customer’s launch. Make the call and tell both parties."
+    },
+    {
+      "id": "PRI-09",
+      "category": "prioritization",
+      "difficulty": 4,
+      "format": "opinion",
+      "text": "You are asked to cut your deployment budget by 40% and keep the same outcomes. What do you cut, and how do you explain it?"
+    },
+    {
+      "id": "PRI-10",
+      "category": "prioritization",
+      "difficulty": 5,
+      "format": "roleplay",
+      "text": "Friday, 5 p.m.: a security patch, a customer go-live and a promised executive report all need you this weekend. Tell your manager what you will and won’t do."
+    },
+    {
+      "id": "PRI-11",
+      "category": "prioritization",
+      "difficulty": 5,
+      "format": "roleplay",
+      "text": "The customer’s executive says: “Everything on this list is priority one.” Push her to force-rank it, in the meeting."
+    },
+    {
+      "id": "OWN-01",
+      "category": "ownership",
+      "difficulty": 1,
+      "format": "story",
+      "text": "Tell me about a mistake you made at work and what you changed afterward."
+    },
+    {
+      "id": "OWN-02",
+      "category": "ownership",
+      "difficulty": 1,
+      "format": "story",
+      "text": "Tell me about a time you went beyond your role to help a customer or teammate succeed."
+    },
+    {
+      "id": "OWN-03",
+      "category": "ownership",
+      "difficulty": 2,
+      "format": "story",
+      "text": "Tell me about a project that failed. What was your part in it?"
+    },
+    {
+      "id": "OWN-04",
+      "category": "ownership",
+      "difficulty": 2,
+      "format": "story",
+      "text": "Describe a time you received tough feedback. What did you do with it?"
+    },
+    {
+      "id": "OWN-05",
+      "category": "ownership",
+      "difficulty": 3,
+      "format": "story",
+      "text": "Tell me about a decision you made with incomplete information that turned out wrong. How did you recover?"
+    },
+    {
+      "id": "OWN-06",
+      "category": "ownership",
+      "difficulty": 3,
+      "format": "roleplay",
+      "text": "You shipped a feature customers aren’t using. Your manager asks what happened. Answer honestly."
+    },
+    {
+      "id": "OWN-07",
+      "category": "ownership",
+      "difficulty": 3,
+      "format": "story",
+      "text": "Tell me about a time you disagreed with your manager and you were the one who was wrong."
+    },
+    {
+      "id": "OWN-08",
+      "category": "ownership",
+      "difficulty": 4,
+      "format": "roleplay",
+      "text": "You missed a commitment to a customer because you overcommitted across projects. Apologize to the customer and reset expectations."
+    },
+    {
+      "id": "OWN-09",
+      "category": "ownership",
+      "difficulty": 4,
+      "format": "story",
+      "text": "Tell me about the hardest professional conversation you’ve had. What would you do differently?"
+    },
+    {
+      "id": "OWN-10",
+      "category": "ownership",
+      "difficulty": 5,
+      "format": "roleplay",
+      "text": "A junior engineer’s error hurt a customer, but you approved the change. With the junior engineer in the room, the customer’s executive asks who is accountable. Answer."
+    },
+    {
+      "id": "OWN-11",
+      "category": "ownership",
+      "difficulty": 5,
+      "format": "roleplay",
+      "text": "In your review, your manager says customers love you but internal teams find you difficult to work with. Respond."
+    },
+    {
+      "id": "TRU-01",
+      "category": "trust_ethics",
+      "difficulty": 1,
+      "format": "opinion",
+      "text": "What does it mean to be a trusted advisor to a customer rather than just a vendor?"
+    },
+    {
+      "id": "TRU-02",
+      "category": "trust_ethics",
+      "difficulty": 1,
+      "format": "opinion",
+      "text": "When is it acceptable to tell a customer “I don’t know”?"
+    },
+    {
+      "id": "TRU-03",
+      "category": "trust_ethics",
+      "difficulty": 2,
+      "format": "roleplay",
+      "text": "A customer asks you to copy their production customer data into a quick test environment “just for today.” Respond."
+    },
+    {
+      "id": "TRU-04",
+      "category": "trust_ethics",
+      "difficulty": 2,
+      "format": "roleplay",
+      "text": "The customer asks whether your AI system is “unbiased.” Give an honest answer."
+    },
+    {
+      "id": "TRU-05",
+      "category": "trust_ethics",
+      "difficulty": 3,
+      "format": "roleplay",
+      "text": "A customer wants to use your AI system to screen job applicants automatically with no human review. Respond."
+    },
+    {
+      "id": "TRU-06",
+      "category": "trust_ethics",
+      "difficulty": 3,
+      "format": "roleplay",
+      "text": "You learn the customer tells its end users that no AI is involved in a process that uses your system. Raise it with your contact."
+    },
+    {
+      "id": "TRU-07",
+      "category": "trust_ethics",
+      "difficulty": 3,
+      "format": "roleplay",
+      "text": "A customer engineer pastes production credentials into a chat with you “to save time.” Respond, and fix it."
+    },
+    {
+      "id": "TRU-08",
+      "category": "trust_ethics",
+      "difficulty": 4,
+      "format": "roleplay",
+      "text": "Your sales lead asks you to downplay a known product limitation in a customer’s security questionnaire. Respond to the sales lead."
+    },
+    {
+      "id": "TRU-09",
+      "category": "trust_ethics",
+      "difficulty": 4,
+      "format": "roleplay",
+      "text": "A customer wants to use the system where a wrong answer could harm someone’s health, and is pushing to launch next week. Respond."
+    },
+    {
+      "id": "TRU-10",
+      "category": "trust_ethics",
+      "difficulty": 5,
+      "format": "roleplay",
+      "text": "A customer executive offers a much bigger contract if you help them use the system in a way that likely violates your company’s usage policy. Respond."
+    },
+    {
+      "id": "TRU-11",
+      "category": "trust_ethics",
+      "difficulty": 5,
+      "format": "roleplay",
+      "text": "A journalist contacts you directly about a rumored failure at one of your customers. You know some of the details. Respond to the journalist."
+    },
+    {
+      "id": "LEA-01",
+      "category": "leadership",
+      "difficulty": 1,
+      "format": "opinion",
+      "text": "What makes a great Forward Deployed Engineer different from a great software engineer?"
+    },
+    {
+      "id": "LEA-02",
+      "category": "leadership",
+      "difficulty": 1,
+      "format": "story",
+      "text": "Describe the best leader you’ve worked with and what you learned from them."
+    },
+    {
+      "id": "LEA-03",
+      "category": "leadership",
+      "difficulty": 2,
+      "format": "opinion",
+      "text": "How would you onboard a new engineer onto a messy, high-pressure customer deployment?"
+    },
+    {
+      "id": "LEA-04",
+      "category": "leadership",
+      "difficulty": 2,
+      "format": "opinion",
+      "text": "What does good leadership look like when you have no formal authority?"
+    },
+    {
+      "id": "LEA-05",
+      "category": "leadership",
+      "difficulty": 3,
+      "format": "roleplay",
+      "text": "Your team just lost a major customer after months of work. Morale is low. Say what you would say to the team on Monday morning."
+    },
+    {
+      "id": "LEA-06",
+      "category": "leadership",
+      "difficulty": 3,
+      "format": "opinion",
+      "text": "Take a position: should Forward Deployed Engineers specialize by industry or stay generalists? Defend it."
+    },
+    {
+      "id": "LEA-07",
+      "category": "leadership",
+      "difficulty": 3,
+      "format": "roleplay",
+      "text": "A high-performing teammate is burning out but insists they’re fine. Talk to them."
+    },
+    {
+      "id": "LEA-08",
+      "category": "leadership",
+      "difficulty": 4,
+      "format": "opinion",
+      "text": "If you were building an FDE team from scratch next year, what would you do differently from how most teams operate today?"
+    },
+    {
+      "id": "LEA-09",
+      "category": "leadership",
+      "difficulty": 4,
+      "format": "roleplay",
+      "text": "Your team is split: half want to build a reusable platform, half want to keep shipping custom solutions. Set the direction."
+    },
+    {
+      "id": "LEA-10",
+      "category": "leadership",
+      "difficulty": 5,
+      "format": "opinion",
+      "text": "In five years the FDE role will be either the most important role in the company or gone. Pick one and defend it."
+    },
+    {
+      "id": "LEA-11",
+      "category": "leadership",
+      "difficulty": 5,
+      "format": "roleplay",
+      "text": "You were just promoted to lead the team. A former peer who wanted the role openly questions your decision in a meeting. Respond in the meeting."
+    },
+    {
+      "id": "COM-01",
+      "category": "commercial",
+      "difficulty": 1,
+      "format": "explain",
+      "text": "How do you show a customer the value of a deployment in their language, not yours?"
+    },
+    {
+      "id": "COM-02",
+      "category": "commercial",
+      "difficulty": 1,
+      "format": "opinion",
+      "text": "What is an engineer’s role in closing or expanding a deal?"
+    },
+    {
+      "id": "COM-03",
+      "category": "commercial",
+      "difficulty": 2,
+      "format": "roleplay",
+      "text": "A customer asks for a discount because the pilot “took longer than expected.” Respond."
+    },
+    {
+      "id": "COM-04",
+      "category": "commercial",
+      "difficulty": 2,
+      "format": "pitch",
+      "text": "Your pilot saved one team 10 hours a week. Turn that into an expansion pitch for the customer’s operations leader."
+    },
+    {
+      "id": "COM-05",
+      "category": "commercial",
+      "difficulty": 3,
+      "format": "roleplay",
+      "text": "The customer’s procurement lead says: “We like the product, but your competitor is 30% cheaper.” Respond."
+    },
+    {
+      "id": "COM-06",
+      "category": "commercial",
+      "difficulty": 3,
+      "format": "roleplay",
+      "text": "The customer asks for six months of free professional services as a condition of renewal. Respond."
+    },
+    {
+      "id": "COM-07",
+      "category": "commercial",
+      "difficulty": 3,
+      "format": "roleplay",
+      "text": "Your champion at the customer is leaving the company next month. Talk to her about how to protect the project."
+    },
+    {
+      "id": "COM-08",
+      "category": "commercial",
+      "difficulty": 4,
+      "format": "roleplay",
+      "text": "Renewal is in three weeks, usage is down 40%, and your executive sponsor has gone quiet. You get her on the phone. What do you say?"
+    },
+    {
+      "id": "COM-09",
+      "category": "commercial",
+      "difficulty": 4,
+      "format": "roleplay",
+      "text": "A customer wants payment to depend on a metric you can’t fully control. Respond."
+    },
+    {
+      "id": "COM-10",
+      "category": "commercial",
+      "difficulty": 5,
+      "format": "roleplay",
+      "text": "The customer’s CFO says: “Give me one number that proves this was worth it, or we cancel.” Respond."
+    },
+    {
+      "id": "COM-11",
+      "category": "commercial",
+      "difficulty": 5,
+      "format": "roleplay",
+      "text": "In a negotiation, the customer’s executive says: “You need our logo more than we need your product.” Respond."
+    },
+    {
+      "id": "AMB-01",
+      "category": "ambiguity",
+      "difficulty": 1,
+      "format": "opinion",
+      "text": "How do you make progress when requirements are unclear?"
+    },
+    {
+      "id": "AMB-02",
+      "category": "ambiguity",
+      "difficulty": 1,
+      "format": "explain",
+      "text": "What do you do in your first hour on-site at a customer you know nothing about?"
+    },
+    {
+      "id": "AMB-03",
+      "category": "ambiguity",
+      "difficulty": 2,
+      "format": "roleplay",
+      "text": "You arrive on-site and the access, data and hardware you were promised aren’t ready. Tell your manager your plan for the week."
+    },
+    {
+      "id": "AMB-04",
+      "category": "ambiguity",
+      "difficulty": 2,
+      "format": "opinion",
+      "text": "The customer can’t agree on what success means. What do you do tomorrow morning?"
+    },
+    {
+      "id": "AMB-05",
+      "category": "ambiguity",
+      "difficulty": 3,
+      "format": "roleplay",
+      "text": "The customer’s project lead and your own account executive give you conflicting instructions. Decide what you’ll do and tell both."
+    },
+    {
+      "id": "AMB-06",
+      "category": "ambiguity",
+      "difficulty": 3,
+      "format": "opinion",
+      "text": "You have 48 hours to decide whether to build a custom solution or wait for an official product feature. Make the call and justify it."
+    },
+    {
+      "id": "AMB-07",
+      "category": "ambiguity",
+      "difficulty": 3,
+      "format": "roleplay",
+      "text": "The customer’s data is far worse than expected and nobody owns cleaning it. Propose a path in the steering meeting."
+    },
+    {
+      "id": "AMB-08",
+      "category": "ambiguity",
+      "difficulty": 4,
+      "format": "roleplay",
+      "text": "Starting tomorrow you own a failing deployment at a customer you have never worked with. You get one call with the account team today. What do you say on that call?"
+    },
+    {
+      "id": "AMB-09",
+      "category": "ambiguity",
+      "difficulty": 4,
+      "format": "opinion",
+      "text": "Your product changes monthly, and the customer wants a 12-month roadmap commitment. Respond with a plan."
+    },
+    {
+      "id": "AMB-10",
+      "category": "ambiguity",
+      "difficulty": 5,
+      "format": "roleplay",
+      "text": "The executive who championed your project was just fired, and nobody knows if the project continues. You meet her replacement tomorrow. Open that meeting."
+    },
+    {
+      "id": "AMB-11",
+      "category": "ambiguity",
+      "difficulty": 5,
+      "format": "roleplay",
+      "text": "Two hours before an executive demo, you find the numbers on your key slide come from a flawed analysis. Decide what to do and say it to your account executive."
+    }
+  ]
+}

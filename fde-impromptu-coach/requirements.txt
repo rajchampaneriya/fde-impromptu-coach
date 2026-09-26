@@ -1,0 +1,7 @@
+# FDE Impromptu Coach - Python dependencies (Python 3.9+)
+python-pptx>=0.6.21,<2
+lxml>=4.9
+google-api-python-client>=2.80
+google-auth>=2.15
+google-auth-oauthlib>=1.0
+google-auth-httplib2>=0.1

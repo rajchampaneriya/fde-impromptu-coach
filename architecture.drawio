@@ -1,0 +1,94 @@
+<mxfile host="app.diagrams.net" modified="2026-09-26T22:00:00.000Z" agent="fde-impromptu-coach" version="24.0.0">
+  <diagram id="fde-arch" name="Architecture">
+    <mxGraphModel dx="1200" dy="800" grid="0" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1240" pageHeight="700" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+
+        <mxCell id="title" value="FDE Impromptu Coach — how five minutes a day works" style="text;html=1;fontFamily=Calibri;fontSize=22;fontStyle=1;fontColor=#0B2545;align=left;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="40" y="20" width="1160" height="34" as="geometry" />
+        </mxCell>
+
+        <mxCell id="problem" value="THE PROBLEM&#10;&#10;Meetings throw surprise questions.&#10;Most engineers never practice&#10;unscripted speaking." style="rounded=1;whiteSpace=wrap;html=1;fontFamily=Calibri;fontSize=14;fontColor=#0B2545;fillColor=#F1F6FD;strokeColor=#1F5FBF;strokeWidth=1.5;verticalAlign=middle;spacing=8;" vertex="1" parent="1">
+          <mxGeometry x="40" y="70" width="560" height="110" as="geometry" />
+        </mxCell>
+
+        <mxCell id="why" value="WHY THIS SKILL EXISTS&#10;&#10;Daily practice needs discipline nobody has.&#10;The coach removes the discipline tax:&#10;deck, timer, recording, upload, streak — automated." style="rounded=1;whiteSpace=wrap;html=1;fontFamily=Calibri;fontSize=14;fontColor=#0B2545;fillColor=#DCE7F7;strokeColor=#1F5FBF;strokeWidth=1.5;verticalAlign=middle;spacing=8;" vertex="1" parent="1">
+          <mxGeometry x="640" y="70" width="560" height="110" as="geometry" />
+        </mxCell>
+
+        <mxCell id="flowlabel" value="THE DAILY FLOW" style="text;html=1;fontFamily=Calibri;fontSize=13;fontStyle=1;fontColor=#5B6B7F;align=left;" vertex="1" parent="1">
+          <mxGeometry x="40" y="205" width="300" height="22" as="geometry" />
+        </mxCell>
+
+        <mxCell id="n1" value="05:30&#10;Mac wakes&#10;(launchd)" style="rounded=1;whiteSpace=wrap;html=1;fontFamily=Calibri;fontSize=13;fontColor=#FFFFFF;fillColor=#1F5FBF;strokeColor=none;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="40" y="235" width="150" height="90" as="geometry" />
+        </mxCell>
+
+        <mxCell id="n2" value="fde-coach&#10;builds deck&#10;5 surprise questions" style="rounded=1;whiteSpace=wrap;html=1;fontFamily=Calibri;fontSize=13;fontColor=#0B2545;fillColor=#DCE7F7;strokeColor=#1F5FBF;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="240" y="235" width="180" height="90" as="geometry" />
+        </mxCell>
+
+        <mxCell id="n3" value="You speak&#10;5 × 60 seconds&#10;QuickTime records" style="rounded=1;whiteSpace=wrap;html=1;fontFamily=Calibri;fontSize=13;fontColor=#0B2545;fillColor=#DCE7F7;strokeColor=#1F5FBF;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="470" y="235" width="180" height="90" as="geometry" />
+        </mxCell>
+
+        <mxCell id="n4" value="Video uploads&#10;privately&#10;(YouTube)" style="rounded=1;whiteSpace=wrap;html=1;fontFamily=Calibri;fontSize=13;fontColor=#0B2545;fillColor=#DCE7F7;strokeColor=#1F5FBF;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="700" y="235" width="180" height="90" as="geometry" />
+        </mxCell>
+
+        <mxCell id="n5" value="Streak grows&#10;questions get&#10;harder each week" style="rounded=1;whiteSpace=wrap;html=1;fontFamily=Calibri;fontSize=13;fontColor=#FFFFFF;fillColor=#0B2545;strokeColor=none;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="930" y="235" width="180" height="90" as="geometry" />
+        </mxCell>
+
+        <mxCell id="e1" style="edgeStyle=orthogonalEdgeStyle;rounded=1;strokeColor=#1F5FBF;strokeWidth=1.5;endArrow=blockThin;endFill=1;fontFamily=Calibri;" edge="1" parent="1" source="n1" target="n2">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e2" style="edgeStyle=orthogonalEdgeStyle;rounded=1;strokeColor=#1F5FBF;strokeWidth=1.5;endArrow=blockThin;endFill=1;fontFamily=Calibri;" edge="1" parent="1" source="n2" target="n3">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e3" style="edgeStyle=orthogonalEdgeStyle;rounded=1;strokeColor=#1F5FBF;strokeWidth=1.5;endArrow=blockThin;endFill=1;fontFamily=Calibri;" edge="1" parent="1" source="n3" target="n4">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e4" style="edgeStyle=orthogonalEdgeStyle;rounded=1;strokeColor=#1F5FBF;strokeWidth=1.5;endArrow=blockThin;endFill=1;fontFamily=Calibri;" edge="1" parent="1" source="n4" target="n5">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <mxCell id="complabel" value="MAIN COMPONENTS" style="text;html=1;fontFamily=Calibri;fontSize=13;fontStyle=1;fontColor=#5B6B7F;align=left;" vertex="1" parent="1">
+          <mxGeometry x="40" y="360" width="300" height="22" as="geometry" />
+        </mxCell>
+
+        <mxCell id="c1" value="Question generator&#10;(Claude + 132-question bank)" style="rounded=1;whiteSpace=wrap;html=1;fontFamily=Calibri;fontSize=12;fontColor=#0B2545;fillColor=#F1F6FD;strokeColor=#8A98A9;dashed=1;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="40" y="390" width="220" height="70" as="geometry" />
+        </mxCell>
+        <mxCell id="c2" value="Deck builder&#10;(PowerPoint / Keynote)" style="rounded=1;whiteSpace=wrap;html=1;fontFamily=Calibri;fontSize=12;fontColor=#0B2545;fillColor=#F1F6FD;strokeColor=#8A98A9;dashed=1;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="280" y="390" width="220" height="70" as="geometry" />
+        </mxCell>
+        <mxCell id="c3" value="Session recorder&#10;(QuickTime + timers)" style="rounded=1;whiteSpace=wrap;html=1;fontFamily=Calibri;fontSize=12;fontColor=#0B2545;fillColor=#F1F6FD;strokeColor=#8A98A9;dashed=1;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="520" y="390" width="220" height="70" as="geometry" />
+        </mxCell>
+        <mxCell id="c4" value="Streak guard&#10;(Reminders + Calendar)" style="rounded=1;whiteSpace=wrap;html=1;fontFamily=Calibri;fontSize=12;fontColor=#0B2545;fillColor=#F1F6FD;strokeColor=#8A98A9;dashed=1;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="760" y="390" width="220" height="70" as="geometry" />
+        </mxCell>
+        <mxCell id="c5" value="Catch-up agent&#10;(runs every 15 min)" style="rounded=1;whiteSpace=wrap;html=1;fontFamily=Calibri;fontSize=12;fontColor=#0B2545;fillColor=#F1F6FD;strokeColor=#8A98A9;dashed=1;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="1000" y="390" width="200" height="70" as="geometry" />
+        </mxCell>
+
+        <mxCell id="ec2" style="strokeColor=#8A98A9;dashed=1;endArrow=none;fontFamily=Calibri;" edge="1" parent="1" source="c2" target="n2">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="ec3" style="strokeColor=#8A98A9;dashed=1;endArrow=none;fontFamily=Calibri;" edge="1" parent="1" source="c3" target="n3">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="ec4" style="strokeColor=#8A98A9;dashed=1;endArrow=none;fontFamily=Calibri;" edge="1" parent="1" source="c4" target="n5">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <mxCell id="userband" value="YOU TALK, CLAUDE ACTS:  “start my practice”  ·  “what's my streak?”  ·  “make today harder”  ·  “I missed yesterday”" style="rounded=1;whiteSpace=wrap;html=1;fontFamily=Calibri;fontSize=14;fontStyle=1;fontColor=#FFFFFF;fillColor=#1F5FBF;strokeColor=none;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="40" y="500" width="1160" height="60" as="geometry" />
+        </mxCell>
+
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
