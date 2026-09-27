@@ -336,7 +336,9 @@ def warmup(presentation_app: str) -> List[str]:
         ("QuickTime Player", 'tell application "QuickTime Player" to return (count of documents) as text'),
     ]
     if app_exists(presentation_app):
-        checks.append((presentation_app, f'tell application {q(presentation_app)} to return (count of presentations) as text'))
+        # PowerPoint exposes `presentations`; Keynote calls the same thing `documents`.
+        obj = "documents" if "keynote" in presentation_app.lower() else "presentations"
+        checks.append((presentation_app, f'tell application {q(presentation_app)} to return (count of {obj}) as text'))
     for name, script in checks:
         ok, out = osascript(script, timeout=120)
         results.append(f"{name}: {'ok' if ok else 'blocked (' + out[:80] + ')'}")
