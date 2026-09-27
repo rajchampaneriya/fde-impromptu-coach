@@ -207,8 +207,58 @@ end tell
     return ok and out == "started"
 
 
-def quicktime_stop_and_save(dest: Path) -> Tuple[bool, str]:
-    """Stop the recording and save it to dest. Tries save, then export presets."""
+def _recover_composition(dest: Path, since: float) -> bool:
+    """Modern QuickTime (macOS 26+) silently ignores AppleScript save/export
+    targets (exit 0, empty file); a stopped recording instead auto-saves as a
+    .qtpxcomposition bundle. Pull the movie out of the newest such bundle."""
+    dirs = {dest.parent, Path("~/Movies").expanduser()}
+    deadline = time.time() + 10
+    while time.time() < deadline:
+        bundles = []
+        for d in dirs:
+            if d.exists():
+                bundles += [b for b in d.glob("*.qtpxcomposition")
+                            if b.stat().st_mtime >= since - 5]
+        if bundles:
+            inner = max(bundles, key=lambda b: b.stat().st_mtime) / "Movie Recording.mov"
+            if inner.exists() and inner.stat().st_size > 1_000_000:
+                try:
+                    shutil.copyfile(inner, dest)
+                except OSError as exc:
+                    log.warning("composition copy failed: %s", exc)
+                    return False
+                osascript('tell application "QuickTime Player" to close front document saving no', timeout=30)
+                bundle = inner.parent
+                shutil.rmtree(bundle, ignore_errors=True)
+                size = dest.stat().st_size if dest.exists() else 0
+                log.info("QuickTime composition recover: %s (%d bytes)", dest, size)
+                return size > 1_000_000
+        time.sleep(3)
+    return False
+
+
+def _finish_sidecar(dest: Path) -> bool:
+    """macOS 26+ QuickTime rewrites the save target to '<dest>.qtpxcomposition' —
+    either a flat movie file (rename it) or a bundle (extract Movie Recording.mov).
+    Returns True when dest holds a >1 MB movie."""
+    side = dest.with_name(dest.name + ".qtpxcomposition")
+    if dest.exists() and dest.stat().st_size > 1_000_000:
+        return True
+    if side.is_file() and side.stat().st_size > 1_000_000:
+        side.replace(dest)
+        return True
+    if side.is_dir():
+        inner = side / "Movie Recording.mov"
+        if inner.exists() and inner.stat().st_size > 1_000_000:
+            shutil.copyfile(inner, dest)
+            shutil.rmtree(side, ignore_errors=True)
+            return dest.exists() and dest.stat().st_size > 1_000_000
+    return False
+
+
+def quicktime_stop_and_save(dest: Path, since: float = 0.0) -> Tuple[bool, str]:
+    """Stop the recording and save it to dest. Tries the auto-saved
+    composition bundle first (modern macOS), then save/export AppleScript."""
     if dry_run() or not is_macos():
         dest.parent.mkdir(parents=True, exist_ok=True)
         with open(dest, "wb") as fh:
@@ -226,6 +276,11 @@ end tell
 """, timeout=60)
     time.sleep(4)
     dest.parent.mkdir(parents=True, exist_ok=True)
+    if since and _recover_composition(dest, since):
+        _finish_sidecar(dest)
+        osascript('tell application "QuickTime Player" to close front document saving no', timeout=30)
+        if dest.exists() and dest.stat().st_size > 1_000_000:
+            return True, "composition"
     attempts: List[Tuple[str, str]] = [
         ("save", "save theDoc in (POSIX file {p})"),
         ("export-1080p", 'export theDoc in (POSIX file {p}) using settings preset "1080p"'),
@@ -245,6 +300,11 @@ end timeout
 return "ok"
 """
         ok, out = osascript(script, timeout=1860)
+        if ok and _finish_sidecar(dest):
+            osascript('tell application "QuickTime Player" to close front document saving no', timeout=30)
+            size = dest.stat().st_size
+            log.info("QuickTime %s: sidecar finalised (%d bytes)", label, size)
+            return True, f"{label}-sidecar"
         size = dest.stat().st_size if dest.exists() else 0
         log.info("QuickTime %s: ok=%s size=%s %s", label, ok, size, out[:200])
         if ok and size > 1_000_000:

@@ -115,7 +115,7 @@ def record(session: Dict[str, Any], cfg: Dict[str, Any], paths: Paths) -> Dict[s
         result["offset"] = round(t_show - t_rec, 1)
 
     if mode == "auto":
-        saved, how = macos.quicktime_stop_and_save(dest)
+        saved, how = macos.quicktime_stop_and_save(dest, since=t_rec)
         result["method"] = f"auto:{how}"
         video = dest if saved else _manual_save(folder, t_rec - 5)
     else:
