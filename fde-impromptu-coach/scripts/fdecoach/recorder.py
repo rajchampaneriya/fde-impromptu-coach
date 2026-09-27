@@ -47,6 +47,29 @@ def _manual_save(folder: Path, since: float) -> Optional[Path]:
     return wait_for_video(folder, since, timeout=900)
 
 
+def _run_show(deck: Path, show: Path, cfg: Dict[str, Any], total: float, grace: int):
+    """Start the slide show and wait for it to run its course (or Esc).
+    Returns (ended_early, show_start_time)."""
+    started = macos.powerpoint_start_show(deck)
+    if not started:
+        log.warning("Could not start the show via AppleScript; opening the .ppsx play copy")
+        macos.open_path(show, cfg.get("presentation_app"))
+        time.sleep(4)
+    t_show = time.time()
+    ended_early = False
+    while True:
+        time.sleep(0 if macos.dry_run() else 2)
+        elapsed = time.time() - t_show
+        running = macos.powerpoint_show_running()
+        if elapsed >= total + grace or macos.dry_run():
+            break
+        if running is False and elapsed > 8:
+            ended_early = elapsed < total - 5
+            break
+    macos.powerpoint_end_show()
+    return ended_early, t_show
+
+
 def record(session: Dict[str, Any], cfg: Dict[str, Any], paths: Paths) -> Dict[str, Any]:
     rec_cfg = cfg.get("recording", {})
     folder = paths.recordings_dir(cfg)
@@ -58,9 +81,16 @@ def record(session: Dict[str, Any], cfg: Dict[str, Any], paths: Paths) -> Dict[s
     mode = rec_cfg.get("mode", "auto")
     result: Dict[str, Any] = {"ok": False, "video": None, "offset": None, "method": mode, "ended_early": False}
 
+    if mode == "none":
+        # Camera-less practice: run the deck show, count the day, save no video.
+        result["ended_early"], _ = _run_show(deck, show, cfg, total, grace)
+        result.update(ok=True, method="none")
+        return result
+
     if mode == "auto" and not (macos.has_camera() and macos.has_microphone()):
-        result["error"] = ("no camera/microphone on this Mac - open the deck and practise manually, "
-                           "then run: fde-coach complete --no-video")
+        result["error"] = ("no camera/microphone on this Mac - practise with the deck and mark the day "
+                           "(fde-coach complete --no-video), or make camera-less practice the default: "
+                           "fde-coach config --set recording.mode=none")
         return result
 
     if mode == "auto":
@@ -80,26 +110,9 @@ def record(session: Dict[str, Any], cfg: Dict[str, Any], paths: Paths) -> Dict[s
             return result
         t_rec = time.time()
 
-    started = macos.powerpoint_start_show(deck)
-    if not started:
-        log.warning("Could not start the show via AppleScript; opening the .ppsx play copy")
-        macos.open_path(show, cfg.get("presentation_app"))
-        time.sleep(4)
-    t_show = time.time()
+    result["ended_early"], t_show = _run_show(deck, show, cfg, total, grace)
     if mode == "auto":
         result["offset"] = round(t_show - t_rec, 1)
-
-    # Wait for the show to run its course (or for the learner to press Esc).
-    while True:
-        time.sleep(0 if macos.dry_run() else 2)
-        elapsed = time.time() - t_show
-        running = macos.powerpoint_show_running()
-        if elapsed >= total + grace or macos.dry_run():
-            break
-        if running is False and elapsed > 8:
-            result["ended_early"] = elapsed < total - 5
-            break
-    macos.powerpoint_end_show()
 
     if mode == "auto":
         saved, how = macos.quicktime_stop_and_save(dest)

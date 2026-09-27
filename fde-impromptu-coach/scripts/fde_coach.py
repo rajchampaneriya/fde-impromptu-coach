@@ -286,9 +286,13 @@ def cmd_doctor(args) -> int:
     line(macos.app_exists(cfg.get("presentation_app", "Microsoft PowerPoint")), "Microsoft PowerPoint installed")
     line(macos.app_exists("QuickTime Player"), "QuickTime Player installed")
     cam, mic = macos.has_camera(), macos.has_microphone()
-    line(cam and mic, "Camera & microphone",
-         "found" if cam and mic else
-         "not found - run sessions on a Mac with a camera, or practise with the deck and mark the day: fde-coach complete --no-video")
+    if cfg.get("recording", {}).get("mode") == "none":
+        line(True, "Camera & microphone", "not needed (recording.mode=none: deck show only, no video)")
+    else:
+        line(cam and mic, "Camera & microphone",
+             "found" if cam and mic else
+             "not found - run sessions on a Mac with a camera, make camera-less practice the default "
+             "(config --set recording.mode=none), or practise and mark the day: fde-coach complete --no-video")
     rec = paths.recordings_dir(cfg, create=False)
     if rec.exists():
         free = shutil.disk_usage(str(rec)).free / 1e9

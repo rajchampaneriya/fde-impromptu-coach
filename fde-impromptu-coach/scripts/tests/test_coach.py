@@ -229,6 +229,17 @@ class TestEndToEnd(unittest.TestCase):
         finally:
             macos.has_camera, macos.has_microphone = orig_cam, orig_mic
 
+    def test_camera_less_mode_records_day_without_video(self):
+        self.h.run("config", "--set", "recording.mode=none", now="2026-10-01T05:29:00")
+        self.h.run("daily", now="2026-10-01T05:30:00", answers="Start now,About right")
+        s = self.h.history()["sessions"]["2026-10-01"]
+        self.assertTrue(s["recorded"])
+        self.assertIsNone(s["video_path"])
+        self.assertEqual(s["record_method"], "none")
+        self.assertEqual(s["youtube"]["status"], "disabled")
+        st = json.loads(self.h.run("status", "--json", now="2026-10-01T08:00:00").stdout)
+        self.assertEqual(st["streak"]["current"], 1)
+
     def test_deck_structure_and_timings(self):
         self.h.run("generate", now="2026-10-01T05:30:00")
         s = self.h.history()["sessions"]["2026-10-01"]
