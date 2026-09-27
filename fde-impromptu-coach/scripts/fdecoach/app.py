@@ -18,7 +18,7 @@ from typing import Any, Callable, Dict, List, Optional, Tuple
 
 from . import gcal, macos, recorder, youtube
 from .config import APP_NAME, ENTRY_SCRIPT, REFERENCES_DIR, TAG, Paths, load_config, parse_hhmm, setup_logging
-from .deck import build_deck, chapters, session_seconds
+from .deck import build_deck, chapters, render_thumbnail, session_seconds
 from .questions import categories, generate_questions, plan_slots, questions_from_file
 from .state import History, LockBusy, Runtime, file_lock, lock_is_held, now, streaks, today
 
@@ -415,8 +415,9 @@ def upload_pending(ctx: Ctx, interactive: bool = False) -> List[str]:
                     continue
                 stats = streaks(ctx.history(), date)
                 meta = youtube.build_metadata(s, ctx.cfg, _chapter_marks(s, ctx.cfg), stats["current"])
+                thumb = render_thumbnail(s, stats, ctx.cfg, ctx.paths.decks / f"{s['date']}_thumb.png")
                 try:
-                    vid = youtube.upload(ctx.paths, video, meta)
+                    vid = youtube.upload(ctx.paths, video, meta, thumbnail=thumb)
                 except (youtube.YouTubeAuthExpired, youtube.YouTubeNotConfigured) as exc:
                     notify_once(ctx, "yt-auth", "YouTube needs you", str(exc))
                     out.append(f"{s['date']}: {exc}")

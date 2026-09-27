@@ -13,7 +13,8 @@ from .config import Paths
 
 log = logging.getLogger("fdecoach")
 
-SCOPES = ["https://www.googleapis.com/auth/youtube.upload"]
+SCOPES = ["https://www.googleapis.com/auth/youtube.upload",
+          "https://www.googleapis.com/auth/youtube.force-ssl"]  # force-ssl: thumbnails.set
 RETRIABLE_STATUS = {500, 502, 503, 504}
 
 
@@ -122,7 +123,7 @@ def build_metadata(session: Dict[str, Any], cfg: Dict[str, Any], marks: Optional
     }
 
 
-def upload(paths: Paths, video: Path, metadata: Dict[str, Any]) -> str:
+def upload(paths: Paths, video: Path, metadata: Dict[str, Any], thumbnail: Optional[Path] = None) -> str:
     """Resumable upload with retries. Returns the YouTube video id."""
     if os.environ.get("FDE_COACH_DRYRUN") == "1":
         log.info("[dry-run] YouTube upload %s: %s", video.name, metadata["snippet"]["title"])
@@ -158,4 +159,13 @@ def upload(paths: Paths, video: Path, metadata: Dict[str, Any]) -> str:
             raise
     if "id" not in response:
         raise RuntimeError(f"Unexpected upload response: {json.dumps(response)[:300]}")
+    if thumbnail and Path(thumbnail).exists():
+        try:  # custom thumbnails need a phone-verified channel; skip gracefully
+            from googleapiclient.http import MediaFileUpload
+            service.thumbnails().set(
+                videoId=response["id"],
+                media_body=MediaFileUpload(str(thumbnail), mimetype="image/png")).execute()
+            log.info("YouTube thumbnail set from %s", thumbnail)
+        except Exception as exc:  # noqa: BLE001 - thumbnail is cosmetic, never fail the upload
+            log.warning("YouTube thumbnail not set (%s); channel may need phone verification", exc)
     return response["id"]

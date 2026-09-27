@@ -10,13 +10,16 @@ imports cleanly into Google Slides.
 from __future__ import annotations
 
 import datetime as dt
+import logging
 import math
 import shutil
 import zipfile
 from pathlib import Path
-from typing import Any, Dict, List, Sequence, Tuple
+from typing import Any, Dict, List, Optional, Sequence, Tuple
 
 from lxml import etree
+
+log = logging.getLogger("fdecoach")
 from pptx import Presentation
 from pptx.dml.color import RGBColor
 from pptx.enum.shapes import MSO_SHAPE
@@ -461,3 +464,59 @@ def chapters(session: Dict[str, Any], cfg: Dict[str, Any], offset: float = 0.0) 
         marks.append((start, f"Q{i} \u00b7 {q.get('category_label', '')}"))
     marks.append((int(math.floor(offset + intro + len(session['questions']) * per)), "Wrap-up"))
     return marks
+
+
+def render_thumbnail(session: Dict[str, Any], stats: Dict[str, Any], cfg: Dict[str, Any], out_png: Path) -> Optional[Path]:
+    """Render the intro slide's look (title card: Day N, date, streak) as a
+    1280x720 PNG used as the YouTube thumbnail."""
+    try:
+        from PIL import Image, ImageDraw, ImageFont
+    except ImportError:
+        log.warning("Pillow not installed; skipping YouTube thumbnail")
+        return None
+    W, H = 1280, 720
+    navy, blue, gray, gray_l = "#0B2545", "#1F5FBF", "#5B6B7F", "#8A98A9"
+    img = Image.new("RGB", (W, H), "white")
+    d = ImageDraw.Draw(img)
+
+    def font(size: int, bold: bool = False):
+        names = ["Arial Bold.ttf", "Arial.ttf"] if bold else ["Arial.ttf", "Helvetica.ttf"]
+        for sub in ("Supplemental", ""):
+            for name in names:
+                try:
+                    return ImageFont.truetype(f"/System/Library/Fonts/{sub}/{name}".replace("//", "/"), size)
+                except OSError:
+                    continue
+        return ImageFont.load_default()
+
+    def fit(text: str, size: int, bold: bool, max_w: int) -> int:
+        while size > 14 and d.textlength(text, font=font(size, bold)) > max_w:
+            size -= 2
+        return size
+
+    card_x = 940
+    left_w = card_x - 120  # keep left-column text clear of the streak card
+    d.text((80, 70), f"{cfg.get('role', 'Forward Deployed Engineer').upper()}  ·  IMPROMPTU PRACTICE",
+           font=font(fit(f"{cfg.get('role', 'x').upper()}  ·  IMPROMPTU PRACTICE", 26, True, left_w), True), fill=blue)
+    d.text((80, 140), f"Day {session['day_number']}", font=font(120, True), fill=navy)
+    date = dt.date.fromisoformat(session["date"])
+    d.text((80, 310), date.strftime("%A, %d %B %Y"), font=font(fit(date.strftime("%A, %d %B %Y"), 46, False, left_w)), fill=gray)
+    n = len(session["questions"])
+    secs = int(cfg.get("seconds_per_question", 60))
+    qline = f"{n} questions  ·  {secs} seconds each  ·  no preparation"
+    d.text((80, 400), qline, font=font(fit(qline, 40, True, left_w), True), fill=navy)
+    pline = "Pause. Lead with your point. Land it before the bar runs out."
+    d.text((80, 480), pline, font=font(fit(pline, 32, False, left_w)), fill=gray)
+
+    # streak panel (right side, like the slide)
+    px, py, pw, ph = card_x + 20, 140, 240, 340
+    d.rounded_rectangle((px, py, px + pw, py + ph), radius=24, fill="#F1F6FD", outline="#DCE7F7")
+    d.text((px + pw // 2, py + 95), str(int(stats.get("current", 0))),
+           font=font(100, True), fill=blue, anchor="mm")
+    d.text((px + pw // 2, py + 180), "DAY STREAK", font=font(26), fill=gray, anchor="mm")
+    best = f"Best {stats.get('best', 0)}  ·  Level {session['level']} of 5"
+    d.text((px + pw // 2, py + 265), best, font=font(fit(best, 22, False, pw - 30)), fill=gray_l, anchor="mm")
+
+    out_png.parent.mkdir(parents=True, exist_ok=True)
+    img.save(out_png, "PNG")
+    return out_png
