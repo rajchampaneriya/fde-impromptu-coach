@@ -97,6 +97,11 @@ class History:
         self.data.setdefault("sessions", {})
 
     def save(self) -> None:
+        # Embed the computed streak so raw readers of history.json see the
+        # same numbers the CLI reports (unrecorded days never count).
+        snapshot = streaks(self)
+        snapshot["as_of"] = today().isoformat()
+        self.data["streak"] = snapshot
         _write_json(self.paths.history, self.data)
 
     @property

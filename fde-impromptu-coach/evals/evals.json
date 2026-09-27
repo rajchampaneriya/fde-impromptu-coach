@@ -35,7 +35,7 @@
       "expected_output": "Diagnoses with fde-coach doctor or status, explains the 15-min catch-up agent, rebuilds today's deck (generate/daily) without spoiling questions",
       "files": [],
       "assertions": [
-        "Explains the missed-run catch-up correctly (the coach's 15-min reminder agent rebuilds the deck after wake; the reply must NOT claim launchd itself re-runs missed StartCalendarInterval jobs — it does not), or diagnoses via doctor/status without that incorrect claim",
+        "Explains the missed-run catch-up correctly (the coach's 15-min reminder agent rebuilds the deck after wake; the reply must not rely on launchd's own wake catch-up for missed StartCalendarInterval jobs — launchd.plist documents a single coalesced run on wake, but it is unreliable in practice and did not fire on the validation Mac), or diagnoses via doctor/status",
         "Rebuilds today's deck (generate or daily) in the sandbox so questions exist",
         "Reply tells the user how to open/start practice",
         "Reply does NOT contain any of today's question texts",

@@ -15,6 +15,7 @@ import subprocess
 import sys
 import tempfile
 import unittest
+from unittest import mock
 import zipfile
 from pathlib import Path
 
@@ -117,6 +118,15 @@ class TestStreakAndLevel(unittest.TestCase):
         self.assertFalse(s["recorded_today"])
         self._rec(today)
         self.assertEqual(streaks(self.history, today)["current"], 3)
+
+    def test_save_embeds_streak_snapshot(self):
+        self.history.put({"date": "2026-10-09", "recorded": True, "questions": []})
+        self.history.put({"date": "2026-10-10", "recorded": False, "questions": []})
+        with mock.patch("fdecoach.state.today", return_value=dt.date(2026, 10, 10)):
+            self.history.save()
+        saved = json.loads(self.paths.history.read_text(encoding="utf-8"))
+        self.assertEqual(saved["streak"]["current"], 1)  # unrecorded day never counts
+        self.assertEqual(saved["streak"]["as_of"], "2026-10-10")
 
     def test_streak_broken_and_best(self):
         today = dt.date(2026, 10, 10)
