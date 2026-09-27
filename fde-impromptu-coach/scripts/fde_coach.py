@@ -17,6 +17,7 @@ import shutil
 import stat
 import subprocess
 import sys
+import time
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
@@ -83,6 +84,10 @@ def cmd_setup(args) -> int:
     print(f"  launcher      : {wrapper}")
     print(f"  double-click  : {paths.start_command}")
     if not args.no_agents:
+        # Agent reinstall is a fresh start: clear old error output so doctor
+        # does not keep reporting errors from a previous install.
+        for err_log in paths.logs.glob("*.err.log"):
+            err_log.write_text("", encoding="utf-8")
         for line in scheduler.install(cfg, paths):
             print(f"  launchd       : {line}")
         print(f"  schedule      : daily at {cfg['daily_time']}, reminder checks every 15 minutes")
@@ -292,6 +297,16 @@ def cmd_doctor(args) -> int:
         line(False, "Recordings folder", f"{rec} does not exist yet (created on first session)")
     for label, loaded in scheduler.status().items():
         line(loaded, f"launchd agent {label}", "loaded" if loaded else "not loaded - run: fde-coach install-agents")
+        # A loaded agent can still fail on every tick (e.g. macOS TCC blocks
+        # launchd from reading the script); surface the last logged error.
+        err = paths.logs / f"{label.split('.')[-1]}.err.log"
+        if err.exists() and time.time() - err.stat().st_mtime < 86400:
+            # agent stderr also carries INFO lines; only real errors matter
+            errors = [l for l in err.read_text(encoding="utf-8", errors="replace").splitlines()
+                      if ("ERROR" in l or "Traceback" in l or "Errno" in l)]
+            if errors:
+                msg = errors[-1]
+                line(False, f"agent {label} error log", msg[:120] + ("…" if len(msg) > 120 else ""))
     if cfg.get("youtube", {}).get("enabled", True):
         line(paths.client_secret.exists(), "YouTube OAuth client file", str(paths.client_secret))
         configured = youtube.is_configured(paths)

@@ -48,15 +48,26 @@ say "Installing Python packages"
 "$VENV/bin/python" -m pip install --quiet --upgrade pip
 "$VENV/bin/python" -m pip install --quiet --upgrade -r "$SKILL_DIR/requirements.txt"
 
+# Deploy the runtime scripts into the data folder. macOS TCC blocks
+# launchd agents from reading ~/Downloads (and other protected folders),
+# so the schedule must run from a copy outside them.
+SRC_DIR="$DATA_DIR/src"
+if [ "$(cd "$SKILL_DIR" && pwd)" != "$(cd "$SRC_DIR" 2>/dev/null && pwd)" ]; then
+  say "Deploying scripts to $SRC_DIR"
+  mkdir -p "$SRC_DIR"
+  rsync -a --delete --exclude '__pycache__' \
+    "$SKILL_DIR/scripts" "$SKILL_DIR/references" "$SKILL_DIR/assets" "$SRC_DIR/"
+fi
+
 say "Running self-tests (simulated, nothing is recorded or uploaded)"
-if (cd "$SKILL_DIR" && "$VENV/bin/python" -m unittest discover -s scripts/tests >/dev/null 2>&1); then
+if (cd "$SRC_DIR" && "$VENV/bin/python" -m unittest discover -s scripts/tests >/dev/null 2>&1); then
   echo "Self-tests passed."
 else
-  echo "Warning: self-tests failed. Details: cd \"$SKILL_DIR\" && \"$VENV/bin/python\" -m unittest discover -s scripts/tests -v"
+  echo "Warning: self-tests failed. Details: cd \"$SRC_DIR\" && \"$VENV/bin/python\" -m unittest discover -s scripts/tests -v"
 fi
 
 say "Setting up data folder, launcher and the daily schedule"
-FDE_COACH_HOME="$DATA_DIR" "$VENV/bin/python" "$SKILL_DIR/scripts/fde_coach.py" setup "$@"
+FDE_COACH_HOME="$DATA_DIR" "$VENV/bin/python" "$SRC_DIR/scripts/fde_coach.py" setup "$@"
 
 mkdir -p "$HOME/.local/bin"
 ln -sf "$DATA_DIR/bin/fde-coach" "$HOME/.local/bin/fde-coach"
