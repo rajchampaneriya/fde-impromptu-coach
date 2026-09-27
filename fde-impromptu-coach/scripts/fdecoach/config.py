@@ -118,10 +118,13 @@ class Paths:
         except OSError:
             pass
 
-    def recordings_dir(self, cfg: Dict[str, Any]) -> Path:
+    def recordings_dir(self, cfg: Dict[str, Any], create: bool = True) -> Path:
         override = os.environ.get("FDE_COACH_RECORDINGS")
         path = Path(override or cfg.get("recordings_dir") or "~/Movies/FDE-Impromptu").expanduser()
-        path.mkdir(parents=True, exist_ok=True)
+        # Read-only commands (status/doctor) pass create=False so a bad
+        # recordings path degrades to a report instead of crashing.
+        if create:
+            path.mkdir(parents=True, exist_ok=True)
         return path
 
 

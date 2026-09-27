@@ -621,7 +621,7 @@ def status(ctx: Ctx) -> Dict[str, Any]:
         "calendar_today": (rt.data.get("gcal_events") or {}).get(date.isoformat()),
         "agents": scheduler.status(),
         "data_dir": str(ctx.paths.root),
-        "recordings_dir": str(ctx.paths.recordings_dir(ctx.cfg)),
+        "recordings_dir": str(ctx.paths.recordings_dir(ctx.cfg, create=False)),
     }
 
 

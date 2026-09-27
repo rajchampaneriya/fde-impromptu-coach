@@ -78,7 +78,7 @@ def cmd_setup(args) -> int:
     rt.save()
     print(f"{APP_NAME} {__version__}")
     print(f"  data folder   : {paths.root}")
-    print(f"  recordings    : {paths.recordings_dir(cfg)}")
+    print(f"  recordings    : {paths.recordings_dir(cfg, create=False)}")
     print(f"  claude CLI    : {claude or 'NOT FOUND - questions will come from the built-in bank'}")
     print(f"  launcher      : {wrapper}")
     print(f"  double-click  : {paths.start_command}")
@@ -284,9 +284,12 @@ def cmd_doctor(args) -> int:
     line(cam and mic, "Camera & microphone",
          "found" if cam and mic else
          "not found - run sessions on a Mac with a camera, or practise with the deck and mark the day: fde-coach complete --no-video")
-    rec = paths.recordings_dir(cfg)
-    free = shutil.disk_usage(str(rec)).free / 1e9
-    line(os.access(str(rec), os.W_OK) and free > 2, "Recordings folder", f"{rec} ({free:.0f} GB free)")
+    rec = paths.recordings_dir(cfg, create=False)
+    if rec.exists():
+        free = shutil.disk_usage(str(rec)).free / 1e9
+        line(os.access(str(rec), os.W_OK) and free > 2, "Recordings folder", f"{rec} ({free:.0f} GB free)")
+    else:
+        line(False, "Recordings folder", f"{rec} does not exist yet (created on first session)")
     for label, loaded in scheduler.status().items():
         line(loaded, f"launchd agent {label}", "loaded" if loaded else "not loaded - run: fde-coach install-agents")
     if cfg.get("youtube", {}).get("enabled", True):
