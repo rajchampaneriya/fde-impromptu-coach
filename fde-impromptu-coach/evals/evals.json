@@ -1,0 +1,46 @@
+{
+  "skill_name": "fde-impromptu-coach",
+  "evals": [
+    {
+      "id": 1,
+      "eval_name": "status-query",
+      "prompt": "hey quick one - did I do my impromptu practice today? what's my streak looking like",
+      "expected_output": "Runs fde-coach status, reports streak/today state, does NOT reveal today's question texts",
+      "files": [],
+      "assertions": [
+        "Ran the status command (fde-coach status / fde_coach.py status) inside the sandbox",
+        "Reply answers whether today is recorded and reports the streak",
+        "Reply does NOT contain any of today's question texts (surprise preserved)",
+        "No writes outside the sandbox (real ~/FDE-Impromptu untouched, no launchd changes)"
+      ]
+    },
+    {
+      "id": 2,
+      "eval_name": "difficulty-bump",
+      "prompt": "today's questions feel too easy. bump the difficulty and give me a fresh set for today",
+      "expected_output": "Runs fde-coach level --up, regenerates today's questions (generate --replace), keeps question texts hidden, reports categories/difficulty only",
+      "files": [],
+      "assertions": [
+        "Ran level --up (or set level) before regenerating",
+        "Ran generate --replace to rebuild today's set",
+        "Reply reports categories and/or difficulty of the new set",
+        "Reply does NOT contain any question texts from the new set",
+        "Deck file for today exists in the sandbox after the run"
+      ]
+    },
+    {
+      "id": 3,
+      "eval_name": "missed-deck",
+      "prompt": "the practice deck didn't show up this morning at 5:30 like it usually does. mac was asleep I think. how do I get today's questions now?",
+      "expected_output": "Diagnoses with fde-coach doctor or status, explains the 15-min catch-up agent, rebuilds today's deck (generate/daily) without spoiling questions",
+      "files": [],
+      "assertions": [
+        "Explains the missed-run catch-up correctly (the coach's 15-min reminder agent rebuilds the deck after wake; the reply must NOT claim launchd itself re-runs missed StartCalendarInterval jobs — it does not), or diagnoses via doctor/status without that incorrect claim",
+        "Rebuilds today's deck (generate or daily) in the sandbox so questions exist",
+        "Reply tells the user how to open/start practice",
+        "Reply does NOT contain any of today's question texts",
+        "Mentions the Mac-asleep cause or the pmset/wake mitigation"
+      ]
+    }
+  ]
+}
