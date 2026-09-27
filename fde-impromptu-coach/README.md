@@ -10,13 +10,14 @@ Every morning at **05:30** your Mac:
    never repeating anything you have answered before and ramping up difficulty;
 2. builds a minimalist blue, Calibri deck: a 10-second intro, then one question
    per slide with a 60-second progress bar that auto-advances;
-3. opens it in PowerPoint (thumbnails collapsed so nothing is spoiled) and asks
-   **Start now / Snooze / Later**.
+3. opens it (PowerPoint by default, with thumbnails collapsed so nothing is
+   spoiled) and asks **Start now / Snooze / Later**.
 
 When you start, QuickTime records your camera, the slides run by themselves, and
 after about 5½ minutes everything stops. The video is saved to
 `~/Movies/FDE-Impromptu/` and uploaded to YouTube as a **private** video with the
-questions and chapter marks in the description. Your streak goes up.
+questions and chapter marks in the description and a title-card thumbnail. Your
+streak goes up.
 
 Miss it, and reminders keep coming on the Mac (06:30, 07:30, 09:00, 12:30,
 17:30, 19:30, 21:00 and a last call at 22:00). **Google Calendar** alerts you
@@ -28,9 +29,16 @@ The streak is the point.
 
 ## 1. Install (about 3 minutes)
 
-Requirements: macOS 12 or later, Microsoft PowerPoint, QuickTime Player (built in),
-Claude Code (logged in), and Python 3.9+ (Apple's command line tools are enough:
-`xcode-select --install`).
+Requirements:
+
+- macOS 12 or later, Claude Code (logged in), and Python 3.9+ (Apple's command
+  line tools are enough: `xcode-select --install`).
+- **Microsoft PowerPoint** for the fully automatic slide show. Keynote can open
+  the deck instead (see *Using Keynote* below).
+- **A camera and a microphone.** MacBooks have both built in. On a Mac mini or
+  other desktop, plug in a USB webcam with a microphone (for example a Logitech
+  Brio 100) and select it once in QuickTime (**File → New Movie Recording → ⌄**).
+  No camera at all? Use `recording.mode=none` (see section 3).
 
 ```bash
 mkdir -p ~/.claude/skills
@@ -38,11 +46,27 @@ unzip ~/Downloads/fde-impromptu-coach.zip -d ~/.claude/skills/
 bash ~/.claude/skills/fde-impromptu-coach/install.sh
 ```
 
+From a git clone instead, link the skill folder so Claude Code finds it, then
+run the installer:
+
+```bash
+mkdir -p ~/.claude/skills
+ln -s "$PWD/fde-impromptu-coach" ~/.claude/skills/fde-impromptu-coach
+bash fde-impromptu-coach/install.sh
+```
+
 Optional: `install.sh --time 06:00` to use a different daily time.
 
 The installer creates `~/FDE-Impromptu/` (history, decks, logs, settings), a
 Python virtual environment, the launcher `~/FDE-Impromptu/bin/fde-coach` (also
 linked to `~/.local/bin/fde-coach`), and two background jobs (launchd agents).
+It also copies the scripts to `~/FDE-Impromptu/src`, because macOS blocks
+background jobs from reading protected folders such as Downloads and Documents;
+the schedule always runs from that copy.
+
+**After updating the skill (new zip or `git pull`), run `install.sh` again.**
+Otherwise the schedule keeps running the old copy in `~/FDE-Impromptu/src`.
+Your history, settings and sign-ins are kept.
 
 ### Approve the permission prompts
 
@@ -51,7 +75,7 @@ each:
 
 | Prompt | Why |
 |---|---|
-| "Python" wants to control "QuickTime Player" / "Microsoft PowerPoint" / "Reminders" | start the recording and the slide show, add the reminder |
+| "Python" wants to control "QuickTime Player" / your presentation app / "Reminders" | start the recording and the slide show, add the reminder |
 | QuickTime Player would like to access the camera / microphone | the video itself (a 3-second preview opens as the check) |
 | Script Editor notifications | reminder banners (macOS shows script notifications under "Script Editor") |
 
@@ -67,40 +91,69 @@ Check the result:
 
 Then try a session: double-click **`~/FDE-Impromptu/Start Practice.command`**.
 
-## 2. Google setup: YouTube + Calendar (once, about 10 minutes)
+## 2. Google setup: YouTube + Calendar (once)
 
 YouTube uploads and the Google Calendar alerts use your own free Google Cloud
 project, so everything goes straight from your Mac to your account. Uploads from
 a new, unverified API project are always private, which is exactly what this
 tool wants.
 
-1. Make sure your Google account has a YouTube channel (youtube.com → Create a channel).
-2. Open <https://console.cloud.google.com/>, create a project (e.g. "FDE Practice").
+You can be recording and uploading within about 15 minutes (steps 1–9, app in
+**Testing**). Moving the app to **In production** (step 10), which stops Google
+from ending your sign-in every 7 days, needs a small website and a Google
+branding review that can take a few days.
+
+1. Make sure your Google account has a YouTube channel (youtube.com → Create a
+   channel). For the custom thumbnail, also verify the channel with a phone
+   number at youtube.com/verify; without it the upload still works and YouTube
+   picks a thumbnail itself.
+2. Open <https://console.cloud.google.com/> and create a project.
 3. **APIs & Services → Library** → search **YouTube Data API v3** → **Enable**.
    Then search **Google Calendar API** → **Enable**.
 4. **Google Auth Platform** (older consoles: "OAuth consent screen") → **Get started**:
-   app name "FDE Practice", your email as support and contact email,
-   audience **External** → **Create**.
-5. **Audience** → **Publish app** so the status reads **In production**.
-   *Do not skip this.* In "Testing" status Google expires the sign-in every 7 days
-   and uploads would stop weekly. You do not need Google verification for
-   personal use.
-6. **Clients** → **Create client** → application type **Desktop app** → **Create**
-   → **Download JSON**.
+   audience **External**, your email as support and contact email.
+   Choose an **app name that identifies you**, for example "RajC FDE Impromptu
+   Coach". Google rejects generic names such as "fde-coach" in step 10, and the
+   name must match your home page exactly.
+5. **Audience → Test users → Add users** → your Gmail → **Save**.
+6. **Clients → Create client** → application type **Desktop app** → **Create**
+   → **Download JSON** right away (the secret may not be shown again).
 7. Save that file as `~/FDE-Impromptu/secrets/client_secret.json`:
    ```bash
    mv ~/Downloads/client_secret_*.json ~/FDE-Impromptu/secrets/client_secret.json
+   chmod 600 ~/FDE-Impromptu/secrets/client_secret.json
    ```
 8. Run `~/FDE-Impromptu/bin/fde-coach youtube-auth`. A browser opens: choose the
    account with your channel. Google warns "Google hasn't verified this app"
-   because it is your own project: click **Advanced → Go to FDE Practice** →
-   **Continue**. The tool asks only for permission to upload videos.
+   because it is your own project: click **Continue** (sometimes under
+   **Advanced**). Tick **both** YouTube permissions if checkboxes appear: one
+   uploads the videos, the other is used only to set the thumbnail.
 9. Run `~/FDE-Impromptu/bin/fde-coach calendar-auth` and approve the same way,
    choosing the Google account whose calendar you use. This permission lets the
    tool add and delete its own events only.
+10. **Publish the app (recommended).** Google requires branding details first:
+    - Host three public pages on a domain you own (GitHub Pages works): a home
+      page that shows the exact app name and describes the tool, a privacy
+      policy that lists both YouTube permissions and the Calendar permission,
+      and terms of service. Link the privacy policy from the home page.
+    - **Branding**: enter the three URLs and add your domain under
+      **Authorized domains**. Do not upload a logo.
+    - Verify the domain in **Google Search Console** (Add property → Domain →
+      "Any DNS provider" → add the TXT record at whoever runs your DNS, e.g.
+      Cloudflare), using the same Google account.
+    - Request branding verification; when approved, go to **Audience → Publish
+      app** so the status reads **In production**. Do not submit the app for
+      verification.
+    - Run `youtube-auth` and `calendar-auth` again: sign-ins made in Testing
+      still expire after 7 days.
 
-Any recordings made before this are uploaded right away. Videos are never made
-public by this tool.
+    If you skip step 10, everything works, but you must run `youtube-auth` and
+    `calendar-auth` again every 7 days. Recordings queue up meanwhile and upload
+    as soon as you sign in again.
+
+Any recordings made before connecting are uploaded right away. Videos are never
+made public by this tool. **If an update adds a new Google permission, run the
+matching `-auth` command again.**
 
 ### How the missed-practice alerts work
 
@@ -110,8 +163,8 @@ Google Calendar, with alerts at 07:30, 12:30, 18:00 and 21:30 plus an email at
 an alert. Events for the next two days are always in place, so the alerts still
 arrive when the Mac is closed or off. The events don't block your free/busy time.
 
-To receive them without an iPhone: install Google Calendar on your Android phone,
-or turn on browser notifications in calendar.google.com (Settings → Notification
+To receive them on your phone, install Google Calendar (Android or iPhone), or
+turn on browser notifications in calendar.google.com (Settings → Notification
 settings → Desktop notifications). The email alert goes to your Gmail either way.
 
 Change the times with, for example:
@@ -138,7 +191,9 @@ at or before `event_time`. Turn the feature off with
 | Tell the coach about yourself | `fde-coach config --set 'learner_context=Backend engineer moving into FDE roles at AI companies; I ramble when challenged'` |
 | Change the time | `fde-coach config --set daily_time=06:15` |
 | Change reminder times | `fde-coach config --set 'reminders.times=["07:00","12:30","20:00","22:00"]'` |
-| Recorded some other way | `fde-coach complete --video ~/path/to/video.mov` |
+| Practise on a Mac with no camera | `fde-coach config --set recording.mode=none` (the show runs and the day counts; no video, no upload). Back to video: `recording.mode=auto` |
+| Recorded some other way (e.g. on your phone) | `fde-coach complete --video ~/path/to/video.mov` |
+| Save disk space | `fde-coach config --set keep_recordings_days=14` (deletes local copies older than 14 days that are already on YouTube) |
 | Check today's calendar alert | `fde-coach status` ("armed" means it will alert you until you record) |
 | Something went wrong | `fde-coach doctor`, then `references/troubleshooting.md` |
 
@@ -150,6 +205,15 @@ early; the recording stops too, and if it is short you can keep it or try again.
 
 After recording, the speaker notes of each slide (and the YouTube description)
 list what a strong answer does and a five-point self-review checklist.
+
+### Using Keynote
+
+`fde-coach config --set presentation_app=Keynote` makes the tool open the deck in
+Keynote. Starting and stopping the slide show by script is automated for
+PowerPoint; with Keynote, start the show yourself when the deck opens
+(**Play → Play Slideshow**). The recording still stops on its own after the
+session length. The collapsed-thumbnail spoiler guard applies to PowerPoint
+only, so avoid looking at Keynote's slide navigator before you start.
 
 ### How difficulty grows
 
@@ -163,8 +227,8 @@ ethics, leadership, commercial conversations, and ambiguity.
 ## 4. Optional: wake the Mac for 05:30
 
 If the Mac is asleep at 05:30, the practice is prepared as soon as it wakes
-(nothing is lost). To have it ready on time, schedule a wake (needs admin, and
-works best plugged in with the lid open):
+(nothing is lost). To have it ready on time, schedule a wake (needs admin; on a
+MacBook it works best plugged in with the lid open):
 
 ```bash
 sudo pmset repeat wakeorpoweron MTWRFSU 05:25:00
@@ -185,20 +249,21 @@ minute** there. PowerPoint on the Mac is the primary, fully timed experience.
 |---|---|
 | Settings | `~/FDE-Impromptu/config.json` |
 | Question history, streak | `~/FDE-Impromptu/state/history.json` |
-| Decks | `~/FDE-Impromptu/decks/` |
+| Decks and thumbnails | `~/FDE-Impromptu/decks/` |
+| Scripts the schedule runs | `~/FDE-Impromptu/src/` (refreshed by `install.sh`) |
 | Videos | `~/Movies/FDE-Impromptu/` |
 | Logs | `~/FDE-Impromptu/logs/` |
 | YouTube and Calendar sign-in | `~/FDE-Impromptu/secrets/` (only readable by you) |
 
 Only three things leave your Mac: the question-writing prompt sent through your
-Claude Code login, the private video sent to your own YouTube channel, and the
-missed-practice events in your own Google Calendar.
+Claude Code login, the private video and its thumbnail sent to your own YouTube
+channel, and the missed-practice events in your own Google Calendar.
 
 ## 7. Uninstall
 
 ```bash
 bash ~/.claude/skills/fde-impromptu-coach/uninstall.sh          # keeps history and videos, removes calendar alerts
-bash ~/.claude/skills/fde-impromptu-coach/uninstall.sh --purge  # also deletes ~/FDE-Impromptu
+bash ~/.claude/skills/fde-impromptu-coach/uninstall.sh --purge  # also deletes ~/FDE-Impromptu (including src/)
 ```
 
 Videos in `~/Movies/FDE-Impromptu/` are never deleted by the uninstaller.
