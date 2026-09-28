@@ -50,23 +50,27 @@ def _manual_save(folder: Path, since: float) -> Optional[Path]:
 def _run_show(deck: Path, show: Path, cfg: Dict[str, Any], total: float, grace: int):
     """Start the slide show and wait for it to run its course (or Esc).
     Returns (ended_early, show_start_time)."""
-    started = macos.powerpoint_start_show(deck)
+    app = cfg.get("presentation_app", "Microsoft PowerPoint")
+    started = macos.powerpoint_start_show(deck, app)
     if not started:
-        log.warning("Could not start the show via AppleScript; opening the .ppsx play copy")
-        macos.open_path(show, cfg.get("presentation_app"))
+        if app == "Microsoft PowerPoint":
+            log.warning("Could not start the show via AppleScript; opening the .ppsx play copy")
+        else:
+            log.info("%s: starting the show via the .ppsx play copy", app)
+        macos.open_path(show, app)
         time.sleep(4)
     t_show = time.time()
     ended_early = False
     while True:
         time.sleep(0 if macos.dry_run() else 2)
         elapsed = time.time() - t_show
-        running = macos.powerpoint_show_running()
+        running = macos.powerpoint_show_running(app)
         if elapsed >= total + grace or macos.dry_run():
             break
         if running is False and elapsed > 8:
             ended_early = elapsed < total - 5
             break
-    macos.powerpoint_end_show()
+    macos.powerpoint_end_show(app)
     return ended_early, t_show
 
 

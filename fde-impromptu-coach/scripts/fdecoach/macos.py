@@ -133,8 +133,11 @@ end if
 """, timeout=30)
 
 
-def powerpoint_start_show(path: Path) -> bool:
+def powerpoint_start_show(path: Path, app: str = "Microsoft PowerPoint") -> bool:
     """Open the deck (if needed) and start the slide show from slide 1. True if a show window appears."""
+    if app != "Microsoft PowerPoint":
+        # Keynote 14.5 has no usable slideshow AppleScript; start via the .ppsx play copy instead.
+        return False
     if dry_run() or not is_macos():
         log.info("[dry-run] start slide show %s", path.name)
         return True
@@ -166,8 +169,8 @@ end tell
     return ok and out.isdigit() and int(out) > 0
 
 
-def powerpoint_show_running() -> Optional[bool]:
-    if dry_run() or not is_macos():
+def powerpoint_show_running(app: str = "Microsoft PowerPoint") -> Optional[bool]:
+    if app != "Microsoft PowerPoint" or dry_run() or not is_macos():
         return None
     ok, out = osascript('tell application "Microsoft PowerPoint" to return (count of slide show windows) as text', 10)
     if not ok or not out.isdigit():
@@ -175,7 +178,9 @@ def powerpoint_show_running() -> Optional[bool]:
     return int(out) > 0
 
 
-def powerpoint_end_show() -> None:
+def powerpoint_end_show(app: str = "Microsoft PowerPoint") -> None:
+    if app != "Microsoft PowerPoint":
+        return
     osascript("""
 tell application "Microsoft PowerPoint"
     try
