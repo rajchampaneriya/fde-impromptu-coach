@@ -101,15 +101,17 @@ def _words_slide(prs, session: Dict[str, Any], cfg: Dict[str, Any], seconds: int
     _background(s)
     _text(s, MARGIN, 0.7, 9.0, 0.35, [(label.upper(), {"size": 14, "bold": True, "color": BLUE, "spacing": 150})])
     runs: List[Tuple[str, Dict[str, Any]]] = []
+    show_tips = len(session["target_words"]) <= 6
     for i, t in enumerate(session["target_words"], 1):
-        runs.append((t["word"], {"size": 30, "bold": True, "color": NAVY, "newline": True,
-                                 "space_before": 10 if i > 1 else 0}))
-        runs.append((f"   {t['stress']}", {"size": 22, "color": BLUE}))
-        if t.get("tip"):
-            runs.append((f"   ·  {t['tip']}", {"size": 16, "color": GRAY}))
-    _text(s, MARGIN, 1.35, CONTENT_W, 4.6, runs, line_spacing=1.05)
+        runs.append((t["word"], {"size": 26 if show_tips else 24, "bold": True, "color": NAVY, "newline": True,
+                                 "space_before": 8 if i > 1 else 0}))
+        runs.append((f"   {t.get('stress') or t.get('respelling', '')}", {"size": 17, "bold": True, "color": BLUE}))
+        tip = (t.get("tip") or "").strip()
+        if tip and show_tips:
+            runs.append((tip[:80], {"size": 13, "color": GRAY, "newline": True}))
+    _text(s, MARGIN, 1.3, CONTENT_W, 4.75, runs, line_spacing=1.0)
     foot = "Each word slowly, then at normal speed." if again else "Say each word twice, slowly."
-    _text(s, MARGIN, 5.95, CONTENT_W, 0.35, [(foot, {"size": 18, "color": GRAY})])
+    _text(s, MARGIN, 6.05, CONTENT_W, 0.35, [(foot, {"size": 18, "color": GRAY})])
     effects = _timer(s, seconds, label=label, ticks=False)
     set_transition(s, seconds * 1000)
     set_auto_animations(s, effects)

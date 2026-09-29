@@ -15,7 +15,7 @@ from .state import History
 
 log = logging.getLogger("fdecoach")
 
-_BANK: Optional[Dict[str, Any]] = None
+_PRON_BANK: Optional[Dict[str, Any]] = None  # cache for assets/pronunciation_bank.json (questions.py has its own _BANK)
 MIN_WORDS = 90
 MAX_WORDS = 140
 MIN_USES = 2
@@ -24,10 +24,10 @@ RETIRE_AFTER = 4
 
 
 def bank() -> Dict[str, Any]:
-    global _BANK
-    if _BANK is None:
-        _BANK = json.loads((ASSETS_DIR / "pronunciation_bank.json").read_text(encoding="utf-8"))
-    return _BANK
+    global _PRON_BANK
+    if _PRON_BANK is None:
+        _PRON_BANK = json.loads((ASSETS_DIR / "pronunciation_bank.json").read_text(encoding="utf-8"))
+    return _PRON_BANK
 
 
 # --------------------------------------------------------------------------- word scheduling
