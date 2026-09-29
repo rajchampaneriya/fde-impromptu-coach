@@ -212,10 +212,11 @@ end tell
     return ok and out == "started"
 
 
-def _recover_composition(dest: Path, since: float) -> bool:
+def _recover_composition(dest: Path, since: float, inner_names: Sequence[str] = ("Movie Recording.mov",),
+                         min_bytes: int = 1_000_000) -> bool:
     """Modern QuickTime (macOS 26+) silently ignores AppleScript save/export
     targets (exit 0, empty file); a stopped recording instead auto-saves as a
-    .qtpxcomposition bundle. Pull the movie out of the newest such bundle."""
+    .qtpxcomposition bundle. Pull the media out of the newest such bundle."""
     dirs = {dest.parent, Path("~/Movies").expanduser()}
     deadline = time.time() + 10
     while time.time() < deadline:
@@ -225,49 +226,53 @@ def _recover_composition(dest: Path, since: float) -> bool:
                 bundles += [b for b in d.glob("*.qtpxcomposition")
                             if b.stat().st_mtime >= since - 5]
         if bundles:
-            inner = max(bundles, key=lambda b: b.stat().st_mtime) / "Movie Recording.mov"
-            if inner.exists() and inner.stat().st_size > 1_000_000:
+            bundle = max(bundles, key=lambda b: b.stat().st_mtime)
+            inner = next((bundle / n for n in inner_names
+                          if (bundle / n).exists() and (bundle / n).stat().st_size > min_bytes), None)
+            if inner is not None:
                 try:
                     shutil.copyfile(inner, dest)
                 except OSError as exc:
                     log.warning("composition copy failed: %s", exc)
                     return False
                 osascript('tell application "QuickTime Player" to close front document saving no', timeout=30)
-                bundle = inner.parent
                 shutil.rmtree(bundle, ignore_errors=True)
                 size = dest.stat().st_size if dest.exists() else 0
                 log.info("QuickTime composition recover: %s (%d bytes)", dest, size)
-                return size > 1_000_000
+                return size > min_bytes
         time.sleep(3)
     return False
 
 
-def _finish_sidecar(dest: Path) -> bool:
+def _finish_sidecar(dest: Path, inner_names: Sequence[str] = ("Movie Recording.mov",),
+                    min_bytes: int = 1_000_000) -> bool:
     """macOS 26+ QuickTime rewrites the save target to '<dest>.qtpxcomposition' —
-    either a flat movie file (rename it) or a bundle (extract Movie Recording.mov).
-    Returns True when dest holds a >1 MB movie."""
+    either a flat media file (rename it) or a bundle (extract the recording).
+    Returns True when dest holds a file larger than min_bytes."""
     side = dest.with_name(dest.name + ".qtpxcomposition")
-    if dest.exists() and dest.stat().st_size > 1_000_000:
+    if dest.exists() and dest.stat().st_size > min_bytes:
         return True
-    if side.is_file() and side.stat().st_size > 1_000_000:
+    if side.is_file() and side.stat().st_size > min_bytes:
         side.replace(dest)
         return True
     if side.is_dir():
-        inner = side / "Movie Recording.mov"
-        if inner.exists() and inner.stat().st_size > 1_000_000:
+        inner = next((side / n for n in inner_names
+                      if (side / n).exists() and (side / n).stat().st_size > min_bytes), None)
+        if inner is not None:
             shutil.copyfile(inner, dest)
             shutil.rmtree(side, ignore_errors=True)
-            return dest.exists() and dest.stat().st_size > 1_000_000
+            return dest.exists() and dest.stat().st_size > min_bytes
     return False
 
 
-def quicktime_stop_and_save(dest: Path, since: float = 0.0) -> Tuple[bool, str]:
-    """Stop the recording and save it to dest. Tries the auto-saved
+def _stop_and_save(dest: Path, since: float, inner_names: Sequence[str], export_presets: Sequence[str],
+                   min_bytes: int = 1_000_000, dry_bytes: int = 2 * 1024 * 1024) -> Tuple[bool, str]:
+    """Stop the front QuickTime recording and save it to dest. Tries the auto-saved
     composition bundle first (modern macOS), then save/export AppleScript."""
     if dry_run() or not is_macos():
         dest.parent.mkdir(parents=True, exist_ok=True)
         with open(dest, "wb") as fh:
-            fh.write(b"\0" * (2 * 1024 * 1024))
+            fh.write(b"\0" * dry_bytes)
         log.info("[dry-run] QuickTime stop + save -> %s", dest)
         return True, "dry-run"
     osascript("""
@@ -281,16 +286,14 @@ end tell
 """, timeout=60)
     time.sleep(4)
     dest.parent.mkdir(parents=True, exist_ok=True)
-    if since and _recover_composition(dest, since):
-        _finish_sidecar(dest)
+    if since and _recover_composition(dest, since, inner_names, min_bytes):
+        _finish_sidecar(dest, inner_names, min_bytes)
         osascript('tell application "QuickTime Player" to close front document saving no', timeout=30)
-        if dest.exists() and dest.stat().st_size > 1_000_000:
+        if dest.exists() and dest.stat().st_size > min_bytes:
             return True, "composition"
-    attempts: List[Tuple[str, str]] = [
-        ("save", "save theDoc in (POSIX file {p})"),
-        ("export-1080p", 'export theDoc in (POSIX file {p}) using settings preset "1080p"'),
-        ("export-720p", 'export theDoc in (POSIX file {p}) using settings preset "720p"'),
-    ]
+    attempts: List[Tuple[str, str]] = [("save", "save theDoc in (POSIX file {p})")]
+    for preset in export_presets:
+        attempts.append((f"export-{preset}", f'export theDoc in (POSIX file {{p}}) using settings preset "{preset}"'))
     for label, command in attempts:
         if dest.exists():
             dest.unlink()
@@ -305,19 +308,44 @@ end timeout
 return "ok"
 """
         ok, out = osascript(script, timeout=1860)
-        if ok and _finish_sidecar(dest):
+        if ok and _finish_sidecar(dest, inner_names, min_bytes):
             osascript('tell application "QuickTime Player" to close front document saving no', timeout=30)
             size = dest.stat().st_size
             log.info("QuickTime %s: sidecar finalised (%d bytes)", label, size)
             return True, f"{label}-sidecar"
         size = dest.stat().st_size if dest.exists() else 0
         log.info("QuickTime %s: ok=%s size=%s %s", label, ok, size, out[:200])
-        if ok and size > 1_000_000:
+        if ok and size > min_bytes:
             osascript('tell application "QuickTime Player" to close front document saving no', timeout=30)
             return True, label
     if dest.exists() and dest.stat().st_size == 0:
         dest.unlink()
     return False, "save-failed"
+
+
+def quicktime_stop_and_save(dest: Path, since: float = 0.0) -> Tuple[bool, str]:
+    return _stop_and_save(dest, since, ("Movie Recording.mov",), ("1080p", "720p"))
+
+
+def quicktime_start_audio_recording(warmup: float = 2.0) -> bool:
+    if dry_run() or not is_macos():
+        log.info("[dry-run] QuickTime: new audio recording + start")
+        return True
+    ok, out = osascript(f"""
+tell application "QuickTime Player"
+    activate
+    set rec to new audio recording
+    delay {warmup}
+    tell rec to start
+    return "started"
+end tell
+""", timeout=60)
+    log.info("QuickTime audio start: ok=%s out=%s", ok, out)
+    return ok and out == "started"
+
+
+def quicktime_stop_audio_save(dest: Path, since: float = 0.0) -> Tuple[bool, str]:
+    return _stop_and_save(dest, since, ("Audio Recording.m4a", "Movie Recording.mov"), ())
 
 
 # --------------------------------------------------------------------------- Reminders (syncs to iPhone)
@@ -421,3 +449,46 @@ tell application "QuickTime Player"
 end tell
 """, timeout=60)
     return ok
+
+
+def quicktime_audio_check() -> bool:
+    """Opens an audio recording for 2 s so macOS asks QuickTime for microphone access."""
+    ok, _ = osascript("""
+tell application "QuickTime Player"
+    activate
+    set rec to new audio recording
+    delay 2
+    close rec saving no
+end tell
+""", timeout=60)
+    return ok
+
+
+def choose_from_list(message: str, title: str, items: Sequence[str],
+                     default_items: Sequence[str] = ()) -> List[str]:
+    """Multi-select list dialog. Returns the chosen items ([] on cancel/timeout).
+    FDE_COACH_DRYRUN_ANSWERS feeds one answer per dialog; the dry-run encoding
+    for a selection is a single item with '+' between the chosen words."""
+    if dry_run() or not is_macos():
+        answers = [a for a in os.environ.get("FDE_COACH_DRYRUN_ANSWERS", "").split(",") if a]
+        answer = answers.pop(0) if answers else ""
+        os.environ["FDE_COACH_DRYRUN_ANSWERS"] = ",".join(answers)
+        log.info("[dry-run] choose %r -> %s", message[:60], answer)
+        return [w for w in answer.split("+") if w]
+    items_xml = ", ".join(q(i) for i in items)
+    defaults = ", ".join(q(i) for i in default_items) or "{}"
+    script = f"""
+try
+    set picked to choose from list {{{items_xml}}} with title {q(title)} with prompt {q(message)} \
+default items {{{defaults}}} with multiple selections allowed
+    if picked is false then return ""
+    set AppleScript's text item delimiters to "\\n"
+    return (picked as text)
+on error number -128
+    return ""
+end try
+"""
+    ok, out = osascript(script, timeout=300)
+    if not ok or not out:
+        return []
+    return [line.strip() for line in out.splitlines() if line.strip()]

@@ -89,20 +89,22 @@ def lock_is_held(paths: Paths, name: str) -> bool:
 # --------------------------------------------------------------------------- history
 
 class History:
-    """sessions keyed by ISO date. A session is 'recorded' once a video is saved."""
+    """sessions keyed by ISO date. A session is 'recorded' once a video is saved.
+    `file` points the same store at another state file (pronunciation practice)."""
 
-    def __init__(self, paths: Paths):
+    def __init__(self, paths: Paths, file: Optional[Path] = None):
         self.paths = paths
-        self.data: Dict[str, Any] = _read_json(paths.history, {"version": 1, "sessions": {}})
+        self.file = file or paths.history
+        self.data: Dict[str, Any] = _read_json(self.file, {"version": 1, "sessions": {}})
         self.data.setdefault("sessions", {})
 
     def save(self) -> None:
-        # Embed the computed streak so raw readers of history.json see the
+        # Embed the computed streak so raw readers of the state file see the
         # same numbers the CLI reports (unrecorded days never count).
         snapshot = streaks(self)
         snapshot["as_of"] = today().isoformat()
         self.data["streak"] = snapshot
-        _write_json(self.paths.history, self.data)
+        _write_json(self.file, self.data)
 
     @property
     def sessions(self) -> Dict[str, Dict[str, Any]]:

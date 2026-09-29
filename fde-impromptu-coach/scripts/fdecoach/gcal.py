@@ -47,8 +47,8 @@ def is_configured(paths: Paths) -> bool:
     return token_path(paths).exists()
 
 
-def event_id(date: dt.date) -> str:
-    return f"{ID_PREFIX}{date.strftime('%Y%m%d')}"
+def event_id(date: dt.date, prefix: str = ID_PREFIX) -> str:
+    return f"{prefix}{date.strftime('%Y%m%d')}"
 
 
 # --------------------------------------------------------------------------- auth

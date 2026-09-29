@@ -50,6 +50,20 @@ DEFAULTS: Dict[str, Any] = {
         "stop_grace_seconds": 4,
         "min_video_seconds": 150,
     },
+    "pronunciation": {
+        "daily_time": "05:45",
+        "prompt_after_fde": True,
+        "words": [],
+        "focus_sounds": [],
+        "intro_seconds": 10,
+        "warmup_seconds": 45,
+        "round1_seconds": 60,
+        "round2_seconds": 75,
+        "round3_seconds": 60,
+        "words_seconds": 30,
+        "min_audio_seconds": 180,
+        "audio_clean_preset": "light",
+    },
     "reminders": {
         "times": ["06:30", "07:30", "09:00", "12:30", "17:30", "19:30", "21:00", "22:00"],
         "snooze_minutes": 20,
@@ -76,6 +90,7 @@ DEFAULTS: Dict[str, Any] = {
         "title_template": "FDE Impromptu \u00b7 Day {day} \u00b7 {date}",
         "tags": ["impromptu speaking", "forward deployed engineer", "communication practice"],
         "max_attempts": 12,
+        "pronunciation_playlist_id": "",
     },
 }
 
@@ -99,6 +114,7 @@ class Paths:
         self.config = root / "config.json"
         self.state_dir = root / "state"
         self.history = self.state_dir / "history.json"
+        self.pron_state = self.state_dir / "pronunciation.json"
         self.runtime = self.state_dir / "runtime.json"
         self.incoming = self.state_dir / "incoming"
         self.locks = self.state_dir / "locks"

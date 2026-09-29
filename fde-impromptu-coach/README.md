@@ -206,6 +206,33 @@ early; the recording stops too, and if it is short you can keep it or try again.
 After recording, the speaker notes of each slide (and the YouTube description)
 list what a strong answer does and a five-point self-review checklist.
 
+### Pronunciation practice (pen method)
+
+A second daily practice at **05:45** (its own streak, reminders and calendar
+alerts). A 7-slide deck trains the words you find hard to pronounce: warm-up
+words with respellings, the paragraph three times (once with a pen held
+horizontally between your teeth — over-articulate — then without it, slow and
+clear), and the words again. It records **audio only** with QuickTime, keeps
+the `.m4a` in `~/Movies/FDE-Impromptu/pronunciation/`, assembles a
+slides-plus-voice MP4 with ffmpeg and uploads it privately to YouTube.
+
+| You want to… | Do this |
+|---|---|
+| Start it now | `fde-coach pronounce session --detach` (or "start pronunciation practice" to Claude Code) |
+| Add / remove a hard word | `fde-coach pronounce words --add entrepreneur` / `--remove WORD` |
+| See the streak and due words | `fde-coach pronounce status` |
+| Review past sessions | `fde-coach pronounce history` |
+| Change the time | `fde-coach config --set pronunciation.daily_time=06:00` |
+
+Words are scheduled like flashcards: a word you mark **hard** in the
+after-session dialog comes back tomorrow; each easy answer doubles the gap
+(1, 2, 4, 8 days); after four easy answers in a row a word retires. Paragraphs
+are written fresh every day by Claude Code (`references/pronunciation_design.md`
+is the rubric) with a curated 30-paragraph bank
+(`assets/pronunciation_bank.json`) as the offline fallback. ffmpeg missing?
+The audio is still kept and you are told how to fix it
+(`brew install ffmpeg`, then `fde-coach pronounce upload`).
+
 ### Using Keynote
 
 `fde-coach config --set presentation_app=Keynote` makes the tool open the deck in

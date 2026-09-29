@@ -170,6 +170,11 @@ def cmd_status(args) -> int:
         return 0
     s = st["streak"]
     print(f"Streak: {s['current']} day(s)  |  best {s['best']}  |  total sessions {s['total']}  |  level {st['level']}/5")
+    pron = st.get("pronunciation")
+    if pron:
+        ps = pron["streak"]
+        print(f"Pronunciation: {ps['current']} day(s)  |  best {ps['best']}  |  total {ps['total']}  |  "
+              f"due words: {', '.join(pron['due_words']) or '-'}")
     t = st["today"]
     if not t:
         print(f"Today ({st['date']}): no deck yet")
@@ -285,6 +290,16 @@ def cmd_doctor(args) -> int:
     line(macos.is_macos() or macos.dry_run(), "macOS", os.uname().sysname)
     line(macos.app_exists(cfg.get("presentation_app", "Microsoft PowerPoint")), "Microsoft PowerPoint installed")
     line(macos.app_exists("QuickTime Player"), "QuickTime Player installed")
+    from fdecoach import audio
+    line(audio.has_ffmpeg(), "ffmpeg (pronunciation video)",
+         "found" if audio.has_ffmpeg() else "not found - pronunciation videos are skipped, audio is kept "
+         "(brew install ffmpeg)")
+    if not macos.dry_run() and macos.is_macos():
+        ok_audio = macos.quicktime_audio_check()
+        line(ok_audio, "QuickTime audio recording",
+             "works" if ok_audio else "blocked - approve the microphone prompt (doctor --warmup)")
+    else:
+        line(True, "QuickTime audio recording", "dry-run")
     cam, mic = macos.has_camera(), macos.has_microphone()
     if cfg.get("recording", {}).get("mode") == "none":
         line(True, "Camera & microphone", "not needed (recording.mode=none: deck show only, no video)")
@@ -378,7 +393,7 @@ def cmd_config(args) -> int:
                 print(f"bad --set {item!r}; use key=value (dotted keys for nested values, JSON for lists/bools)")
                 return 2
             value = _coerce(raw)
-            if key == "daily_time":
+            if key == "daily_time" or key.endswith(".daily_time"):
                 parse_hhmm(str(value))
                 reinstall = True
             node = user
@@ -410,6 +425,90 @@ def cmd_level(args) -> int:
     print(f"Level for the next new deck: {lvl} of 5 (manual adjustment {int(ctx.runtime().data.get('level_adjust', 0)):+d}). "
           "An existing deck keeps its level unless you run: fde-coach generate --replace")
     return 0
+
+
+def cmd_pronounce(args) -> int:
+    from fdecoach import app, pronounce_session
+    ctx = _ctx(args)
+    if args.pron_command == "session":
+        if args.detach:
+            app.spawn_detached(["pronounce", "session"] + (["--force"] if args.force else []))
+            print("Pronunciation session started in the background: QuickTime audio + slide show "
+                  "(about 5 minutes). Check progress with: fde-coach pronounce status")
+            return 0
+        res = pronounce_session.run_session(ctx, force=args.force)
+        _print(res)
+        return 0 if res.get("ok") else 1
+    if args.pron_command == "daily":
+        _print(pronounce_session.daily(ctx))
+        return 0
+    if args.pron_command == "generate":
+        session, created = pronounce_session.ensure_today(ctx, replace=args.replace)
+        _print({"date": session["date"], "day_number": session["day_number"], "source": session["source"],
+                "created": created, "deck": session["deck_path"],
+                "words": session["words"], "notes": session.get("notes", []),
+                "paragraph": "hidden until you record (fde-coach pronounce history)"})
+        return 0
+    if args.pron_command == "status":
+        st = pronounce_session.status(ctx)
+        if args.json:
+            _print(st)
+            return 0
+        s = st["streak"]
+        print(f"Pronunciation streak: {s['current']} day(s)  |  best {s['best']}  |  "
+              f"total {s['total']}  |  due words: {', '.join(st['due_words']) or '-'}")
+        t = st["today"]
+        if not t:
+            print(f"Today ({st['date'] if 'date' in st else ''}): no deck yet (built at the pronunciation daily run)")
+        else:
+            state = "RECORDED" if t["recorded"] else "NOT RECORDED YET"
+            print(f"Today: Day {t['day_number']}  |  {state}  |  words: {', '.join(t.get('words') or [])}")
+            if t.get("audio"):
+                print(f"  audio: {t['audio']}")
+            if t["recorded"]:
+                yt = t.get("youtube") or {}
+                print(f"  youtube: {yt.get('url') or yt.get('status')}")
+        if st["pending_uploads"]:
+            print(f"Pending uploads: {', '.join(st['pending_uploads'])}")
+        return 0
+    if args.pron_command == "history":
+        rows = pronounce_session.history_rows(ctx, limit=args.limit)
+        if args.json:
+            _print(rows)
+            return 0
+        if not rows:
+            print("No pronunciation sessions yet.")
+        for r in rows:
+            mark = "✓" if r["recorded"] else "✗"
+            print(f"{mark} {r['date']}  Day {r['day']}  youtube: {r['youtube']}  words: {', '.join(r['words'])}")
+            print(f"     {r['paragraph']}")
+        return 0
+    if args.pron_command == "words":
+        from fdecoach.config import save_config
+        pron = ctx.cfg.setdefault("pronunciation", {})
+        if args.add:
+            words = [w.strip().lower() for w in args.add if w.strip()]
+            user = json.loads(ctx.paths.config.read_text(encoding="utf-8")) if ctx.paths.config.exists() else {}
+            have = [w.lower() for w in user.get("pronunciation", {}).get("words", [])]
+            user.setdefault("pronunciation", {})["words"] = have + [w for w in words if w not in have]
+            save_config(ctx.paths, user)
+            print(f"Added: {', '.join(words)}")
+        if args.remove:
+            user = json.loads(ctx.paths.config.read_text(encoding="utf-8")) if ctx.paths.config.exists() else {}
+            gone = [w.strip().lower() for w in args.remove]
+            pron_list = user.get("pronunciation", {}).get("words", [])
+            user.setdefault("pronunciation", {})["words"] = [w for w in pron_list if w.lower() not in gone]
+            save_config(ctx.paths, user)
+            print(f"Removed: {', '.join(gone)}")
+        st = pronounce_session.status(ctx)
+        print("Words:", ", ".join(st["all_words"]) or "(none yet — add with: fde-coach pronounce words --add WORD)")
+        print("Due today:", ", ".join(st["due_words"]) or "-")
+        return 0
+    if args.pron_command == "upload":
+        for line in pronounce_session.upload_pending(ctx, interactive=True):
+            print(line)
+        return 0
+    return 2
 
 
 # --------------------------------------------------------------------------- parser
@@ -493,6 +592,29 @@ def build_parser() -> argparse.ArgumentParser:
     g.add_argument("--down", action="store_true")
     g.add_argument("--reset", action="store_true")
     s.set_defaults(func=cmd_level)
+
+    s = sub.add_parser("pronounce", help="daily pronunciation practice (pen method)")
+    psub = s.add_subparsers(dest="pron_command", required=True)
+    ps = psub.add_parser("session", help="record today's pronunciation session (audio only)")
+    ps.add_argument("--force", action="store_true")
+    ps.add_argument("--detach", action="store_true")
+    ps.set_defaults(func=cmd_pronounce)
+    psub.add_parser("daily", help="scheduled run: build the deck, notify, ask to start").set_defaults(func=cmd_pronounce)
+    pg = psub.add_parser("generate", help="build today's paragraph + deck")
+    pg.add_argument("--replace", action="store_true")
+    pg.set_defaults(func=cmd_pronounce)
+    pst = psub.add_parser("status", help="pronunciation streak, today's state, words")
+    pst.add_argument("--json", action="store_true")
+    pst.set_defaults(func=cmd_pronounce)
+    ph = psub.add_parser("history", help="past pronunciation sessions")
+    ph.add_argument("--limit", type=int, default=14)
+    ph.add_argument("--json", action="store_true")
+    ph.set_defaults(func=cmd_pronounce)
+    pw = psub.add_parser("words", help="manage the hard-word pool")
+    pw.add_argument("--add", action="append", metavar="WORD")
+    pw.add_argument("--remove", action="append", metavar="WORD")
+    pw.set_defaults(func=cmd_pronounce)
+    psub.add_parser("upload", help="assemble + upload pending pronunciation videos").set_defaults(func=cmd_pronounce)
     return p
 
 

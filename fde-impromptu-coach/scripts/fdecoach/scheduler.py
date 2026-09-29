@@ -13,6 +13,7 @@ from .macos import dry_run, is_macos
 
 DAILY_LABEL = "com.fdecoach.daily"
 REMIND_LABEL = "com.fdecoach.reminder"
+PRON_LABEL = "com.fdecoach.pronounce"
 REMIND_INTERVAL = 900
 
 
@@ -61,7 +62,17 @@ def build_plists(cfg: Dict[str, Any], paths: Paths, python: str = "") -> Dict[st
         "StandardOutPath": str(paths.logs / "reminder.out.log"),
         "StandardErrorPath": str(paths.logs / "reminder.err.log"),
     })
-    return {DAILY_LABEL: daily, REMIND_LABEL: remind}
+    pron_hour, pron_minute = parse_hhmm(cfg.get("pronunciation", {}).get("daily_time", "05:45"))
+    pron = dict(common)
+    pron.update({
+        "Label": PRON_LABEL,
+        "ProgramArguments": [python, str(ENTRY_SCRIPT), "pronounce", "daily"],
+        "StartCalendarInterval": {"Hour": pron_hour, "Minute": pron_minute},
+        "RunAtLoad": False,
+        "StandardOutPath": str(paths.logs / "pronounce.out.log"),
+        "StandardErrorPath": str(paths.logs / "pronounce.err.log"),
+    })
+    return {DAILY_LABEL: daily, REMIND_LABEL: remind, PRON_LABEL: pron}
 
 
 def _launchctl(*args: str) -> Tuple[int, str]:
@@ -91,7 +102,7 @@ def install(cfg: Dict[str, Any], paths: Paths, python: str = "") -> List[str]:
 def uninstall() -> List[str]:
     out: List[str] = []
     domain = f"gui/{os.getuid()}"
-    for label in (DAILY_LABEL, REMIND_LABEL):
+    for label in (DAILY_LABEL, REMIND_LABEL, PRON_LABEL):
         _launchctl("bootout", f"{domain}/{label}")
         path = agents_dir() / f"{label}.plist"
         if path.exists():
@@ -102,7 +113,7 @@ def uninstall() -> List[str]:
 
 def status() -> Dict[str, bool]:
     result = {}
-    for label in (DAILY_LABEL, REMIND_LABEL):
+    for label in (DAILY_LABEL, REMIND_LABEL, PRON_LABEL):
         code, _ = _launchctl("print", f"gui/{os.getuid()}/{label}")
         result[label] = code == 0 and (agents_dir() / f"{label}.plist").exists()
     return result

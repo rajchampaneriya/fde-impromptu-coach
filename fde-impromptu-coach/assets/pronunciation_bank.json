@@ -1,0 +1,1168 @@
+{
+  "paragraphs": [
+    {
+      "paragraph": "Good morning. Let me walk you through the hierarchy of our rollout plan. At the top of the hierarchy sits the platform migration; below it, the reporting layer. We will prioritize data integrity first, then prioritize speed. This matters throughout the quarter, and the same review cadence applies throughout each sprint. The effort is worthwhile because every worthwhile migration removes manual reconciliation. My verdict after the pilot: ship it. That verdict is backed by two weeks of clean numbers, so I stand behind it with confidence today. One more thing on the hierarchy: every layer needs a named owner. When teams prioritize loudly, duplicates disappear, and a clear verdict at the top keeps the whole hierarchy honest.",
+      "target_words": [
+        {
+          "word": "hierarchy",
+          "respelling": "HY-er-ar-kee",
+          "stress": "HY-er-ar-kee",
+          "tip": "three syllables, not 'hi-ararchy'; stress the first"
+        },
+        {
+          "word": "prioritize",
+          "respelling": "pry-OR-i-tize",
+          "stress": "pry-OR-i-tize",
+          "tip": "the 'o' in the middle carries the stress"
+        },
+        {
+          "word": "throughout",
+          "respelling": "throo-OWT",
+          "stress": "throo-OWT",
+          "tip": "one word, stress the second part"
+        },
+        {
+          "word": "worthwhile",
+          "respelling": "WURTH-wile",
+          "stress": "WURTH-wile",
+          "tip": "stress 'worth', not 'while'"
+        },
+        {
+          "word": "verdict",
+          "respelling": "VUR-dikt",
+          "stress": "VUR-dikt",
+          "tip": "crisp 'dikt' ending, no extra vowel"
+        }
+      ],
+      "focus_sounds": [
+        "r clusters",
+        "th"
+      ]
+    },
+    {
+      "paragraph": "The vulnerability we found sits below the alerting threshold, but every vulnerability deserves a ticket. The detection algorithm now scores risk twice, and the algorithm retrains weekly. We rebuilt the tree as a hierarchical model so each hierarchical level maps to one owner. Strategically, this is the right call, and we will keep thinking strategically about debt. I want to be transparent: the hierarchical view exposed two gaps, and fixing that vulnerability properly takes a sprint, not a day. The threshold for paging stayed at five minutes all night. A vulnerability scan tonight closes the threshold question. The hierarchical model makes that algorithm easier to audit, and thinking strategically about ownership is what turned this vulnerability report into a plan.",
+      "target_words": [
+        {
+          "word": "vulnerability",
+          "respelling": "vul-ner-uh-BIL-i-tee",
+          "stress": "vul-ner-uh-BIL-i-tee",
+          "tip": "six syllables; stress 'BIL'"
+        },
+        {
+          "word": "threshold",
+          "respelling": "THRESH-hohld",
+          "stress": "THRESH-hohld",
+          "tip": "only two syllables; tongue between teeth for 'th'"
+        },
+        {
+          "word": "algorithm",
+          "respelling": "AL-go-rith-um",
+          "stress": "AL-go-rith-um",
+          "tip": "end with '-um', not '-rithm'"
+        },
+        {
+          "word": "hierarchical",
+          "respelling": "hy-er-AR-kik-ul",
+          "stress": "hy-er-AR-kik-ul",
+          "tip": "stress the third syllable 'AR'"
+        },
+        {
+          "word": "strategically",
+          "respelling": "struh-TEE-jik-lee",
+          "stress": "struh-TEE-jik-lee",
+          "tip": "'strateegically' is not a word; keep it to four parts"
+        }
+      ],
+      "focus_sounds": [
+        "th",
+        "l/r"
+      ]
+    },
+    {
+      "paragraph": "Here are the statistics from the load test. The statistics show a forty percent improvement at peak. We measured system strength under failure, and the strength of the new cache held. To establish trust with the customer, we will establish a weekly error budget review. The next step is to invest in autoscaling, and the board agreed to invest immediately. A useful side effect, and a genuinely useful one, is that dashboards now load in under a second. These statistics also establish a baseline for the strength of the cache. If we invest in one thing this month, invest in dashboards, because useful numbers beat confident guesses every time.",
+      "target_words": [
+        {
+          "word": "statistics",
+          "respelling": "stuh-TIS-tiks",
+          "stress": "stuh-TIS-tiks",
+          "tip": "stress the middle 'TIS'; keep the final 's' sharp"
+        },
+        {
+          "word": "strength",
+          "respelling": "strengkth",
+          "stress": "STRENGKTH",
+          "tip": "one syllable; end with 'kth', no vowel after"
+        },
+        {
+          "word": "establish",
+          "respelling": "ih-STAB-lish",
+          "stress": "ih-STAB-lish",
+          "tip": "stress 'STAB', not 'EST'"
+        },
+        {
+          "word": "invest",
+          "respelling": "in-VEST",
+          "stress": "in-VEST",
+          "tip": "stress the second syllable"
+        },
+        {
+          "word": "useful",
+          "respelling": "YOOS-ful",
+          "stress": "YOOS-ful",
+          "tip": "say 'yoo', not 'yoosful' mashed together"
+        }
+      ],
+      "focus_sounds": [
+        "st clusters"
+      ]
+    },
+    {
+      "paragraph": "My thesis today is simple, and I will defend that thesis with one chart. If we categorize tickets by root cause, and then categorize them again by team, the pattern jumps out. There is real enthusiasm on the ground, and that enthusiasm is worth protecting. An authentic demo beats a polished deck, because authentic stories are what executives remember. Watch the rhythm of the launch: pause, ship, measure. A steady rhythm beats a sprint and a stall, every single quarter we have tracked it. Let me repeat the thesis in one line: fix categories, keep the enthusiasm. When you categorize honestly, the authentic stories surface on their own, and a steady rhythm of shipping does the rest.",
+      "target_words": [
+        {
+          "word": "thesis",
+          "respelling": "THEE-sis",
+          "stress": "THEE-sis",
+          "tip": "voiced 'th' as in 'the'; plural is 'theses'"
+        },
+        {
+          "word": "categorize",
+          "respelling": "KAT-uh-goh-rise",
+          "stress": "KAT-uh-goh-rise",
+          "tip": "stress the first syllable, not 'cat-e-GOR-ize'"
+        },
+        {
+          "word": "enthusiasm",
+          "respelling": "en-THOO-zee-az-um",
+          "stress": "en-THOO-zee-az-um",
+          "tip": "four parts; 'th' then 'z' sounds"
+        },
+        {
+          "word": "authentic",
+          "respelling": "aw-THEN-tik",
+          "stress": "aw-THEN-tik",
+          "tip": "stress the second syllable 'THEN'"
+        },
+        {
+          "word": "rhythm",
+          "respelling": "RITH-um",
+          "stress": "RITH-um",
+          "tip": "two syllables, no vowel between 'th' and 'm'... say 'RITH' then 'um'"
+        }
+      ],
+      "focus_sounds": [
+        "th",
+        "z"
+      ]
+    },
+    {
+      "paragraph": "The entrepreneur who founded our customer built the tool herself. That entrepreneur mindset shows in their roadmap. They act entrepreneurial even at enterprise scale, and their entrepreneurial bets keep surprising us. Every venture fund that visited asked the same thing, and this venture is now profitable. We benchmark against the top quartile, and we benchmark quarterly. The company operates globally with hubs on three continents, and its globally distributed team ships daily without a war room. Every entrepreneur we host asks the same first question. An entrepreneurial customer treats vendors like partners, and that venture mindset is why we benchmark against them and share the results globally.",
+      "target_words": [
+        {
+          "word": "entrepreneur",
+          "respelling": "on-truh-pruh-NUR",
+          "stress": "on-truh-pruh-NUR",
+          "tip": "stress the last syllable 'NUR'; no 'een' at the end"
+        },
+        {
+          "word": "entrepreneurial",
+          "respelling": "on-truh-pruh-NUR-ee-ul",
+          "stress": "on-truh-pruh-NUR-ee-ul",
+          "tip": "six parts; keep the stressed 'NUR' loud"
+        },
+        {
+          "word": "venture",
+          "respelling": "VEN-chur",
+          "stress": "VEN-chur",
+          "tip": "crisp 'ch', not a soft 'sh'"
+        },
+        {
+          "word": "globally",
+          "respelling": "GLOW-buh-lee",
+          "stress": "GLOW-buh-lee",
+          "tip": "three syllables; stress 'GLOW'"
+        },
+        {
+          "word": "benchmark",
+          "respelling": "BENCH-mark",
+          "stress": "BENCH-mark",
+          "tip": "equal weight on both halves"
+        }
+      ],
+      "focus_sounds": [
+        "r",
+        "ch"
+      ]
+    },
+    {
+      "paragraph": "The rollout in rural regions taught us more than the city pilots. Rural connectivity is patchy, so the client caches locally. A regular sync cadence, not a perfect one, keeps data fresh; regular check-ins keep teams honest. The architecture is virtually identical across sites, and virtually all downtime vanished after the change. One particular module, and that particular module only, needs a rewrite. The reference architecture now ships as a template, and every architecture review since has copied it. The rural pilot rewrote our assumptions about regular sync windows. That particular failure taught us the architecture lesson twice: cache locally, and virtually every rural outage disappears.",
+      "target_words": [
+        {
+          "word": "rural",
+          "respelling": "RUR-ul",
+          "stress": "RUR-ul",
+          "tip": "two syllables; 'r' at both ends, no vowel in between tricks"
+        },
+        {
+          "word": "regular",
+          "respelling": "REG-yoo-lur",
+          "stress": "REG-yoo-lur",
+          "tip": "say 'yoo' in the middle, not 'reg-lur'"
+        },
+        {
+          "word": "virtually",
+          "respelling": "VUR-choo-lee",
+          "stress": "VUR-choo-lee",
+          "tip": "'ch' sound, three syllables"
+        },
+        {
+          "word": "particular",
+          "respelling": "pur-TIK-yoo-lur",
+          "stress": "pur-TIK-yoo-lur",
+          "tip": "stress 'TIK', keep the 'yoo'"
+        },
+        {
+          "word": "architecture",
+          "respelling": "AR-ki-tek-chur",
+          "stress": "AR-ki-tek-chur",
+          "tip": "stress first syllable; end 'chur' not 'tecture'"
+        }
+      ],
+      "focus_sounds": [
+        "r/l",
+        "ch"
+      ]
+    },
+    {
+      "paragraph": "Our world changed when the audit landed, and the world of compliance now reads our commits. The workflow we adopted, and that same workflow is now policy, gates every merge. It was worthwhile to slow down, because a worthwhile process pays for itself in incidents avoided. The response was overwhelming at first, overwhelmingly positive by the second week. The fix is widespread across services, and this kind of widespread guardrail is what lets us sleep. The overwhelming lesson is that overwhelming onboarding kills adoption. The world of the customer now reads the same workflow we do. When a worthwhile change goes widespread, the overwhelming response is relief, and that is the world we want to keep.",
+      "target_words": [
+        {
+          "word": "world",
+          "respelling": "wurld",
+          "stress": "WURLD",
+          "tip": "round the 'w', then 'rld' with no vowel"
+        },
+        {
+          "word": "workflow",
+          "respelling": "WURK-floh",
+          "stress": "WURK-floh",
+          "tip": "two halves, stress the first"
+        },
+        {
+          "word": "worthwhile",
+          "respelling": "WURTH-wile",
+          "stress": "WURTH-wile",
+          "tip": "stress 'worth'"
+        },
+        {
+          "word": "overwhelming",
+          "respelling": "oh-vur-WEL-ming",
+          "stress": "oh-vur-WEL-ming",
+          "tip": "stress 'WEL'; drop the 'h' entirely"
+        },
+        {
+          "word": "widespread",
+          "respelling": "WIDE-spred",
+          "stress": "WIDE-spred",
+          "tip": "the 'd' in 'wide' stays soft; second half is 'spred'"
+        }
+      ],
+      "focus_sounds": [
+        "w/v",
+        "r clusters"
+      ]
+    },
+    {
+      "paragraph": "Verification of the migration took three days, and verification of the rollback took one. Validation is not verification: validation asks if we built the right thing, verification asks if we built it right. Both are valuable, and the valuable lesson is to automate both. Our evaluation of vendors used four criteria, and that evaluation is repeatable. Innovation without guardrails scared the customer, so we framed the innovation inside a safety envelope they approved. Verification of the rollback took one hour, which shortened the whole evaluation. Validation of the numbers was equally valuable, and that innovation in process is what the customer remembers.",
+      "target_words": [
+        {
+          "word": "verification",
+          "respelling": "ver-ih-fih-KAY-shun",
+          "stress": "ver-ih-fih-KAY-shun",
+          "tip": "stress 'KAY'; 'v' teeth on lip"
+        },
+        {
+          "word": "validation",
+          "respelling": "val-ih-DAY-shun",
+          "stress": "val-ih-DAY-shun",
+          "tip": "stress 'DAY'"
+        },
+        {
+          "word": "valuable",
+          "respelling": "VAL-yoo-uh-bul",
+          "stress": "VAL-yoo-uh-bul",
+          "tip": "keep the 'yoo'; not 'val-yuh-bul'"
+        },
+        {
+          "word": "evaluation",
+          "respelling": "ih-val-yoo-AY-shun",
+          "stress": "ih-val-yoo-AY-shun",
+          "tip": "stress 'AY'"
+        },
+        {
+          "word": "innovation",
+          "respelling": "in-oh-VAY-shun",
+          "stress": "in-oh-VAY-shun",
+          "tip": "stress the 'VAY'"
+        }
+      ],
+      "focus_sounds": [
+        "v",
+        "l"
+      ]
+    },
+    {
+      "paragraph": "Throughout the incident we kept one rule: speak with data. Although the thought was to throttle traffic, a thorough review said otherwise. I thought the cache was the bottleneck; the thorough trace showed the thought was wrong. The threshold for paging is five minutes, and we held that threshold all night. Although it was loud, we never skipped a step, and the process held throughout. Throughout the night, although the pressure grew, a thorough postmortem was already drafted. The thought behind the threshold was sound; the execution throughout was calmer than usual.",
+      "target_words": [
+        {
+          "word": "throughout",
+          "respelling": "throo-OWT",
+          "stress": "throo-OWT",
+          "tip": "stress 'OUT'"
+        },
+        {
+          "word": "although",
+          "respelling": "awl-THOH",
+          "stress": "awl-THOH",
+          "tip": "the 'th' is voiced here"
+        },
+        {
+          "word": "thought",
+          "respelling": "thawt",
+          "stress": "THAWT",
+          "tip": "unvoiced 'th'; one syllable, no 's'"
+        },
+        {
+          "word": "thorough",
+          "respelling": "THUR-oh",
+          "stress": "THUR-oh",
+          "tip": "two syllables; different from 'through'"
+        },
+        {
+          "word": "threshold",
+          "respelling": "THRESH-hohld",
+          "stress": "THRESH-hohld",
+          "tip": "two syllables only"
+        }
+      ],
+      "focus_sounds": [
+        "th (voiced and unvoiced)"
+      ]
+    },
+    {
+      "paragraph": "We chose to withdraw the feature, and the decision to withdraw was unanimous. Whether we relaunch depends on data; whether the team agrees depends on trust. The weather metaphor helps: stormy weather passed, calmer weather followed. A worthy fallback exists, and the worthy option was shipped the same day. Their willingness to reverse a call, that willingness, is what makes this team rare. Whether we withdraw again depends on the next set of numbers. The worthy fallback and the team's willingness to reverse course, whatever the weather, are the story worth telling.",
+      "target_words": [
+        {
+          "word": "withdraw",
+          "respelling": "with-DRAW",
+          "stress": "with-DRAW",
+          "tip": "stress the second syllable"
+        },
+        {
+          "word": "whether",
+          "respelling": "WETH-ur",
+          "stress": "WETH-ur",
+          "tip": "voiced 'th'; distinct from 'weather' only by voicing"
+        },
+        {
+          "word": "weather",
+          "respelling": "WETH-ur",
+          "stress": "WETH-ur",
+          "tip": "same shape as 'whether'; practise both pairs"
+        },
+        {
+          "word": "worthy",
+          "respelling": "WUR-thee",
+          "stress": "WUR-thee",
+          "tip": "voiced 'th' in the second syllable"
+        },
+        {
+          "word": "willingness",
+          "respelling": "WIL-ing-ness",
+          "stress": "WIL-ing-ness",
+          "tip": "three syllables; stress the first"
+        }
+      ],
+      "focus_sounds": [
+        "w",
+        "th voiced"
+      ]
+    },
+    {
+      "paragraph": "The results are not zero, they are close to zero, and that difference matters. Be zealous about the fix, not zealous about blame. We analyze every failure, and we analyze the near misses too. I apologize for the noise in the earlier deck, and I apologize once, not twice. Let me emphasize the trend line, because the point I emphasize is that errors halved in a month. Zero doubt remains that the fix holds, and I apologize for nothing else. When you analyze failures without zeal, the zealous pursuit of clean graphs feels almost easy, so emphasize the trend.",
+      "target_words": [
+        {
+          "word": "zero",
+          "respelling": "ZEER-oh",
+          "stress": "ZEER-oh",
+          "tip": "buzzing 'z', not a soft 's'"
+        },
+        {
+          "word": "zealous",
+          "respelling": "ZEL-us",
+          "stress": "ZEL-us",
+          "tip": "starts with a strong 'z'"
+        },
+        {
+          "word": "analyze",
+          "respelling": "AN-uh-rise",
+          "stress": "AN-uh-rise",
+          "tip": "ends in 'rise', not 'rize-ee'"
+        },
+        {
+          "word": "apologize",
+          "respelling": "uh-POL-uh-rise",
+          "stress": "uh-POL-uh-rise",
+          "tip": "stress 'POL'; ends 'rise'"
+        },
+        {
+          "word": "emphasize",
+          "respelling": "EM-fuh-rise",
+          "stress": "EM-fuh-rise",
+          "tip": "the 'ph' is an 'f'; ends 'rise'"
+        }
+      ],
+      "focus_sounds": [
+        "z",
+        "s"
+      ]
+    },
+    {
+      "paragraph": "Status update, three lines. Our strategy for the quarter is set, and the strategy fits on one page. We establish a baseline before we optimize, and we establish it in production, not staging. The institutional knowledge in this team is deep, and institutional memory is why the fix took hours. We distribute the load across regions, and we distribute ownership the same way. That is the status, and the strategy behind it is working. That is the status, and the strategy behind it is unchanged. We establish the baseline, distribute the institutional load, and let the distribute-first rule keep every status meeting short.",
+      "target_words": [
+        {
+          "word": "status",
+          "respelling": "STAY-tus",
+          "stress": "STAY-tus",
+          "tip": "say 'stay', not 'stat'"
+        },
+        {
+          "word": "strategy",
+          "respelling": "STRAT-uh-jee",
+          "stress": "STRAT-uh-jee",
+          "tip": "three syllables; 'str' cluster up front"
+        },
+        {
+          "word": "establish",
+          "respelling": "ih-STAB-lish",
+          "stress": "ih-STAB-lish",
+          "tip": "stress 'STAB'"
+        },
+        {
+          "word": "institutional",
+          "respelling": "in-sti-TOO-shun-ul",
+          "stress": "in-sti-TOO-shun-ul",
+          "tip": "five syllables; stress 'TOO'"
+        },
+        {
+          "word": "distribute",
+          "respelling": "dih-STRIB-yoot",
+          "stress": "dih-STRIB-yoot",
+          "tip": "stress 'STRIB'; 'yoot' not 'yute'"
+        }
+      ],
+      "focus_sounds": [
+        "st",
+        "y"
+      ]
+    },
+    {
+      "paragraph": "Specifically, we cut latency by thirty percent. Practically, that means the page opens before the blink. Drastically different behaviour appeared on mobile, and the mobile gain was drastically larger than desktop. Statistically the sample is small, but statistically the direction is unambiguous. Technically the fix is a one-line cache header, and technically that line took a week to find. Specifically, the cache header did it, and specifically that line took a week to find. Practically, mobile felt it first: drastically fewer spinner screens, statistically cleaner percentiles, technically the same release. Specifically, mobile improved the most, and practically every user felt it. Statistically the sample is small, but technically the fix is sound, and drastically fewer taps time out now.",
+      "target_words": [
+        {
+          "word": "specifically",
+          "respelling": "spi-SIF-ik-lee",
+          "stress": "spi-SIF-ik-lee",
+          "tip": "stress 'SIF'; four syllables, not 'specificaly'"
+        },
+        {
+          "word": "practically",
+          "respelling": "PRAK-tik-lee",
+          "stress": "PRAK-tik-lee",
+          "tip": "keep the 'k' before 'lee'"
+        },
+        {
+          "word": "drastically",
+          "respelling": "DRAS-tik-lee",
+          "stress": "DRAS-tik-lee",
+          "tip": "stress 'DRAS'"
+        },
+        {
+          "word": "statistically",
+          "respelling": "stuh-TIS-tik-lee",
+          "stress": "stuh-TIS-tik-lee",
+          "tip": "long word; land on 'TIS'"
+        },
+        {
+          "word": "technically",
+          "respelling": "TEK-nik-lee",
+          "stress": "TEK-nik-lee",
+          "tip": "three parts, crisp 'k' sounds"
+        }
+      ],
+      "focus_sounds": [
+        "k clusters",
+        "st"
+      ]
+    },
+    {
+      "paragraph": "My colleague raised the risk first, and that colleague was right. We collaborate in one document, and we collaborate in the open. Clarity beats polish: one number, one owner, one date. When clarity drops, we escalate immediately, and we escalate with evidence, not adjectives. Watch how I articulate the trade-off, then articulate it yourself in one breath. A colleague who articulates trade-offs clearly is worth two who merely collaborate loudly. Escalate with clarity when dialogue stalls, because deliberate words from one articulate colleague often settle the room. Clarity first, then collaborate; that is how a colleague earns the room.",
+      "target_words": [
+        {
+          "word": "colleague",
+          "respelling": "KOL-eeg",
+          "stress": "KOL-eeg",
+          "tip": "two syllables; end with a hard 'g'"
+        },
+        {
+          "word": "collaborate",
+          "respelling": "kuh-LAB-uh-rayt",
+          "stress": "kuh-LAB-uh-rayt",
+          "tip": "stress 'LAB'"
+        },
+        {
+          "word": "clarity",
+          "respelling": "KLAR-ih-tee",
+          "stress": "KLAR-ih-tee",
+          "tip": "'k' then 'l' with no vowel between"
+        },
+        {
+          "word": "escalate",
+          "respelling": "ES-kuh-layt",
+          "stress": "ES-kuh-layt",
+          "tip": "stress the first syllable"
+        },
+        {
+          "word": "articulate",
+          "respelling": "ar-TIK-yoo-layt",
+          "stress": "ar-TIK-yoo-layt",
+          "tip": "verb: stress 'TIK' and end 'layt'"
+        }
+      ],
+      "focus_sounds": [
+        "l/r",
+        "k"
+      ]
+    },
+    {
+      "paragraph": "We determine scope with the customer, and we determine it in writing. Do not differentiate features by audience alone; differentiate by value. Let me demonstrate the dashboard once, then demonstrate the failure path. Be deliberate with claims: a deliberate understatement builds more trust than hype. A dependable cadence, weekly and boring, is more dependable than brilliance on demand. We determine scope together, demonstrate progress weekly, and differentiate by outcomes. A deliberate, dependable, demonstrate-first rhythm beats a brilliant demo that nobody can differentiate from the last one. Differentiate the demo from the pitch, and determine the difference in writing.",
+      "target_words": [
+        {
+          "word": "determine",
+          "respelling": "dih-TUR-min",
+          "stress": "dih-TUR-min",
+          "tip": "stress the second syllable 'TUR'"
+        },
+        {
+          "word": "differentiate",
+          "respelling": "dif-uh-REN-shee-ayt",
+          "stress": "dif-uh-REN-shee-ayt",
+          "tip": "stress 'REN'"
+        },
+        {
+          "word": "demonstrate",
+          "respelling": "DEM-un-strayt",
+          "stress": "DEM-un-strayt",
+          "tip": "three syllables; 'strayt' ending"
+        },
+        {
+          "word": "deliberate",
+          "respelling": "dih-LIB-er-it",
+          "stress": "dih-LIB-er-it",
+          "tip": "adjective: stress 'LIB'"
+        },
+        {
+          "word": "dependable",
+          "respelling": "dih-PEN-duh-bul",
+          "stress": "dih-PEN-duh-bul",
+          "tip": "stress 'PEN'"
+        }
+      ],
+      "focus_sounds": [
+        "d",
+        "l"
+      ]
+    },
+    {
+      "paragraph": "Keep the receipt of every approval, and keep that receipt where audit can find it. Believe the tracing, not the ticket comments; believe the reproducible graph. We achieve the target or we say why, and we achieve it without heroics. Retrieve the last good backup, then retrieve the config from the same stamp. How do you perceive risk: as a wall, or as weather you can perceive coming?. Believe the receipt trail, retrieve the graph, and perceive the pattern. When you achieve that level of evidence, every achieve-and-show cycle builds the credibility you need to believe in.",
+      "target_words": [
+        {
+          "word": "receipt",
+          "respelling": "rih-SEET",
+          "stress": "rih-SEET",
+          "tip": "silent 'p'; stress 'SEET'"
+        },
+        {
+          "word": "believe",
+          "respelling": "bih-LEEV",
+          "stress": "bih-LEEV",
+          "tip": "stress the second syllable"
+        },
+        {
+          "word": "achieve",
+          "respelling": "uh-CHEEV",
+          "stress": "uh-CHEEV",
+          "tip": "stress 'CHEEV'"
+        },
+        {
+          "word": "retrieve",
+          "respelling": "rih-TREEV",
+          "stress": "rih-TREEV",
+          "tip": "'tr' cluster, then a long 'ee'"
+        },
+        {
+          "word": "perceive",
+          "respelling": "pur-SEEV",
+          "stress": "pur-SEEV",
+          "tip": "stress the second part"
+        }
+      ],
+      "focus_sounds": [
+        "long ee",
+        "v"
+      ]
+    },
+    {
+      "paragraph": "The genre of the demo matters: a live query is its own genre of proof. A generic slide deck forgets by Friday; a generic claim dies in Q&A. Genuine curiosity from the customer, genuine questions, are the buying signal. We generate a sandbox per prospect, and we generate it in ninety seconds. The generator behind it is the same generator that runs production, which is the whole point. The genre of proof we prefer is a live query. Genuine signals beat generic decks, so we generate a sandbox per meeting, and the generator behind it stays production-grade.",
+      "target_words": [
+        {
+          "word": "genre",
+          "respelling": "ZHAN-ruh",
+          "stress": "ZHAN-ruh",
+          "tip": "soft French 'zh' at the start; two syllables"
+        },
+        {
+          "word": "generic",
+          "respelling": "juh-NER-ik",
+          "stress": "juh-NER-ik",
+          "tip": "stress 'NER'; not 'JEN-er-ic'"
+        },
+        {
+          "word": "genuine",
+          "respelling": "JEN-yoo-in",
+          "stress": "JEN-yoo-in",
+          "tip": "three syllables; keep the 'yoo'"
+        },
+        {
+          "word": "generate",
+          "respelling": "JEN-uh-rayt",
+          "stress": "JEN-uh-rayt",
+          "tip": "hard 'g'; stress the first syllable"
+        },
+        {
+          "word": "generator",
+          "respelling": "JEN-uh-ray-tur",
+          "stress": "JEN-uh-ray-tur",
+          "tip": "stress 'JEN', not 'ray'"
+        }
+      ],
+      "focus_sounds": [
+        "g soft/hard",
+        "zh"
+      ]
+    },
+    {
+      "paragraph": "The paradigm shifted from batch to streaming, and that paradigm shift is now two years old. Measure the diameter of the blast radius, not the diameter of the bug. The system scales dynamically, and dynamically priced cloud bills taught us limits. We diagnose with traces first, and we diagnose again after every change. Keep the dialogue with the customer short, and keep that dialogue weekly. The paradigm moved again this quarter, and the dialogue moved with it. Diagnose with traces, measure the diameter of impact, and let the streaming paradigm prove itself dynamically.",
+      "target_words": [
+        {
+          "word": "paradigm",
+          "respelling": "PAIR-uh-dime",
+          "stress": "PAIR-uh-dime",
+          "tip": "silent 'g'; ends like 'dime'"
+        },
+        {
+          "word": "diameter",
+          "respelling": "dy-AM-uh-tur",
+          "stress": "dy-AM-uh-tur",
+          "tip": "stress 'AM'; not 'dy-a-meter'"
+        },
+        {
+          "word": "dynamically",
+          "respelling": "dy-NAM-ik-lee",
+          "stress": "dy-NAM-ik-lee",
+          "tip": "stress 'NAM'"
+        },
+        {
+          "word": "diagnose",
+          "respelling": "dy-ag-NOHZ",
+          "stress": "dy-ag-NOHZ",
+          "tip": "stress the last syllable 'NOHZ'"
+        },
+        {
+          "word": "dialogue",
+          "respelling": "DY-uh-log",
+          "stress": "DY-uh-log",
+          "tip": "three syllables; 'log' not 'lawg'"
+        }
+      ],
+      "focus_sounds": [
+        "d",
+        "g"
+      ]
+    },
+    {
+      "paragraph": "The sixth failure taught the most, and the sixth retry passed clean. Two months of work compressed, months of learning kept. His strengths are quiet review and steady delivery, and those strengths scale across teams. We track tasks by age, and old tasks get split, because tasks that rot get worse. Read the texts of the runbooks aloud, and shorter texts survive audits. The sixth lesson: clusters are cheap to practise and expensive to skip. Sixth attempts, months of retries, strengths nobody sees: tasks like these texts are how teams are built. Read the runbook aloud until the clusters stop being scary.",
+      "target_words": [
+        {
+          "word": "sixth",
+          "respelling": "siksth",
+          "stress": "SIKSTH",
+          "tip": "end with 'ksth' in one motion; practise slowly"
+        },
+        {
+          "word": "months",
+          "respelling": "munths",
+          "stress": "MUNTHS",
+          "tip": "no vowel after 'th'"
+        },
+        {
+          "word": "strengths",
+          "respelling": "strengkths",
+          "stress": "STRENGKTHS",
+          "tip": "hardest cluster in English; exaggerate each sound"
+        },
+        {
+          "word": "tasks",
+          "respelling": "tasks",
+          "stress": "TASKS",
+          "tip": "'sks' at the end, no 'iz'"
+        },
+        {
+          "word": "texts",
+          "respelling": "teksts",
+          "stress": "TEKSTS",
+          "tip": "'ksts' cluster; slow first, then speed"
+        }
+      ],
+      "focus_sounds": [
+        "final consonant clusters"
+      ]
+    },
+    {
+      "paragraph": "Make the room comfortable before the demo starts; a comfortable room buys five minutes of patience. The vegetable analogy works: data pipelines are vegetable soup, every vegetable matters. Check the temperature of the stakeholder group early, and check that temperature again after news. Reference their literature, their own memos, because quoting their literature back is persuasion. The structure of the argument matters more than its length, and structure wins Q&A. A comfortable room, a vegetable-simple story, and the right literature quoted back: check the temperature early. Structure the argument so the comfortable parts carry the hard parts.",
+      "target_words": [
+        {
+          "word": "comfortable",
+          "respelling": "KUMF-ter-bul",
+          "stress": "KUMF-ter-bul",
+          "tip": "three syllables, not 'com-for-ta-ble'"
+        },
+        {
+          "word": "vegetable",
+          "respelling": "VEJ-tuh-bul",
+          "stress": "VEJ-tuh-bul",
+          "tip": "three syllables; the middle 'e' disappears"
+        },
+        {
+          "word": "temperature",
+          "respelling": "TEM-pruh-chur",
+          "stress": "TEM-pruh-chur",
+          "tip": "say 'tem-pruh', not 'tem-per-a-ture'"
+        },
+        {
+          "word": "literature",
+          "respelling": "LIT-ruh-chur",
+          "stress": "LIT-ruh-chur",
+          "tip": "three syllables; drop the middle 'e' sounds"
+        },
+        {
+          "word": "structure",
+          "respelling": "STRUK-chur",
+          "stress": "STRUK-chur",
+          "tip": "'str' start, 'chur' end"
+        }
+      ],
+      "focus_sounds": [
+        "ch",
+        "syllable compression"
+      ]
+    },
+    {
+      "paragraph": "We develop in the open, and we develop against production shadows. The envelope of safe change is small, but that envelope is enough. Involvement from the customer grew monthly, and that involvement shortened feedback loops. Improvement compounds: each improvement removes a step from the runbook. The environment is boring by design, and a boring environment is the goal, not a compromise. We develop against shadows, envelope every change, and measure each improvement weekly. Involvement from the customer grew because the environment stayed predictable and the develop-test-ship loop stayed short. The environment stays boring, the envelope stays small, and the improvement graph only goes down.",
+      "target_words": [
+        {
+          "word": "develop",
+          "respelling": "dih-VEL-up",
+          "stress": "dih-VEL-up",
+          "tip": "stress the middle; not 'DEV-el-up'"
+        },
+        {
+          "word": "envelope",
+          "respelling": "EN-vuh-lohp",
+          "stress": "EN-vuh-lohp",
+          "tip": "stress the first; verb 'envelop' differs"
+        },
+        {
+          "word": "involvement",
+          "respelling": "in-VOLV-ment",
+          "stress": "in-VOLV-ment",
+          "tip": "the 'v' is sharp; three syllables"
+        },
+        {
+          "word": "improvement",
+          "respelling": "im-PROOV-ment",
+          "stress": "im-PROOV-ment",
+          "tip": "stress 'PROOV'"
+        },
+        {
+          "word": "environment",
+          "respelling": "en-VY-run-ment",
+          "stress": "en-VY-run-ment",
+          "tip": "stress 'VY'; four syllables max"
+        }
+      ],
+      "focus_sounds": [
+        "v",
+        "n clusters"
+      ]
+    },
+    {
+      "paragraph": "The schedule holds: review Tuesday, ship Thursday, and the schedule is public. No scheme survives contact with production, so keep the scheme simple. The school of thought we follow is boring trunk-based. Every scenario we rehearsed, one scenario per failure class, paid off in March. Keep the scope of the change small, and a small scope is a feature, not a limitation. We follow the boring trunk-based school of thought, and that school keeps winning. The schedule is the strategy this quarter: simple scheme, trunk-based school, small scope. Every scenario we rehearsed, every scenario we skipped, showed up in March to be graded.",
+      "target_words": [
+        {
+          "word": "schedule",
+          "respelling": "SKED-jool",
+          "stress": "SKED-jool",
+          "tip": "hard 'k' start; 'jool' at the end"
+        },
+        {
+          "word": "scheme",
+          "respelling": "skeem",
+          "stress": "SKEEM",
+          "tip": "the 'ch' is a 'k' sound here"
+        },
+        {
+          "word": "school",
+          "respelling": "skool",
+          "stress": "SKOOL",
+          "tip": "'sk' cluster; long 'oo'"
+        },
+        {
+          "word": "scenario",
+          "respelling": "sih-NAIR-ee-oh",
+          "stress": "sih-NAIR-ee-oh",
+          "tip": "four syllables; stress 'NAIR'"
+        },
+        {
+          "word": "scope",
+          "respelling": "skohp",
+          "stress": "SKOHP",
+          "tip": "start with 'sk', not 'sh'"
+        }
+      ],
+      "focus_sounds": [
+        "sk clusters"
+      ]
+    },
+    {
+      "paragraph": "We determine the owner before the incident, not during. Every decision gets a one-line rationale, and that decision log is searchable. The dimension that matters most is time-to-mitigate, one dimension only. Discipline in the runbook beats heroics at 3 a.m., and discipline is trainable. The dividend of this practice, a dividend paid weekly, is sleep. Determine the owner before the incident starts, not while it burns. Determine the owner first, write the decision down, and treat time as the dimension that matters. The dividend of discipline compounds, and every dimension of the decision shows it.",
+      "target_words": [
+        {
+          "word": "determine",
+          "respelling": "dih-TUR-min",
+          "stress": "dih-TUR-min",
+          "tip": "stress 'TUR'"
+        },
+        {
+          "word": "decision",
+          "respelling": "dih-SIZH-un",
+          "stress": "dih-SIZH-un",
+          "tip": "the 's' sounds like 'z'; stress second syllable"
+        },
+        {
+          "word": "dimension",
+          "respelling": "dih-MEN-shun",
+          "stress": "dih-MEN-shun",
+          "tip": "stress 'MEN'"
+        },
+        {
+          "word": "discipline",
+          "respelling": "DIS-uh-plin",
+          "stress": "DIS-uh-plin",
+          "tip": "stress the first; three syllables"
+        },
+        {
+          "word": "dividend",
+          "respelling": "DIV-ih-dend",
+          "stress": "DIV-ih-dend",
+          "tip": "stress the first; end 'dend'"
+        }
+      ],
+      "focus_sounds": [
+        "d",
+        "s/z"
+      ]
+    },
+    {
+      "paragraph": "Promote the fix quietly; promote results, not effort. The prototype took a day, and that prototype answered the question. Be proactive about bad news: a proactive disclosure is a rounding error. One priority per quarter, and that priority is written down. The probability of failure halves with each rehearsal, and probability math belongs in the appendix. Promote the prototype quietly, be proactive about the priority, and let the numbers speak. The probability of a second outage drops with every rehearsal, so promote the process too. The prototype proved the priority, so promote the proactive path with confidence.",
+      "target_words": [
+        {
+          "word": "promote",
+          "respelling": "pruh-MOHT",
+          "stress": "pruh-MOHT",
+          "tip": "stress the second syllable"
+        },
+        {
+          "word": "prototype",
+          "respelling": "PROH-tuh-type",
+          "stress": "PROH-tuh-type",
+          "tip": "stress the first; three syllables"
+        },
+        {
+          "word": "proactive",
+          "respelling": "proh-AK-tiv",
+          "stress": "proh-AK-tiv",
+          "tip": "stress 'AK'"
+        },
+        {
+          "word": "priority",
+          "respelling": "pry-OR-ih-tee",
+          "stress": "pry-OR-ih-tee",
+          "tip": "stress 'OR'; four syllables"
+        },
+        {
+          "word": "probability",
+          "respelling": "prob-uh-BIL-ih-tee",
+          "stress": "prob-uh-BIL-ih-tee",
+          "tip": "stress 'BIL'"
+        }
+      ],
+      "focus_sounds": [
+        "p/r",
+        "b"
+      ]
+    },
+    {
+      "paragraph": "The test suite runs in ninety seconds, and a fast suite is a moral suite. A suitable workload for the trial is production-shaped, and only suitable data counts. The pursuit of coverage became the pursuit of confidence. Low-hanging fruit first, and that fruit is usually logging. Their influence on the roadmap grew, and that influence was earned with uptime. The suite stays fast, the workload stays suitable, and the pursuit of confidence never ends. Their influence on the roadmap grew from fruit picked early, one low-hanging fruit at a time.",
+      "target_words": [
+        {
+          "word": "suite",
+          "respelling": "sweet",
+          "stress": "SWEET",
+          "tip": "sounds exactly like 'sweet'; stress it"
+        },
+        {
+          "word": "suitable",
+          "respelling": "SOO-tuh-bul",
+          "stress": "SOO-tuh-bul",
+          "tip": "stress the first; three syllables"
+        },
+        {
+          "word": "pursuit",
+          "respelling": "pur-SOOT",
+          "stress": "pur-SOOT",
+          "tip": "stress the second; ends 'soot' as in boot"
+        },
+        {
+          "word": "fruit",
+          "respelling": "froot",
+          "stress": "FROOT",
+          "tip": "long 'oo'; one syllable"
+        },
+        {
+          "word": "influence",
+          "respelling": "IN-floo-uns",
+          "stress": "IN-floo-uns",
+          "tip": "stress the first; three syllables"
+        }
+      ],
+      "focus_sounds": [
+        "long u"
+      ]
+    },
+    {
+      "paragraph": "The design treats the island of legacy code as an island, bridged only by contracts. We assign one owner per service, and we assign blame to nobody. Teams may resign from a migration they do not believe in; nobody chose to resign. Every signature on the design doc matters, and a signature means 'I read it'. The assign-and-forget pattern is banned here. Design the island out, assign the contracts, and resign only with a reason. Every signature on the page means the design was read, and an assign-without-read pattern is banned.",
+      "target_words": [
+        {
+          "word": "island",
+          "respelling": "EYE-lund",
+          "stress": "EYE-lund",
+          "tip": "silent 's'; two syllables"
+        },
+        {
+          "word": "design",
+          "respelling": "dih-ZINE",
+          "stress": "dih-ZINE",
+          "tip": "stress the second; ends like 'zine'"
+        },
+        {
+          "word": "assign",
+          "respelling": "uh-ZINE",
+          "stress": "uh-ZINE",
+          "tip": "same ending as design"
+        },
+        {
+          "word": "resign",
+          "respelling": "rih-ZINE",
+          "stress": "rih-ZINE",
+          "tip": "stress 'ZINE'"
+        },
+        {
+          "word": "signature",
+          "respelling": "SIG-nuh-chur",
+          "stress": "SIG-nuh-chur",
+          "tip": "stress the first; 'chur' end"
+        }
+      ],
+      "focus_sounds": [
+        "s/z",
+        "silent letters"
+      ]
+    },
+    {
+      "paragraph": "Join the queue for review early; the queue is fair but slow. Every unique failure gets a unique ticket, and a unique reproduction script. The technique that found it was old-school diffing, an underrated technique. The antique dashboard still works, and that antique charm buys patience during incidents. A sharp critique in the open beats a polite critique in the hallway, every time we have measured it. Join the queue early, write a unique reproduction, and keep the technique old-school. A sharp critique in the open beats an antique polite one, so queue the critique with the ticket.",
+      "target_words": [
+        {
+          "word": "queue",
+          "respelling": "kyoo",
+          "stress": "KYOO",
+          "tip": "one syllable; 'q' says 'k' then 'yoo'"
+        },
+        {
+          "word": "unique",
+          "respelling": "yoo-NEEK",
+          "stress": "yoo-NEEK",
+          "tip": "stress the second"
+        },
+        {
+          "word": "technique",
+          "respelling": "tek-NEEK",
+          "stress": "tek-NEEK",
+          "tip": "stress the second; end 'neek'"
+        },
+        {
+          "word": "antique",
+          "respelling": "an-TEEK",
+          "stress": "an-TEEK",
+          "tip": "stress the second"
+        },
+        {
+          "word": "critique",
+          "respelling": "krih-TEEK",
+          "stress": "krih-TEEK",
+          "tip": "stress the second; 'k' start"
+        }
+      ],
+      "focus_sounds": [
+        "k",
+        "long ee"
+      ]
+    },
+    {
+      "paragraph": "Judge the change by the trend, and judge it after a week. The bridge between staging and production is config, and that bridge is one-way. Each edge service owns its own cache at the edge. Our knowledge of their workflow grew, and that knowledge is now a runbook. The schedule for the cutover is set, and the schedule survives contact with reality, mostly. Judge the trend, not the day; bridge the gap with config; keep knowledge in runbooks. The schedule holds when every edge service owns its cache, and the schedule bends for nobody.",
+      "target_words": [
+        {
+          "word": "judge",
+          "respelling": "juj",
+          "stress": "JUJ",
+          "tip": "soft 'j'; the 'dge' is one sound"
+        },
+        {
+          "word": "bridge",
+          "respelling": "brij",
+          "stress": "BRIJ",
+          "tip": "ends with the same 'j' sound"
+        },
+        {
+          "word": "edge",
+          "respelling": "ej",
+          "stress": "EJ",
+          "tip": "one syllable; no 'ee' at the end"
+        },
+        {
+          "word": "knowledge",
+          "respelling": "NOL-ij",
+          "stress": "NOL-ij",
+          "tip": "silent 'k'; two syllables"
+        },
+        {
+          "word": "schedule",
+          "respelling": "SKED-jool",
+          "stress": "SKED-jool",
+          "tip": "hard 'sk' start"
+        }
+      ],
+      "focus_sounds": [
+        "j sound",
+        "silent letters"
+      ]
+    },
+    {
+      "paragraph": "The height of the spike was brief, and its height set the page count. The weight of the decision was clear, and that weight was shared. The eighth retry passed, and the eighth was the charm. Split the fourths of the quarter evenly, review each of the fourths. Two months of drift, months of quiet debt, surfaced in one graph. The height of the spike, the weight of the call, the eighth retry, the fourths of the quarter: months of quiet drift in one graph. Height, weight, and months belong in dashboards, not memories.",
+      "target_words": [
+        {
+          "word": "height",
+          "respelling": "hyte",
+          "stress": "HYTE",
+          "tip": "rhymes with 'light'; the 'eigh' says 'eye'"
+        },
+        {
+          "word": "weight",
+          "respelling": "wayt",
+          "stress": "WAYT",
+          "tip": "silent 'gh'; rhymes with 'late'"
+        },
+        {
+          "word": "eighth",
+          "respelling": "aytth",
+          "stress": "AYTTH",
+          "tip": "'ay' then 'th'; the 't' nearly vanishes"
+        },
+        {
+          "word": "fourths",
+          "respelling": "forthz",
+          "stress": "FORTHZ",
+          "tip": "one syllable; end 'thz'"
+        },
+        {
+          "word": "months",
+          "respelling": "munths",
+          "stress": "MUNTHS",
+          "tip": "no vowel after 'n-th-s'"
+        }
+      ],
+      "focus_sounds": [
+        "gh silence",
+        "th clusters"
+      ]
+    },
+    {
+      "paragraph": "Stay calm when the pager fires; a calm voice writes better notes. The palm-sized device in the rack is the emergency palm switch, labelled and guarded. We ordered salmon and an almond croissant for the war room; the salmon was cold and the almond was stale by the time we shipped. Half the fix was config, and the better half was a test. Meet failure half-prepared, never half-informed. Stay calm, guard the palm switch, order the salmon and the almond croissant early. Half the battle is preparation, the other half is staying calm enough to use it.",
+      "target_words": [
+        {
+          "word": "calm",
+          "respelling": "kahm",
+          "stress": "KAHM",
+          "tip": "silent 'l'; one syllable"
+        },
+        {
+          "word": "palm",
+          "respelling": "pahm",
+          "stress": "PAHM",
+          "tip": "silent 'l' again"
+        },
+        {
+          "word": "salmon",
+          "respelling": "SAM-un",
+          "stress": "SAM-un",
+          "tip": "silent 'l'; stress the first"
+        },
+        {
+          "word": "almond",
+          "respelling": "AH-mund",
+          "stress": "AH-mund",
+          "tip": "the 'l' is silent here too"
+        },
+        {
+          "word": "half",
+          "respelling": "haf",
+          "stress": "HAF",
+          "tip": "silent 'l'; ends with 'f'"
+        }
+      ],
+      "focus_sounds": [
+        "silent l"
+      ]
+    }
+  ]
+}

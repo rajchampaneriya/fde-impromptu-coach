@@ -169,3 +169,20 @@ def upload(paths: Paths, video: Path, metadata: Dict[str, Any], thumbnail: Optio
         except Exception as exc:  # noqa: BLE001 - thumbnail is cosmetic, never fail the upload
             log.warning("YouTube thumbnail not set (%s); channel may need phone verification", exc)
     return response["id"]
+
+
+def add_to_playlist(paths: Paths, video_id: str, playlist_id: str) -> bool:
+    """Best-effort: a failed playlist add never fails the upload."""
+    if os.environ.get("FDE_COACH_DRYRUN") == "1":
+        log.info("[dry-run] playlist add %s -> %s", video_id, playlist_id)
+        return True
+    try:
+        service = build("youtube", "v3", credentials=_credentials(paths), cache_discovery=False)
+        service.playlistItems().insert(part="snippet", body={
+            "snippet": {"playlistId": playlist_id, "resourceId": {"kind": "youtube#video", "videoId": video_id}}
+        }).execute()
+        log.info("Added %s to playlist %s", video_id, playlist_id)
+        return True
+    except Exception as exc:  # noqa: BLE001
+        log.warning("Playlist add failed (%s); check youtube.pronunciation_playlist_id", exc)
+        return False

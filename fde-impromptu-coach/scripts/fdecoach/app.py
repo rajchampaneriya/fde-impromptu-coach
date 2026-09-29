@@ -293,7 +293,27 @@ def _run_session_locked(ctx: Ctx, force: bool, max_tries: int) -> Dict[str, Any]
                   ended_early=bool(result.get("ended_early")))
     ask_feedback(ctx, date)
     upload_async(ctx)
+    offer_pronunciation(ctx)
     return result
+
+
+def offer_pronunciation(ctx: Ctx) -> None:
+    """After the FDE session: one prompt for the pronunciation practice."""
+    pron_cfg = ctx.cfg.get("pronunciation", {})
+    if not pron_cfg.get("prompt_after_fde", True) or lock_is_held(ctx.paths, "session"):
+        return
+    try:
+        from . import pronounce_session
+        history = pronounce_session.pron_history(ctx.paths)
+        s = history.get(today())
+        if s and s.get("recorded"):
+            return
+    except Exception:  # noqa: BLE001 - never disturb the FDE flow
+        return
+    answer = macos.dialog("FDE practice saved. Pronunciation practice next? (5 min, audio only)",
+                          APP_NAME, ["Later", "Start now"], "Start now", timeout_seconds=300)
+    if answer == "Start now":
+        spawn_detached(["pronounce", "session"])
 
 
 def mark_recorded(ctx: Ctx, date: dt.date, video: Optional[str], offset: Optional[float] = None,
@@ -604,9 +624,16 @@ def status(ctx: Ctx) -> Dict[str, Any]:
     rem = ctx.cfg.get("reminders", {})
     t = now()
     upcoming = [x for x in sorted(rem.get("times", [])) if _time_today(x, date) > t]
+    try:
+        from . import pronounce_session
+        pron = pronounce_session.status(ctx)
+    except Exception as exc:  # noqa: BLE001 - pronunciation must never break the FDE status
+        log.debug("pronunciation status unavailable: %s", exc)
+        pron = None
     return {
         "date": date.isoformat(),
         "streak": stats,
+        "pronunciation": pron,
         "level": s.get("level") if s else plan_slots(history, rt, ctx.cfg, date)["level"],
         "level_adjust": rt.data.get("level_adjust", 0),
         "today": None if not s else {

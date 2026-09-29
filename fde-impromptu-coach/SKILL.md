@@ -43,6 +43,9 @@ installed yet: see **Install** below.
 | "Too easy" / "too hard" | `fde-coach level --up` / `--down` (then `generate --replace` if today is not recorded yet) |
 | "Remind me at another time", "run at 6:15" | `fde-coach config --set daily_time=06:15` (reinstalls the schedule) or `--set 'reminders.times=["07:00","12:00","20:00"]'` |
 | "I recorded it myself / on my phone" | `fde-coach complete --video /path/to/file` (or `--no-video` if no usable file) |
+| "Pronunciation practice", "pen method", "start pronunciation" | `fde-coach pronounce session --detach` (audio only, ~5 min: warm-up words, 3 rounds with the pen in Round 2, words again; auto-stops and saves) |
+| "Add a hard word" (pronunciation) | `fde-coach pronounce words --add WORD` (repeat per word; `--remove WORD`, bare `words` lists the pool and what's due) |
+| "Pronunciation streak / status / history" | `fde-coach pronounce status` / `pronounce history` |
 | "No camera on this Mac", "practise without video" | `fde-coach config --set recording.mode=none` — session runs the deck show only, still counts for the streak, no QuickTime/YouTube |
 | "Upload didn't happen" | `fde-coach upload` |
 | "Connect YouTube" | walk them through README.md → *Google setup*, then `fde-coach youtube-auth` |
@@ -120,8 +123,12 @@ YouTube setup and an optional `pmset` wake schedule.
 - `scripts/fde_coach.py` — CLI (`--help` lists all commands)
 - `scripts/fdecoach/` — modules: `app` (flows), `questions`, `deck`, `recorder`,
   `macos` (AppleScript), `youtube`, `gcal` (Google Calendar missed-practice alerts),
-  `scheduler` (launchd), `state`, `config`
+  `scheduler` (launchd), `state`, `config`, plus the pronunciation practice:
+  `pronounce` (words + paragraph), `pronounce_deck` (deck + slide PNGs),
+  `pronounce_session` (record/upload flows), `audio` (ffmpeg clean-up)
 - `scripts/tests/` — `~/FDE-Impromptu/venv/bin/python -m unittest discover -s scripts/tests` (dry-run, safe anywhere; needs the venv because the CLI imports `pptx`)
 - `references/question_design.md` — question rubric and JSON schema
+- `references/pronunciation_design.md` — pronunciation paragraph rubric and JSON schema
+- `references/pronunciation_plan.md` — pronunciation practice design plan
 - `references/troubleshooting.md` — symptoms → fixes
 - `references/plan.md` — design plan, risks found in validation, and fixes

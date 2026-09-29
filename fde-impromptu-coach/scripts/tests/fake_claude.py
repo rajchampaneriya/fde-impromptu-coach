@@ -30,6 +30,8 @@ def main() -> int:
     if mode == "garbage":
         print("I cannot help with that")
         return 0
+    if "pronunciation practice" in prompt.lower():
+        return pronounce(prompt, mode)
     slots = re.findall(r"- slot (\d+): category `([a-z_]+)`[^\n]*difficulty (\d)", prompt)
     rng = random.Random(prompt[-4000:] + os.environ.get("FAKE_CLAUDE_SALT", ""))
     questions = []
@@ -49,6 +51,38 @@ def main() -> int:
     body = json.dumps({"questions": questions})
     if mode == "fenced":
         body = "Here you go:\n```json\n" + body + "\n```"
+    print(json.dumps({"type": "result", "subtype": "success", "is_error": False, "result": body}))
+    return 0
+
+
+def pronounce(prompt: str, mode: str) -> int:
+    """Valid paragraph for the pronunciation rubric; 'dupes' always returns the
+    same paragraph so the novelty check rejects it."""
+    if mode == "dupes":
+        words = ["hierarchy", "prioritize", "verdict", "threshold", "algorithm"]
+    else:
+        words = re.findall(r"^- ([a-z']+)$", prompt, re.MULTILINE)
+        if len(words) < 5:
+            words = (words + ["colleague", "articulate", "rhythm", "paradigm", "suite"])[:5]
+    rng = random.Random(prompt[-2000:] + os.environ.get("FAKE_CLAUDE_SALT", ""))
+    leads = ["This morning the customer asked about", "Yesterday's review surfaced",
+             "The quarterly plan hinges on", "Their lead engineer questioned our",
+             "The migration checklist starts with", "Nobody on the call could settle the"]
+    tails = ["before the board call", "during the pilot review", "after the incident drill",
+             "in front of the auditors", "before Friday's demo", "during the vendor call"]
+    sentences = ["Let me give you the short version of where we stand this week."]
+    for i, w in enumerate(words):
+        sentences.append(f"{rng.choice(leads)} the {w} question, and the same {w} concern returned "
+                         f"{rng.choice(tails)}.")
+        if i == 2:
+            sentences.append("I wrote the numbers down twice, checked them twice, and kept the slide to one line.")
+    sentences.append("That is the whole update: clear words, plain numbers, and a decision we can defend.")
+    body = json.dumps({
+        "paragraph": " ".join(sentences),
+        "target_words": [{"word": w, "respelling": w.upper(), "stress": w.upper(),
+                          "tip": "Slow down on this word."} for w in words],
+        "focus_sounds": ["th"],
+    })
     print(json.dumps({"type": "result", "subtype": "success", "is_error": False, "result": body}))
     return 0
 

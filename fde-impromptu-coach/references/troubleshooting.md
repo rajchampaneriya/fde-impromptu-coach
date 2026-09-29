@@ -30,6 +30,10 @@ If today is at risk, protect the streak first: record any way you can
 | Calendar: "authorization expired" | OAuth app in Testing, or access removed | publish the app (In production), then `fde-coach calendar-auth` |
 | Leftover "FDE practice not recorded yet" events | tool uninstalled without cleanup | `fde-coach calendar-sync --clear`, or delete them in Google Calendar |
 | Upload status "missing" | video file moved or deleted | Put it back at the recorded path, or upload it by hand |
+| Pronunciation video skipped | ffmpeg not installed | `brew install ffmpeg`; the .m4a is always kept. Retry with `fde-coach pronounce upload` |
+| Pronunciation audio not saved | QuickTime save quirk on macOS 26 | Same fallbacks as the FDE recording; the guided dialog asks you to press ⌘S. The .m4a lands in `~/Movies/FDE-Impromptu/pronunciation/` |
+| Pronunciation words never change | every word retired (4 easy answers in a row) | `fde-coach pronounce words --add WORD` — new words enter the schedule immediately |
+| Nothing happened at 05:45 | pronouncing agent not loaded | `fde-coach install-agents` (installs all three agents); check `pronounce.err.log` |
 | Deck file deleted | — | Any command (`fde-coach open`) rebuilds it from the saved questions |
 | Broke after a Homebrew Python upgrade | the virtual environment points at a removed Python | Re-run `install.sh` (history is kept) |
 | Want to start fresh | — | `bash uninstall.sh --purge`, then `install.sh` |
