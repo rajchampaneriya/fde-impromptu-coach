@@ -487,11 +487,13 @@ def choose_from_list(message: str, title: str, items: Sequence[str],
         log.info("[dry-run] choose %r -> %s", message[:60], answer)
         return [w for w in answer.split("+") if w]
     items_xml = ", ".join(q(i) for i in items)
-    defaults = ", ".join(q(i) for i in default_items) or "{}"
+    default_part = ""
+    if default_items:
+        default_part = " default items {" + ", ".join(q(i) for i in default_items) + "}"
     script = f"""
 try
-    set picked to choose from list {{{items_xml}}} with title {q(title)} with prompt {q(message)} \
-default items {{{defaults}}} with multiple selections allowed
+    set picked to choose from list {{{items_xml}}} with title {q(title)} with prompt {q(message)}{default_part} \
+with multiple selections allowed
     if picked is false then return ""
     set AppleScript's text item delimiters to "\\n"
     return (picked as text)
