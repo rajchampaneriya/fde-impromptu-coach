@@ -265,6 +265,16 @@ def _finish_sidecar(dest: Path, inner_names: Sequence[str] = ("Movie Recording.m
     return False
 
 
+def _sidecar_with_retry(dest: Path, inner_names: Sequence[str], min_bytes: int, tries: int = 8) -> bool:
+    """macOS 26 writes the '<dest>.qtpxcomposition' sidecar asynchronously after the
+    save command returns ok — poll briefly before giving up."""
+    for _ in range(tries):
+        if _finish_sidecar(dest, inner_names, min_bytes):
+            return True
+        time.sleep(1)
+    return _finish_sidecar(dest, inner_names, min_bytes)
+
+
 def _stop_and_save(dest: Path, since: float, inner_names: Sequence[str], export_presets: Sequence[str],
                    min_bytes: int = 1_000_000, dry_bytes: int = 2 * 1024 * 1024) -> Tuple[bool, str]:
     """Stop the front QuickTime recording and save it to dest. Tries the auto-saved
@@ -308,7 +318,7 @@ end timeout
 return "ok"
 """
         ok, out = osascript(script, timeout=1860)
-        if ok and _finish_sidecar(dest, inner_names, min_bytes):
+        if ok and _sidecar_with_retry(dest, inner_names, min_bytes):
             osascript('tell application "QuickTime Player" to close front document saving no', timeout=30)
             size = dest.stat().st_size
             log.info("QuickTime %s: sidecar finalised (%d bytes)", label, size)
@@ -345,7 +355,8 @@ end tell
 
 
 def quicktime_stop_audio_save(dest: Path, since: float = 0.0) -> Tuple[bool, str]:
-    return _stop_and_save(dest, since, ("Audio Recording.m4a", "Movie Recording.mov"), ())
+    # speech is mono AAC: a valid 5-minute take can be well under 1 MB
+    return _stop_and_save(dest, since, ("Audio Recording.m4a", "Movie Recording.mov"), (), min_bytes=100_000)
 
 
 # --------------------------------------------------------------------------- Reminders (syncs to iPhone)

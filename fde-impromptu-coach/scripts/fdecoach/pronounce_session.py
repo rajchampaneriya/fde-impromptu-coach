@@ -301,7 +301,7 @@ def assemble_video(session: Dict[str, Any], cfg: Dict[str, Any], paths: Paths) -
     out = _recordings_dir(paths, cfg) / f"{session['date']}_Pronunciation_Day{session['day_number']}.mp4"
     cmd = [exe, "-y", "-f", "concat", "-safe", "0", "-i", str(lst), "-i", str(audio_path),
            "-vf", "format=yuv420p", "-c:v", "libx264", "-tune", "stillimage", "-r", "30",
-           "-c:a", "aac", "-b:a", "192k", "-shortest", str(out)]
+           "-c:a", "aac", "-b:a", "192k", "-shortest", "-t", f"{dur:.3f}", str(out)]
     proc = subprocess.run(cmd, capture_output=True, text=True, timeout=1800)
     if proc.returncode != 0 or not out.exists():
         log.warning("ffmpeg video assembly failed: %s", (proc.stderr or "")[-400:])
