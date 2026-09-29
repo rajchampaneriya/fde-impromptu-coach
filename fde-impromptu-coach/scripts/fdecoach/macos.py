@@ -94,6 +94,23 @@ def open_path(path: Path, app: Optional[str] = None) -> bool:
     return subprocess.run(cmd, capture_output=True).returncode == 0
 
 
+def quit_app(name: str) -> None:
+    osascript(f"tell application {q(name)} to quit", timeout=30)
+
+
+def keynote_close_documents() -> None:
+    """Close every open Keynote document (a finished show leaves the deck open)."""
+    osascript("""
+tell application "Keynote"
+    try
+        repeat with d in documents
+            close d saving no
+        end repeat
+    end try
+end tell
+""", timeout=60)
+
+
 def app_exists(name: str) -> bool:
     if dry_run():
         return True

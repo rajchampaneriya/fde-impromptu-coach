@@ -54,6 +54,7 @@ DEFAULTS: Dict[str, Any] = {
         "daily_time": "05:45",
         "prompt_after_fde": True,
         "words": [],
+        "audio_device": "Brio 100",
         "focus_sounds": [],
         "intro_seconds": 10,
         "warmup_seconds": 45,

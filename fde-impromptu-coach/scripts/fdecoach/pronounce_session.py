@@ -134,6 +134,8 @@ def _run_show(deck: Path, show: Path, cfg: Dict[str, Any], total: int, grace: in
         if running is False and time.time() - t_show > 8:
             break
     macos.powerpoint_end_show(app)
+    if "keynote" in app.lower():
+        macos.keynote_close_documents()
     return t_show
 
 
@@ -146,21 +148,43 @@ def _record_once(session: Dict[str, Any], cfg: Dict[str, Any], paths: Paths) -> 
     total = session_seconds(cfg)
     grace = int(cfg.get("recording", {}).get("stop_grace_seconds", 4))
     result: Dict[str, Any] = {"ok": False, "audio": None, "offset": None, "ended_early": False}
+    min_secs = int(rec_cfg.get("min_audio_seconds", 180))
 
+    # Preferred: capture straight from the AVFoundation input. QuickTime's own
+    # input selection goes stale when devices are reconnected and records silence.
+    cap = audio.AudioCapture(dest, str(rec_cfg.get("audio_device", "")))
+    if cap.start():
+        t_rec = time.time()
+        t_show = _run_show(deck, show, cfg, total, grace)
+        result["offset"] = round(t_show - t_rec, 1)
+        out = cap.stop()
+        if out is None:
+            result["error"] = "audio was not saved"
+            return result
+        result.update(audio=str(out), method="ffmpeg")
+        duration = audio.audio_duration_seconds(out)
+        result["duration"] = duration
+        if duration is not None and duration < min_secs:
+            result["error"] = f"recording too short ({int(duration)} s < {min_secs} s)"
+        else:
+            result["ok"] = True
+        return result
+
+    # Fallback: QuickTime audio recording (needs its own microphone permission)
     t_rec = time.time()
     if not macos.quicktime_start_audio_recording(float(cfg.get("recording", {}).get("camera_warmup_seconds", 2))):
-        result["error"] = "QuickTime audio recording did not start"
+        result["error"] = "audio capture did not start (ffmpeg AVFoundation failed and QuickTime fallback failed)"
         return result
     t_show = _run_show(deck, show, cfg, total, grace)
     result["offset"] = round(t_show - t_rec, 1)
     saved, how = macos.quicktime_stop_audio_save(dest, since=t_rec)
+    macos.quit_app("QuickTime Player")
     if not saved:
         result["error"] = "audio was not saved"
         return result
-    result.update(audio=str(dest), method=how)
+    result.update(audio=str(dest), method=f"quicktime:{how}")
     duration = audio.audio_duration_seconds(dest)
     result["duration"] = duration
-    min_secs = int(rec_cfg.get("min_audio_seconds", 180))
     if duration is not None and duration < min_secs:
         result["error"] = f"recording too short ({int(duration)} s < {min_secs} s)"
     else:

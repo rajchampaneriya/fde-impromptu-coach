@@ -294,6 +294,12 @@ def cmd_doctor(args) -> int:
     line(audio.has_ffmpeg(), "ffmpeg (pronunciation video)",
          "found" if audio.has_ffmpeg() else "not found - pronunciation videos are skipped, audio is kept "
          "(brew install ffmpeg)")
+    want_device = str(cfg.get("pronunciation", {}).get("audio_device", ""))
+    devices = audio.avfoundation_audio_devices() if audio.has_ffmpeg() else []
+    resolved = audio.resolve_audio_device(want_device) if devices else None
+    line(bool(resolved is not None or not devices), "Pronunciation audio input",
+         f"{devices[resolved][1] if resolved is not None and devices else want_device or 'first available'}"
+         if devices else "dry-run or no ffmpeg")
     if not macos.dry_run() and macos.is_macos():
         ok_audio = macos.quicktime_audio_check()
         line(ok_audio, "QuickTime audio recording",

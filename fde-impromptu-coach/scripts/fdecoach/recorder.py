@@ -71,6 +71,8 @@ def _run_show(deck: Path, show: Path, cfg: Dict[str, Any], total: float, grace: 
             ended_early = elapsed < total - 5
             break
     macos.powerpoint_end_show(app)
+    if "keynote" in app.lower():
+        macos.keynote_close_documents()
     return ended_early, t_show
 
 
@@ -132,6 +134,8 @@ def record(session: Dict[str, Any], cfg: Dict[str, Any], paths: Paths) -> Dict[s
     if not video:
         result["error"] = "no video file was saved"
         return result
+    if mode == "auto":
+        macos.quit_app("QuickTime Player")
     result["video"] = str(video)
     duration = macos.video_duration_seconds(video)
     result["duration"] = duration
