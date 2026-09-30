@@ -48,16 +48,18 @@ def avfoundation_audio_devices() -> List[Tuple[int, str]]:
 
 
 def resolve_audio_device(name: str) -> Optional[int]:
-    """Index of the device whose name contains `name` (case-insensitive); first device otherwise."""
+    """Index of the first device matching any comma-separated preference in
+    `name` (case-insensitive, left-to-right priority); first device otherwise."""
     devices = avfoundation_audio_devices()
     if not devices:
         return None
-    if name:
-        low = name.lower()
+    for pref in [p.strip() for p in name.split(",") if p.strip()]:
+        low = pref.lower()
         for idx, dev in devices:
             if low in dev.lower():
                 return idx
-        log.warning("audio device %r not found; using %r", name, devices[0][1])
+    if name:
+        log.warning("audio device(s) %r not found; using %r", name, devices[0][1])
     return devices[0][0]
 
 
