@@ -32,6 +32,7 @@ From 10 October 2026 the coach also runs a daily technical video for a public Yo
 
 - **Evening before:** a brief with the topic, WHAT, WHY, HOW, repository references, diagrams, the demo to prepare and a 3-minute outline (Mac + Google Calendar).
 - **Recording day:** minimal blue slides, a keyword outline and the facts to verify.
+- **A real demo in every video**, faceless: commands run in a demo city on your Mac and appear as an animated terminal, taught Greg Tang style (see it, group it, name it).
 - **Up to three voice takes** over self-running slides (Discovery, Improve, Publish), then a finished video with intro and outro music. Your voice is never processed.
 
 See the [learning path](fde-impromptu-coach/references/factory_learning_path.md) and `fde-coach factory --help`.

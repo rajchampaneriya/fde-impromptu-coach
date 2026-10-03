@@ -326,6 +326,15 @@ def cmd_doctor(args) -> int:
              f"{factory.total_days()} days from {cfg['factory'].get('start_date')}" if not errs
              else f"{len(errs)} problem(s): {errs[0]}")
         line(True, "Slide font", factory_deck.font_report(cfg))
+        from fdecoach import factory_demo
+        for store in factory_demo.STORES:
+            missing = [t for t, ok, _ in factory_demo.tools_report(store) if not ok]
+            ready = factory_demo.is_ready(cfg, store)
+            label = "Demo city (file store, Days 1-7)" if store == "file" else "Demo city (default setup, Day 8+)"
+            line(ready and not missing, label,
+                 "ready" if ready and not missing else
+                 (f"missing {', '.join(missing)}; " if missing else "")
+                 + f"then: fde-coach factory demo setup --store {store}")
         music = factory_session.music_report(ctx)
         line(True, "Video music", f"intro: {music['intro']}; outro: {music['outro']}")
         mode = cfg["factory"].get("publish_mode", "studio")
@@ -679,7 +688,62 @@ def cmd_factory(args) -> int:
         for line in FS.calendar_sync(ctx, clear=args.clear):
             print(line)
         return 0
+    if sub == "demo":
+        return _factory_demo(ctx, args)
     return 2
+
+
+def _factory_demo(ctx, args) -> int:
+    from fdecoach import factory_demo as DEMO, factory_session as FS
+    action = args.demo_command
+    if action == "setup":
+        stores = list(DEMO.STORES) if args.store == "both" else [args.store]
+        code = 0
+        for store in stores:
+            print(f"Demo city ({'file-based beads' if store == 'file' else 'default: bd + Dolt'}):")
+            for tool, ok, hint in DEMO.tools_report(store):
+                print(f"  [{'ok' if ok else '!!'}] {tool}" + ("" if ok else f"  -> {hint}"))
+            notes: list = []
+            res = DEMO.setup(ctx.cfg, store, notes)
+            for n in notes:
+                print("  " + n.strip().replace("\n", "\n  "))
+            if res.get("ok"):
+                print(f"  ready: city {res['city']}, rig {res['rig']}")
+            else:
+                print(f"  not ready: {res.get('error')}")
+                code = 1
+        return code
+    if action == "capture":
+        res = FS.capture_demo(ctx, _parse_date(args.date))
+        if args.json:
+            _print(res)
+        else:
+            print(("Captured: " if res.get("ok") else "FAILED: ") + str(res.get("error") or
+                  f"{len(res.get('steps', []))} steps" + (" (simulated)" if res.get("simulated") else "")))
+            for st in res.get("steps", []):
+                print(f"  {'✓' if not st.get('code') else '✗'} {st['cmd']}"
+                      + (f"   (time-lapse {st['timelapse']} s)" if st.get("timelapse") else ""))
+            if res.get("note"):
+                print(res["note"])
+        return 0 if res.get("ok") else 1
+    if action == "clip":
+        s = FS.set_clip(ctx, Path(args.file), _parse_date(args.date))
+        print(f"Day {s['day']} will use your clip for the demo: {args.file}")
+        return 0
+    st = FS.demo_status(ctx)
+    if args.json:
+        _print(st)
+        return 0
+    for store, lab in st["labs"].items():
+        missing = [t for t, ok in lab["tools"] if not ok]
+        state = "ready" if lab["ready"] else "not set up (fde-coach factory demo setup --store " + store + ")"
+        print(f"{'file' if store == 'file' else 'default'} demo city: {state}"
+              + (f"; missing: {', '.join(missing)}" if missing else ""))
+    for d in st["days"]:
+        cap = "not captured" if d["ok"] is None else ("captured " + str(d["captured_at"]) if d["ok"]
+                                                       else f"FAILED: {d['error']}")
+        print(f"{d['date']} Day {d['day']}: {d['demo']} [{d['store']}] — {cap}")
+    return 0
 
 
 # --------------------------------------------------------------------------- parser
@@ -826,6 +890,22 @@ def build_parser() -> argparse.ArgumentParser:
     fs.add_argument("--outro", help="audio file to use under the outro card")
     fs.add_argument("--regenerate", action="store_true", help="rebuild the generated default chords")
     fs.set_defaults(func=cmd_factory)
+    fs = fsub.add_parser("demo", help="the demo cities and each day's captured demo")
+    dsub = fs.add_subparsers(dest="demo_command", required=True)
+    ds = dsub.add_parser("setup", help="create the demo city (file store first, then the default setup)")
+    ds.add_argument("--store", choices=["file", "bd", "both"], default="file")
+    ds.set_defaults(func=cmd_factory, factory_command="demo")
+    ds = dsub.add_parser("capture", help="run a day's demo for real and save its output")
+    ds.add_argument("--date", default="today", help="today (default), tomorrow or YYYY-MM-DD")
+    ds.add_argument("--json", action="store_true")
+    ds.set_defaults(func=cmd_factory, factory_command="demo")
+    ds = dsub.add_parser("status", help="demo cities and today's/tomorrow's captures")
+    ds.add_argument("--json", action="store_true")
+    ds.set_defaults(func=cmd_factory, factory_command="demo")
+    ds = dsub.add_parser("clip", help="use your own screen recording for today's demo")
+    ds.add_argument("--file", required=True)
+    ds.add_argument("--date", default="today")
+    ds.set_defaults(func=cmd_factory, factory_command="demo")
     fs = fsub.add_parser("calendar-sync", help="bring the brief and not-published calendar events up to date")
     fs.add_argument("--clear", action="store_true")
     fs.set_defaults(func=cmd_factory)

@@ -1,6 +1,6 @@
 ---
 name: fde-impromptu-coach
-description: Daily speaking coach for the Forward Deployed Engineer (FDE) role on macOS, with three tracks: a 05:30 impromptu practice (minimalist blue Calibri PowerPoint deck, 5 never-repeated, progressively harder questions, 60 s each, QuickTime camera recording, private YouTube upload), a pen-method pronunciation practice, and a daily Software Factory / Gas City explainer video (day-before brief, recording-day kit with slides and outline, up to 3 voice takes, a video under 3 minutes for the public channel). Mac reminders and Google Calendar alerts protect each streak. Use this skill whenever the user mentions impromptu, FDE, communication or pronunciation practice, today's questions or deck, the Software Factory or Gas City video series, tomorrow's topic, a brief, takes, publishing a video, the learning path, streaks, reminders, calendar alerts, practice video uploads, or installing, configuring or troubleshooting this routine, even if they do not name the skill.
+description: Daily speaking coach for the Forward Deployed Engineer (FDE) role on macOS, with three tracks: a 05:30 impromptu practice (minimalist blue Calibri PowerPoint deck, 5 never-repeated, progressively harder questions, 60 s each, QuickTime camera recording, private YouTube upload), a pen-method pronunciation practice, and a daily Software Factory / Gas City explainer with a real demo in every episode (day-before brief, recording-day kit, up to 3 voice takes, a faceless video under 3 minutes for the public channel). Mac reminders and Google Calendar alerts protect each streak. Use this skill whenever the user mentions impromptu, FDE, communication or pronunciation practice, today's questions or deck, the Software Factory or Gas City video series, tomorrow's topic, a brief, takes, publishing a video, the learning path, streaks, reminders, calendar alerts, practice video uploads, or installing, configuring or troubleshooting this routine, even if they do not name the skill.
 compatibility: macOS 12+ with Microsoft PowerPoint, QuickTime Player, Python 3.9+ and Claude Code. ffmpeg for the pronunciation and Software Factory videos. YouTube upload needs a Google Cloud OAuth desktop client.
 ---
 
@@ -34,10 +34,11 @@ installed yet: see **Install** below.
    unless asked.
 5. Today's questions can be replaced only **before** today is recorded.
 6. **Software Factory: one video, one concept, one takeaway, under 3 minutes,
-   at most 3 takes.** Help the user explain, don't script them: give keywords
-   and plain-language definitions, not paragraphs to read. Never process their
-   voice (no noise reduction or loudness filters); a past audio clean-up hurt
-   their recordings.
+   at most 3 takes, a real demo every time, never the user's face.** Help the
+   user explain, don't script them: give keywords and plain-language
+   definitions, not paragraphs to read. Never process their voice (no noise
+   reduction or loudness filters); a past audio clean-up hurt their recordings.
+   Never publish a preview demo: capture it, or use their own clip.
 
 ## What the user says → what to run
 
@@ -62,6 +63,9 @@ installed yet: see **Install** below.
 | "What's tomorrow's video?", "send me tomorrow's brief" | `fde-coach factory brief` (prints it; `--open` opens the styled page). It also arrives by itself at `factory.brief_time` (19:00) and as a Google Calendar event |
 | "Prepare today's video", "build my slides / outline" | `fde-coach factory prep --open` (slides, prep sheet, outline, checks to verify; built by itself at `factory.prep_time`) |
 | "Record the video", "start take 1 / next take" | `fde-coach factory take --detach` (voice + auto-advancing slides, ~3 min; Take 1 Discovery, Take 2 Improve, Take 3 Publish; never more than 3) |
+| "Set up the demos", "install Gas City for the videos" | install Gas City (`brew install gascity`) and Claude Code (`curl -fsSL https://claude.ai/install.sh \| bash`, then `claude` once to log in); then `fde-coach factory demo setup --store file` (Days 1–7) and `--store bd` (Day 8 on) |
+| "Run / check today's demo" | `fde-coach factory demo capture` (`--date tomorrow`), `fde-coach factory demo status` |
+| "Use my screen recording for the demo" | `fde-coach factory demo clip --file PATH` |
 | "Publish today's video", "use take 2" | `fde-coach factory publish --take N` (assembles final.mp4, thumbnail, title/description/chapters; opens YouTube Studio) |
 | "It's live: <link>" | `fde-coach factory published --url LINK` |
 | "Show the learning path", "where am I in the series?" | `fde-coach factory plan` / `fde-coach factory status` |
@@ -132,14 +136,24 @@ a day that isn't published carries its topic over.
 - **Day before, 19:00:** the brief (topic, WHAT, WHY, HOW, repository references,
   existing diagrams, artifact or demo, 3-minute outline) opens on the Mac, and a
   Google Calendar event with the same brief alerts the phone and inbox.
+- **Every video teaches Greg Tang style:** see it (a real demo), group it (one
+  picture of the pattern), name it (the takeaway). Format, 2:50: intro 4 s,
+  what & why 25 s, demo 100 s, picture 22 s, takeaway 12 s, outro 7 s.
+- **Demos are real and faceless.** Each day's commands run in a demo city
+  (`~/rajcwork-demo`: a file-store city for Days 1–7, the default bd + Dolt
+  city from Day 8) with the rig `hello-factory`. `factory demo capture` saves
+  the real output; the video shows it as an animated terminal (slow agent work
+  becomes a time-lapse card). The capture runs with the evening brief, and in
+  the morning if it is missing. Publishing refuses a preview demo.
 - **Recording day, 07:00:** the kit is built and its prep sheet opens: speaking
-  outline (keywords), slides, the HOW diagram, demo, points to verify, final flow.
-- **Takes:** `factory take` records voice only while the slides run (5 s intro,
-  WHAT 35 s, WHY 35 s, HOW 75 s, Takeaway 15 s). After each take a dialog offers
-  the next take, listening back, or publishing. Three takes maximum.
-- **Publish:** the final video (intro card with music, the four sections, outro
-  card with soft music; 2:53) plus thumbnail and description with chapters and
-  references. Default `studio` mode: the user uploads in YouTube Studio and
+  outline (keywords), slides, the demo and its capture status, the picture,
+  points to verify, final flow.
+- **Takes:** `factory take` records voice only while the slides run. After each
+  take a dialog offers the next take, listening back, or publishing. Three takes
+  maximum.
+- **Publish:** the final video (intro card with music, hook, demo, picture,
+  takeaway, outro card with soft music) plus thumbnail and description with
+  chapters and references. Default `studio` mode: the user uploads in YouTube Studio and
   pastes the link (`factory published --url`). API uploads from unaudited
   Google Cloud projects are locked private, so `api` mode is only for audited
   projects.
@@ -184,5 +198,5 @@ YouTube setup and an optional `pmset` wake schedule.
 - `references/factory_curriculum.md` — how to write more days of the learning path
 - `references/factory_learning_path.md` — the 35-day path (generated)
 - `assets/factory_curriculum.json`, `assets/factory_diagrams/` — the path and the Gas City diagrams (MIT)
-- `scripts/fdecoach/factory*.py` — `factory` (curriculum, planning, briefs), `factory_deck` (slides, take deck, thumbnail), `factory_session` (kit, takes, video, publish, reminders, calendar)
+- `scripts/fdecoach/factory*.py` — `factory` (curriculum, planning, briefs), `factory_demo` (demo cities, capture), `factory_deck` (slides, terminal animation, take deck, thumbnail), `factory_session` (kit, takes, video, publish, reminders, calendar)
 - `references/plan.md` — design plan, risks found in validation, and fixes

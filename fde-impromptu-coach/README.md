@@ -238,8 +238,34 @@ The audio is still kept and you are told how to fix it
 One short technical video a day for your public channel (**rajcwork**), and a
 structured way to learn Software Factory concepts through
 [Gas City](https://github.com/gastownhall/gascity). One video, one concept, one
-takeaway, 2:53 long. The 35-day learning path is in
+takeaway, 2:50 long, **a real demo in every episode, and never your face**. The
+35-day learning path is in
 [`references/factory_learning_path.md`](references/factory_learning_path.md).
+
+Each video follows Greg Tang's order, from concrete to abstract:
+
+| Section | Time | On screen |
+|---|---|---|
+| Intro | 0:04 | Title card, simple music |
+| What & why | 0:25 | The concept, one sentence each |
+| **See it** | 1:40 | The demo: real commands typing out, real output, the line that matters highlighted, slow agent work shown as "2 min later" |
+| **Group it** | 0:22 | One picture that groups what you just saw into the concept |
+| **Name it** | 0:12 | The takeaway |
+| Outro | 0:07 | Tomorrow's topic, soft music |
+
+**Set up the demos once (before 9 October):**
+
+```bash
+brew install gascity                              # gc, tmux, bd, Dolt and friends
+curl -fsSL https://claude.ai/install.sh | bash    # Claude Code; then run `claude` once to log in
+fde-coach factory demo setup --store file         # Week 1 demo city (file-based beads, no Dolt)
+fde-coach factory demo capture --date 2026-10-10  # try Day 1's demo now
+```
+
+Before Day 8 (17 October) add the default setup that the rest of the series
+uses: `fde-coach factory demo setup --store bd`. The demo cities live in
+`~/rajcwork-demo` with one project, `hello-factory`, that grows across the
+series. Demos that use an agent spend Claude Code usage.
 
 | When | What you get |
 |---|---|
@@ -247,14 +273,16 @@ takeaway, 2:53 long. The 35-day learning path is in
 | **Recording day, 07:00** | Today's kit: minimal blue slides, a prep sheet with a keyword outline, the diagram, the demo, the technical points to verify, and the final 3-minute flow |
 | **When you're ready** | Double-click **`~/FDE-Impromptu/Start Video.command`** (or `fde-coach factory take`, or tell Claude Code "record today's video") |
 
-Each take records **your voice only** while the slides run by themselves:
-5 s intro, WHAT 35 s, WHY 35 s, HOW 75 s, Takeaway 15 s. **Take 1 — Discovery**
+The demo runs for real the evening before (with the brief) and its output
+becomes the animated terminal; if a step fails you get a notification with the
+error, with time to fix it. Each take records **your voice only** while the
+slides, including one slide per demo step, run by themselves. **Take 1 — Discovery**
 (just explain it), **Take 2 — Improve** (fix unclear bits, cut words, check
 timing and accuracy), **Take 3 — Publish** (clean and conversational). After any
 take you can publish it; after Take 3 the tool stops offering more.
 
 Publishing builds `final.mp4` from the same slides: a branded intro card with
-simple music, your four sections, and an outro card with soft music and
+simple music, the hook, the demo, the picture and the takeaway, and an outro card with soft music and
 tomorrow's topic. **Your voice is not processed** (no noise reduction, no
 loudness filter): it is only lined up with the slides. You also get
 `thumbnail.png` and `youtube.txt` (title, description with chapters and Gas City
@@ -267,6 +295,8 @@ upload, set **Public**, then paste the link into the dialog (or later:
 | See tomorrow's brief now | `fde-coach factory brief --open` |
 | Prepare today's slides now | `fde-coach factory prep --open` (`--date tomorrow` to preview) |
 | Record the next take | `fde-coach factory take` (max 3) |
+| Run or check the demo | `fde-coach factory demo capture` · `fde-coach factory demo status` |
+| Use your own screen recording for the demo | `fde-coach factory demo clip --file ~/Movies/demo.mov` |
 | Publish a specific take | `fde-coach factory publish --take 2` |
 | See the path and your progress | `fde-coach factory plan`, `fde-coach factory status` |
 | Reword a slide or the takeaway | Ask Claude Code ("make today's takeaway simpler"); it writes an override and rebuilds the kit |

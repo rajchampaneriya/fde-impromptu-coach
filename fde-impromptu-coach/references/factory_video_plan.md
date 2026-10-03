@@ -25,28 +25,57 @@ three minutes. Loop: Understand → Explain → Demonstrate → Publish → Repe
 Everything runs from the existing 15-minute reminder agent (`remind`), so a
 sleeping Mac catches up on wake. No new launchd agent.
 
-## Video format (2:53 by default)
+## Video format (2:50 by default): see it, group it, name it
+
+Faceless, demo-first, in the order Greg Tang teaches maths: show something
+concrete, group it into a picture, then name the rule.
 
 | Section | Seconds | On screen | Voice |
 |---|---|---|---|
-| Intro | 5 | Brand card: channel, series, day, title, module; simple music | silent |
-| WHAT | 35 | Concept, one-sentence definition, three keyword cards | explain |
-| WHY | 35 | The problem in one sentence, three keyword cards | explain |
-| HOW | 75 | One visual: a Gas City diagram, a flow, a comparison, a hub, layers, or code | explain, point at the visual |
-| Takeaway | 15 | The takeaway sentence | say it |
-| Outro | 8 | "Thanks for watching", tomorrow's topic, channel; soft music | silent |
+| Intro | 4 | Brand card: channel, series, day, title, module; simple music | silent |
+| What & why | 25 | The concept, its one-sentence definition, why it matters | set it up |
+| **See it** | 100 | The demo: real commands typing out in a terminal, real output, the key line highlighted, slow agent work as "2 min later" cards | narrate |
+| **Group it** | 22 | One picture of the pattern: a Gas City diagram, a flow, a comparison, a hub, layers or code | map the demo onto it |
+| **Name it** | 12 | The takeaway sentence | say it |
+| Outro | 7 | "Thanks for watching", tomorrow's topic, channel; soft music | silent |
 
 Visual system: white, navy text, one blue accent, Calibri (from Microsoft Office
 when installed; Carlito, Arial or DejaVu otherwise), letter-spaced section
-labels, a WHAT · WHY · HOW · TAKEAWAY tracker on every content slide. One idea
-per slide and a picture over words: slides carry keywords, never paragraphs to
-read aloud.
+labels, a WHAT & WHY · SEE IT · GROUP IT · TAKEAWAY tracker on every content
+slide, a navy terminal panel for demos. Slides carry keywords, never
+paragraphs to read aloud.
+
+## Demos: real commands, no screen recording
+
+- **Two demo cities** under `factory.demo_root` (`~/rajcwork-demo`), each with
+  the rig `hello-factory` (a small git repo that grows across the series):
+  `file/` uses the file-based bead store (Days 1–7: no Dolt, no `bd`);
+  `default/` uses the default setup, bd + Dolt (Day 8 on, when `bd` commands
+  start). `fde-coach factory demo setup --store file|bd` creates them.
+- **Each day's demo** is 2–7 visible steps in the curriculum: `run` (a command;
+  values such as bead IDs can be saved from its output and reused as
+  `@{name}`), `wait_for` (poll until text appears; shown as a time-lapse card),
+  hidden `write` steps (files the demo needs), and optional teardown.
+- **Capture** (`fde-coach factory demo capture`) runs the steps for real and
+  stores the cleaned output (no colour codes, paths shortened, long output
+  trimmed). It runs in the background with the evening brief, and again in the
+  morning if it is missing; a failure notifies you with the failing command
+  the evening before, with time to fix it.
+- **Rendering:** each command types out, its real output appears, the
+  highlighted line is marked, and time-lapses show the real elapsed time. The
+  100 seconds are split across steps by how much there is to read. The take
+  deck has one slide per demo step with the same timing, so your narration
+  lines up with the video.
+- **Guards:** until a capture succeeds the slides say PREVIEW and publishing
+  refuses. `fde-coach factory demo clip --file PATH` uses your own screen
+  recording for the demo section instead (scaled, padded, trimmed to 100 s).
+- Agent demos spend Claude Code usage; about half the days use an agent.
 
 ## Recording: voice over slides, three takes
 
-- **Voice only, over the slides.** The viewer sees the diagrams; the speaker
-  sees the same frames as a timed deck. The video is assembled from the exact
-  frames shown during the take, so nothing has to be screen-recorded.
+- **Voice only, over the slides; the face is never recorded.** The viewer sees
+  the demo and the picture; the speaker sees the same frames as a timed deck.
+  The video is assembled from the exact frames shown during the take.
 - Audio is captured straight from the AVFoundation input with ffmpeg (as in the
   pronunciation practice), with QuickTime audio recording as the fallback.
   Device: `factory.audio_device`, else `pronunciation.audio_device`.
@@ -80,8 +109,8 @@ suite checks that the voice level in the final video matches the take within
 | `studio` (default) | final.mp4, thumbnail.png and youtube.txt (title, description with chapters and references, tags) in one folder; the description is copied to the clipboard; the folder and YouTube Studio open; a dialog asks for the link | Always works for a public channel |
 | `api` | Uploads with `factory.privacy_status` (public) | Only for a Google Cloud project that passed YouTube's API audit: videos uploaded by unaudited projects are locked private |
 
-Chapters start at 0:00 and each lasts at least 10 s (YouTube's rule), so the
-5-second intro is folded into the WHAT chapter.
+Chapters start at 0:00 and each lasts at least 10 s (YouTube's rule): what and
+why (with the intro folded in), demo, picture, takeaway.
 
 ## Learning path
 

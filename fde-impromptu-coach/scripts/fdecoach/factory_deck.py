@@ -25,7 +25,8 @@ NAVY, BLUE, SOFT, TINT = "#0B2545", "#1F5FBF", "#DCE7F7", "#F1F6FD"
 GRAY, GRAY_L, NEUTRAL, WHITE = "#5B6B7F", "#8A98A9", "#F4F6F9", "#FFFFFF"
 CODE_FG, CODE_DIM, CODE_PROMPT = "#E6EEF9", "#9FB3CF", "#8FBCFF"
 CONTENT_BOTTOM = 900  # the take deck's progress bar sits at ~924 px
-TRACKER = (("what", "WHAT"), ("why", "WHY"), ("how", "HOW"), ("end", "TAKEAWAY"))
+TRACKER = (("hook", "WHAT & WHY"), ("demo", "SEE IT"), ("picture", "GROUP IT"), ("end", "TAKEAWAY"))
+TERM_BG, TERM_BAR, TERM_OUT, TERM_HI, AMBER = "#0B2545", "#13325C", "#C9D6EA", "#1E4E8C", "#F2B84B"
 
 _OFFICE_FONT_DIRS = [
     "/Applications/Microsoft PowerPoint.app/Contents/Resources/DFonts",
@@ -210,19 +211,6 @@ def _footer(draw, d: Dict[str, Any], cfg: Dict[str, Any]) -> None:
     while _tw(draw, left, f) > W - 2 * M - ch_w - 60 and len(left) > 20:
         left = left[:-2].rstrip() + "…" if not left.endswith("…") else left[:-3].rstrip() + "…"
     draw.text((M, 1002), left, font=f, fill=GRAY_L)
-
-
-def _cards(draw, points: Sequence[str], y0: int, y1: int) -> None:
-    n = len(points)
-    gap = 40
-    cw = (W - 2 * M - gap * (n - 1)) / n
-    for i, text in enumerate(points):
-        x0 = M + i * (cw + gap)
-        rounded(draw, (x0, y0, x0 + cw, y1), TINT, SOFT, 3)
-        draw.text((x0 + 34, y0 + 26), str(i + 1), font=font(36, "bold"), fill=BLUE)
-        f, lines, lh = fit(draw, text, cw - 68, (y1 - y0) - 100, (46, 42, 38, 34, 30, 28), "bold")
-        th = len(lines) * lh
-        draw_lines(draw, x0 + 34, y0 + 84 + ((y1 - y0 - 100) - th) / 2, lines, f, lh, NAVY)
 
 
 # --------------------------------------------------------------------------- visuals
@@ -418,35 +406,29 @@ def draw_visual(img, draw, v: Dict[str, Any], box) -> None:
 
 # --------------------------------------------------------------------------- frames
 
-def frame_what(d: Dict[str, Any], cfg: Dict[str, Any]):
+def frame_hook(d: Dict[str, Any], cfg: Dict[str, Any]):
+    """What and why in one slide: the concept, one-sentence definition, why it matters."""
     img, draw = _canvas()
-    _label(draw, "What")
-    _tracker(draw, "what")
-    f, lines, lh = fit(draw, d["concept"], W - 2 * M, 250, (124, 116, 108, 100, 92, 84, 76, 68), "bold",
+    _label(draw, "What & why")
+    _tracker(draw, "hook")
+    f, lines, lh = fit(draw, d["concept"], W - 2 * M, 230, (120, 112, 104, 96, 88, 80, 72, 64), "bold",
                        spacing=1.08, max_lines=2)
-    y = draw_lines(draw, M, 165, lines, f, lh, NAVY) + 28
-    fs, sl, slh = fit(draw, d["what"], W - 2 * M, 600 - y, (54, 50, 46, 42, 38, 34), spacing=1.3)
-    draw_lines(draw, M, y, sl, fs, slh, GRAY)
-    _cards(draw, d["what_points"], 640, CONTENT_BOTTOM - 20)
+    y = draw_lines(draw, M, 160, lines, f, lh, NAVY) + 26
+    fs, sl, slh = fit(draw, d["what"], W - 2 * M, 560 - y, (52, 48, 44, 40, 36, 32), spacing=1.3)
+    draw_lines(draw, M, y, sl, fs, slh, NAVY)
+    rounded(draw, (M, 600, W - M, CONTENT_BOTTOM - 20), TINT, SOFT, 3)
+    draw.text((M + 44, 630), spaced("Why it matters"), font=font(30, "bold"), fill=BLUE)
+    fw, wl, wlh = fit(draw, d["why"], W - 2 * M - 88, 170, (46, 42, 40, 38, 36, 34, 30), spacing=1.25)
+    draw_lines(draw, M + 44, 690, wl, fw, wlh, NAVY)
     _footer(draw, d, cfg)
     return img
 
 
-def frame_why(d: Dict[str, Any], cfg: Dict[str, Any]):
+def frame_picture(d: Dict[str, Any], cfg: Dict[str, Any]):
+    """Group it: one picture that maps what the demo showed onto the concept."""
     img, draw = _canvas()
-    _label(draw, "Why")
-    _tracker(draw, "why")
-    f, lines, lh = fit(draw, d["why"], W - 2 * M, 430, (68, 64, 60, 56, 52, 48, 44, 40), spacing=1.25)
-    draw_lines(draw, M, 170, lines, f, lh, NAVY)
-    _cards(draw, d["why_points"], 640, CONTENT_BOTTOM - 20)
-    _footer(draw, d, cfg)
-    return img
-
-
-def frame_how(d: Dict[str, Any], cfg: Dict[str, Any]):
-    img, draw = _canvas()
-    _label(draw, "How")
-    _tracker(draw, "how")
+    _label(draw, "Group it")
+    _tracker(draw, "picture")
     v = d["visual"]
     draw_visual(img, draw, v, (M, 140, W - M, 828))
     caption = str(v.get("caption", ""))
@@ -523,7 +505,7 @@ def frame_countdown(d: Dict[str, Any], cfg: Dict[str, Any], take: int):
     y = draw_lines(draw, M, 260, lines, f, lh, NAVY) + 40
     draw.text((M, max(y, 620)), f"Day {d['day']} · {d['title']}", font=font(40, "bold"), fill=GRAY)
     secs = segments(cfg)["intro"]
-    draw.text((M, max(y, 620) + 70), f"Starting in {secs} seconds. Breathe. When the bar ends, start with WHAT.",
+    draw.text((M, max(y, 620) + 70), f"Starting in {secs} seconds. Breathe. When the bar ends: what it is, and why.",
               font=font(34), fill=GRAY_L)
     _footer(draw, d, cfg)
     return img
@@ -545,9 +527,8 @@ def render_frames(d: Dict[str, Any], cfg: Dict[str, Any], cur: Dict[str, Any],
     resolve_fonts(cfg)
     frames = {
         "intro": frame_intro_card(d, cfg, cur),
-        "what": frame_what(d, cfg),
-        "why": frame_why(d, cfg),
-        "how": frame_how(d, cfg),
+        "hook": frame_hook(d, cfg),
+        "picture": frame_picture(d, cfg),
         "end": frame_end(d, cfg),
         "outro": frame_outro_card(d, cfg, next_day),
         "closing": frame_closing(d, cfg),
@@ -590,24 +571,175 @@ def render_thumbnail(d: Dict[str, Any], cfg: Dict[str, Any], out_png: Path) -> P
     return out_png
 
 
+# --------------------------------------------------------------------------- demo (animated terminal)
+
+PROMPTS = {"rig": "hello-factory $", "city": "lab $", "scratch": "scratch $"}
+
+
+def demo_steps_for(d: Dict[str, Any], cap: Optional[Dict[str, Any]]) -> Tuple[List[Dict[str, Any]], bool]:
+    """Steps to show: the real capture when there is a good one, else a preview of the commands."""
+    if cap and cap.get("ok") and cap.get("topic") == d["id"] and cap.get("steps"):
+        return list(cap["steps"]), False
+    from .factory import demo_steps
+    shown = [st for st in d["demo"]["steps"] if "write" not in st and not st.get("hidden")]
+    steps = []
+    for (cmd, say), st in zip(demo_steps(d), shown):
+        steps.append({"cmd": cmd.split("   # time-lapse")[0], "say": say,
+                      "output": list(st.get("expect") or ["(the real output appears after: fde-coach factory demo capture)"]),
+                      "highlight": "", "timelapse": 60 if "wait_for" in st else 0, "cwd": st.get("cwd", "rig")})
+    return steps, True
+
+
+def allocate(steps: Sequence[Dict[str, Any]], total: float) -> List[float]:
+    """Split the demo time across steps: more output or a time-lapse gets more time; 6 s minimum."""
+    weights = [2 + min(len(st.get("output") or []), 14) / 3 + (1.5 if st.get("timelapse") else 0) for st in steps]
+    raw = [max(6.0, total * w / sum(weights)) for w in weights]
+    scale = total / sum(raw)
+    out = [round(x * scale, 1) for x in raw]
+    out[-1] = round(total - sum(out[:-1]), 1)
+    return out
+
+
+def _lapse(seconds: int) -> str:
+    m, s_ = divmod(max(1, int(seconds)), 60)
+    return f"» {m} min {s_} s later" if m else f"» {s_} s later"
+
+
+def frame_demo(d: Dict[str, Any], cfg: Dict[str, Any], lines: List[Tuple[str, str]], idx: int, n: int,
+               say: str, highlight: str, preview: bool):
+    """lines: [(kind, text)] with kind prompt | out | lapse; the newest lines are shown."""
+    img, draw = _canvas()
+    _label(draw, "See it")
+    _tracker(draw, "demo")
+    ft = font(46, "bold")
+    draw.text((M, 128), d["demo"]["title"], font=ft, fill=NAVY)
+    fs = font(26)
+    step = f"Step {idx} of {n}"
+    draw.text((W - M - _tw(draw, step, fs), 142), step, font=fs, fill=GRAY_L)
+    x0, y0, x1, y1 = M, 208, W - M, 840
+    rounded(draw, (x0, y0, x1, y1), TERM_BG, radius=18)
+    draw.rounded_rectangle((x0, y0, x1, y0 + 46), radius=18, fill=TERM_BAR)
+    draw.rectangle((x0, y0 + 30, x1, y0 + 46), fill=TERM_BAR)
+    for i, col in enumerate(("#E5604F", "#F2B84B", "#5CC26A")):
+        draw.ellipse((x0 + 22 + i * 30, y0 + 15, x0 + 38 + i * 30, y0 + 31), fill=col)
+    path = "~/hello-factory" if d["demo"].get("store") else "~"
+    store = "file store" if d["demo"].get("store") == "file" else "bd + Dolt"
+    fh = font(22)
+    head = f"{path}  ·  rajcwork demo city ({store})"
+    draw.text(((x0 + x1 - _tw(draw, head, fh)) / 2, y0 + 11), head, font=fh, fill=CODE_DIM)
+    if preview:
+        fp = font(22, "bold")
+        tag = "PREVIEW — not captured yet"
+        draw.text((x1 - 24 - _tw(draw, tag, fp), y0 + 11), tag, font=fp, fill=AMBER)
+    fm = font(26, "mono")
+    lh = 37
+    cw = max(1.0, _tw(draw, "0" * 10, fm) / 10)
+    cols = int((x1 - x0 - 64) / cw)
+    rows: List[Tuple[str, str]] = []
+    for kind, text in lines:
+        if kind == "lapse":
+            rows.append((kind, text))
+            continue
+        chunks = [text[i:i + cols] for i in range(0, max(1, len(text)), cols)] or [""]
+        rows += [(kind if j == 0 else ("out" if kind == "out" else "cont"), c) for j, c in enumerate(chunks)]
+    fit_rows = int((y1 - y0 - 80) / lh)
+    rows = rows[-fit_rows:]
+    y = y0 + 64
+    hi = highlight.lower().strip()
+    for kind, text in rows:
+        if kind == "lapse":
+            fl = font(28, "bold")
+            w = _tw(draw, text, fl) + 48
+            cx = (x0 + x1) / 2
+            rounded(draw, (cx - w / 2, y - 2, cx + w / 2, y + lh - 4), BLUE, radius=16)
+            draw.text((cx - w / 2 + 24, y + 2), text, font=fl, fill=WHITE)
+        elif kind in ("prompt",):
+            prompt, _, cmd = text.partition("\u0000")
+            draw.text((x0 + 32, y), prompt, font=fm, fill=CODE_PROMPT)
+            draw.text((x0 + 32 + _tw(draw, prompt + " ", fm), y), cmd, font=fm, fill=WHITE)
+        else:
+            if hi and hi in text.lower():
+                draw.rectangle((x0 + 20, y - 3, x1 - 20, y + lh - 5), fill=TERM_HI)
+                draw.text((x0 + 32, y), text, font=fm, fill=WHITE)
+            else:
+                draw.text((x0 + 32, y), text, font=fm, fill=CODE_FG if kind == "cont" else TERM_OUT)
+        y += lh
+    if say:
+        fc, cl, clh = fit(draw, say, W - 2 * M, 50, (32, 30, 28, 26), max_lines=1)
+        draw_lines(draw, M, 856, cl, fc, clh, GRAY, "center", W - 2 * M)
+    _footer(draw, d, cfg)
+    return img
+
+
+def render_demo(d: Dict[str, Any], cfg: Dict[str, Any], cap: Optional[Dict[str, Any]],
+                out_dir: Path) -> Dict[str, Any]:
+    """Animated terminal for the demo section. Returns {timeline: [(png, s)], slides: [(png, s, notes)],
+    captured: bool}. Commands type out, real output appears, slow agent work becomes a time-lapse card."""
+    out_dir.mkdir(parents=True, exist_ok=True)
+    for old in out_dir.glob("*.png"):
+        old.unlink()
+    steps, preview = demo_steps_for(d, cap)
+    secs = allocate(steps, float(segments(cfg)["demo"]))
+    history: List[Tuple[str, str]] = []
+    timeline: List[Tuple[Path, float]] = []
+    slides: List[Tuple[Path, float, str]] = []
+    k = 0
+
+    def save(im, dur: float) -> Path:
+        nonlocal k
+        k += 1
+        pth = out_dir / f"demo_{k:03d}.png"
+        im.save(pth, "PNG")
+        timeline.append((pth, round(dur, 2)))
+        return pth
+
+    n = len(steps)
+    for i, (st, t) in enumerate(zip(steps, secs), 1):
+        prompt = PROMPTS.get(st.get("cwd", "rig"), "$")
+        cmd = st["cmd"]
+        n_type = min(6, max(2, len(cmd) // 14))
+        typing = 0.22
+        for j in range(1, n_type + 1):
+            part = cmd[: int(len(cmd) * j / n_type)]
+            cursor = "█" if j < n_type else ""
+            save(frame_demo(d, cfg, history + [("prompt", f"{prompt}\u0000{part}{cursor}")], i, n, st.get("say", ""),
+                            "", preview), typing)
+        history.append(("prompt", f"{prompt}\u0000{cmd}"))
+        used = n_type * typing
+        if st.get("timelapse"):
+            save(frame_demo(d, cfg, history + [("lapse", _lapse(st["timelapse"]))], i, n, st.get("say", ""), "",
+                            preview), 1.6)
+            history.append(("lapse", _lapse(st["timelapse"])))
+            used += 1.6
+        history += [("out", ln) for ln in (st.get("output") or [])]
+        final = frame_demo(d, cfg, history, i, n, st.get("say", ""), st.get("highlight", ""), preview)
+        pth = save(final, max(0.5, t - used))
+        notes = f"Step {i} of {n}: {cmd}\n\nPoint out: {st.get('say', '')}"
+        if st.get("highlight"):
+            notes += f"\nLook at: {st['highlight']}"
+        slides.append((pth, t, notes))
+    return {"timeline": timeline, "slides": slides, "captured": not preview}
+
+
 # --------------------------------------------------------------------------- take deck (.pptx)
 
 def _speaker_notes(d: Dict[str, Any], section: str) -> str:
-    if section == "what":
-        lines = [f"Open with: Today: {d['concept'].lower()}.", d["what"], ""] + [f"- {p}" for p in d["what_points"]]
-        lines += [""] + [f"Explain '{j['term']}' right away: {j['plain']}" for j in d["jargon"]]
-    elif section == "why":
-        lines = [d["why"], ""] + [f"- {p}" for p in d["why_points"]] + ["", f"Analogy: {d['analogy']}"]
-    elif section == "how":
-        lines = [d["how"], ""] + [f"- {p}" for p in d["how_points"]]
+    if section == "hook":
+        lines = [f"Open with: Today: {d['concept'].lower()}.", d["what"], "", f"Why: {d['why']}", ""]
+        lines += [f"Explain '{j['term']}' right away: {j['plain']}" for j in d["jargon"]]
+        lines += ["", f"Then: let's see it. ({d['demo']['title']})"]
+    elif section == "picture":
+        lines = ["Group what they just saw:", d["how"], ""] + [f"- {p}" for p in d["how_points"]]
+        lines += ["", f"Analogy: {d['analogy']}"]
     else:
         lines = [f"Close with: {d['takeaway']}", "", "Then stop talking; the outro music plays in the video."]
     return "\n".join(lines)
 
 
 def build_take_deck(d: Dict[str, Any], cfg: Dict[str, Any], frames: Dict[str, Path], countdown: Path,
-                    out_dir: Path, stem: str) -> Tuple[Path, Path]:
-    """Countdown, WHAT, WHY, HOW, Takeaway (auto-advancing with a progress bar), then a closing slide."""
+                    demo_slides: Sequence[Tuple[Any, float, str]], out_dir: Path, stem: str) -> Tuple[Path, Path]:
+    """Countdown, hook, one slide per demo step, picture, takeaway (all auto-advancing with a progress
+    bar), then a closing slide."""
     from pptx import Presentation
     from pptx.util import Emu, Inches
 
@@ -619,13 +751,16 @@ def build_take_deck(d: Dict[str, Any], cfg: Dict[str, Any], frames: Dict[str, Pa
     prs = Presentation()
     prs.slide_width = Emu(int(Inches(SLIDE_W)))
     prs.slide_height = Emu(int(Inches(SLIDE_H)))
-    plan = [("intro", countdown, "Take is recording. Settle; start with WHAT when the slide changes.")]
-    plan += [(s, frames[s], _speaker_notes(d, s)) for s in ("what", "why", "how", "end")]
-    for section, png, notes in plan:
+    plan = [(countdown, seg["intro"], "Take is recording. Settle; start when the slide changes.")]
+    plan.append((frames["hook"], seg["hook"], _speaker_notes(d, "hook")))
+    plan += [(png, secs, notes) for png, secs, notes in demo_slides]
+    plan.append((frames["picture"], seg["picture"], _speaker_notes(d, "picture")))
+    plan.append((frames["end"], seg["end"], _speaker_notes(d, "end")))
+    for png, secs, notes in plan:
         s = prs.slides.add_slide(prs.slide_layouts[6])
         s.shapes.add_picture(str(png), 0, 0, width=prs.slide_width, height=prs.slide_height)
-        effects = _timer(s, seg[section], ticks=False)
-        set_transition(s, seg[section] * 1000)
+        effects = _timer(s, secs, ticks=False)
+        set_transition(s, int(round(secs * 1000)))
         set_auto_animations(s, effects)
         _notes(s, notes)
     s = prs.slides.add_slide(prs.slide_layouts[6])
@@ -647,4 +782,4 @@ def build_take_deck(d: Dict[str, Any], cfg: Dict[str, Any], frames: Dict[str, Pa
 
 def take_seconds(cfg: Dict[str, Any]) -> int:
     seg = segments(cfg)
-    return sum(seg[s] for s in ("intro", "what", "why", "how", "end"))
+    return sum(seg[s] for s in ("intro", "hook", "demo", "picture", "end"))

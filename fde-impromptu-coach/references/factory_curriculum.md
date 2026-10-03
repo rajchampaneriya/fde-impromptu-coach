@@ -19,11 +19,14 @@ user asks to plan the next module, add a day, or rework a topic. The test suite
 4. **Plain words.** Write for a software engineer who has never used Gas City.
    Short sentences. Any jargon goes in `jargon` with a plain definition, so the
    speaker explains it the moment they say it.
-5. **Picture over words.** The HOW slide is one visual. Prefer an existing
+5. **Picture over words.** The Group-it picture is one visual. Prefer an existing
    diagram from `docs/diagrams/excalidraw-rendered/`; otherwise choose the
    simplest generated visual that shows the mechanism.
 6. **Keywords, not a script.** Slide points are cues for an impromptu
    explanation, not sentences to read.
+7. **A real demo every day.** Show it before explaining it (see it, group it,
+   name it). Every command must exist in `docs/reference/cli.md`. Week 1 runs
+   in the file-store city, so use `gc` commands only there (no `bd`).
 
 ## Fields
 
@@ -44,7 +47,7 @@ user asks to plan the next module, add a day, or rework a topic. The test suite
 | `references` | repository-relative paths, at least one |
 | `diagrams` | names of PNGs in `assets/factory_diagrams/` worth looking at |
 | `artifact` | what to prepare: a sketch, a file, a transcript |
-| `demo` | optional commands (shown as code) |
+| `demo` | see below: title, store, steps (required) |
 | `verify` | claims to check against the references before Take 1 |
 | `builds_on` | ids of earlier days |
 
@@ -59,7 +62,45 @@ user asks to plan the next module, add a day, or rework a topic. The test suite
 | `layers` | 2–5 stacked bands | `layers`: `[{label, sub}]` |
 | `code` | a terminal or config panel | `lang`, `lines` (≤ 12 lines, ≤ 72 chars) |
 
-Every visual takes an optional `caption`. New repository diagrams: render the
+Every visual takes an optional `caption`. The visual is the **Group it**
+picture shown right after the demo.
+
+## Demo
+
+```json
+"demo": {
+  "title": "Kill the session, keep the work",
+  "store": "file",
+  "agent": true,
+  "setup": [ hidden steps run first ],
+  "steps": [
+    {"run": "gc sling hello-factory/claude \"...\"", "save": {"bead": "Created ([a-z0-9]+-[a-z0-9]+)"},
+     "say": "Give the city some work."},
+    {"wait_for": "gc beads show @{bead}", "until": "closed", "timeout": 900,
+     "say": "A fresh session resumes it.", "highlight": "closed"},
+    {"write": "formulas/x.toml", "content": "...", "cwd": "city"}
+  ],
+  "teardown": [ shell commands run after, never shown ]
+}
+```
+
+| Key | Rule |
+|---|---|
+| `title` | ≤ 60 characters, shown above the terminal and as a chapter |
+| `store` | `file` (Days 1–7) or `bd` |
+| `agent` | true when a step needs Claude Code (cost, time-lapse) |
+| `run` | a shell command; exits non-zero → the capture fails, unless `may_fail` |
+| `wait_for` + `until` | poll every `every` s (10) until the text appears, up to `timeout` (600); shown as a time-lapse |
+| `write` + `content` | create a file (hidden); `mode: "x"` makes it executable |
+| `save` | `{name: regex}`: the first group becomes `@{name}` for later steps |
+| `cwd` | `rig` (default, `hello-factory`), `city`, or `scratch` (a fresh temp dir) |
+| `say` | ≤ 90 characters: the cue under the terminal and in the speaker notes |
+| `highlight` | text whose output lines get marked |
+| `hidden` | run it, never show it |
+| `expect` | optional sample output for the preview before a capture |
+
+Built-in values: `@{city}`, `@{rig}`, `@{scratch}`, `@{rig_name}`. 2–7 visible
+steps; the 100 seconds are shared between them. New repository diagrams: render the
 SVG to a white PNG at twice its size into `assets/factory_diagrams/` and keep
 the MIT notice (`NOTICE.md`).
 
@@ -72,7 +113,8 @@ cd ~/.claude/skills/fde-impromptu-coach
 bash install.sh   # the schedule runs from the copy in ~/FDE-Impromptu/src
 ```
 
-Preview a day before it airs: `fde-coach factory prep --date YYYY-MM-DD --open`.
+Preview a day before it airs: `fde-coach factory prep --date YYYY-MM-DD --open`,
+and run its demo: `fde-coach factory demo capture --date YYYY-MM-DD`.
 
 ## Ideas for the next modules
 

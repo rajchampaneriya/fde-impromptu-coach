@@ -20,9 +20,10 @@ from typing import Any, Dict, List, Optional, Tuple
 
 from . import audio, gcal, macos, youtube
 from . import factory_deck as FD
+from . import factory_demo as DEMO
 from .config import APP_NAME, Paths, parse_hhmm
-from .factory import (TAKE_FOCUS, brief_doc, chapters, day_for, learning_path_doc, load_curriculum,
-                      prep_doc, repo_url, segments, start_date, talk_seconds, topic, total_days,
+from .factory import (TAKE_FOCUS, brief_doc, chapters, day_for, demo_steps, demo_where, learning_path_doc,
+                      load_curriculum, prep_doc, repo_url, segments, start_date, talk_seconds, topic, total_days,
                       video_seconds, visual_summary, outline_rows, ts)
 from .state import History, LockBusy, file_lock, lock_is_held, now, streaks, today
 
@@ -89,7 +90,9 @@ def brief_text(d: Dict[str, Any], date: dt.date, cfg: Dict[str, Any]) -> str:
     lines = [f"Day {d['day']} · {d['title']} ({date.strftime('%A %d %B %Y')})", "",
              f"Takeaway: {d['takeaway']}", "",
              f"WHAT: {d['what']}", f"WHY: {d['why']}", f"HOW: {d['how']}",
-             f"On screen: {visual_summary(d['visual'])}", "", f"Analogy: {d['analogy']}"]
+             f"Picture after the demo: {visual_summary(d['visual'])}", "",
+             f"DEMO: {d['demo']['title']} ({demo_where(d)})"] + [f"  $ {c}" for c, _ in demo_steps(d)] + [
+             "", f"Analogy: {d['analogy']}"]
     if d["jargon"]:
         lines += ["Explain right away: " + "; ".join(f"{j['term']} = {j['plain']}" for j in d["jargon"])]
     lines += ["", "References:"] + [f"- {repo_url(cfg, r)}" for r in d["references"]]
@@ -97,8 +100,6 @@ def brief_text(d: Dict[str, Any], date: dt.date, cfg: Dict[str, Any]) -> str:
         lines += ["Diagrams:"] + [f"- {repo_url(cfg, 'docs/diagrams/excalidraw-rendered/' + n + '.svg')}"
                                   for n in d["diagrams"]]
     lines += ["", f"Prepare: {d['artifact']}"]
-    if d["demo"]:
-        lines += ["Demo:"] + [f"  {c}" for c in d["demo"]]
     lines += ["", f"Outline ({ts(video_seconds(cfg))}):"]
     lines += [f"{r[0]} {r[1]} — {r[2].replace('**', '')}" for r in outline_rows(d, cfg)]
     return "\n".join(lines)
@@ -121,10 +122,16 @@ def build_kit(ctx, date: dt.date, d: Dict[str, Any]) -> Dict[str, Any]:
     folder = kit_dir(ctx.paths, date, d)
     frames = FD.render_frames(d, cfg, cur, topic(int(d["day"]) + 1, ctx.paths), folder / "frames")
     countdown = FD.render_countdown(d, cfg, 1, folder / "frames")
+    clip = (fhistory(ctx.paths).get(date) or {}).get("demo_clip")
+    demo = _demo_section(ctx, d, folder, clip)
     stem = f"{date.isoformat()}_SoftwareFactory_Day{int(d['day']):02d}"
-    pptx, ppsx = FD.build_take_deck(d, cfg, frames, countdown, folder, stem)
+    pptx, ppsx = FD.build_take_deck(d, cfg, frames, countdown, demo["slides"], folder, stem)
     kit: Dict[str, Any] = {"dir": str(folder), "deck": str(pptx), "show": str(ppsx),
-                           "frames": {k: str(v) for k, v in frames.items()}, "how_png": "frames/how.png"}
+                           "frames": {k: str(v) for k, v in frames.items()}, "how_png": "frames/picture.png",
+                           "demo": {"timeline": [[str(p), t] for p, t in demo["timeline"]],
+                                    "slides": [[str(p), t, n] for p, t, n in demo["slides"]],
+                                    "captured": demo["captured"], "clip": clip},
+                           "demo_status": demo["status"], "built_at": now().isoformat(timespec="seconds")}
     doc = prep_doc(d, date, cfg, kit, cur)
     (folder / "prep.md").write_text(doc.markdown(), encoding="utf-8")
     (folder / "prep.html").write_text(doc.html(), encoding="utf-8")
@@ -134,6 +141,36 @@ def build_kit(ctx, date: dt.date, d: Dict[str, Any]) -> Dict[str, Any]:
     kit.update(prep_md=str(folder / "prep.md"), prep_html=str(folder / "prep.html"))
     log.info("Software Factory kit for %s (Day %s): %s", date, d["day"], folder)
     return kit
+
+
+def _demo_section(ctx, d: Dict[str, Any], folder: Path, clip: Optional[str]) -> Dict[str, Any]:
+    """The demo part of the kit: your clip if you gave one, else the captured (or preview) terminal."""
+    secs = float(segments(ctx.cfg)["demo"])
+    if clip and Path(clip).exists():
+        still = folder / "frames" / "demo_clip.png"
+        exe = audio.ffmpeg_path()
+        if exe and not macos.dry_run():
+            subprocess.run([exe, "-y", "-ss", "1", "-i", clip, "-frames:v", "1", "-vf",
+                            "scale=1920:1080:force_original_aspect_ratio=decrease,pad=1920:1080:(ow-iw)/2:(oh-ih)/2:"
+                            "color=white", str(still)], capture_output=True, timeout=120)
+        if not still.exists():
+            FD.render_demo(d, ctx.cfg, None, folder / "frames" / "demo")
+            still = sorted((folder / "frames" / "demo").glob("*.png"))[-1]
+        note = f"Your clip plays here ({int(secs)} s). Narrate it: " + " → ".join(
+            say for _, say in demo_steps(d) if say)
+        return {"timeline": [], "slides": [(still, secs, note)], "captured": True,
+                "status": f"Using your clip: {clip}"}
+    cap = DEMO.load_capture(ctx.paths, d)
+    rendered = FD.render_demo(d, ctx.cfg, cap, folder / "frames" / "demo")
+    if rendered["captured"]:
+        sim = " (simulated)" if cap.get("simulated") else ""
+        status = f"Captured {cap.get('captured_at', '')}{sim}: {len(cap.get('steps', []))} steps, all passed."
+    elif cap and not cap.get("ok"):
+        status = f"Capture FAILED: {cap.get('error', 'unknown error')}. Fix it, then: fde-coach factory demo capture"
+    else:
+        status = "Not captured yet: the slides show a preview. Run: fde-coach factory demo capture"
+    rendered["status"] = status
+    return rendered
 
 
 def _kit_ok(s: Dict[str, Any]) -> bool:
@@ -211,7 +248,8 @@ def _record_take(ctx, s: Dict[str, Any], d: Dict[str, Any], n: int) -> Dict[str,
     frames = {k: Path(v) for k, v in kit["frames"].items()}
     countdown = FD.render_countdown(d, cfg, n, Path(kit["dir"]) / "frames")
     stem = f"{date.isoformat()}_SoftwareFactory_Day{int(d['day']):02d}_take{n}"
-    deck, show = FD.build_take_deck(d, cfg, frames, countdown, Path(kit["dir"]), stem)
+    slides = [(Path(p), float(t), notes) for p, t, notes in (kit.get("demo") or {}).get("slides", [])]
+    deck, show = FD.build_take_deck(d, cfg, frames, countdown, slides, Path(kit["dir"]), stem)
     total = FD.take_seconds(cfg)
     grace = int(cfg.get("recording", {}).get("stop_grace_seconds", 4))
     device = str(f.get("audio_device") or cfg.get("pronunciation", {}).get("audio_device", ""))
@@ -408,8 +446,8 @@ def audio_channels(path: Path) -> Optional[int]:
 
 
 def assemble_video(ctx, s: Dict[str, Any], d: Dict[str, Any], take: Dict[str, Any]) -> Optional[Path]:
-    """Intro card + WHAT/WHY/HOW/Takeaway frames + outro card, with the take's voice (unprocessed)
-    aligned to the slides and quiet music under the intro and outro."""
+    """Intro card, hook, the demo (animated terminal or your clip), picture, takeaway and outro card,
+    with the take's voice (unprocessed) aligned to the slides and quiet music under intro and outro."""
     cfg = ctx.cfg
     date = dt.date.fromisoformat(s["date"])
     out = media_dir(ctx, date, d) / "final.mp4"
@@ -426,17 +464,44 @@ def assemble_video(ctx, s: Dict[str, Any], d: Dict[str, Any], take: Dict[str, An
     frames = {k: Path(v) for k, v in s["kit"]["frames"].items()}
     seg = segments(cfg)
     talk, total = talk_seconds(cfg), video_seconds(cfg)
-    lst = Path(s["kit"]["dir"]) / "video_frames.txt"
-    with open(lst, "w", encoding="utf-8") as fh:
-        for name in ("intro", "what", "why", "how", "end", "outro"):
-            fh.write(f"file '{frames[name]}'\nduration {seg[name]:.3f}\n")
-        fh.write(f"file '{frames['outro']}'\n")
+    demo = s["kit"].get("demo") or {}
+    clip = demo.get("clip") if demo.get("clip") and Path(demo["clip"]).exists() else None
+
+    def concat_list(path: Path, items: List[Tuple[Path, float]]) -> Path:
+        with open(path, "w", encoding="utf-8") as fh:
+            for png, secs in items:
+                fh.write(f"file '{png}'\nduration {secs:.3f}\n")
+            fh.write(f"file '{items[-1][0]}'\n")
+        return path
+
+    before = [(frames["intro"], seg["intro"]), (frames["hook"], seg["hook"])]
+    after = [(frames["picture"], seg["picture"]), (frames["end"], seg["end"]), (frames["outro"], seg["outro"])]
+    kit_dir_ = Path(s["kit"]["dir"])
+    if clip:
+        video_inputs = ["-f", "concat", "-safe", "0", "-i", str(concat_list(kit_dir_ / "video_a.txt", before)),
+                        "-i", str(clip),
+                        "-f", "concat", "-safe", "0", "-i", str(concat_list(kit_dir_ / "video_b.txt", after))]
+        d_s = seg["demo"]
+        video_graph = [
+            "[0:v]fps=30,format=yuv420p,setsar=1[va]",
+            f"[1:v]scale=1920:1080:force_original_aspect_ratio=decrease,pad=1920:1080:(ow-iw)/2:(oh-ih)/2:"
+            f"color=white,fps=30,format=yuv420p,setsar=1,trim=duration={d_s},setpts=PTS-STARTPTS,"
+            f"tpad=stop_mode=clone:stop_duration={d_s},trim=duration={d_s}[vb]",
+            "[2:v]fps=30,format=yuv420p,setsar=1[vc]",
+            "[va][vb][vc]concat=n=3:v=1:a=0[v]"]
+        voice_idx = 3
+    else:
+        timeline = [(Path(p), float(t)) for p, t in demo.get("timeline", [])]
+        video_inputs = ["-f", "concat", "-safe", "0", "-i",
+                        str(concat_list(kit_dir_ / "video_frames.txt", before + timeline + after))]
+        video_graph = ["[0:v]fps=30,format=yuv420p[v]"]
+        voice_idx = 1
     vol = float(_f(cfg).get("music_volume", 0.5))
     off = max(0.0, float(take.get("offset") or 0.0))
     fmt = "aformat=sample_fmts=fltp:sample_rates=48000:channel_layouts=stereo"
     # A mono microphone goes to both channels at full level (ffmpeg's default upmix is 3 dB quieter).
     voice_fmt = "pan=stereo|c0=c0|c1=c0," + fmt if audio_channels(Path(take["audio"])) == 1 else fmt
-    inputs = ["-f", "concat", "-safe", "0", "-i", str(lst), "-i", str(take["audio"])]
+    inputs = video_inputs + ["-i", str(take["audio"])]
     intro_len, outro_len = seg["intro"] + 1.5, float(seg["outro"])
     for kind, length in (("intro", intro_len), ("outro", outro_len)):
         track = music_file(ctx, kind)
@@ -445,13 +510,13 @@ def assemble_video(ctx, s: Dict[str, Any], d: Dict[str, Any], take: Dict[str, An
         else:
             inputs += ["-f", "lavfi", "-t", f"{length:.3f}", "-i", "anullsrc=r=48000:cl=stereo"]
     talk_ms = int(talk * 1000)
-    graph = ";".join([
-        "[0:v]fps=30,format=yuv420p[v]",
-        f"[1:a]atrim=start={off:.3f},asetpts=PTS-STARTPTS,atrim=end={talk + 1:.3f},{voice_fmt},"
+    v, m1, m2 = voice_idx, voice_idx + 1, voice_idx + 2
+    graph = ";".join(video_graph + [
+        f"[{v}:a]atrim=start={off:.3f},asetpts=PTS-STARTPTS,atrim=end={talk + 1:.3f},{voice_fmt},"
         f"afade=t=out:st={talk:.3f}:d=1,apad=whole_dur={total:.3f}[voice]",
-        f"[2:a]atrim=end={intro_len:.3f},asetpts=PTS-STARTPTS,{fmt},afade=t=in:d=0.4,"
+        f"[{m1}:a]atrim=end={intro_len:.3f},asetpts=PTS-STARTPTS,{fmt},afade=t=in:d=0.4,"
         f"afade=t=out:st={intro_len - 1.5:.3f}:d=1.5,volume={vol}[m1]",
-        f"[3:a]atrim=end={outro_len:.3f},asetpts=PTS-STARTPTS,{fmt},afade=t=in:d=1.2,"
+        f"[{m2}:a]atrim=end={outro_len:.3f},asetpts=PTS-STARTPTS,{fmt},afade=t=in:d=1.2,"
         f"afade=t=out:st={max(0.0, outro_len - 3):.3f}:d=3,volume={vol},adelay={talk_ms}|{talk_ms}[m2]",
         "[voice][m1][m2]amix=inputs=3:duration=first:normalize=0[a]",
     ])
@@ -523,6 +588,11 @@ def publish(ctx, date: Optional[dt.date] = None, take: Optional[int] = None) -> 
     if chosen is None:
         raise RuntimeError(f"Take {take} doesn't exist (have: {', '.join(str(t['n']) for t in takes)}).")
     d = topic(int(s["day"]), ctx.paths)
+    demo = (s.get("kit") or {}).get("demo") or {}
+    if not demo.get("captured"):
+        raise RuntimeError("Today's demo hasn't been captured, so the video would show a preview. Run "
+                           "`fde-coach factory demo capture` (then record again), or give your own screen "
+                           "recording: `fde-coach factory demo clip --file PATH`.")
     folder = media_dir(ctx, date, d)
     video = assemble_video(ctx, s, d, chosen)
     if video is None:
@@ -630,6 +700,8 @@ def tick(ctx) -> str:
             macos.open_path(Path(s["kit"]["prep_html"]))
             _mark(ctx, date, "kit")
             done.append("kit")
+            if not ((s.get("kit") or {}).get("demo") or {}).get("captured"):
+                done.append(request_capture(ctx, date, d))
         due = [x for x in sorted(f.get("reminder_times", [])) if _at(x, date) <= t and f"rem-{x}" not in seen]
         if due and ("kit" in seen or "kit" in done):
             macos.notify("Today's video isn't published yet", f"Day {n}: {d['title']}",
@@ -646,8 +718,82 @@ def tick(ctx) -> str:
                          subtitle="Brief opened: WHAT, WHY, HOW, references, outline")
             macos.open_path(Path(files["html"]))
             done.append("brief")
+            done.append(request_capture(ctx, tomorrow, d2))
         _mark(ctx, date, "brief")
     return ",".join(done) or "nothing-due"
+
+
+def request_capture(ctx, date: dt.date, d: Dict[str, Any]) -> str:
+    """Capture a day's demo in the background (or say once what to set up first)."""
+    store = d["demo"].get("store", "bd")
+    if not macos.dry_run() and not DEMO.is_ready(ctx.cfg, store):
+        from .app import notify_once
+        notify_once(ctx, f"demo-setup-{store}", "Set up the demo city",
+                    f"Day {d['day']} needs it: fde-coach factory demo setup --store {store}")
+        return "demo-setup-needed"
+    if lock_is_held(ctx.paths, "demo"):
+        return "demo-capture-running"
+    if macos.dry_run():
+        capture_demo(ctx, date)
+    else:
+        from .app import spawn_detached
+        spawn_detached(["factory", "demo", "capture", "--date", date.isoformat()])
+    return "demo-capture"
+
+
+def capture_demo(ctx, date: Optional[dt.date] = None) -> Dict[str, Any]:
+    """Run a day's demo for real, save the output, and refresh today's kit if no take uses it yet."""
+    date = date or today()
+    n = day_for(fhistory(ctx.paths), ctx.cfg, date, today())
+    d = topic(n, ctx.paths) if n else None
+    if d is None:
+        raise FactoryNotReady(f"No video planned for {date.isoformat()}.")
+    try:
+        with file_lock(ctx.paths, "demo"):
+            result = DEMO.capture(ctx.paths, ctx.cfg, d)
+    except LockBusy:
+        return {"ok": False, "error": "a demo capture is already running"}
+    s = fhistory(ctx.paths).get(date)
+    if date == today() and s and not s.get("recorded"):
+        if _valid_takes(s):
+            result["note"] = "Takes already recorded with the old demo; record a new take to use this capture."
+        else:
+            ensure_kit(ctx, rebuild=True)
+    if result.get("ok"):
+        macos.notify(f"Demo ready · Day {d['day']}", d["demo"]["title"],
+                     subtitle=f"{len(result.get('steps', []))} steps captured and checked")
+    else:
+        macos.notify(f"Demo failed · Day {d['day']}", str(result.get("error", ""))[:120],
+                     subtitle="Fix it, then: fde-coach factory demo capture")
+    return result
+
+
+def set_clip(ctx, path: Path, date: Optional[dt.date] = None) -> Dict[str, Any]:
+    date = date or today()
+    path = path.expanduser().resolve()
+    if not path.exists():
+        raise FileNotFoundError(str(path))
+    ensure_kit(ctx)
+    update_session(ctx, date, lambda x: x.update(demo_clip=str(path)))
+    return ensure_kit(ctx, rebuild=True)
+
+
+def demo_status(ctx) -> Dict[str, Any]:
+    date = today()
+    out: Dict[str, Any] = {"labs": {}, "days": []}
+    for store in DEMO.STORES:
+        places = DEMO.lab(ctx.cfg, store)
+        out["labs"][store] = {"ready": DEMO.is_ready(ctx.cfg, store), "city": str(places["city"]),
+                              "tools": [(t, ok) for t, ok, _ in DEMO.tools_report(store)]}
+    for when in (date, date + dt.timedelta(days=1)):
+        n = day_for(fhistory(ctx.paths), ctx.cfg, when, date)
+        d = topic(n, ctx.paths) if n else None
+        if d:
+            cap = DEMO.load_capture(ctx.paths, d) or {}
+            out["days"].append({"date": when.isoformat(), "day": n, "demo": d["demo"]["title"],
+                                "store": d["demo"].get("store"), "captured_at": cap.get("captured_at"),
+                                "ok": cap.get("ok"), "error": cap.get("error")})
+    return out
 
 
 def tick_safe(ctx) -> None:

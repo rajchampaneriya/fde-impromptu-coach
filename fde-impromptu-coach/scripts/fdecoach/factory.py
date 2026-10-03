@@ -1,7 +1,9 @@
 """Software Factory daily video: the learning path, day planning, and the
 written briefs (day-before reminder and recording-day prep sheet).
 
-One video -> one concept -> one clear takeaway. The curriculum lives in
+One video -> one concept -> one clear takeaway, taught Greg Tang style:
+see it (a real demo) -> group it (one picture of the pattern) -> name it
+(the takeaway). The curriculum lives in
 assets/factory_curriculum.json; references/factory_curriculum.md is the rubric
 for writing more days. Topics are consumed in order: a day that isn't
 published carries over, so the path never skips a concept.
@@ -25,8 +27,10 @@ log = logging.getLogger("fdecoach")
 CURRICULUM_FILE = ASSETS_DIR / "factory_curriculum.json"
 DIAGRAMS_DIR = ASSETS_DIR / "factory_diagrams"
 VISUAL_TYPES = ("image", "flow", "compare", "hub", "layers", "code")
-SECTIONS = ("intro", "what", "why", "how", "end", "outro")
-SECTION_LABELS = {"intro": "Intro", "what": "WHAT", "why": "WHY", "how": "HOW", "end": "Takeaway", "outro": "Outro"}
+SECTIONS = ("intro", "hook", "demo", "picture", "end", "outro")
+SECTION_DEFAULTS = (4, 25, 100, 22, 12, 7)
+SECTION_LABELS = {"intro": "Intro", "hook": "What & why", "demo": "See it (demo)", "picture": "Group it (picture)",
+                  "end": "Takeaway", "outro": "Outro"}
 MAX_VIDEO_SECONDS = 180
 LIMITS = {"title": 60, "concept": 40, "sentence": 150, "takeaway": 130, "slide_point": 40, "point": 60}
 REQUIRED = ("day", "module", "id", "title", "concept", "what", "what_points", "why", "why_points", "how",
@@ -123,6 +127,8 @@ def validate_day(d: Dict[str, Any]) -> List[str]:
     if not isinstance(hp, list) or not 2 <= len(hp) <= 5 or any(len(p) > LIMITS["point"] for p in hp):
         errs.append(f"how_points: 2-5 points of at most {LIMITS['point']} characters")
     errs += _visual_errors(d["visual"])
+    from .factory_demo import validate_demo
+    errs += [f"demo: {e}" for e in validate_demo(d["demo"])]
     for name in d["diagrams"]:
         if not (DIAGRAMS_DIR / f"{name}.png").exists():
             errs.append(f"diagram {name!r} has no PNG")
@@ -196,13 +202,12 @@ def topic(n: int, paths: Optional[Paths] = None, cur: Optional[Dict[str, Any]] =
 
 def segments(cfg: Dict[str, Any]) -> Dict[str, int]:
     f = cfg.get("factory", {})
-    return {s: int(f.get(f"{s}_seconds", d)) for s, d in
-            zip(SECTIONS, (5, 35, 35, 75, 15, 8))}
+    return {s: int(f.get(f"{s}_seconds", d)) for s, d in zip(SECTIONS, SECTION_DEFAULTS)}
 
 
 def talk_seconds(cfg: Dict[str, Any]) -> int:
     seg = segments(cfg)
-    return sum(seg[s] for s in ("intro", "what", "why", "how", "end"))
+    return sum(seg[s] for s in ("intro", "hook", "demo", "picture", "end"))
 
 
 def video_seconds(cfg: Dict[str, Any]) -> int:
@@ -226,8 +231,8 @@ def chapters(d: Dict[str, Any], cfg: Dict[str, Any]) -> List[Tuple[int, str]]:
     """YouTube chapters: the first starts at 0:00 and each lasts 10 s or more, so the short
     intro is folded into the WHAT chapter."""
     st = starts(cfg)
-    return [(0, f"What: {d['concept']}"), (st["why"], "Why it matters"), (st["how"], "How it works"),
-            (st["end"], "Takeaway")]
+    return [(0, f"What and why: {d['concept']}"), (st["demo"], f"Demo: {d['demo']['title']}"),
+            (st["picture"], "The picture"), (st["end"], "Takeaway")]
 
 
 # --------------------------------------------------------------------------- planning
@@ -449,6 +454,28 @@ def visual_summary(v: Dict[str, Any]) -> str:
     return f"Code ({v.get('lang', 'text')}), {len(v['lines'])} lines"
 
 
+def demo_steps(d: Dict[str, Any]) -> List[Tuple[str, str]]:
+    """(command as shown, what to point out) for every visible demo step; saved values appear as <name>."""
+    from .factory_demo import VAR
+    out = []
+    for st in d["demo"]["steps"]:
+        if "write" in st or st.get("hidden"):
+            continue
+        cmd = VAR.sub(lambda m: {"rig": "~/hello-factory", "city": "~/lab", "scratch": "."}.get(
+            m.group(1), f"<{m.group(1)}>"), st.get("run") or st["wait_for"])
+        if "wait_for" in st:
+            cmd = f"{cmd}   # time-lapse until '{st['until']}'"
+        out.append((cmd, st.get("say", "")))
+    return out
+
+
+def demo_where(d: Dict[str, Any]) -> str:
+    demo = d["demo"]
+    store = "file-based demo city (no Dolt)" if demo.get("store") == "file" else "default demo city (bd + Dolt)"
+    agent = "uses Claude Code (tokens), slow parts become time-lapse cuts" if demo.get("agent") else "no agent, fast"
+    return f"{store}; {agent}"
+
+
 def outline_rows(d: Dict[str, Any], cfg: Dict[str, Any]) -> List[List[str]]:
     seg, st = segments(cfg), starts(cfg)
 
@@ -457,10 +484,11 @@ def outline_rows(d: Dict[str, Any], cfg: Dict[str, Any]) -> List[List[str]]:
 
     return [
         [span("intro"), "Intro", "Title card and music. Stay silent, settle, smile."],
-        [span("what"), "WHAT", f"Name it: **{d['concept']}** · " + " · ".join(d["what_points"])],
-        [span("why"), "WHY", " · ".join(d["why_points"])],
-        [span("how"), "HOW", " → ".join(d["how_points"]) + f" (on screen: {visual_summary(d['visual'])})"],
-        [span("end"), "Takeaway", f"“{d['takeaway']}”"],
+        [span("hook"), "What & why", f"**{d['concept']}** · " + " · ".join(d["what_points"][:2])
+         + " · why: " + d["why_points"][0]],
+        [span("demo"), "See it", f"Demo: {d['demo']['title']}. " + " → ".join(say for _, say in demo_steps(d) if say)],
+        [span("picture"), "Group it", " → ".join(d["how_points"]) + f" (on screen: {visual_summary(d['visual'])})"],
+        [span("end"), "Name it", f"“{d['takeaway']}”"],
         [span("outro"), "Outro", "Soft music on the closing card. Say nothing."],
     ]
 
@@ -487,7 +515,12 @@ def brief_doc(d: Dict[str, Any], date: dt.date, cfg: Dict[str, Any], cur: Option
     doc.h2("WHAT").p(d["what"]).bullets(d["what_points"])
     doc.h2("WHY").p(d["why"]).bullets(d["why_points"])
     doc.h2("HOW").p(d["how"]).bullets(d["how_points"])
-    doc.p(f"On screen: {visual_summary(d['visual'])}.")
+    doc.p(f"After the demo, the picture groups what viewers saw: {visual_summary(d['visual'])}.")
+    doc.h2(f"Demo: {d['demo']['title']}")
+    doc.p(f"Real commands, run in the {demo_where(d)}. The output is captured on your Mac tonight and "
+          "becomes the animated terminal in the video, so nothing is screen-recorded.")
+    doc.code([c for c, _ in demo_steps(d)])
+    doc.bullets([f"`{c.split('   #')[0][:60]}` — {say}" for c, say in demo_steps(d) if say])
     doc.h2("Say it simply")
     doc.p(f"Analogy: {d['analogy']}")
     if d["jargon"]:
@@ -500,11 +533,9 @@ def brief_doc(d: Dict[str, Any], date: dt.date, cfg: Dict[str, Any], cur: Option
         doc.links([(name, diagram_url(cfg, name), "Gas City docs") for name in d["diagrams"]])
     else:
         doc.p("None in the repository for this one; the slide draws a simple diagram for you.")
-    doc.h2("Artifact or demo to prepare")
+    doc.h2("Artifact to prepare")
     doc.p(d["artifact"])
-    if d["demo"]:
-        doc.code(d["demo"])
-    doc.h2("3-minute outline")
+    doc.h2("3-minute outline: see it, group it, name it")
     doc.table(["Time", "Section", "Say (keywords, not a script)"], outline_rows(d, cfg))
     doc.h2("Builds on")
     doc.p(_builds_on(cur, d))
@@ -513,7 +544,8 @@ def brief_doc(d: Dict[str, Any], date: dt.date, cfg: Dict[str, Any], cur: Option
         "Skim the references above; stop when the WHAT makes sense.",
         "Say the takeaway out loud twice, in your own words.",
         "Explain the HOW to an imaginary engineer who has never used Gas City.",
-        "Prepare the artifact. Tomorrow's slides, outline and checks are built for you in the morning.",
+        "Watch the demo capture notification. If a step failed, fix it tonight (fde-coach factory demo capture).",
+        "Tomorrow's slides, outline and checks are built for you in the morning.",
     ])
     return doc
 
@@ -529,19 +561,26 @@ def prep_doc(d: Dict[str, Any], date: dt.date, cfg: Dict[str, Any], kit: Dict[st
     doc = Doc(f"Recording day: {d['title']}", kicker=f"{series} · Day {d['day']}", meta=meta)
     doc.quote(f"One concept: {d['concept']}. One takeaway: {d['takeaway']}")
     doc.h2("Speaking outline (keywords, not a script)")
-    doc.p(f"**WHAT ({seg['what']} s)** — open with: “Today: {d['concept'].lower()}.” Then: "
-          + " · ".join(d["what_points"]))
-    doc.p(f"**WHY ({seg['why']} s)** — " + " · ".join(d["why_points"]))
-    doc.p(f"**HOW ({seg['how']} s)** — " + " → ".join(d["how_points"]))
-    doc.p(f"**Takeaway ({seg['end']} s)** — close with: “{d['takeaway']}”")
+    doc.p(f"**What & why ({seg['hook']} s)** — open with: “Today: {d['concept'].lower()}.” Then: "
+          + " · ".join(d["what_points"]) + ". Why: " + " · ".join(d["why_points"]))
+    doc.p(f"**See it ({seg['demo']} s)** — narrate the demo; the terminal moves by itself:")
+    doc.bullets([say for _, say in demo_steps(d) if say])
+    doc.p(f"**Group it ({seg['picture']} s)** — map what they just saw onto the picture: "
+          + " → ".join(d["how_points"]))
+    doc.p(f"**Name it ({seg['end']} s)** — close with: “{d['takeaway']}”")
     doc.p(f"Analogy if you need one: {d['analogy']}")
     if d["jargon"]:
         doc.bullets([f"Say **{j['term']}**, then right away: “{j['plain']}”." for j in d["jargon"]])
     doc.h2("Slides")
     doc.p(f"Deck: `{kit.get('deck', '')}` (minimal blue theme, Calibri). It runs by itself: "
-          f"{seg['intro']} s countdown, then WHAT, WHY, HOW and Takeaway with a progress bar.")
+          f"{seg['intro']} s countdown, the hook, one slide per demo step, the picture and the takeaway, "
+          "each with a progress bar.")
     if kit.get("how_png"):
-        doc.image(kit["how_png"], "HOW slide")
+        doc.image(kit["how_png"], "The picture slide")
+    doc.h2(f"Demo: {d['demo']['title']}")
+    doc.p(kit.get("demo_status") or "Not captured yet: fde-coach factory demo capture")
+    doc.p(f"Runs in the {demo_where(d)}.")
+    doc.code([c for c, _ in demo_steps(d)])
     doc.h2("Diagram")
     if d["visual"]["type"] == "image":
         doc.p(f"The HOW slide shows the Gas City diagram `{d['visual']['diagram']}`. Walk through it left to "
@@ -550,12 +589,11 @@ def prep_doc(d: Dict[str, Any], date: dt.date, cfg: Dict[str, Any], kit: Dict[st
         doc.p(f"The HOW slide draws it for you: {visual_summary(d['visual'])}.")
     if d["diagrams"]:
         doc.links([(name, diagram_url(cfg, name), "") for name in d["diagrams"]])
-    doc.h2("Demo or artifact")
+    doc.h2("Artifact")
     doc.p(d["artifact"])
-    if d["demo"]:
-        doc.code(d["demo"])
     doc.h2("Key technical points to verify before Take 1")
-    doc.checklist(list(d["verify"]) + ["Open each reference below and check the words you plan to say."])
+    doc.checklist(list(d["verify"]) + ["The demo capture passed and its output says what you plan to point at.",
+                                        "Open each reference below and check the words you plan to say."])
     doc.links([(r, repo_url(cfg, r), "") for r in d["references"]])
     doc.h2("Final 3-minute flow")
     doc.table(["Time", "Section", "Say"], outline_rows(d, cfg))
@@ -584,6 +622,9 @@ def learning_path_doc(cfg: Dict[str, Any], cur: Optional[Dict[str, Any]] = None)
           "Dates assume one video a day; a missed day carries its topic over, so no concept is skipped.")
     doc.p("Rule for every video: one video, one concept, one clear takeaway. "
           "Understand → Explain → Demonstrate → Publish → Repeat.")
+    doc.p("Every video teaches Greg Tang style: **see it** (a real demo with real output), **group it** "
+          "(one picture of the pattern), **name it** (the takeaway). Days 1–7 run in a file-based demo city; "
+          "from Day 8 the demos use the default setup (bd + Dolt).")
     for idx, m in enumerate(cur["modules"], 1):
         days = [d for d in cur["days"] if d["module"] == m["id"]]
         if not days:
@@ -594,6 +635,7 @@ def learning_path_doc(cfg: Dict[str, Any], cur: Optional[Dict[str, Any]] = None)
         for d in days:
             date = start + dt.timedelta(days=d["day"] - 1)
             visual = d["visual"]["diagram"] if d["visual"]["type"] == "image" else d["visual"]["type"]
-            rows.append([str(d["day"]), date.strftime("%a %d %b"), d["title"], d["takeaway"], visual])
-        doc.table(["Day", "Date", "Topic", "Takeaway", "HOW visual"], rows)
+            rows.append([str(d["day"]), date.strftime("%a %d %b"), d["title"], d["demo"]["title"], d["takeaway"],
+                         visual])
+        doc.table(["Day", "Date", "Topic", "Demo", "Takeaway", "Picture"], rows)
     return doc

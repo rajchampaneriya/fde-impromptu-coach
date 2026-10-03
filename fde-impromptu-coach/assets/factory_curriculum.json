@@ -8,12 +8,36 @@
     "verified_on": "2026-10-03"
   },
   "modules": [
-    {"id": "big-picture", "title": "The Big Picture", "goal": "Know what a software factory is and the shape of Gas City."},
-    {"id": "work", "title": "Work: Beads", "goal": "Understand the unit of work, how it is ordered, grouped and claimed."},
-    {"id": "workers", "title": "Workers: Agents and Sessions", "goal": "Define agents, run sessions and see how agents coordinate."},
-    {"id": "methods", "title": "Methods: Formulas", "goal": "Write a method once and let the orchestrator run it as a graph."},
-    {"id": "automation", "title": "Automation and Operations", "goal": "Make the factory start, supervise and observe its own work."},
-    {"id": "composition", "title": "Composition: Packs", "goal": "Package, share and assemble the whole factory."}
+    {
+      "id": "big-picture",
+      "title": "The Big Picture",
+      "goal": "Know what a software factory is and the shape of Gas City."
+    },
+    {
+      "id": "work",
+      "title": "Work: Beads",
+      "goal": "Understand the unit of work, how it is ordered, grouped and claimed."
+    },
+    {
+      "id": "workers",
+      "title": "Workers: Agents and Sessions",
+      "goal": "Define agents, run sessions and see how agents coordinate."
+    },
+    {
+      "id": "methods",
+      "title": "Methods: Formulas",
+      "goal": "Write a method once and let the orchestrator run it as a graph."
+    },
+    {
+      "id": "automation",
+      "title": "Automation and Operations",
+      "goal": "Make the factory start, supervise and observe its own work."
+    },
+    {
+      "id": "composition",
+      "title": "Composition: Packs",
+      "goal": "Package, share and assemble the whole factory."
+    }
   ],
   "days": [
     {
@@ -23,27 +47,89 @@
       "title": "Software Factory vs. Coding Agent",
       "concept": "Software factory",
       "what": "A software factory runs a written-down method across a fleet of coding agents, without you steering every step.",
-      "what_points": ["A fleet, not one agent", "A written-down method", "Runs without you in the loop"],
+      "what_points": [
+        "A fleet, not one agent",
+        "A written-down method",
+        "Runs without you in the loop"
+      ],
       "why": "One coding agent is a faster pair of hands, but it works alone, needs you watching, and loses context when it crashes.",
-      "why_points": ["One session, one train of thought", "You hover and steer", "A crash loses the context"],
+      "why_points": [
+        "One session, one train of thought",
+        "You hover and steer",
+        "A crash loses the context"
+      ],
       "how": "You write the method once; an orchestrator splits the job into tracked work, runs independent pieces in parallel and retries failures.",
-      "how_points": ["Write the method once", "Orchestrator splits the job into tracked units", "Parallel where possible, wait where needed", "Retry until the job is done"],
+      "how_points": [
+        "Write the method once",
+        "Orchestrator splits the job into tracked units",
+        "Parallel where possible, wait where needed",
+        "Retry until the job is done"
+      ],
       "visual": {
         "type": "compare",
-        "left": {"title": "Interactive session", "points": ["You steer every move", "One agent, one context", "Crash means start over"]},
-        "right": {"title": "Software factory", "points": ["Method written once", "A fleet works in parallel", "Work survives crashes"]},
+        "left": {
+          "title": "Interactive session",
+          "points": [
+            "You steer every move",
+            "One agent, one context",
+            "Crash means start over"
+          ]
+        },
+        "right": {
+          "title": "Software factory",
+          "points": [
+            "Method written once",
+            "A fleet works in parallel",
+            "Work survives crashes"
+          ]
+        },
         "caption": "Faster hands vs. a system that produces finished work"
       },
       "analogy": "A great chef cooks one meal fast. A restaurant kitchen has recipes, stations and tickets, so dinner is served even when one cook goes home.",
       "jargon": [
-        {"term": "orchestrator", "plain": "the program that hands out work, tracks it and keeps it moving"},
-        {"term": "fleet", "plain": "many coding agents working at the same time"}
+        {
+          "term": "orchestrator",
+          "plain": "the program that hands out work, tracks it and keeps it moving"
+        },
+        {
+          "term": "fleet",
+          "plain": "many coding agents working at the same time"
+        }
       ],
       "takeaway": "A coding agent gives you faster hands; a software factory gives you finished work without you in the loop.",
-      "references": ["docs/index.mdx", "docs/getting-started/faq.md"],
+      "references": [
+        "docs/index.mdx",
+        "docs/getting-started/faq.md"
+      ],
       "diagrams": [],
       "artifact": "Sketch two columns on paper: interactive session vs. software factory. The HOW slide is that sketch.",
-      "demo": [],
+      "demo": {
+        "title": "Describe the job once, come back to finished work",
+        "store": "file",
+        "agent": true,
+        "steps": [
+          {
+            "run": "gc sling hello-factory/claude \"Create hello.py that prints Hello, factory\"",
+            "save": {
+              "bead": "Created (?:issue: )?([a-z0-9]+-[a-z0-9]+)"
+            },
+            "say": "One command. I describe the job and walk away.",
+            "highlight": "Created"
+          },
+          {
+            "wait_for": "gc beads show @{bead}",
+            "until": "closed",
+            "timeout": 900,
+            "say": "No steering: an agent picks it up and closes it.",
+            "highlight": "closed"
+          },
+          {
+            "run": "python3 hello.py",
+            "say": "Finished work, in the repo.",
+            "highlight": "Hello, factory"
+          }
+        ]
+      },
       "verify": [
         "docs/index.mdx describes Gas City as the platform for building software factories.",
         "The FAQ promise: describe a feature once and come back to a finished branch."
@@ -57,36 +143,95 @@
       "title": "Gas City: Zero Hardcoded Roles",
       "concept": "Gas City",
       "what": "Gas City is an open-source toolkit for building software factories: orchestration infrastructure for multi-agent coding.",
-      "what_points": ["Open source, MIT licence", "Extracted from Gas Town", "A toolkit, not one fixed bot"],
+      "what_points": [
+        "Open source, MIT licence",
+        "Extracted from Gas Town",
+        "A toolkit, not one fixed bot"
+      ],
       "why": "Hardcoded roles lock you into someone else's team shape. Gas City makes every role configuration, so one engine runs many designs.",
-      "why_points": ["No built-in manager or reviewer", "Roles are config plus prompts", "One engine, many orchestrators"],
+      "why_points": [
+        "No built-in manager or reviewer",
+        "Roles are config plus prompts",
+        "One engine, many orchestrators"
+      ],
       "how": "The engine only knows primitives; packs supply the roles. Swap the packs and you get a different factory, Gas Town included.",
-      "how_points": ["The engine knows primitives only", "Packs bring the roles", "Gas Town is one pack on top", "Your team shape is your pack"],
+      "how_points": [
+        "The engine knows primitives only",
+        "Packs bring the roles",
+        "Gas Town is one pack on top",
+        "Your team shape is your pack"
+      ],
       "visual": {
         "type": "layers",
         "layers": [
-          {"label": "Your factory", "sub": "Gas Town · Ralph · your own design"},
-          {"label": "Packs", "sub": "roles as prompts and config"},
-          {"label": "Gas City engine", "sub": "orchestrator · bead store · event bus"}
+          {
+            "label": "Your factory",
+            "sub": "Gas Town · Ralph · your own design"
+          },
+          {
+            "label": "Packs",
+            "sub": "roles as prompts and config"
+          },
+          {
+            "label": "Gas City engine",
+            "sub": "orchestrator · bead store · event bus"
+          }
         ],
         "caption": "Roles live in packs, not in the binary"
       },
       "analogy": "Like a game engine: the engine handles physics and drawing; each game brings its own characters.",
       "jargon": [
-        {"term": "SDK", "plain": "a toolkit you build your own product with"},
-        {"term": "pack", "plain": "a folder of config that defines agents, methods and schedules"}
+        {
+          "term": "SDK",
+          "plain": "a toolkit you build your own product with"
+        },
+        {
+          "term": "pack",
+          "plain": "a folder of config that defines agents, methods and schedules"
+        }
       ],
       "takeaway": "Gas City hardcodes zero roles, so you can build the factory your team actually needs.",
-      "references": ["README.md", "docs/getting-started/how-gas-city-works.md", "docs/getting-started/coming-from-gastown.md"],
-      "diagrams": ["gastown-agents-by-scope"],
+      "references": [
+        "README.md",
+        "docs/getting-started/how-gas-city-works.md",
+        "docs/getting-started/coming-from-gastown.md"
+      ],
+      "diagrams": [
+        "gastown-agents-by-scope"
+      ],
       "artifact": "Open the Gas Town role table in coming-from-gastown.md and pick two roles to mention: Mayor and Polecat.",
-      "demo": [],
+      "demo": {
+        "title": "Roles are just files you can read",
+        "store": "file",
+        "agent": false,
+        "steps": [
+          {
+            "run": "ls agents",
+            "cwd": "city",
+            "say": "Every role in this city is a folder.",
+            "highlight": "mayor"
+          },
+          {
+            "run": "head -12 agents/mayor/prompt.template.md",
+            "cwd": "city",
+            "say": "The mayor is a prompt, not code.",
+            "highlight": "Mayor"
+          },
+          {
+            "run": "gc prime mayor | head -10",
+            "cwd": "city",
+            "say": "gc prime shows exactly what the agent starts with."
+          }
+        ]
+      },
       "verify": [
         "how-gas-city-works.md: the orchestrator hardcodes zero roles.",
         "README and FAQ: Gas City is MIT-licensed.",
         "coming-from-gastown.md: every Gas Town role maps to a configured agent."
       ],
-      "builds_on": ["software-factory"]
+      "builds_on": [
+        "software-factory"
+      ]
     },
     {
       "day": 3,
@@ -95,25 +240,84 @@
       "title": "The Six Primitives",
       "concept": "Six primitives",
       "what": "Everything in Gas City is built from six primitives: Agent, Bead, Formula, Rig, Pack and Event.",
-      "what_points": ["Agent = who · Bead = what", "Formula = how · Rig = where", "Pack = configures · Event = observe"],
+      "what_points": [
+        "Agent = who · Bead = what",
+        "Formula = how · Rig = where",
+        "Pack = configures · Event = observe"
+      ],
       "why": "Six words give you a map. Every feature you meet later is one of them, or a combination of them.",
-      "why_points": ["Small vocabulary, big system", "New features slot into the map", "Easier to explain and debug"],
+      "why_points": [
+        "Small vocabulary, big system",
+        "New features slot into the map",
+        "Easier to explain and debug"
+      ],
       "how": "Packs declare agents and formulas; a formula operates over beads; agents execute beads in a rig; events fire so everyone can watch.",
-      "how_points": ["Pack configures agents and formulas", "Formula operates over beads", "Agents execute beads in a rig", "Events let humans and agents observe"],
-      "visual": {"type": "image", "diagram": "primitives", "caption": "The six primitives and how they relate"},
+      "how_points": [
+        "Pack configures agents and formulas",
+        "Formula operates over beads",
+        "Agents execute beads in a rig",
+        "Events let humans and agents observe"
+      ],
+      "visual": {
+        "type": "image",
+        "diagram": "primitives",
+        "caption": "The six primitives and how they relate"
+      },
       "analogy": "Who, what, how and where are the questions every news story answers. Add who set it up and how you hear about it.",
       "jargon": [
-        {"term": "primitive", "plain": "a basic building block that isn't made of smaller blocks"}
+        {
+          "term": "primitive",
+          "plain": "a basic building block that isn't made of smaller blocks"
+        }
       ],
       "takeaway": "Who, what, how, where, configure, observe: six primitives hold the whole system.",
-      "references": ["docs/getting-started/how-gas-city-works.md"],
-      "diagrams": ["primitives"],
+      "references": [
+        "docs/getting-started/how-gas-city-works.md"
+      ],
+      "diagrams": [
+        "primitives"
+      ],
       "artifact": "The primitives diagram. Practise pointing at each box in order: Pack, Formula, Bead, Agent, Rig, Event.",
-      "demo": [],
+      "demo": {
+        "title": "One command per primitive",
+        "store": "file",
+        "agent": false,
+        "steps": [
+          {
+            "run": "ls agents formulas orders",
+            "cwd": "city",
+            "say": "Agents, formulas, orders: declared by the pack."
+          },
+          {
+            "run": "gc rig list",
+            "cwd": "city",
+            "say": "Rig: where the work happens.",
+            "highlight": "hello-factory"
+          },
+          {
+            "run": "gc beads list --all | head -8",
+            "cwd": "city",
+            "say": "Beads: the work itself."
+          },
+          {
+            "run": "head -8 pack.toml",
+            "cwd": "city",
+            "say": "Pack: what configures all of it.",
+            "highlight": "[pack]"
+          },
+          {
+            "run": "gc events --since 24h | tail -4",
+            "cwd": "city",
+            "say": "Events: how we observe it."
+          }
+        ]
+      },
       "verify": [
         "The six-primitives table in how-gas-city-works.md: Agent WHO, Bead WHAT, Formula HOW, Rig WHERE, Pack CONFIGURES, Event OBSERVE."
       ],
-      "builds_on": ["gas-city-platform"]
+      "builds_on": [
+        "gas-city-platform"
+      ]
     },
     {
       "day": 4,
@@ -122,34 +326,104 @@
       "title": "The Machinery Underneath",
       "concept": "Orchestrator, store, event bus",
       "what": "Three pieces of plumbing run the primitives: the orchestrator, the bead store and the event bus.",
-      "what_points": ["Orchestrator runs the work", "Bead store remembers it", "Event bus announces it"],
+      "what_points": [
+        "Orchestrator runs the work",
+        "Bead store remembers it",
+        "Event bus announces it"
+      ],
       "why": "If progress lived inside an agent's memory, one crash would erase it. In shared state, work survives a crash on either side.",
-      "why_points": ["Agents crash", "Orchestrators restart", "Shared state survives both"],
+      "why_points": [
+        "Agents crash",
+        "Orchestrators restart",
+        "Shared state survives both"
+      ],
       "how": "The orchestrator starts and stops sessions, but reads their progress from the store and event bus instead of waiting for callbacks.",
-      "how_points": ["Orchestrator acts on sessions", "Sessions record progress in beads", "Orchestrator reads the store, not callbacks", "After a crash, resume from the store"],
+      "how_points": [
+        "Orchestrator acts on sessions",
+        "Sessions record progress in beads",
+        "Orchestrator reads the store, not callbacks",
+        "After a crash, resume from the store"
+      ],
       "visual": {
         "type": "flow",
-        "nodes": ["Orchestrator", "Sessions", "Bead store + events"],
-        "arrows": ["starts", "record progress"],
+        "nodes": [
+          "Orchestrator",
+          "Sessions",
+          "Bead store + events"
+        ],
+        "arrows": [
+          "starts",
+          "record progress"
+        ],
         "loop": true,
         "loop_label": "the orchestrator reads progress back",
         "caption": "The loop closes through shared state"
       },
       "analogy": "A kitchen ticket rail: cooks come and go, but the tickets on the rail say exactly what is done and what is next.",
       "jargon": [
-        {"term": "bead store", "plain": "the database where every unit of work is recorded"},
-        {"term": "event bus", "plain": "a running feed of 'this just happened' messages"}
+        {
+          "term": "bead store",
+          "plain": "the database where every unit of work is recorded"
+        },
+        {
+          "term": "event bus",
+          "plain": "a running feed of 'this just happened' messages"
+        }
       ],
       "takeaway": "The orchestrator never waits for a callback; it reads shared state, so work survives a crash on either side.",
-      "references": ["docs/getting-started/how-gas-city-works.md", "engdocs/architecture/nine-concepts.md"],
+      "references": [
+        "docs/getting-started/how-gas-city-works.md",
+        "engdocs/architecture/nine-concepts.md"
+      ],
       "diagrams": [],
       "artifact": "Draw the loop by hand once: orchestrator, sessions, store, back to the orchestrator.",
-      "demo": [],
+      "demo": {
+        "title": "Kill the session, keep the work",
+        "store": "file",
+        "agent": true,
+        "steps": [
+          {
+            "run": "gc sling hello-factory/claude \"Add a docstring and a main() function to hello.py\"",
+            "save": {
+              "bead": "Created (?:issue: )?([a-z0-9]+-[a-z0-9]+)"
+            },
+            "say": "Give the city some work."
+          },
+          {
+            "wait_for": "gc session list --template hello-factory/claude",
+            "until": "hello-factory/claude",
+            "timeout": 300,
+            "save": {
+              "session": "^(\\S+)\\s+hello-factory/claude"
+            },
+            "say": "A session starts for it."
+          },
+          {
+            "run": "gc session kill @{session}",
+            "say": "Now I kill that session on purpose.",
+            "may_fail": true
+          },
+          {
+            "run": "gc beads show @{bead}",
+            "say": "The work is still in the store, not lost with the agent.",
+            "highlight": "@{bead}"
+          },
+          {
+            "wait_for": "gc beads show @{bead}",
+            "until": "closed",
+            "timeout": 900,
+            "say": "A fresh session resumes it from the store.",
+            "highlight": "closed"
+          }
+        ]
+      },
       "verify": [
         "how-gas-city-works.md, 'The machinery underneath': Orchestrator, Bead store, Event bus.",
         "Same page: 'The loop closes through shared state'."
       ],
-      "builds_on": ["six-primitives"]
+      "builds_on": [
+        "six-primitives"
+      ]
     },
     {
       "day": 5,
@@ -158,31 +432,88 @@
       "title": "Why Not a Bash Loop or CI?",
       "concept": "Orchestrator vs. loop",
       "what": "An orchestrator runs work as a graph with a durable memory. A bash loop only restarts an agent; CI only checks a finished change.",
-      "what_points": ["Loop: restart blindly", "CI: verify afterwards", "Orchestrator: plan, run, remember"],
+      "what_points": [
+        "Loop: restart blindly",
+        "CI: verify afterwards",
+        "Orchestrator: plan, run, remember"
+      ],
       "why": "A loop has no model of the work. Every round starts blind, and a crash loses whatever the last round knew.",
-      "why_points": ["No model of the work", "A crash loses knowledge", "CI doesn't produce the change"],
+      "why_points": [
+        "No model of the work",
+        "A crash loses knowledge",
+        "CI doesn't produce the change"
+      ],
       "how": "The orchestrator holds each step until its dependencies close, fans ready steps out, retries failures and stores every unit durably.",
-      "how_points": ["Steps wait for their dependencies", "Ready steps fan out", "Failures are retried", "Everything is stored durably"],
+      "how_points": [
+        "Steps wait for their dependencies",
+        "Ready steps fan out",
+        "Failures are retried",
+        "Everything is stored durably"
+      ],
       "visual": {
         "type": "compare",
-        "left": {"title": "Bash loop", "points": ["Restarts the agent", "Starts blind every round", "A crash loses state"]},
-        "right": {"title": "Orchestrator", "points": ["Runs a graph of steps", "Knows what is done", "Resumes from the store"]},
+        "left": {
+          "title": "Bash loop",
+          "points": [
+            "Restarts the agent",
+            "Starts blind every round",
+            "A crash loses state"
+          ]
+        },
+        "right": {
+          "title": "Orchestrator",
+          "points": [
+            "Runs a graph of steps",
+            "Knows what is done",
+            "Resumes from the store"
+          ]
+        },
         "caption": "CI is complementary: it verifies the change a formula produces"
       },
       "analogy": "A loop is an alarm clock that keeps waking you up. An orchestrator is a project manager with a checklist.",
       "jargon": [
-        {"term": "graph", "plain": "steps joined by 'this finishes before that' arrows"},
-        {"term": "durable", "plain": "saved, so it survives crashes and restarts"}
+        {
+          "term": "graph",
+          "plain": "steps joined by 'this finishes before that' arrows"
+        },
+        {
+          "term": "durable",
+          "plain": "saved, so it survives crashes and restarts"
+        }
       ],
       "takeaway": "A loop repeats; an orchestrator remembers.",
-      "references": ["docs/getting-started/faq.md"],
+      "references": [
+        "docs/getting-started/faq.md"
+      ],
       "diagrams": [],
       "artifact": "Write the naive loop on a sticky note as the 'before' picture.",
-      "demo": ["while true; do claude -p \"keep working on the task\"; done   # the naive loop"],
+      "demo": {
+        "title": "A loop forgets; the store remembers",
+        "store": "file",
+        "agent": false,
+        "steps": [
+          {
+            "run": "for round in 1 2 3; do echo \"round $round: starting from nothing\"; done",
+            "say": "A bash loop: every round starts blind."
+          },
+          {
+            "run": "gc beads list --all | head -8",
+            "cwd": "city",
+            "say": "The city keeps every unit of work it has ever done."
+          },
+          {
+            "run": "gc events --since 48h | tail -5",
+            "cwd": "city",
+            "say": "And a history of what happened, in order."
+          }
+        ]
+      },
       "verify": [
         "FAQ: 'Couldn't I get the same thing from a bash loop or CI?'"
       ],
-      "builds_on": ["machinery"]
+      "builds_on": [
+        "machinery"
+      ]
     },
     {
       "day": 6,
@@ -191,36 +522,99 @@
       "title": "The Toolbelt: gc, bd, tmux, Dolt",
       "concept": "Supporting tools",
       "what": "Gas City runs on a small toolbelt: gc drives the city, bd manages beads, tmux hosts sessions and Dolt stores the beads.",
-      "what_points": ["gc = the city CLI", "bd = the beads CLI", "tmux = sessions · Dolt = storage"],
+      "what_points": [
+        "gc = the city CLI",
+        "bd = the beads CLI",
+        "tmux = sessions · Dolt = storage"
+      ],
       "why": "When something breaks, knowing which tool owns which job tells you exactly where to look.",
-      "why_points": ["Each tool has one job", "Errors point at a tool", "A lighter start is possible"],
+      "why_points": [
+        "Each tool has one job",
+        "Errors point at a tool",
+        "A lighter start is possible"
+      ],
       "how": "brew install gascity brings the dependencies, and gc init checks them. Set GC_BEADS=file to skip Dolt and bd while you learn.",
-      "how_points": ["brew install gascity", "gc init and gc start check prerequisites", "Every agent session lives in tmux", "GC_BEADS=file for a light start"],
+      "how_points": [
+        "brew install gascity",
+        "gc init and gc start check prerequisites",
+        "Every agent session lives in tmux",
+        "GC_BEADS=file for a light start"
+      ],
       "visual": {
         "type": "layers",
         "layers": [
-          {"label": "gc", "sub": "cities, rigs, sling, sessions, formulas"},
-          {"label": "bd", "sub": "create, list and close beads"},
-          {"label": "tmux", "sub": "one terminal per agent session"},
-          {"label": "Dolt", "sub": "versioned database behind bd"}
+          {
+            "label": "gc",
+            "sub": "cities, rigs, sling, sessions, formulas"
+          },
+          {
+            "label": "bd",
+            "sub": "create, list and close beads"
+          },
+          {
+            "label": "tmux",
+            "sub": "one terminal per agent session"
+          },
+          {
+            "label": "Dolt",
+            "sub": "versioned database behind bd"
+          }
         ],
         "caption": "One job per tool"
       },
       "analogy": "A workshop: the foreman's clipboard, the job tickets, the workbenches and the filing cabinet.",
       "jargon": [
-        {"term": "tmux", "plain": "a tool that keeps many terminals running, even in the background"},
-        {"term": "Dolt", "plain": "a SQL database with Git-style version history"}
+        {
+          "term": "tmux",
+          "plain": "a tool that keeps many terminals running, even in the background"
+        },
+        {
+          "term": "Dolt",
+          "plain": "a SQL database with Git-style version history"
+        }
       ],
       "takeaway": "Learn which tool owns which job, and every error message gets easier to read.",
-      "references": ["README.md", "docs/getting-started/installation.md", "docs/getting-started/faq.md"],
+      "references": [
+        "README.md",
+        "docs/getting-started/installation.md",
+        "docs/getting-started/faq.md"
+      ],
       "diagrams": [],
       "artifact": "The prerequisites table from the README: tmux, git, jq, dolt, bd, flock.",
-      "demo": ["brew install gascity", "gc version", "export GC_BEADS=file   # skip dolt + bd while learning"],
+      "demo": {
+        "title": "The toolbelt, one command each",
+        "store": "file",
+        "agent": false,
+        "steps": [
+          {
+            "run": "gc version",
+            "say": "gc drives the city."
+          },
+          {
+            "run": "tmux -V && tmux ls 2>/dev/null | head -3",
+            "say": "tmux hosts every agent session.",
+            "may_fail": true
+          },
+          {
+            "run": "grep -A1 '\\[beads\\]' city.toml",
+            "cwd": "city",
+            "say": "This demo city uses the file store: no Dolt needed.",
+            "highlight": "file"
+          },
+          {
+            "run": "bd --version; dolt version | head -1",
+            "say": "bd and Dolt are the default store; we switch to it next week.",
+            "may_fail": true
+          }
+        ]
+      },
       "verify": [
         "README prerequisites table and the GC_BEADS=file note.",
         "FAQ: agent sessions run in tmux."
       ],
-      "builds_on": ["loop-vs-orchestrator"]
+      "builds_on": [
+        "loop-vs-orchestrator"
+      ]
     },
     {
       "day": 7,
@@ -229,11 +623,24 @@
       "title": "City and Rig: The Factory Floor",
       "concept": "City and rig",
       "what": "A city is the directory holding your agents, formulas and settings. A rig is a project, usually a Git repo, registered with it.",
-      "what_points": ["City = the factory floor", "Rig = a project brought in", "Each rig gets its own bead prefix"],
+      "what_points": [
+        "City = the factory floor",
+        "Rig = a project brought in",
+        "Each rig gets its own bead prefix"
+      ],
       "why": "Work needs a home and a boundary: the city holds the method, and each rig keeps its work apart from other projects.",
-      "why_points": ["One home for definitions", "Projects stay isolated", "Repos can live anywhere"],
+      "why_points": [
+        "One home for definitions",
+        "Projects stay isolated",
+        "Repos can live anywhere"
+      ],
       "how": "gc init creates and starts a city. gc rig add registers a project, gives it a bead prefix and keeps its path in .gc/site.toml.",
-      "how_points": ["gc init ~/my-city", "pack.toml and city.toml", "gc rig add ~/my-project", "Bead prefix such as mp-"],
+      "how_points": [
+        "gc init ~/my-city",
+        "pack.toml and city.toml",
+        "gc rig add ~/my-project",
+        "Bead prefix such as mp-"
+      ],
       "visual": {
         "type": "code",
         "lang": "shell",
@@ -251,19 +658,65 @@
       },
       "analogy": "The city is the factory building; each rig is a production line for one product.",
       "jargon": [
-        {"term": "rig", "plain": "a project directory registered with the city"},
-        {"term": "prefix", "plain": "the two letters on every bead ID that show which project it belongs to"}
+        {
+          "term": "rig",
+          "plain": "a project directory registered with the city"
+        },
+        {
+          "term": "prefix",
+          "plain": "the two letters on every bead ID that show which project it belongs to"
+        }
       ],
       "takeaway": "The city is your factory floor; a rig is a project you bring onto it.",
-      "references": ["docs/tutorials/01-cities-and-rigs.md", "docs/getting-started/quickstart.md"],
+      "references": [
+        "docs/tutorials/01-cities-and-rigs.md",
+        "docs/getting-started/quickstart.md"
+      ],
       "diagrams": [],
       "artifact": "Run gc init and gc rig add once, or use the Tutorial 01 transcript on the slide.",
-      "demo": ["gc init ~/my-city", "gc rig add ~/my-project", "gc rig list"],
+      "demo": {
+        "title": "A city and a rig in four commands",
+        "store": "file",
+        "agent": false,
+        "teardown": [
+          "cd demo-city && gc stop >/dev/null 2>&1; gc unregister >/dev/null 2>&1; true"
+        ],
+        "steps": [
+          {
+            "run": "gc init --template gascity --default-provider claude ./demo-city | tail -4",
+            "cwd": "scratch",
+            "timeout": 600,
+            "say": "gc init creates and starts a city.",
+            "highlight": "Registered"
+          },
+          {
+            "run": "ls demo-city",
+            "cwd": "scratch",
+            "say": "pack.toml is the portable part; city.toml is this deployment.",
+            "highlight": "city.toml"
+          },
+          {
+            "run": "mkdir demo-app && git -C demo-app init -q && cd demo-city && gc rig add ../demo-app",
+            "cwd": "scratch",
+            "timeout": 300,
+            "say": "Bring a project in as a rig. Note its prefix.",
+            "highlight": "Prefix"
+          },
+          {
+            "run": "cd demo-city && gc rig list",
+            "cwd": "scratch",
+            "say": "The city now knows where work can happen.",
+            "highlight": "demo-app"
+          }
+        ]
+      },
       "verify": [
         "Tutorial 01: gc rig add prints 'Prefix: mp'.",
         "Tutorial 01: the rig path binding lives in .gc/site.toml."
       ],
-      "builds_on": ["toolbelt"]
+      "builds_on": [
+        "toolbelt"
+      ]
     },
     {
       "day": 8,
@@ -272,27 +725,88 @@
       "title": "Your First Sling: The Work Lifecycle",
       "concept": "gc sling",
       "what": "Slinging hands a task to an agent: gc sling creates a bead and routes it, and the city does the rest.",
-      "what_points": ["One command", "Creates a bead", "Routes it to an agent"],
+      "what_points": [
+        "One command",
+        "Creates a bead",
+        "Routes it to an agent"
+      ],
       "why": "This is the smallest complete loop. Once you see it, every bigger workflow is more of the same.",
-      "why_points": ["Smallest end-to-end job", "Same loop at every scale", "You watch, you don't steer"],
+      "why_points": [
+        "Smallest end-to-end job",
+        "Same loop at every scale",
+        "You watch, you don't steer"
+      ],
       "how": "Sling creates a bead and a route. A reconcile tick spawns a session, the agent finds its work, edits the rig and closes the bead.",
-      "how_points": ["Sling creates a bead and a route", "A tick spawns a session", "The agent works in the rig", "The bead closes; events record it"],
-      "visual": {"type": "image", "diagram": "work-lifecycle", "caption": "The work lifecycle after one sling"},
+      "how_points": [
+        "Sling creates a bead and a route",
+        "A tick spawns a session",
+        "The agent works in the rig",
+        "The bead closes; events record it"
+      ],
+      "visual": {
+        "type": "image",
+        "diagram": "work-lifecycle",
+        "caption": "The work lifecycle after one sling"
+      },
       "analogy": "Dropping a ticket in the kitchen window: you don't pick the cook, the kitchen picks it up.",
       "jargon": [
-        {"term": "sling", "plain": "Gas City's verb for creating work and routing it in one go"},
-        {"term": "tick", "plain": "the orchestrator's regular check-in, every 30 seconds by default"}
+        {
+          "term": "sling",
+          "plain": "Gas City's verb for creating work and routing it in one go"
+        },
+        {
+          "term": "tick",
+          "plain": "the orchestrator's regular check-in, every 30 seconds by default"
+        }
       ],
       "takeaway": "One sling sets the whole loop in motion: bead, session, work, close.",
-      "references": ["docs/tutorials/01-cities-and-rigs.md", "docs/getting-started/quickstart.md"],
-      "diagrams": ["work-lifecycle"],
+      "references": [
+        "docs/tutorials/01-cities-and-rigs.md",
+        "docs/getting-started/quickstart.md"
+      ],
+      "diagrams": [
+        "work-lifecycle"
+      ],
       "artifact": "The hello-world sling transcript from Tutorial 01.",
-      "demo": ["cd ~/my-project", "gc sling my-project/claude \"Write hello world in python to the file hello.py\"", "gc bd show <bead-id> --watch"],
+      "demo": {
+        "title": "One sling, start to finish",
+        "store": "bd",
+        "agent": true,
+        "steps": [
+          {
+            "run": "gc sling hello-factory/claude \"Write hello world in python to the file hello_world.py\"",
+            "save": {
+              "bead": "Created (?:issue: )?([a-z0-9]+-[a-z0-9]+)"
+            },
+            "say": "Sling creates a bead and routes it.",
+            "highlight": "Created"
+          },
+          {
+            "run": "gc bd show @{bead}",
+            "say": "The bead: open, routed, tracked by a convoy.",
+            "highlight": "OPEN"
+          },
+          {
+            "wait_for": "gc bd show @{bead}",
+            "until": "closed",
+            "timeout": 900,
+            "say": "A tick spawns a session; the agent works and closes it.",
+            "highlight": "CLOSED"
+          },
+          {
+            "run": "python3 hello_world.py",
+            "say": "And the file is there.",
+            "highlight": "ello"
+          }
+        ]
+      },
       "verify": [
         "Tutorial 01: sling prints 'Created mp-…' and attaches the mol-do-work workflow.",
         "health-patrol.md: the patrol interval defaults to 30 seconds."
       ],
-      "builds_on": ["city-and-rig"]
+      "builds_on": [
+        "city-and-rig"
+      ]
     },
     {
       "day": 9,
@@ -301,26 +815,82 @@
       "title": "The Bead: Work That Survives a Crash",
       "concept": "Bead",
       "what": "A bead is one unit of work with an ID, a title, a status and a type.",
-      "what_points": ["ID · title · status · type", "open → in_progress → closed", "Lives in the store, not the agent"],
+      "what_points": [
+        "ID · title · status · type",
+        "open → in_progress → closed",
+        "Lives in the store, not the agent"
+      ],
       "why": "Agents crash and sessions recycle. Because the work lives in a bead, a fresh agent picks up exactly where the last one stopped.",
-      "why_points": ["Sessions are disposable", "Beads are not", "Ground truth after any restart"],
+      "why_points": [
+        "Sessions are disposable",
+        "Beads are not",
+        "Ground truth after any restart"
+      ],
       "how": "An agent claims an open bead, which moves it to in progress, and closes it when done. Blocked and deferred are managed for you.",
-      "how_points": ["open: waiting", "in_progress: claimed", "closed: done", "blocked and deferred: managed for you"],
-      "visual": {"type": "image", "diagram": "bead-lifecycle", "caption": "A bead's lifecycle"},
+      "how_points": [
+        "open: waiting",
+        "in_progress: claimed",
+        "closed: done",
+        "blocked and deferred: managed for you"
+      ],
+      "visual": {
+        "type": "image",
+        "diagram": "bead-lifecycle",
+        "caption": "A bead's lifecycle"
+      },
       "analogy": "A sticky note on a shared board: whoever picks it up moves it to doing, then done. The note outlives any worker.",
       "jargon": [
-        {"term": "claim", "plain": "an agent takes a bead in one step, so nobody else works on it"}
+        {
+          "term": "claim",
+          "plain": "an agent takes a bead in one step, so nobody else works on it"
+        }
       ],
       "takeaway": "Sessions are disposable; beads are not.",
-      "references": ["docs/tutorials/06-beads.md", "docs/getting-started/how-gas-city-works.md"],
-      "diagrams": ["bead-lifecycle"],
+      "references": [
+        "docs/tutorials/06-beads.md",
+        "docs/getting-started/how-gas-city-works.md"
+      ],
+      "diagrams": [
+        "bead-lifecycle"
+      ],
       "artifact": "A bd list output with the status symbols.",
-      "demo": ["bd create \"Fix the login bug\"", "bd list", "bd close <bead-id>"],
+      "demo": {
+        "title": "A bead from open to closed",
+        "store": "bd",
+        "agent": false,
+        "steps": [
+          {
+            "run": "bd create \"Fix the login bug\"",
+            "save": {
+              "bead": "Created (?:issue: )?([a-z0-9]+-[a-z0-9]+)"
+            },
+            "say": "Create one unit of work.",
+            "highlight": "@{bead}"
+          },
+          {
+            "run": "bd update @{bead} --status in_progress && bd show @{bead} | head -3",
+            "say": "Claimed: in progress.",
+            "highlight": "IN_PROGRESS"
+          },
+          {
+            "run": "bd close @{bead}",
+            "say": "Done: closed.",
+            "highlight": "Closed"
+          },
+          {
+            "run": "bd list --all --flat | grep @{bead}",
+            "say": "Still in the store, with its history.",
+            "highlight": "@{bead}"
+          }
+        ]
+      },
       "verify": [
         "Tutorial 06: statuses open, in_progress, blocked, deferred, closed.",
         "Tutorial 06: bead IDs start with a two-letter prefix."
       ],
-      "builds_on": ["first-sling"]
+      "builds_on": [
+        "first-sling"
+      ]
     },
     {
       "day": 10,
@@ -329,31 +899,87 @@
       "title": "Everything Is a Bead",
       "concept": "One store for everything",
       "what": "Tasks, mail, sessions and convoys are all beads that differ only by type.",
-      "what_points": ["task · message", "session · convoy", "One store, one way to query"],
+      "what_points": [
+        "task · message",
+        "session · convoy",
+        "One store, one way to query"
+      ],
       "why": "One store means one way to query, one dependency model and one history. That is what makes the system composable.",
-      "why_points": ["No separate databases", "Same tools for everything", "Features compose easily"],
+      "why_points": [
+        "No separate databases",
+        "Same tools for everything",
+        "Features compose easily"
+      ],
       "how": "bd list shows formula steps, mail and sessions side by side. A formula run lands as plain task beads tagged with metadata.",
-      "how_points": ["The type column says what it is", "bd list sees everything", "Formula runs become task beads", "Metadata adds structure"],
+      "how_points": [
+        "The type column says what it is",
+        "bd list sees everything",
+        "Formula runs become task beads",
+        "Metadata adds structure"
+      ],
       "visual": {
         "type": "hub",
         "center": "Bead store",
-        "spokes": ["task", "message", "session", "convoy"],
+        "spokes": [
+          "task",
+          "message",
+          "session",
+          "convoy"
+        ],
         "caption": "Same store, same queries; only the type differs"
       },
       "analogy": "One spreadsheet with a 'type' column instead of four separate spreadsheets.",
       "jargon": [
-        {"term": "metadata", "plain": "extra key-value notes attached to a bead"}
+        {
+          "term": "metadata",
+          "plain": "extra key-value notes attached to a bead"
+        }
       ],
       "takeaway": "When everything is a bead, one set of tools works on everything.",
-      "references": ["docs/tutorials/06-beads.md"],
+      "references": [
+        "docs/tutorials/06-beads.md"
+      ],
       "diagrams": [],
       "artifact": "The bead types table from Tutorial 06.",
-      "demo": ["bd list --status in_progress --flat   # live sessions show up as beads too"],
+      "demo": {
+        "title": "Mail, sessions and tasks in one list",
+        "store": "bd",
+        "agent": false,
+        "steps": [
+          {
+            "run": "gc mail send mayor -s \"Hello\" -m \"Mail is a bead too\"",
+            "cwd": "city",
+            "save": {
+              "msg": "\\b([a-z0-9]{2,4}-[a-z0-9]{2,6})\\b"
+            },
+            "say": "Send the mayor some mail."
+          },
+          {
+            "run": "bd show @{msg} | head -4",
+            "cwd": "city",
+            "say": "That message is a bead: type message.",
+            "highlight": "message"
+          },
+          {
+            "run": "bd list --status in_progress --flat | head -5",
+            "cwd": "city",
+            "say": "Running sessions are beads too.",
+            "highlight": "session"
+          },
+          {
+            "run": "bd list --flat | head -8",
+            "cwd": "city",
+            "say": "One store, one list, one way to query."
+          }
+        ]
+      },
       "verify": [
         "Tutorial 06 bead types table: task, message, session, convoy.",
         "Tutorial 06: a formula root carries gc.kind=workflow metadata."
       ],
-      "builds_on": ["bead"]
+      "builds_on": [
+        "bead"
+      ]
     },
     {
       "day": 11,
@@ -362,32 +988,104 @@
       "title": "Dependencies: Order Without a Scheduler",
       "concept": "Blocking dependencies",
       "what": "A dependency says one bead must close before another can start.",
-      "what_points": ["A blocks B", "Blocked work is invisible", "Order emerges from the graph"],
+      "what_points": [
+        "A blocks B",
+        "Blocked work is invisible",
+        "Order emerges from the graph"
+      ],
       "why": "No central scheduler decides what runs next. Agents simply only see work that is ready.",
-      "why_points": ["No scheduler bottleneck", "Nobody starts too early", "Parallel by default"],
+      "why_points": [
+        "No scheduler bottleneck",
+        "Nobody starts too early",
+        "Parallel by default"
+      ],
       "how": "bd dep A --blocks B adds the edge. B disappears from every agent's work query until A closes; then it shows up as ready.",
-      "how_points": ["bd dep A --blocks B", "B is hidden while A is open", "A closes, B becomes ready", "Only 'blocks' affects visibility"],
+      "how_points": [
+        "bd dep A --blocks B",
+        "B is hidden while A is open",
+        "A closes, B becomes ready",
+        "Only 'blocks' affects visibility"
+      ],
       "visual": {
         "type": "flow",
-        "nodes": [{"label": "A: Refactor auth", "sub": "open"}, {"label": "B: Update API docs", "sub": "invisible until A closes"}],
-        "arrows": ["blocks"],
+        "nodes": [
+          {
+            "label": "A: Refactor auth",
+            "sub": "open"
+          },
+          {
+            "label": "B: Update API docs",
+            "sub": "invisible until A closes"
+          }
+        ],
+        "arrows": [
+          "blocks"
+        ],
         "caption": "Agents only see ready work"
       },
       "analogy": "You can't paint a wall before the plaster dries, so the painter isn't even told about the job yet.",
       "jargon": [
-        {"term": "edge", "plain": "an arrow that links two beads"},
-        {"term": "ready", "plain": "open, with nothing blocking it"}
+        {
+          "term": "edge",
+          "plain": "an arrow that links two beads"
+        },
+        {
+          "term": "ready",
+          "plain": "open, with nothing blocking it"
+        }
       ],
       "takeaway": "Agents only see ready work, so the right order emerges from the graph.",
-      "references": ["docs/tutorials/06-beads.md", "docs/getting-started/how-gas-city-works.md"],
+      "references": [
+        "docs/tutorials/06-beads.md",
+        "docs/getting-started/how-gas-city-works.md"
+      ],
       "diagrams": [],
       "artifact": "Two beads and one blocks edge.",
-      "demo": ["bd dep mc-a4l --blocks mc-xp7", "bd ready --unassigned --limit=5   # mc-xp7 stays hidden until mc-a4l closes"],
+      "demo": {
+        "title": "Watch blocked work appear when it's ready",
+        "store": "bd",
+        "agent": false,
+        "steps": [
+          {
+            "run": "bd create \"Refactor auth\"",
+            "save": {
+              "a": "Created (?:issue: )?([a-z0-9]+-[a-z0-9]+)"
+            },
+            "say": "Bead A."
+          },
+          {
+            "run": "bd create \"Update API docs\"",
+            "save": {
+              "b": "Created (?:issue: )?([a-z0-9]+-[a-z0-9]+)"
+            },
+            "say": "Bead B."
+          },
+          {
+            "run": "bd dep @{a} --blocks @{b}",
+            "say": "A blocks B.",
+            "highlight": "blocks"
+          },
+          {
+            "run": "bd ready --limit 20 | grep -E '@{a}|@{b}'",
+            "say": "Only A is ready. B is invisible.",
+            "highlight": "@{a}",
+            "may_fail": true
+          },
+          {
+            "run": "bd close @{a} >/dev/null && bd ready --limit 20 | grep -E '@{a}|@{b}'",
+            "say": "Close A, and B shows up.",
+            "highlight": "@{b}",
+            "may_fail": true
+          }
+        ]
+      },
       "verify": [
         "Tutorial 06 dependency table: only blocks affects work visibility.",
         "Check the exact bd ready flags on your bd version: bd ready --help."
       ],
-      "builds_on": ["everything-is-a-bead"]
+      "builds_on": [
+        "everything-is-a-bead"
+      ]
     },
     {
       "day": 12,
@@ -396,26 +1094,83 @@
       "title": "Convoys: Track a Batch as One",
       "concept": "Convoy",
       "what": "A convoy is a bead that groups related beads, so you can track a batch of work as one unit.",
-      "what_points": ["A container bead", "Members keep their identity", "Closes itself when all are done"],
+      "what_points": [
+        "A container bead",
+        "Members keep their identity",
+        "Closes itself when all are done"
+      ],
       "why": "Real work comes in batches: a sprint, a deploy, a feature. You want one answer to 'is all of this done yet?'",
-      "why_points": ["One progress view", "No fake dependencies", "Auto-close, no polling"],
+      "why_points": [
+        "One progress view",
+        "No fake dependencies",
+        "Auto-close, no polling"
+      ],
       "how": "gc convoy create links members with tracks edges, which block nothing. When the last member closes, the convoy closes itself.",
-      "how_points": ["gc convoy create \"Sprint 42\" ...", "tracks edges, not blocks", "gc convoy status shows progress", "Auto-close on the last member"],
-      "visual": {"type": "image", "diagram": "convoy-tracks-membership", "caption": "Convoy membership is tracking, not blocking"},
+      "how_points": [
+        "gc convoy create \"Sprint 42\" ...",
+        "tracks edges, not blocks",
+        "gc convoy status shows progress",
+        "Auto-close on the last member"
+      ],
+      "visual": {
+        "type": "image",
+        "diagram": "convoy-tracks-membership",
+        "caption": "Convoy membership is tracking, not blocking"
+      },
       "analogy": "A shipping convoy: each truck drives on its own, but you track the convoy's arrival as one event.",
       "jargon": [
-        {"term": "tracks edge", "plain": "an 'I care about this' link that blocks nothing"}
+        {
+          "term": "tracks edge",
+          "plain": "an 'I care about this' link that blocks nothing"
+        }
       ],
       "takeaway": "A convoy groups work without making the pieces wait on each other.",
-      "references": ["docs/tutorials/06-beads.md"],
-      "diagrams": ["convoy-tracks-membership"],
+      "references": [
+        "docs/tutorials/06-beads.md"
+      ],
+      "diagrams": [
+        "convoy-tracks-membership"
+      ],
       "artifact": "The gc convoy status output for 'Sprint 42' from Tutorial 06.",
-      "demo": ["gc convoy create \"Sprint 42\" mc-ykp mc-a4l mc-xp7", "gc convoy status <convoy-id>"],
+      "demo": {
+        "title": "A convoy that closes itself",
+        "store": "bd",
+        "agent": false,
+        "steps": [
+          {
+            "run": "for t in \"Design page\" \"Build page\" \"Write docs\"; do bd create \"$t\"; done",
+            "save": {
+              "a": "Created (?:issue: )?([a-z0-9]+-[a-z0-9]+)"
+            },
+            "say": "Three independent beads."
+          },
+          {
+            "run": "gc convoy create landing-page $(bd list --flat | grep -E 'Design page|Build page|Write docs' | grep -oE '[a-z0-9]+-[a-z0-9]+' | head -3 | tr '\\n' ' ')",
+            "save": {
+              "convoy": "convoy ([a-z0-9]+-[a-z0-9]+)"
+            },
+            "say": "Group them: tracking, not blocking.",
+            "highlight": "tracking"
+          },
+          {
+            "run": "bd close @{a} >/dev/null && gc convoy status @{convoy}",
+            "say": "One closed: progress 1 of 3.",
+            "highlight": "Progress"
+          },
+          {
+            "run": "for id in $(gc convoy status @{convoy} | grep -E ' open ' | awk '{print $1}'); do bd close $id >/dev/null; done; sleep 3; gc convoy status @{convoy} | head -4",
+            "say": "The last one closes, and so does the convoy.",
+            "highlight": "Status"
+          }
+        ]
+      },
       "verify": [
         "Tutorial 06: convoy membership uses tracks edges.",
         "Tutorial 06: auto-close runs from the on_close hook; owned convoys skip it."
       ],
-      "builds_on": ["dependencies"]
+      "builds_on": [
+        "dependencies"
+      ]
     },
     {
       "day": 13,
@@ -424,31 +1179,92 @@
       "title": "The Pull Model: How Agents Find Work",
       "concept": "Routing and readiness",
       "what": "Agents pull their work: each one asks the store for ready work routed to it, then claims one bead.",
-      "what_points": ["Agents pull, nobody pushes", "Routing picks the queue", "Readiness picks the moment"],
+      "what_points": [
+        "Agents pull, nobody pushes",
+        "Routing picks the queue",
+        "Readiness picks the moment"
+      ],
       "why": "Pulling means the sender never needs to know which session exists. Work waits safely until a worker is ready.",
-      "why_points": ["Senders stay decoupled", "No lost hand-offs", "Scale workers freely"],
+      "why_points": [
+        "Senders stay decoupled",
+        "No lost hand-offs",
+        "Scale workers freely"
+      ],
       "how": "Sling stamps gc.routed_to on the bead. At startup an agent runs gc hook --claim, which claims one ready bead from its queue.",
-      "how_points": ["Route: gc.routed_to metadata", "Ready: no open blockers", "gc hook --claim takes one bead", "Run it, close it, repeat"],
+      "how_points": [
+        "Route: gc.routed_to metadata",
+        "Ready: no open blockers",
+        "gc hook --claim takes one bead",
+        "Run it, close it, repeat"
+      ],
       "visual": {
         "type": "flow",
-        "nodes": ["Work created", "Routed", "Ready", "Claimed"],
-        "arrows": ["gc.routed_to", "no blockers", "gc hook --claim"],
+        "nodes": [
+          "Work created",
+          "Routed",
+          "Ready",
+          "Claimed"
+        ],
+        "arrows": [
+          "gc.routed_to",
+          "no blockers",
+          "gc hook --claim"
+        ],
         "caption": "Routing decides which queue; readiness decides when"
       },
       "analogy": "A taxi rank: passengers queue at the right rank, and the next free taxi takes the next passenger.",
       "jargon": [
-        {"term": "atomic claim", "plain": "taking a bead in one step, so two agents can never grab the same one"}
+        {
+          "term": "atomic claim",
+          "plain": "taking a bead in one step, so two agents can never grab the same one"
+        }
       ],
       "takeaway": "Routing decides which queue a bead lands in; readiness decides whether anyone can see it.",
-      "references": ["docs/tutorials/06-beads.md", "docs/tutorials/02-agents.md"],
+      "references": [
+        "docs/tutorials/06-beads.md",
+        "docs/tutorials/02-agents.md"
+      ],
       "diagrams": [],
       "artifact": "The generic worker prompt printed by gc prime: claim, show, close, repeat.",
-      "demo": ["gc prime   # the generic worker prompt with gc hook --claim"],
+      "demo": {
+        "title": "Routing picks the queue; the agent pulls",
+        "store": "bd",
+        "agent": true,
+        "steps": [
+          {
+            "run": "gc sling hello-factory/claude \"List every file in this repo into files.txt\"",
+            "save": {
+              "bead": "Created (?:issue: )?([a-z0-9]+-[a-z0-9]+)"
+            },
+            "say": "Sling only stamps a route on the bead."
+          },
+          {
+            "run": "gc bd show @{bead} | grep -iE 'routed|status|OPEN'",
+            "say": "gc.routed_to: that's the queue.",
+            "highlight": "routed"
+          },
+          {
+            "run": "gc prime | sed -n '1,12p'",
+            "cwd": "city",
+            "say": "The worker's loop: claim one ready bead, do it, repeat.",
+            "highlight": "gc hook --claim"
+          },
+          {
+            "wait_for": "gc bd show @{bead}",
+            "until": "closed",
+            "timeout": 900,
+            "say": "Pulled, done, closed.",
+            "highlight": "CLOSED"
+          }
+        ]
+      },
       "verify": [
         "Tutorial 06, 'How agents find work'.",
         "Tutorial 02: gc prime output."
       ],
-      "builds_on": ["convoys"]
+      "builds_on": [
+        "convoys"
+      ]
     },
     {
       "day": 14,
@@ -457,11 +1273,24 @@
       "title": "Demo: A Tiny Work Graph by Hand",
       "concept": "Beads in practice",
       "what": "Today we build a three-bead work graph by hand with bd and watch readiness change as beads close.",
-      "what_points": ["Three beads", "One dependency", "One convoy"],
+      "what_points": [
+        "Three beads",
+        "One dependency",
+        "One convoy"
+      ],
       "why": "Doing it by hand once makes the factory's automatic behaviour obvious. A formula creates exactly this, only bigger.",
-      "why_points": ["See readiness change", "Recap of week two", "Sets up formulas"],
+      "why_points": [
+        "See readiness change",
+        "Recap of week two",
+        "Sets up formulas"
+      ],
       "how": "Create three beads, add a blocks edge, group them in a convoy, close the blocker and watch the convoy's progress.",
-      "how_points": ["bd create three times", "bd dep A --blocks B", "gc convoy create", "bd close A, then B is ready"],
+      "how_points": [
+        "bd create three times",
+        "bd dep A --blocks B",
+        "gc convoy create",
+        "bd close A, then B is ready"
+      ],
       "visual": {
         "type": "code",
         "lang": "shell",
@@ -479,15 +1308,60 @@
       "analogy": "Laying out the ingredients and recipe steps by hand before letting the kitchen run them.",
       "jargon": [],
       "takeaway": "A formula simply creates this graph for you, and now you know exactly what it builds.",
-      "references": ["docs/tutorials/06-beads.md"],
-      "diagrams": ["bead-lifecycle", "convoy-tracks-membership"],
+      "references": [
+        "docs/tutorials/06-beads.md"
+      ],
+      "diagrams": [
+        "bead-lifecycle",
+        "convoy-tracks-membership"
+      ],
       "artifact": "Run the seven commands in a scratch city (GC_BEADS=file is fine) and keep the convoy status output.",
-      "demo": ["bd create \"Design the page\"", "bd create \"Build the page\"", "bd create \"Write the docs\"", "bd dep <id-1> --blocks <id-2>", "gc convoy create \"Landing page\" <id-1> <id-2> <id-3>", "bd close <id-1>", "gc convoy status <convoy-id>"],
+      "demo": {
+        "title": "A tiny work graph by hand",
+        "store": "bd",
+        "agent": false,
+        "steps": [
+          {
+            "run": "bd create \"Design the page\"",
+            "save": {
+              "a": "Created (?:issue: )?([a-z0-9]+-[a-z0-9]+)"
+            },
+            "say": "Design."
+          },
+          {
+            "run": "bd create \"Build the page\"",
+            "save": {
+              "b": "Created (?:issue: )?([a-z0-9]+-[a-z0-9]+)"
+            },
+            "say": "Build: it should wait for design."
+          },
+          {
+            "run": "bd dep @{a} --blocks @{b} && gc convoy create landing @{a} @{b}",
+            "save": {
+              "convoy": "convoy ([a-z0-9]+-[a-z0-9]+)"
+            },
+            "say": "One dependency, one convoy."
+          },
+          {
+            "run": "bd close @{a} >/dev/null && bd ready --limit 20 | grep @{b}",
+            "say": "Design closes; build becomes ready.",
+            "highlight": "@{b}",
+            "may_fail": true
+          },
+          {
+            "run": "gc convoy status @{convoy}",
+            "say": "The convoy shows the batch: 1 of 2.",
+            "highlight": "Progress"
+          }
+        ]
+      },
       "verify": [
         "Real bead IDs differ from mc-1, mc-2, mc-3: use the IDs bd prints.",
         "Tutorial 06: gc convoy create syntax."
       ],
-      "builds_on": ["pull-model"]
+      "builds_on": [
+        "pull-model"
+      ]
     },
     {
       "day": 15,
@@ -496,11 +1370,24 @@
       "title": "Agents: A Role Is a Prompt",
       "concept": "Agent",
       "what": "An agent is a configured worker: a name, a provider, a scope and a prompt template that defines its behaviour.",
-      "what_points": ["An agents/<name>/ folder", "agent.toml = settings", "prompt.template.md = behaviour"],
+      "what_points": [
+        "An agents/<name>/ folder",
+        "agent.toml = settings",
+        "prompt.template.md = behaviour"
+      ],
       "why": "Because a role is just a prompt you wrote, a new reviewer, planner or tester takes minutes. No plugin, no code.",
-      "why_points": ["No code to write", "Versioned like any file", "As many roles as you need"],
+      "why_points": [
+        "No code to write",
+        "Versioned like any file",
+        "As many roles as you need"
+      ],
       "how": "gc agent add scaffolds the folder. agent.toml sets provider and scope; the prompt says how to work. gc prime shows the result.",
-      "how_points": ["gc agent add --name reviewer", "agent.toml: dir and provider", "prompt.template.md: the role", "gc prime my-project/reviewer"],
+      "how_points": [
+        "gc agent add --name reviewer",
+        "agent.toml: dir and provider",
+        "prompt.template.md: the role",
+        "gc prime my-project/reviewer"
+      ],
       "visual": {
         "type": "code",
         "lang": "toml",
@@ -518,19 +1405,71 @@
       },
       "analogy": "A job description: the same person becomes a reviewer or a planner depending on the description you hand over.",
       "jargon": [
-        {"term": "provider", "plain": "the coding-agent CLI that runs the agent, such as Claude Code or Codex"},
-        {"term": "prompt template", "plain": "the starting instructions, filled in with details about the city"}
+        {
+          "term": "provider",
+          "plain": "the coding-agent CLI that runs the agent, such as Claude Code or Codex"
+        },
+        {
+          "term": "prompt template",
+          "plain": "the starting instructions, filled in with details about the city"
+        }
       ],
       "takeaway": "A reviewer is nothing more than the prompt you wrote for it.",
-      "references": ["docs/tutorials/02-agents.md", "docs/getting-started/how-gas-city-works.md"],
+      "references": [
+        "docs/tutorials/02-agents.md",
+        "docs/getting-started/how-gas-city-works.md"
+      ],
       "diagrams": [],
       "artifact": "The reviewer agent folder from Tutorial 02.",
-      "demo": ["gc agent add --name reviewer", "gc prime my-project/reviewer"],
+      "demo": {
+        "title": "Create a reviewer in two files",
+        "store": "bd",
+        "agent": false,
+        "setup": [
+          {
+            "run": "rm -rf agents/reviewer",
+            "cwd": "city",
+            "hidden": true
+          }
+        ],
+        "steps": [
+          {
+            "run": "gc agent add --name reviewer",
+            "cwd": "city",
+            "say": "Scaffold the agent folder.",
+            "highlight": "reviewer"
+          },
+          {
+            "write": "agents/reviewer/agent.toml",
+            "content": "dir = \"hello-factory\"\nprovider = \"claude\"\n",
+            "cwd": "city"
+          },
+          {
+            "write": "agents/reviewer/prompt.template.md",
+            "content": "# Code Reviewer Agent\nYou are an agent in a Gas City workspace. Claim available work and execute it.\n\n## Your tools\n- `gc hook --claim --json` — find and atomically claim one work item\n- `bd show <id>` — see details of a work item\n- `bd close <id>` — mark work as done\n\n## How to work\n1. Claim work: `gc hook --claim --json`\n2. Read the claimed bead and execute the work described in its title\n3. When done, close it: `bd close <id>`\n4. Check for more work. Repeat until the queue is empty.\n\n## Reviewing code\nRead the code and report bugs, security issues and style problems.\n",
+            "cwd": "city"
+          },
+          {
+            "run": "cat agents/reviewer/agent.toml",
+            "cwd": "city",
+            "say": "Settings: which project, which harness.",
+            "highlight": "provider"
+          },
+          {
+            "run": "gc prime hello-factory/reviewer | tail -4",
+            "cwd": "city",
+            "say": "Behaviour: the prompt you wrote.",
+            "highlight": "Review"
+          }
+        ]
+      },
       "verify": [
         "Tutorial 02: agent.toml with dir and provider.",
         "how-gas-city-works.md: the prompt template is the agent's entire behavioural spec."
       ],
-      "builds_on": ["demo-bead-graph"]
+      "builds_on": [
+        "demo-bead-graph"
+      ]
     },
     {
       "day": 16,
@@ -539,38 +1478,125 @@
       "title": "Harnesses: One Fleet, Many Coding Agents",
       "concept": "Providers (harnesses)",
       "what": "Each agent picks its own harness, such as Claude Code, Codex or Gemini CLI, so a mixed fleet is just configuration.",
-      "what_points": ["Sixteen built-in harnesses", "Chosen per agent", "Uses your existing logins"],
+      "what_points": [
+        "Sixteen built-in harnesses",
+        "Chosen per agent",
+        "Uses your existing logins"
+      ],
       "why": "Different models are good at different jobs. Mixing them puts the right model on the right role without changing the workflow.",
-      "why_points": ["Right model per role", "No lock-in", "Control cost and speed"],
+      "why_points": [
+        "Right model per role",
+        "No lock-in",
+        "Control cost and speed"
+      ],
       "how": "Set provider in agent.toml and register it in city.toml. An agent has five axes: harness, model, upstream, transport, runtime.",
-      "how_points": ["provider = \"codex\"", "[providers.codex] in city.toml", "option_defaults sets the model", "Five independent axes"],
+      "how_points": [
+        "provider = \"codex\"",
+        "[providers.codex] in city.toml",
+        "option_defaults sets the model",
+        "Five independent axes"
+      ],
       "visual": {
         "type": "layers",
         "layers": [
-          {"label": "Harness", "sub": "provider: claude, codex, gemini ..."},
-          {"label": "Model", "sub": "option_defaults.model"},
-          {"label": "Upstream", "sub": "who serves the model"},
-          {"label": "Transport", "sub": "the session"},
-          {"label": "Runtime", "sub": "where it runs: tmux, Kubernetes ..."}
+          {
+            "label": "Harness",
+            "sub": "provider: claude, codex, gemini ..."
+          },
+          {
+            "label": "Model",
+            "sub": "option_defaults.model"
+          },
+          {
+            "label": "Upstream",
+            "sub": "who serves the model"
+          },
+          {
+            "label": "Transport",
+            "sub": "the session"
+          },
+          {
+            "label": "Runtime",
+            "sub": "where it runs: tmux, Kubernetes ..."
+          }
         ],
         "caption": "Five axes you can tune per agent"
       },
       "analogy": "A band where each musician brings their own instrument, but everyone reads the same sheet music.",
       "jargon": [
-        {"term": "harness", "plain": "the coding-agent program an agent runs inside"},
-        {"term": "upstream", "plain": "the service that actually serves the model"}
+        {
+          "term": "harness",
+          "plain": "the coding-agent program an agent runs inside"
+        },
+        {
+          "term": "upstream",
+          "plain": "the service that actually serves the model"
+        }
       ],
       "takeaway": "In Gas City, a mixed fleet of coding agents is just configuration.",
-      "references": ["docs/guides/configuring-an-agent.md", "docs/guides/harness-recipes.md", "docs/getting-started/faq.md"],
+      "references": [
+        "docs/guides/configuring-an-agent.md",
+        "docs/guides/harness-recipes.md",
+        "docs/getting-started/faq.md"
+      ],
       "diagrams": [],
       "artifact": "Two agent.toml snippets side by side: one Claude, one Codex.",
-      "demo": ["gc doctor --fix   # adds missing builtin provider aliases"],
+      "demo": {
+        "title": "Swap the model with one line",
+        "store": "bd",
+        "agent": true,
+        "setup": [
+          {
+            "write": "agents/reviewer/agent.toml",
+            "content": "dir = \"hello-factory\"\nprovider = \"claude\"\n",
+            "cwd": "city"
+          },
+          {
+            "write": "agents/reviewer/prompt.template.md",
+            "content": "# Code Reviewer Agent\nYou are an agent in a Gas City workspace. Claim available work and execute it.\n\n## Your tools\n- `gc hook --claim --json` — find and atomically claim one work item\n- `bd show <id>` — see details of a work item\n- `bd close <id>` — mark work as done\n\n## How to work\n1. Claim work: `gc hook --claim --json`\n2. Read the claimed bead and execute the work described in its title\n3. When done, close it: `bd close <id>`\n4. Check for more work. Repeat until the queue is empty.\n\n## Reviewing code\nRead the code and report bugs, security issues and style problems.\n",
+            "cwd": "city"
+          }
+        ],
+        "steps": [
+          {
+            "write": "agents/reviewer/agent.toml",
+            "content": "dir = \"hello-factory\"\nprovider = \"claude\"\noption_defaults = { model = \"haiku\" }\n",
+            "cwd": "city"
+          },
+          {
+            "run": "cat agents/reviewer/agent.toml",
+            "cwd": "city",
+            "say": "Same harness, a smaller model: one line.",
+            "highlight": "haiku"
+          },
+          {
+            "run": "gc sling hello-factory/reviewer \"Review hello.py and write review.md\"",
+            "save": {
+              "bead": "Created (?:issue: )?([a-z0-9]+-[a-z0-9]+)"
+            },
+            "say": "Same workflow, different engine."
+          },
+          {
+            "wait_for": "gc bd show @{bead}",
+            "until": "closed",
+            "timeout": 900,
+            "say": "The fleet doesn't care which model serves it.",
+            "highlight": "CLOSED"
+          },
+          {
+            "run": "head -8 review.md",
+            "say": "The review."
+          }
+        ]
+      },
       "verify": [
         "FAQ: sixteen built-in harnesses.",
         "configuring-an-agent.md: the five axes.",
         "Tutorial 02: register [providers.codex] with base = \"builtin:codex\"."
       ],
-      "builds_on": ["agent-role-prompt"]
+      "builds_on": [
+        "agent-role-prompt"
+      ]
     },
     {
       "day": 17,
@@ -579,32 +1605,98 @@
       "title": "Sessions: On-Demand vs. Always-On",
       "concept": "Session",
       "what": "A session is a running agent: a live process with its own terminal, state and conversation history.",
-      "what_points": ["Agent = definition", "Session = live process", "On-demand or always-on"],
+      "what_points": [
+        "Agent = definition",
+        "Session = live process",
+        "On-demand or always-on"
+      ],
       "why": "On-demand sessions save cost: they start for work and stop when idle. Always-on sessions keep a coordinator ready to chat.",
-      "why_points": ["Pay only while working", "A mayor that's always there", "Sessions are disposable"],
+      "why_points": [
+        "Pay only while working",
+        "A mayor that's always there",
+        "Sessions are disposable"
+      ],
       "how": "Slung work starts on-demand sessions. A named session with mode always stays alive. Watch with peek and logs; poke with nudge.",
-      "how_points": ["gc session list", "gc session peek and logs", "gc session attach mayor", "gc session nudge mayor \"...\""],
+      "how_points": [
+        "gc session list",
+        "gc session peek and logs",
+        "gc session attach mayor",
+        "gc session nudge mayor \"...\""
+      ],
       "visual": {
         "type": "compare",
-        "left": {"title": "On-demand", "points": ["Starts for slung work", "Shuts down when idle", "The default"]},
-        "right": {"title": "Always-on", "points": ["named_session, mode = always", "Kept alive to chat", "For example, the mayor"]},
+        "left": {
+          "title": "On-demand",
+          "points": [
+            "Starts for slung work",
+            "Shuts down when idle",
+            "The default"
+          ]
+        },
+        "right": {
+          "title": "Always-on",
+          "points": [
+            "named_session, mode = always",
+            "Kept alive to chat",
+            "For example, the mayor"
+          ]
+        },
         "caption": "Same primitive, two lifecycles"
       },
       "analogy": "Contractors who come in for a job, versus a receptionist who's always at the front desk.",
       "jargon": [
-        {"term": "named session", "plain": "a session with a stable name the city keeps track of"},
-        {"term": "nudge", "plain": "typing a message straight into a running session"}
+        {
+          "term": "named session",
+          "plain": "a session with a stable name the city keeps track of"
+        },
+        {
+          "term": "nudge",
+          "plain": "typing a message straight into a running session"
+        }
       ],
       "takeaway": "Agents are definitions; sessions are the live processes, and they're disposable by design.",
-      "references": ["docs/tutorials/03-sessions.md"],
+      "references": [
+        "docs/tutorials/03-sessions.md"
+      ],
       "diagrams": [],
       "artifact": "gc session list output with a reviewer that is creating and a mayor that is active.",
-      "demo": ["gc session list", "gc session peek mayor --lines 3", "gc session logs mayor --tail 2"],
+      "demo": {
+        "title": "Peek, nudge and read a live session",
+        "store": "bd",
+        "agent": true,
+        "steps": [
+          {
+            "run": "gc session list",
+            "cwd": "city",
+            "say": "The mayor is always on.",
+            "highlight": "mayor"
+          },
+          {
+            "run": "gc session peek mayor --lines 4",
+            "cwd": "city",
+            "say": "Peek: a snapshot of its terminal."
+          },
+          {
+            "run": "gc session nudge mayor \"In one sentence, what is this city for?\" && sleep 30",
+            "cwd": "city",
+            "say": "Nudge: type straight into it.",
+            "highlight": "Nudged"
+          },
+          {
+            "run": "gc session logs mayor --tail 2",
+            "cwd": "city",
+            "say": "Logs: the whole conversation.",
+            "highlight": "ASSISTANT"
+          }
+        ]
+      },
       "verify": [
         "Tutorial 03: the on-demand vs. always-on table.",
         "Tutorial 03: detach from tmux with Ctrl-b d."
       ],
-      "builds_on": ["harnesses"]
+      "builds_on": [
+        "harnesses"
+      ]
     },
     {
       "day": 18,
@@ -613,26 +1705,99 @@
       "title": "Agents Talk Only Through the Store",
       "concept": "Mail, nudge and sling",
       "what": "Agents never call each other. They coordinate through the bead store: mail for messages, sling for delegated work.",
-      "what_points": ["No direct connections", "Mail = a message bead", "Sling = delegated work"],
+      "what_points": [
+        "No direct connections",
+        "Mail = a message bead",
+        "Sling = delegated work"
+      ],
       "why": "With no references between agents, any of them can crash, restart, scale or switch providers without breaking the others.",
-      "why_points": ["Senders name a destination", "Gas City routes it", "Hand-offs survive crashes"],
+      "why_points": [
+        "Senders name a destination",
+        "Gas City routes it",
+        "Hand-offs survive crashes"
+      ],
       "how": "A human mails the mayor. The mayor plans and slings tasks to agents, and agents close their beads. Every hop goes through the store.",
-      "how_points": ["gc mail send mayor ...", "The mayor slings to my-project/reviewer", "The reviewer closes the bead", "A nudge only wakes a live session"],
-      "visual": {"type": "image", "diagram": "coordination-through-store", "caption": "Agents coordinate only through the store"},
+      "how_points": [
+        "gc mail send mayor ...",
+        "The mayor slings to my-project/reviewer",
+        "The reviewer closes the bead",
+        "A nudge only wakes a live session"
+      ],
+      "visual": {
+        "type": "image",
+        "diagram": "coordination-through-store",
+        "caption": "Agents coordinate only through the store"
+      },
       "analogy": "A shared office mailroom: nobody walks into anyone's office; everything goes through the pigeonholes.",
       "jargon": [
-        {"term": "mail", "plain": "a persistent message stored as a bead"},
-        {"term": "nudge", "plain": "a one-off poke into a live terminal that isn't saved"}
+        {
+          "term": "mail",
+          "plain": "a persistent message stored as a bead"
+        },
+        {
+          "term": "nudge",
+          "plain": "a one-off poke into a live terminal that isn't saved"
+        }
       ],
       "takeaway": "No agent holds a reference to another, so any of them can crash, scale or swap.",
-      "references": ["docs/tutorials/04-communication.md", "docs/guides/capabilities-for-coding-agent-users.md"],
-      "diagrams": ["coordination-through-store"],
+      "references": [
+        "docs/tutorials/04-communication.md",
+        "docs/guides/capabilities-for-coding-agent-users.md"
+      ],
+      "diagrams": [
+        "coordination-through-store"
+      ],
       "artifact": "The mail vs. nudge table from Tutorial 04.",
-      "demo": ["gc mail send mayor -s \"Review needed\" -m \"Please look at the auth changes\"", "gc mail inbox mayor"],
+      "demo": {
+        "title": "Mail the mayor; watch the work move",
+        "store": "bd",
+        "agent": true,
+        "setup": [
+          {
+            "write": "agents/reviewer/agent.toml",
+            "content": "dir = \"hello-factory\"\nprovider = \"claude\"\n",
+            "cwd": "city"
+          },
+          {
+            "write": "agents/reviewer/prompt.template.md",
+            "content": "# Code Reviewer Agent\nYou are an agent in a Gas City workspace. Claim available work and execute it.\n\n## Your tools\n- `gc hook --claim --json` — find and atomically claim one work item\n- `bd show <id>` — see details of a work item\n- `bd close <id>` — mark work as done\n\n## How to work\n1. Claim work: `gc hook --claim --json`\n2. Read the claimed bead and execute the work described in its title\n3. When done, close it: `bd close <id>`\n4. Check for more work. Repeat until the queue is empty.\n\n## Reviewing code\nRead the code and report bugs, security issues and style problems.\n",
+            "cwd": "city"
+          },
+          {
+            "run": "rm -f review.md",
+            "hidden": true
+          }
+        ],
+        "steps": [
+          {
+            "run": "gc mail send mayor -s \"Review needed\" -m \"Please have hello-factory/reviewer review hello.py and write review.md\"",
+            "cwd": "city",
+            "say": "I only talk to the mayor, by mail."
+          },
+          {
+            "run": "gc session nudge mayor \"Check mail and act on it\"",
+            "cwd": "city",
+            "say": "Nudge it to take a turn."
+          },
+          {
+            "wait_for": "ls",
+            "until": "review.md",
+            "timeout": 1200,
+            "say": "Mayor slings to the reviewer; nobody holds a reference.",
+            "highlight": "review.md"
+          },
+          {
+            "run": "head -6 review.md",
+            "say": "Every hop went through the store."
+          }
+        ]
+      },
       "verify": [
         "Tutorial 04 table: mail survives a crash, a nudge does not."
       ],
-      "builds_on": ["sessions"]
+      "builds_on": [
+        "sessions"
+      ]
     },
     {
       "day": 19,
@@ -641,34 +1806,86 @@
       "title": "Hooks: Wiring a Coding Agent Into the City",
       "concept": "Hooks",
       "what": "Hooks connect a plain coding-agent process to Gas City, so it receives mail, picks up work and saves a hand-off by itself.",
-      "what_points": ["A bare provider knows nothing", "Hooks fire at key moments", "gc init wires Claude for you"],
+      "what_points": [
+        "A bare provider knows nothing",
+        "Hooks fire at key moments",
+        "gc init wires Claude for you"
+      ],
       "why": "Without hooks you'd run gc mail check and gc prime by hand, on every agent, every turn.",
-      "why_points": ["No manual polling", "Mail appears in context", "A hand-off before memory resets"],
+      "why_points": [
+        "No manual polling",
+        "Mail appears in context",
+        "A hand-off before memory resets"
+      ],
       "how": "gc init writes a managed .gc/settings.json for Claude. It runs Gas City commands at session start, before each turn and before compaction.",
-      "how_points": [".gc/settings.json for Claude", "Session start: surface pending work", "Each turn: deliver mail and nudges", "Before compaction: save a hand-off"],
+      "how_points": [
+        ".gc/settings.json for Claude",
+        "Session start: surface pending work",
+        "Each turn: deliver mail and nudges",
+        "Before compaction: save a hand-off"
+      ],
       "visual": {
         "type": "flow",
         "nodes": [
-          {"label": "Session start", "sub": "surface pending work"},
-          {"label": "Before each turn", "sub": "deliver mail and nudges"},
-          {"label": "Before compaction", "sub": "save a hand-off"}
+          {
+            "label": "Session start",
+            "sub": "surface pending work"
+          },
+          {
+            "label": "Before each turn",
+            "sub": "deliver mail and nudges"
+          },
+          {
+            "label": "Before compaction",
+            "sub": "save a hand-off"
+          }
         ],
         "caption": "Three moments where Gas City steps in"
       },
       "analogy": "Phone notifications: apps don't keep asking you; the phone taps them on the shoulder at the right moment.",
       "jargon": [
-        {"term": "context compaction", "plain": "when a coding agent summarises its conversation to free up memory"}
+        {
+          "term": "context compaction",
+          "plain": "when a coding agent summarises its conversation to free up memory"
+        }
       ],
       "takeaway": "Hooks turn a bare coding agent into a member of the city.",
-      "references": ["docs/tutorials/04-communication.md"],
+      "references": [
+        "docs/tutorials/04-communication.md"
+      ],
       "diagrams": [],
       "artifact": "The install_agent_hooks line for a non-Claude provider.",
-      "demo": ["# agents/mayor/agent.toml", "install_agent_hooks = [\"codex\"]"],
+      "demo": {
+        "title": "The hooks that wire Claude into the city",
+        "store": "bd",
+        "agent": true,
+        "steps": [
+          {
+            "run": "jq -r '.hooks | keys[]' .gc/settings.json 2>/dev/null || head -20 .gc/settings.json",
+            "cwd": "city",
+            "say": "gc init wrote these for Claude.",
+            "highlight": "SessionStart"
+          },
+          {
+            "run": "gc mail send mayor -s \"Ping\" -m \"Hello from the hooks demo\"",
+            "cwd": "city",
+            "say": "Send mail; don't tell the mayor to check."
+          },
+          {
+            "run": "gc session nudge mayor \"Anything new for you?\" && sleep 30 && gc session peek mayor --lines 8",
+            "cwd": "city",
+            "say": "The hook drops the mail into its context.",
+            "highlight": "hooks demo"
+          }
+        ]
+      },
       "verify": [
         "Tutorial 04: Claude is the only provider wired automatically.",
         "Tutorial 04: hooks fire at session start, before each turn and before compaction."
       ],
-      "builds_on": ["coordination"]
+      "builds_on": [
+        "coordination"
+      ]
     },
     {
       "day": 20,
@@ -677,34 +1894,110 @@
       "title": "Pools: Scaling Workers to Demand",
       "concept": "Pool",
       "what": "A pool is one agent definition scaled into several identical workers that share a single queue.",
-      "what_points": ["One definition, many sessions", "One shared queue", "Sized to demand"],
+      "what_points": [
+        "One definition, many sessions",
+        "One shared queue",
+        "Sized to demand"
+      ],
       "why": "Ten ready tasks shouldn't wait on one worker, and zero tasks shouldn't keep ten sessions running.",
-      "why_points": ["Parallel when busy", "Nothing running when idle", "Floors and caps you control"],
+      "why_points": [
+        "Parallel when busy",
+        "Nothing running when idle",
+        "Floors and caps you control"
+      ],
       "how": "Each tick the orchestrator runs the agent's scale_check to measure demand, then sizes the pool between its floor and cap.",
-      "how_points": ["scale_check measures demand", "min_active_sessions is the floor", "max_active_sessions is the cap", "Idle sessions retire"],
+      "how_points": [
+        "scale_check measures demand",
+        "min_active_sessions is the floor",
+        "max_active_sessions is the cap",
+        "Idle sessions retire"
+      ],
       "visual": {
         "type": "flow",
-        "nodes": ["Ready work", "scale_check", "Pool: min ... max sessions"],
-        "arrows": ["measured by", "sizes"],
+        "nodes": [
+          "Ready work",
+          "scale_check",
+          "Pool: min ... max sessions"
+        ],
+        "arrows": [
+          "measured by",
+          "sizes"
+        ],
         "loop": true,
         "loop_label": "every tick",
         "caption": "Demand in, sessions out"
       },
       "analogy": "Supermarket checkouts: open more lanes when the queue grows, close them when it's quiet.",
       "jargon": [
-        {"term": "scale_check", "plain": "a small command that reports how much new work is waiting"},
-        {"term": "crew and polecats", "plain": "Gas Town names for persistent and transient workers: operating styles, not types"}
+        {
+          "term": "scale_check",
+          "plain": "a small command that reports how much new work is waiting"
+        },
+        {
+          "term": "crew and polecats",
+          "plain": "Gas Town names for persistent and transient workers: operating styles, not types"
+        }
       ],
       "takeaway": "A pool turns one agent definition into exactly as many workers as the work needs.",
-      "references": ["docs/getting-started/how-gas-city-works.md", "docs/reference/config.md", "docs/getting-started/coming-from-gastown.md"],
-      "diagrams": ["gastown-agents-by-scope"],
+      "references": [
+        "docs/getting-started/how-gas-city-works.md",
+        "docs/reference/config.md",
+        "docs/getting-started/coming-from-gastown.md"
+      ],
+      "diagrams": [
+        "gastown-agents-by-scope"
+      ],
       "artifact": "The pool line from gc status in Tutorial 01: 'scaled (min=0, max=2)'.",
-      "demo": ["gc status   # look for a line like: scaled (min=0, max=2)"],
+      "demo": {
+        "title": "One worker definition, several sessions",
+        "store": "bd",
+        "agent": true,
+        "setup": [
+          {
+            "write": "agents/worker/prompt.template.md",
+            "content": "# Worker Agent\nYou are a general-purpose Gas City worker. Execute assigned work carefully and report the result.\n",
+            "cwd": "city"
+          },
+          {
+            "write": "agents/worker/agent.toml",
+            "content": "max_active_sessions = 3\n",
+            "cwd": "city"
+          }
+        ],
+        "steps": [
+          {
+            "run": "cat agents/worker/agent.toml",
+            "cwd": "city",
+            "say": "A cap of three sessions.",
+            "highlight": "max_active_sessions"
+          },
+          {
+            "run": "for n in 1 2 3; do gc sling worker \"Write the number $n into pool-$n.txt in ~/\"; done",
+            "cwd": "city",
+            "say": "Three ready tasks at once."
+          },
+          {
+            "wait_for": "gc session list --template worker",
+            "until": "worker",
+            "timeout": 300,
+            "say": "The pool scales up to the demand.",
+            "highlight": "worker"
+          },
+          {
+            "wait_for": "echo \"open: $(gc beads list --status open | grep -c pool-) left\"",
+            "until": "open: 0 left",
+            "timeout": 1200,
+            "say": "And retires idle sessions when the queue is empty."
+          }
+        ]
+      },
       "verify": [
         "docs/reference/config.md: scale_check, min_active_sessions, max_active_sessions.",
         "coming-from-gastown.md: crew and polecats are operating modes, not types."
       ],
-      "builds_on": ["hooks"]
+      "builds_on": [
+        "hooks"
+      ]
     },
     {
       "day": 21,
@@ -713,11 +2006,24 @@
       "title": "Demo: Build a Reviewer and Sling a Review",
       "concept": "Agents in practice",
       "what": "Today we define a reviewer agent, sling it a review and watch its session do the work.",
-      "what_points": ["Define the role", "Sling the work", "Watch the session"],
+      "what_points": [
+        "Define the role",
+        "Sling the work",
+        "Watch the session"
+      ],
       "why": "This recap ties week three together: role, harness, session, pull model and coordination, in one small run.",
-      "why_points": ["Week three in one run", "See the prompt land", "See the bead close"],
+      "why_points": [
+        "Week three in one run",
+        "See the prompt land",
+        "See the bead close"
+      ],
       "how": "Scaffold the agent, write its prompt, sling a review, peek at the session and read the result.",
-      "how_points": ["gc agent add --name reviewer", "Write prompt.template.md", "gc sling my-project/reviewer ...", "gc session peek, then read review.md"],
+      "how_points": [
+        "gc agent add --name reviewer",
+        "Write prompt.template.md",
+        "gc sling my-project/reviewer ...",
+        "gc session peek, then read review.md"
+      ],
       "visual": {
         "type": "code",
         "lang": "shell",
@@ -735,15 +2041,74 @@
       "analogy": "Hiring a specialist, handing them a ticket and glancing through the window while they work.",
       "jargon": [],
       "takeaway": "A role, a prompt and one sling: that's a new specialist on your factory floor.",
-      "references": ["docs/tutorials/02-agents.md", "docs/tutorials/03-sessions.md"],
-      "diagrams": ["coordination-through-store"],
+      "references": [
+        "docs/tutorials/02-agents.md",
+        "docs/tutorials/03-sessions.md"
+      ],
+      "diagrams": [
+        "coordination-through-store"
+      ],
       "artifact": "Record the terminal run beforehand, or show the transcript on the slide.",
-      "demo": ["gc agent add --name reviewer", "gc sling my-project/reviewer \"Review hello.py and write review.md with feedback\"", "gc session list --template my-project/reviewer", "gc session peek <session-id>"],
+      "demo": {
+        "title": "Build a reviewer and sling a review",
+        "store": "bd",
+        "agent": true,
+        "setup": [
+          {
+            "run": "rm -rf agents/reviewer; rm -f review.md",
+            "cwd": "city",
+            "hidden": true
+          }
+        ],
+        "steps": [
+          {
+            "run": "gc agent add --name reviewer",
+            "cwd": "city",
+            "say": "A new specialist."
+          },
+          {
+            "write": "agents/reviewer/agent.toml",
+            "content": "dir = \"hello-factory\"\nprovider = \"claude\"\n",
+            "cwd": "city"
+          },
+          {
+            "write": "agents/reviewer/prompt.template.md",
+            "content": "# Code Reviewer Agent\nYou are an agent in a Gas City workspace. Claim available work and execute it.\n\n## Your tools\n- `gc hook --claim --json` — find and atomically claim one work item\n- `bd show <id>` — see details of a work item\n- `bd close <id>` — mark work as done\n\n## How to work\n1. Claim work: `gc hook --claim --json`\n2. Read the claimed bead and execute the work described in its title\n3. When done, close it: `bd close <id>`\n4. Check for more work. Repeat until the queue is empty.\n\n## Reviewing code\nRead the code and report bugs, security issues and style problems.\n",
+            "cwd": "city"
+          },
+          {
+            "run": "gc sling hello-factory/reviewer \"Review hello.py and write review.md with feedback\"",
+            "save": {
+              "bead": "Created (?:issue: )?([a-z0-9]+-[a-z0-9]+)"
+            },
+            "say": "Hand it a ticket."
+          },
+          {
+            "wait_for": "gc session list --template hello-factory/reviewer",
+            "until": "reviewer",
+            "timeout": 300,
+            "say": "A session spins up for it."
+          },
+          {
+            "wait_for": "gc bd show @{bead}",
+            "until": "closed",
+            "timeout": 1200,
+            "say": "It claims, works, closes.",
+            "highlight": "CLOSED"
+          },
+          {
+            "run": "head -10 review.md",
+            "say": "The review, in the repo."
+          }
+        ]
+      },
       "verify": [
         "Tutorial 02: a custom agent has no default sling formula, so the bead is delivered directly.",
         "Tutorial 02: the 'suggest' permission mode blocks unattended writes; use a non-blocking mode for slung work."
       ],
-      "builds_on": ["pools"]
+      "builds_on": [
+        "pools"
+      ]
     },
     {
       "day": 22,
@@ -752,27 +2117,82 @@
       "title": "Formulas: Write the Method Down Once",
       "concept": "Formula",
       "what": "A formula is a TOML file that records how a job gets done: its steps, their dependencies and its variables.",
-      "what_points": ["A reusable method", "Steps plus needs", "Not the work itself"],
+      "what_points": [
+        "A reusable method",
+        "Steps plus needs",
+        "Not the work itself"
+      ],
       "why": "A method kept in a prompt is improvised every time. Written down, it's repeatable, reviewable and runs across many agents.",
-      "why_points": ["Repeatable", "Reviewable like code", "Runs in parallel"],
+      "why_points": [
+        "Repeatable",
+        "Reviewable like code",
+        "Runs in parallel"
+      ],
       "how": "Steps declare needs. Steps without needs run in parallel. Pancakes: dry and wet together, then combine, cook and serve.",
-      "how_points": ["[[steps]] with an id and title", "needs = [\"dry\", \"wet\"]", "No needs means parallel", "A DAG: no cycles allowed"],
-      "visual": {"type": "image", "diagram": "pancakes-dag", "caption": "The pancakes formula as a graph"},
+      "how_points": [
+        "[[steps]] with an id and title",
+        "needs = [\"dry\", \"wet\"]",
+        "No needs means parallel",
+        "A DAG: no cycles allowed"
+      ],
+      "visual": {
+        "type": "image",
+        "diagram": "pancakes-dag",
+        "caption": "The pancakes formula as a graph"
+      },
       "analogy": "A recipe card: anyone can cook from it, and two people can mix dry and wet ingredients at the same time.",
       "jargon": [
-        {"term": "TOML", "plain": "a simple, readable config file format"},
-        {"term": "DAG", "plain": "a graph of steps with arrows and no loops"}
+        {
+          "term": "TOML",
+          "plain": "a simple, readable config file format"
+        },
+        {
+          "term": "DAG",
+          "plain": "a graph of steps with arrows and no loops"
+        }
       ],
       "takeaway": "Write the method down once, and the orchestrator can run it again and again.",
-      "references": ["docs/tutorials/05-formulas.md", "docs/guides/understanding-formulas.md"],
-      "diagrams": ["pancakes-dag"],
+      "references": [
+        "docs/tutorials/05-formulas.md",
+        "docs/guides/understanding-formulas.md"
+      ],
+      "diagrams": [
+        "pancakes-dag"
+      ],
       "artifact": "formulas/pancakes.toml from Tutorial 05.",
-      "demo": ["gc formula list", "gc formula show pancakes"],
+      "demo": {
+        "title": "Pancakes as a graph",
+        "store": "bd",
+        "agent": false,
+        "setup": [
+          {
+            "write": "formulas/pancakes.toml",
+            "content": "formula = \"pancakes\"\ndescription = \"Make pancakes from scratch\"\n\n[requires]\nformula_compiler = \">=2.0.0\"\n\n[[steps]]\nid = \"dry\"\ntitle = \"Mix dry ingredients\"\ndescription = \"Write one line to pancakes.md: flour, sugar, baking powder, salt.\"\n\n[[steps]]\nid = \"wet\"\ntitle = \"Mix wet ingredients\"\ndescription = \"Write one line to pancakes.md: eggs, milk, melted butter.\"\n\n[[steps]]\nid = \"combine\"\ntitle = \"Combine wet and dry\"\ndescription = \"Append 'combined' to pancakes.md.\"\nneeds = [\"dry\", \"wet\"]\n\n[[steps]]\nid = \"cook\"\ntitle = \"Cook the pancakes\"\ndescription = \"Append 'cooked at 375F' to pancakes.md.\"\nneeds = [\"combine\"]\n\n[[steps]]\nid = \"serve\"\ntitle = \"Serve\"\ndescription = \"Append 'served' to pancakes.md.\"\nneeds = [\"cook\"]\n",
+            "cwd": "city"
+          }
+        ],
+        "steps": [
+          {
+            "run": "grep -E '^id|^needs' formulas/pancakes.toml",
+            "cwd": "city",
+            "say": "Steps and what each one needs.",
+            "highlight": "needs"
+          },
+          {
+            "run": "gc formula show pancakes",
+            "cwd": "city",
+            "say": "dry and wet run in parallel; the rest waits.",
+            "highlight": "needs: pancakes.dry, pancakes.wet"
+          }
+        ]
+      },
       "verify": [
         "Tutorial 05: a formula isn't the work itself (that's a bead); it's the reusable method.",
         "Tutorial 05: the v2 compiler rejects cycles at compile time."
       ],
-      "builds_on": ["demo-reviewer"]
+      "builds_on": [
+        "demo-reviewer"
+      ]
     },
     {
       "day": 23,
@@ -781,27 +2201,103 @@
       "title": "From TOML to Beads: Cook vs. Sling",
       "concept": "Applying a formula",
       "what": "Applying a formula compiles it into a recipe, then turns every step into a bead in the store.",
-      "what_points": ["Compile into a recipe", "Instantiate as beads", "The work outlives the file"],
+      "what_points": [
+        "Compile into a recipe",
+        "Instantiate as beads",
+        "The work outlives the file"
+      ],
       "why": "Once the steps are beads, the run no longer depends on the file or on any session. A crash can't erase it.",
-      "why_points": ["Independent of the file", "Independent of sessions", "Inspect before you run"],
+      "why_points": [
+        "Independent of the file",
+        "Independent of sessions",
+        "Inspect before you run"
+      ],
       "how": "gc formula cook creates the beads without routing. gc sling with --formula creates and routes. A finalize step is added.",
-      "how_points": ["gc formula show: preview", "gc formula cook: create only", "gc sling mayor pancakes --formula", "plus a workflow-finalize step"],
-      "visual": {"type": "image", "diagram": "formula-apply-pipeline", "caption": "File, recipe, beads"},
+      "how_points": [
+        "gc formula show: preview",
+        "gc formula cook: create only",
+        "gc sling mayor pancakes --formula",
+        "plus a workflow-finalize step"
+      ],
+      "visual": {
+        "type": "image",
+        "diagram": "formula-apply-pipeline",
+        "caption": "File, recipe, beads"
+      },
       "analogy": "Printing tickets from a recipe: the recipe stays in the book, and the printed tickets go on the rail.",
       "jargon": [
-        {"term": "materialize", "plain": "turn a plan into real records in the store"},
-        {"term": "control step", "plain": "a step the orchestrator completes itself; no agent works on it"}
+        {
+          "term": "materialize",
+          "plain": "turn a plan into real records in the store"
+        },
+        {
+          "term": "control step",
+          "plain": "a step the orchestrator completes itself; no agent works on it"
+        }
       ],
       "takeaway": "A formula is the method; applying it prints the work as beads that outlive everything.",
-      "references": ["docs/tutorials/05-formulas.md", "docs/guides/understanding-formulas.md"],
-      "diagrams": ["formula-apply-pipeline"],
+      "references": [
+        "docs/tutorials/05-formulas.md",
+        "docs/guides/understanding-formulas.md"
+      ],
+      "diagrams": [
+        "formula-apply-pipeline"
+      ],
       "artifact": "The gc formula cook pancakes output: a root and 'Created: 7'.",
-      "demo": ["gc formula cook pancakes", "gc sling mayor pancakes --formula"],
+      "demo": {
+        "title": "Cook it, then sling it",
+        "store": "bd",
+        "agent": true,
+        "setup": [
+          {
+            "write": "formulas/pancakes.toml",
+            "content": "formula = \"pancakes\"\ndescription = \"Make pancakes from scratch\"\n\n[requires]\nformula_compiler = \">=2.0.0\"\n\n[[steps]]\nid = \"dry\"\ntitle = \"Mix dry ingredients\"\ndescription = \"Write one line to pancakes.md: flour, sugar, baking powder, salt.\"\n\n[[steps]]\nid = \"wet\"\ntitle = \"Mix wet ingredients\"\ndescription = \"Write one line to pancakes.md: eggs, milk, melted butter.\"\n\n[[steps]]\nid = \"combine\"\ntitle = \"Combine wet and dry\"\ndescription = \"Append 'combined' to pancakes.md.\"\nneeds = [\"dry\", \"wet\"]\n\n[[steps]]\nid = \"cook\"\ntitle = \"Cook the pancakes\"\ndescription = \"Append 'cooked at 375F' to pancakes.md.\"\nneeds = [\"combine\"]\n\n[[steps]]\nid = \"serve\"\ntitle = \"Serve\"\ndescription = \"Append 'served' to pancakes.md.\"\nneeds = [\"cook\"]\n",
+            "cwd": "city"
+          },
+          {
+            "write": "agents/worker/prompt.template.md",
+            "content": "# Worker Agent\nYou are a general-purpose Gas City worker. Execute assigned work carefully and report the result.\n",
+            "cwd": "city"
+          }
+        ],
+        "steps": [
+          {
+            "run": "gc formula cook pancakes",
+            "cwd": "city",
+            "save": {
+              "root": "Root: ([a-z0-9]+-[a-z0-9]+)"
+            },
+            "say": "Cook: the method becomes seven beads.",
+            "highlight": "Created: 7"
+          },
+          {
+            "run": "bd show @{root} | head -6",
+            "cwd": "city",
+            "say": "The root waits on finalize."
+          },
+          {
+            "run": "gc sling worker @{root}",
+            "cwd": "city",
+            "say": "Sling routes the root to a worker.",
+            "highlight": "Slung"
+          },
+          {
+            "wait_for": "bd show @{root}",
+            "until": "closed",
+            "timeout": 1500,
+            "cwd": "city",
+            "say": "The orchestrator drives every step to done.",
+            "highlight": "CLOSED"
+          }
+        ]
+      },
       "verify": [
         "Tutorial 05: 'Created: 7' is the root, five steps and the finalize step.",
         "Tutorial 05: sling doesn't prompt the agent by default; --nudge does."
       ],
-      "builds_on": ["formula"]
+      "builds_on": [
+        "formula"
+      ]
     },
     {
       "day": 24,
@@ -810,11 +2306,24 @@
       "title": "Variables: One Method, Many Runs",
       "concept": "Formula variables",
       "what": "Variables make a formula reusable: declare them, use {{name}} in the steps and pass values when you cook or sling.",
-      "what_points": ["A [vars] section", "{{name}} placeholders", "--var name=value"],
+      "what_points": [
+        "A [vars] section",
+        "{{name}} placeholders",
+        "--var name=value"
+      ],
       "why": "The same review or release method should work for any branch, feature or priority, without copying the file.",
-      "why_points": ["No copy-paste formulas", "Defaults and required fields", "Validated inputs"],
+      "why_points": [
+        "No copy-paste formulas",
+        "Defaults and required fields",
+        "Validated inputs"
+      ],
       "how": "Variables stay placeholders through compilation and are filled in only when beads are created. Fields validate the input.",
-      "how_points": ["vars.title: required", "vars.branch: default = \"main\"", "vars.priority: enum", "gc formula show --var previews"],
+      "how_points": [
+        "vars.title: required",
+        "vars.branch: default = \"main\"",
+        "vars.priority: enum",
+        "gc formula show --var previews"
+      ],
       "visual": {
         "type": "code",
         "lang": "toml",
@@ -833,18 +2342,56 @@
       },
       "analogy": "A form letter: the same letter with a different name and date each time.",
       "jargon": [
-        {"term": "late binding", "plain": "values are filled in at the last moment, when the work is created"}
+        {
+          "term": "late binding",
+          "plain": "values are filled in at the last moment, when the work is created"
+        }
       ],
       "takeaway": "Variables turn one written method into a method for every situation.",
-      "references": ["docs/tutorials/05-formulas.md"],
+      "references": [
+        "docs/tutorials/05-formulas.md"
+      ],
       "diagrams": [],
       "artifact": "The feature-work formula with title, branch and priority.",
-      "demo": ["gc formula show feature-work --var title=\"Auth system\""],
+      "demo": {
+        "title": "One method, two different runs",
+        "store": "bd",
+        "agent": false,
+        "setup": [
+          {
+            "write": "formulas/feature-work.toml",
+            "content": "formula = \"feature-work\"\n\n[requires]\nformula_compiler = \">=2.0.0\"\n\n[vars.title]\ndescription = \"What this feature is about\"\nrequired = true\n\n[vars.branch]\ndescription = \"Target branch\"\ndefault = \"main\"\n\n[vars.priority]\ndescription = \"How urgent is this\"\ndefault = \"normal\"\nenum = [\"low\", \"normal\", \"high\", \"critical\"]\n\n[[steps]]\nid = \"implement\"\ntitle = \"Implement {{title}}\"\ndescription = \"Work on {{title}} against {{branch}} (priority: {{priority}})\"\n",
+            "cwd": "city"
+          }
+        ],
+        "steps": [
+          {
+            "run": "sed -n '4,13p' formulas/feature-work.toml",
+            "cwd": "city",
+            "say": "Declared once: a required title, defaults for the rest.",
+            "highlight": "required"
+          },
+          {
+            "run": "gc formula show feature-work --var title=\"Auth overhaul\"",
+            "cwd": "city",
+            "say": "Run one.",
+            "highlight": "Implement Auth overhaul"
+          },
+          {
+            "run": "gc formula show feature-work --var title=\"Billing export\" --var priority=high",
+            "cwd": "city",
+            "say": "Run two, same file.",
+            "highlight": "Implement Billing export"
+          }
+        ]
+      },
       "verify": [
         "Tutorial 05 variable fields: description, required, default, enum, pattern.",
         "Tutorial 05: a variable without a default that isn't required stays as the literal {{name}}."
       ],
-      "builds_on": ["formula-apply"]
+      "builds_on": [
+        "formula-apply"
+      ]
     },
     {
       "day": 25,
@@ -853,27 +2400,93 @@
       "title": "v1 vs. v2 Formulas: Who Is the Engine?",
       "concept": "Compiler contracts",
       "what": "Formulas have two contracts. In v1 the agent you sling to is the engine; in v2 the orchestrator is the engine.",
-      "what_points": ["v1: one agent runs it all", "v2: the orchestrator runs a graph", "Choose v2 for new work"],
+      "what_points": [
+        "v1: one agent runs it all",
+        "v2: the orchestrator runs a graph",
+        "Choose v2 for new work"
+      ],
       "why": "Only v2 makes each step its own routable bead, so steps can go to different agents, run in parallel and retry on their own.",
-      "why_points": ["Routing per step", "Parallel fan-out", "Checks, retries, drain"],
+      "why_points": [
+        "Routing per step",
+        "Parallel fan-out",
+        "Checks, retries, drain"
+      ],
       "how": "Opt in with a [requires] table. v1 builds a parent-child molecule; v2 builds a flat graph of blocking edges with a finalize step.",
-      "how_points": ["formula_compiler = \">=2.0.0\"", "v1: a molecule tree", "v2: a flat graph plus finalize", "Graph-only: check, retry, drain"],
-      "visual": {"type": "image", "diagram": "formula-v1-vs-v2", "caption": "Two contracts, two engines"},
+      "how_points": [
+        "formula_compiler = \">=2.0.0\"",
+        "v1: a molecule tree",
+        "v2: a flat graph plus finalize",
+        "Graph-only: check, retry, drain"
+      ],
+      "visual": {
+        "type": "image",
+        "diagram": "formula-v1-vs-v2",
+        "caption": "Two contracts, two engines"
+      },
       "analogy": "v1 is one chef cooking the whole menu. v2 is a head chef sending each dish to the right station.",
       "jargon": [
-        {"term": "molecule", "plain": "v1's container bead with its steps as children"},
-        {"term": "compiler contract", "plain": "the set of rules a formula is compiled under"}
+        {
+          "term": "molecule",
+          "plain": "v1's container bead with its steps as children"
+        },
+        {
+          "term": "compiler contract",
+          "plain": "the set of rules a formula is compiled under"
+        }
       ],
       "takeaway": "In v2 the orchestrator, not a single agent, is the engine.",
-      "references": ["docs/guides/understanding-formulas.md", "docs/reference/specs/formula-spec-v2.md"],
-      "diagrams": ["formula-v1-vs-v2"],
+      "references": [
+        "docs/guides/understanding-formulas.md",
+        "docs/reference/specs/formula-spec-v2.md"
+      ],
+      "diagrams": [
+        "formula-v1-vs-v2"
+      ],
       "artifact": "The v1 vs. v2 comparison table from Understanding Formulas.",
-      "demo": [],
+      "demo": {
+        "title": "Same steps, two engines",
+        "store": "bd",
+        "agent": false,
+        "setup": [
+          {
+            "write": "formulas/plan-v1.toml",
+            "content": "formula = \"plan-v1\"\n\n[[steps]]\nid = \"design\"\ntitle = \"Design\"\n\n[[steps]]\nid = \"build\"\ntitle = \"Build\"\nneeds = [\"design\"]\n",
+            "cwd": "city"
+          },
+          {
+            "write": "formulas/plan-v2.toml",
+            "content": "formula = \"plan-v2\"\n\n[requires]\nformula_compiler = \">=2.0.0\"\n\n[[steps]]\nid = \"design\"\ntitle = \"Design\"\n\n[[steps]]\nid = \"build\"\ntitle = \"Build\"\nneeds = [\"design\"]\n",
+            "cwd": "city"
+          }
+        ],
+        "steps": [
+          {
+            "run": "diff formulas/plan-v1.toml formulas/plan-v2.toml",
+            "cwd": "city",
+            "say": "The only difference: one [requires] table.",
+            "highlight": "formula_compiler",
+            "may_fail": true
+          },
+          {
+            "run": "gc formula show plan-v1",
+            "cwd": "city",
+            "say": "v1: one agent will run the whole thing."
+          },
+          {
+            "run": "gc formula show plan-v2",
+            "cwd": "city",
+            "say": "v2: separate routable steps plus a finalize step.",
+            "highlight": "workflow-finalize"
+          }
+        ]
+      },
       "verify": [
         "understanding-formulas.md contract table: engine, steps, control flow, routing, shape.",
         "understanding-formulas.md: 'For new work, choose v2.'"
       ],
-      "builds_on": ["variables"]
+      "builds_on": [
+        "variables"
+      ]
     },
     {
       "day": 26,
@@ -882,34 +2495,123 @@
       "title": "Check and Retry: Work That Verifies Itself",
       "concept": "check and retry",
       "what": "check reruns a step until a script says it passed. retry re-dispatches a step that failed for a temporary reason.",
-      "what_points": ["check: your script decides", "retry: just try again", "Both run while the workflow runs"],
+      "what_points": [
+        "check: your script decides",
+        "retry: just try again",
+        "Both run while the workflow runs"
+      ],
       "why": "An agent saying 'done' isn't proof. A check makes done mean verified, and retry absorbs flaky failures without a human.",
-      "why_points": ["Done means verified", "Flaky failures heal themselves", "Budgets stop runaway loops"],
+      "why_points": [
+        "Done means verified",
+        "Flaky failures heal themselves",
+        "Budgets stop runaway loops"
+      ],
       "how": "A check script runs after each attempt: exit 0 means done, anything else starts another attempt, up to max_attempts.",
-      "how_points": ["[steps.check] with a script", "exit 0 means pass", "max_attempts is the budget", "exit 75: re-check, no attempt spent"],
+      "how_points": [
+        "[steps.check] with a script",
+        "exit 0 means pass",
+        "max_attempts is the budget",
+        "exit 75: re-check, no attempt spent"
+      ],
       "visual": {
         "type": "flow",
-        "nodes": ["Agent attempt", "verify.sh", "Done"],
-        "arrows": ["then", "exit 0"],
+        "nodes": [
+          "Agent attempt",
+          "verify.sh",
+          "Done"
+        ],
+        "arrows": [
+          "then",
+          "exit 0"
+        ],
         "loop": true,
         "loop_label": "non-zero exit: next attempt, up to max_attempts",
         "caption": "The step is done when the script says so"
       },
       "analogy": "A driving test: you're licensed when the examiner signs off, not when you say you can drive.",
       "jargon": [
-        {"term": "exit code", "plain": "the number a script returns; 0 means success"}
+        {
+          "term": "exit code",
+          "plain": "the number a script returns; 0 means success"
+        }
       ],
       "takeaway": "With check, done means verified, not just claimed.",
-      "references": ["docs/tutorials/05-formulas.md", "docs/guides/understanding-formulas.md"],
+      "references": [
+        "docs/tutorials/05-formulas.md",
+        "docs/guides/understanding-formulas.md"
+      ],
       "diagrams": [],
       "artifact": "The 'checked' formula with scripts/verify.sh from Tutorial 05.",
-      "demo": ["gc formula show checked"],
+      "demo": {
+        "title": "A step that is done only when a script agrees",
+        "store": "bd",
+        "agent": true,
+        "setup": [
+          {
+            "write": "formulas/checked.toml",
+            "content": "formula = \"checked\"\n\n[requires]\nformula_compiler = \">=2.0.0\"\n\n[[steps]]\nid = \"implement\"\ntitle = \"Create done.txt in hello-factory\"\ndescription = \"In the hello-factory repo, create done.txt containing the word verified.\"\n\n[steps.check]\nmax_attempts = 2\n\n[steps.check.check]\nmode = \"exec\"\npath = \"scripts/verify.sh\"\ntimeout = \"30s\"\n",
+            "cwd": "city"
+          },
+          {
+            "write": "scripts/verify.sh",
+            "content": "#!/bin/sh\ngrep -q verified \"@{rig}/done.txt\"\n",
+            "cwd": "city",
+            "mode": "x"
+          },
+          {
+            "write": "agents/worker/prompt.template.md",
+            "content": "# Worker Agent\nYou are a general-purpose Gas City worker. Execute assigned work carefully and report the result.\n",
+            "cwd": "city"
+          },
+          {
+            "run": "rm -f done.txt",
+            "hidden": true
+          }
+        ],
+        "steps": [
+          {
+            "run": "cat scripts/verify.sh",
+            "cwd": "city",
+            "say": "The rule: done.txt must say verified.",
+            "highlight": "verified"
+          },
+          {
+            "run": "gc formula show checked",
+            "cwd": "city",
+            "say": "The compiler turns one step into a check loop.",
+            "highlight": "iteration"
+          },
+          {
+            "run": "gc sling worker checked --formula",
+            "cwd": "city",
+            "save": {
+              "root": "workflow ([a-z0-9]+-[a-z0-9]+)"
+            },
+            "say": "Run it."
+          },
+          {
+            "wait_for": "bd show @{root}",
+            "until": "closed",
+            "timeout": 1500,
+            "cwd": "city",
+            "say": "Closed only after verify.sh exits 0.",
+            "highlight": "CLOSED"
+          },
+          {
+            "run": "cat done.txt",
+            "say": "Verified, not just claimed.",
+            "highlight": "verified"
+          }
+        ]
+      },
       "verify": [
         "Tutorial 05: check is v2-only.",
         "Tutorial 05: exit code 75 re-runs the check without spending an attempt.",
         "understanding-formulas.md: check and retry are mutually exclusive on the same step."
       ],
-      "builds_on": ["v1-vs-v2"]
+      "builds_on": [
+        "v1-vs-v2"
+      ]
     },
     {
       "day": 27,
@@ -918,27 +2620,92 @@
       "title": "Drain: Fan Out Over a Convoy",
       "concept": "drain",
       "what": "drain runs one small workflow per member of a convoy, all in parallel, for a set of work found only at runtime.",
-      "what_points": ["One run per convoy member", "All in parallel", "The set is known only at runtime"],
+      "what_points": [
+        "One run per convoy member",
+        "All in parallel",
+        "The set is known only at runtime"
+      ],
       "why": "You rarely know in advance how many tasks a plan will produce. Drain scales the fan-out to whatever is in the convoy now.",
-      "why_points": ["No fixed count", "Real parallelism", "Each item isolated"],
+      "why_points": [
+        "No fixed count",
+        "Real parallelism",
+        "Each item isolated"
+      ],
       "how": "A drain step names an item formula. The orchestrator splits the convoy into one-member units and runs the item formula for each.",
-      "how_points": ["[steps.drain] formula = \"do-work\"", "context = separate: own worktree", "member_access = exclusive", "Sling a convoy at it"],
-      "visual": {"type": "image", "diagram": "formula-drain-fanout", "caption": "drain fans a convoy out into parallel runs"},
+      "how_points": [
+        "[steps.drain] formula = \"do-work\"",
+        "context = separate: own worktree",
+        "member_access = exclusive",
+        "Sling a convoy at it"
+      ],
+      "visual": {
+        "type": "image",
+        "diagram": "formula-drain-fanout",
+        "caption": "drain fans a convoy out into parallel runs"
+      },
       "analogy": "A teacher handing each student one worksheet from the pile, however many students showed up today.",
       "jargon": [
-        {"term": "fan-out", "plain": "splitting one job into many parallel jobs"},
-        {"term": "worktree", "plain": "a separate checkout of the same Git repo, for parallel work"}
+        {
+          "term": "fan-out",
+          "plain": "splitting one job into many parallel jobs"
+        },
+        {
+          "term": "worktree",
+          "plain": "a separate checkout of the same Git repo, for parallel work"
+        }
       ],
       "takeaway": "Drain turns a convoy of any size into parallel, isolated runs.",
-      "references": ["docs/guides/understanding-formulas.md", "engdocs/drain-fanout.md"],
-      "diagrams": ["formula-drain-fanout"],
+      "references": [
+        "docs/guides/understanding-formulas.md",
+        "engdocs/drain-fanout.md"
+      ],
+      "diagrams": [
+        "formula-drain-fanout"
+      ],
       "artifact": "The build-from-convoy drain step from Understanding Formulas.",
-      "demo": ["gc sling gc.run-operator <convoy-id> --on build-from-convoy"],
+      "demo": {
+        "title": "Fan a convoy out into parallel runs",
+        "store": "bd",
+        "agent": true,
+        "steps": [
+          {
+            "run": "for f in add sub mul; do bd create \"Write $f.py with a $f(a, b) function\"; done",
+            "say": "Three items, discovered at runtime."
+          },
+          {
+            "run": "gc convoy create math-funcs $(bd list --flat | grep -E 'Write (add|sub|mul).py' | grep -oE '[a-z0-9]+-[a-z0-9]+' | head -3 | tr '\\n' ' ')",
+            "save": {
+              "convoy": "convoy ([a-z0-9]+-[a-z0-9]+)"
+            },
+            "say": "One convoy."
+          },
+          {
+            "run": "gc sling gc.run-operator @{convoy} --on build-from-convoy",
+            "say": "Drain it: one run per member.",
+            "may_fail": true
+          },
+          {
+            "wait_for": "gc session list",
+            "until": "implementation",
+            "timeout": 600,
+            "say": "Several sessions working at once, each in its own worktree."
+          },
+          {
+            "wait_for": "gc convoy status @{convoy}",
+            "until": "closed",
+            "timeout": 2400,
+            "say": "All three done.",
+            "highlight": "closed"
+          }
+        ]
+      },
       "verify": [
         "understanding-formulas.md: drain is the canonical v2 fan-out.",
         "understanding-formulas.md: context = separate gives every unit its own git worktree."
       ],
-      "builds_on": ["check-retry"]
+      "builds_on": [
+        "check-retry"
+      ]
     },
     {
       "day": 28,
@@ -947,11 +2714,24 @@
       "title": "Demo: Write and Run the Pancakes Formula",
       "concept": "Formulas in practice",
       "what": "Today we write the pancakes formula, preview it, cook it into beads and sling it to an agent.",
-      "what_points": ["Write it", "Preview it", "Run it"],
+      "what_points": [
+        "Write it",
+        "Preview it",
+        "Run it"
+      ],
       "why": "This recap connects week four: method, compilation, beads and the orchestrator driving the graph to done.",
-      "why_points": ["Week four in one run", "See steps run in parallel", "See finalize close the root"],
+      "why_points": [
+        "Week four in one run",
+        "See steps run in parallel",
+        "See finalize close the root"
+      ],
       "how": "Write formulas/pancakes.toml, preview it with gc formula show, then cook it, sling the root and watch the beads close.",
-      "how_points": ["formulas/pancakes.toml", "gc formula show pancakes", "gc formula cook pancakes", "gc sling worker <root-id>"],
+      "how_points": [
+        "formulas/pancakes.toml",
+        "gc formula show pancakes",
+        "gc formula cook pancakes",
+        "gc sling worker <root-id>"
+      ],
       "visual": {
         "type": "code",
         "lang": "toml",
@@ -972,14 +2752,70 @@
       "analogy": "Cooking from the recipe card you wrote last week, with two helpers mixing in parallel.",
       "jargon": [],
       "takeaway": "Write the method, preview it, run it, and the orchestrator drives it to done.",
-      "references": ["docs/tutorials/05-formulas.md"],
-      "diagrams": ["pancakes-dag", "formula-apply-pipeline"],
+      "references": [
+        "docs/tutorials/05-formulas.md"
+      ],
+      "diagrams": [
+        "pancakes-dag",
+        "formula-apply-pipeline"
+      ],
       "artifact": "A working pancakes.toml in your scratch city.",
-      "demo": ["gc formula show pancakes", "gc formula cook pancakes", "gc sling worker <root-id>", "bd list"],
+      "demo": {
+        "title": "Write the formula, run it, watch it finish",
+        "store": "bd",
+        "agent": true,
+        "setup": [
+          {
+            "write": "formulas/pancakes.toml",
+            "content": "formula = \"pancakes\"\ndescription = \"Make pancakes from scratch\"\n\n[requires]\nformula_compiler = \">=2.0.0\"\n\n[[steps]]\nid = \"dry\"\ntitle = \"Mix dry ingredients\"\ndescription = \"Write one line to pancakes.md: flour, sugar, baking powder, salt.\"\n\n[[steps]]\nid = \"wet\"\ntitle = \"Mix wet ingredients\"\ndescription = \"Write one line to pancakes.md: eggs, milk, melted butter.\"\n\n[[steps]]\nid = \"combine\"\ntitle = \"Combine wet and dry\"\ndescription = \"Append 'combined' to pancakes.md.\"\nneeds = [\"dry\", \"wet\"]\n\n[[steps]]\nid = \"cook\"\ntitle = \"Cook the pancakes\"\ndescription = \"Append 'cooked at 375F' to pancakes.md.\"\nneeds = [\"combine\"]\n\n[[steps]]\nid = \"serve\"\ntitle = \"Serve\"\ndescription = \"Append 'served' to pancakes.md.\"\nneeds = [\"cook\"]\n",
+            "cwd": "city"
+          },
+          {
+            "write": "agents/worker/prompt.template.md",
+            "content": "# Worker Agent\nYou are a general-purpose Gas City worker. Execute assigned work carefully and report the result.\n",
+            "cwd": "city"
+          },
+          {
+            "run": "rm -f pancakes.md",
+            "hidden": true
+          }
+        ],
+        "steps": [
+          {
+            "run": "gc formula show pancakes",
+            "cwd": "city",
+            "say": "Six steps, including finalize.",
+            "highlight": "workflow-finalize"
+          },
+          {
+            "run": "gc sling worker pancakes --formula",
+            "cwd": "city",
+            "save": {
+              "root": "workflow ([a-z0-9]+-[a-z0-9]+)"
+            },
+            "say": "One command starts the whole graph.",
+            "highlight": "Started workflow"
+          },
+          {
+            "wait_for": "bd show @{root}",
+            "until": "closed",
+            "timeout": 1800,
+            "cwd": "city",
+            "say": "Dry and wet in parallel, then the chain.",
+            "highlight": "CLOSED"
+          },
+          {
+            "run": "cat ~/pancakes.md 2>/dev/null || cat pancakes.md 2>/dev/null || bd list --all --flat | grep -iE 'mix|combine|cook|serve' | head -6",
+            "say": "Every step, done in order."
+          }
+        ]
+      },
       "verify": [
         "Tutorial 05: gc formula show prints 6 steps, including workflow-finalize."
       ],
-      "builds_on": ["drain"]
+      "builds_on": [
+        "drain"
+      ]
     },
     {
       "day": 29,
@@ -988,27 +2824,108 @@
       "title": "Orders: When, Not How",
       "concept": "Order",
       "what": "An order pairs a trigger with an action, so a formula or script runs on a schedule, a condition or an event.",
-      "what_points": ["A trigger plus an action", "A formula or a script", "No human dispatch"],
+      "what_points": [
+        "A trigger plus an action",
+        "A formula or a script",
+        "No human dispatch"
+      ],
       "why": "Formulas say how; orders say when. Together, the factory starts its own work: nightly checks, updates, release notes.",
-      "why_points": ["Automation without babysitting", "Schedules and events", "Drop in a file, no restart"],
+      "why_points": [
+        "Automation without babysitting",
+        "Schedules and events",
+        "Drop in a file, no restart"
+      ],
       "how": "Put a TOML file in orders/. Triggers: cooldown, cron, condition, event, manual. Cooldown drifts; cron hits fixed clock times.",
-      "how_points": ["orders/pancakes-check.toml", "cooldown, cron, condition, event, manual", "pool = where the work goes", "gc order list, check, run"],
-      "visual": {"type": "image", "diagram": "cooldown-vs-cron", "caption": "Cooldown drifts; cron keeps clock time"},
+      "how_points": [
+        "orders/pancakes-check.toml",
+        "cooldown, cron, condition, event, manual",
+        "pool = where the work goes",
+        "gc order list, check, run"
+      ],
+      "visual": {
+        "type": "image",
+        "diagram": "cooldown-vs-cron",
+        "caption": "Cooldown drifts; cron keeps clock time"
+      },
       "analogy": "A thermostat: you set the rule once, and it turns the heating on by itself.",
       "jargon": [
-        {"term": "cooldown", "plain": "wait a fixed interval after the last run"},
-        {"term": "cron", "plain": "run at fixed clock times, such as 3 a.m. every day"}
+        {
+          "term": "cooldown",
+          "plain": "wait a fixed interval after the last run"
+        },
+        {
+          "term": "cron",
+          "plain": "run at fixed clock times, such as 3 a.m. every day"
+        }
       ],
       "takeaway": "Formulas say how; orders say when, and then nobody has to press go.",
-      "references": ["docs/tutorials/07-orders.md"],
-      "diagrams": ["cooldown-vs-cron"],
+      "references": [
+        "docs/tutorials/07-orders.md"
+      ],
+      "diagrams": [
+        "cooldown-vs-cron"
+      ],
       "artifact": "orders/pancakes-check.toml: cooldown, 5m, pool worker.",
-      "demo": ["gc order list", "gc order check", "gc order run pancakes-check"],
+      "demo": {
+        "title": "An order that fires by itself",
+        "store": "bd",
+        "agent": false,
+        "setup": [
+          {
+            "write": "formulas/pancakes.toml",
+            "content": "formula = \"pancakes\"\ndescription = \"Make pancakes from scratch\"\n\n[requires]\nformula_compiler = \">=2.0.0\"\n\n[[steps]]\nid = \"dry\"\ntitle = \"Mix dry ingredients\"\ndescription = \"Write one line to pancakes.md: flour, sugar, baking powder, salt.\"\n\n[[steps]]\nid = \"wet\"\ntitle = \"Mix wet ingredients\"\ndescription = \"Write one line to pancakes.md: eggs, milk, melted butter.\"\n\n[[steps]]\nid = \"combine\"\ntitle = \"Combine wet and dry\"\ndescription = \"Append 'combined' to pancakes.md.\"\nneeds = [\"dry\", \"wet\"]\n\n[[steps]]\nid = \"cook\"\ntitle = \"Cook the pancakes\"\ndescription = \"Append 'cooked at 375F' to pancakes.md.\"\nneeds = [\"combine\"]\n\n[[steps]]\nid = \"serve\"\ntitle = \"Serve\"\ndescription = \"Append 'served' to pancakes.md.\"\nneeds = [\"cook\"]\n",
+            "cwd": "city"
+          },
+          {
+            "write": "agents/worker/prompt.template.md",
+            "content": "# Worker Agent\nYou are a general-purpose Gas City worker. Execute assigned work carefully and report the result.\n",
+            "cwd": "city"
+          },
+          {
+            "write": "orders/pancakes-check.toml",
+            "content": "[order]\ndescription = \"Cook pancakes on a timer\"\nformula = \"pancakes\"\ntrigger = \"cooldown\"\ninterval = \"24h\"\npool = \"worker\"\n",
+            "cwd": "city"
+          }
+        ],
+        "steps": [
+          {
+            "run": "cat orders/pancakes-check.toml",
+            "cwd": "city",
+            "say": "When, not how: a trigger plus a formula.",
+            "highlight": "trigger"
+          },
+          {
+            "run": "gc order list | head -8",
+            "cwd": "city",
+            "say": "The orchestrator sees it on its next scan.",
+            "highlight": "pancakes-check"
+          },
+          {
+            "run": "gc order check | head -8",
+            "cwd": "city",
+            "say": "Is it due?"
+          },
+          {
+            "run": "gc order run pancakes-check",
+            "cwd": "city",
+            "say": "Or fire it by hand to test.",
+            "highlight": "executed"
+          },
+          {
+            "run": "gc order history | head -5",
+            "cwd": "city",
+            "say": "Every firing leaves a record.",
+            "highlight": "pancakes-check"
+          }
+        ]
+      },
       "verify": [
         "Tutorial 07: the orchestrator ticks every 30 seconds.",
         "Tutorial 07: trigger types table."
       ],
-      "builds_on": ["demo-pancakes"]
+      "builds_on": [
+        "demo-pancakes"
+      ]
     },
     {
       "day": 30,
@@ -1017,31 +2934,102 @@
       "title": "Exec Orders: Automation Without an LLM",
       "concept": "Exec order",
       "what": "An exec order runs a shell script on the orchestrator: no agent, no model, no work beads.",
-      "what_points": ["Just a script", "No tokens spent", "For mechanical jobs"],
+      "what_points": [
+        "Just a script",
+        "No tokens spent",
+        "For mechanical jobs"
+      ],
       "why": "Pruning branches or checking disk space needs no intelligence. A script is cheaper, faster and more predictable.",
-      "why_points": ["No model cost", "Predictable", "The right tool for chores"],
+      "why_points": [
+        "No model cost",
+        "Predictable",
+        "The right tool for chores"
+      ],
       "how": "Set exec to a script instead of formula. Exec orders take no pool, get ORDER_DIR in their environment and time out after 300 seconds.",
-      "how_points": ["exec = \"scripts/prune-merged.sh\"", "No pool", "[order.env] for settings", "Default timeout: 300 s"],
+      "how_points": [
+        "exec = \"scripts/prune-merged.sh\"",
+        "No pool",
+        "[order.env] for settings",
+        "Default timeout: 300 s"
+      ],
       "visual": {
         "type": "compare",
-        "left": {"title": "Formula order", "points": ["Agents do the work", "Creates work beads", "Routes to a pool"]},
-        "right": {"title": "Exec order", "points": ["A script does the work", "No beads, no model", "Runs on the orchestrator"]},
+        "left": {
+          "title": "Formula order",
+          "points": [
+            "Agents do the work",
+            "Creates work beads",
+            "Routes to a pool"
+          ]
+        },
+        "right": {
+          "title": "Exec order",
+          "points": [
+            "A script does the work",
+            "No beads, no model",
+            "Runs on the orchestrator"
+          ]
+        },
         "caption": "Every order has a formula or an exec, never both"
       },
       "analogy": "You don't hire a consultant to take out the bins; you set a reminder.",
       "jargon": [
-        {"term": "exec", "plain": "run a program directly"}
+        {
+          "term": "exec",
+          "plain": "run a program directly"
+        }
       ],
       "takeaway": "Use agents for judgment and scripts for chores.",
-      "references": ["docs/tutorials/07-orders.md", "docs/getting-started/coming-from-gastown.md"],
+      "references": [
+        "docs/tutorials/07-orders.md",
+        "docs/getting-started/coming-from-gastown.md"
+      ],
       "diagrams": [],
       "artifact": "The prune-merged exec order snippet from Tutorial 07.",
-      "demo": ["gc order list   # built-in housekeeping orders such as reaper and gate-sweep"],
+      "demo": {
+        "title": "A chore with no model at all",
+        "store": "bd",
+        "agent": false,
+        "setup": [
+          {
+            "write": "scripts/disk-check.sh",
+            "content": "#!/bin/sh\ndf -h \"$HOME\" | tail -1\n",
+            "cwd": "city",
+            "mode": "x"
+          },
+          {
+            "write": "orders/disk-check.toml",
+            "content": "[order]\ndescription = \"Report free disk space\"\ntrigger = \"cooldown\"\ninterval = \"24h\"\nexec = \"scripts/disk-check.sh\"\n",
+            "cwd": "city"
+          }
+        ],
+        "steps": [
+          {
+            "run": "cat orders/disk-check.toml scripts/disk-check.sh",
+            "cwd": "city",
+            "say": "exec, not formula: a plain script.",
+            "highlight": "exec"
+          },
+          {
+            "run": "gc order show disk-check",
+            "cwd": "city",
+            "say": "No pool: it runs on the orchestrator."
+          },
+          {
+            "run": "gc order run disk-check",
+            "cwd": "city",
+            "say": "No agent, no tokens, done in a second.",
+            "highlight": "exec"
+          }
+        ]
+      },
       "verify": [
         "Tutorial 07: exec orders can't have a pool.",
         "Tutorial 07: default timeouts are 30 s for formula orders and 300 s for exec orders."
       ],
-      "builds_on": ["orders"]
+      "builds_on": [
+        "orders"
+      ]
     },
     {
       "day": 31,
@@ -1050,34 +3038,91 @@
       "title": "Health Patrol: Let It Crash",
       "concept": "Health patrol",
       "what": "Health patrol is the orchestrator's supervision loop: it keeps running sessions in line with your config and restarts failures.",
-      "what_points": ["Compare want with have", "Restart, within limits", "Modelled on Erlang/OTP"],
+      "what_points": [
+        "Compare want with have",
+        "Restart, within limits",
+        "Modelled on Erlang/OTP"
+      ],
       "why": "Agents will crash. Rather than prevent every crash, Gas City makes crashes cheap: the work persists and a fresh session resumes it.",
-      "why_points": ["Crashes are expected", "Work persists in beads", "Crash loops get quarantined"],
+      "why_points": [
+        "Crashes are expected",
+        "Work persists in beads",
+        "Crash loops get quarantined"
+      ],
       "how": "Each tick compares what config wants with what runs: start missing agents, stop orphans, restart drifted ones.",
-      "how_points": ["Want (config) vs. have (running)", "Start, stop, restart", "Config drift means restart", "Too many restarts: quarantine"],
+      "how_points": [
+        "Want (config) vs. have (running)",
+        "Start, stop, restart",
+        "Config drift means restart",
+        "Too many restarts: quarantine"
+      ],
       "visual": {
         "type": "flow",
-        "nodes": ["Config: want", "Running: have", "Fix the difference"],
-        "arrows": ["compare", "act"],
+        "nodes": [
+          "Config: want",
+          "Running: have",
+          "Fix the difference"
+        ],
+        "arrows": [
+          "compare",
+          "act"
+        ],
         "loop": true,
         "loop_label": "every tick (30 s by default)",
         "caption": "Reconciliation, the Erlang/OTP way"
       },
       "analogy": "A lifeguard doesn't stop people swimming; they watch and pull out anyone in trouble.",
       "jargon": [
-        {"term": "reconcile", "plain": "make what's running match what the config says"},
-        {"term": "quarantine", "plain": "stop restarting an agent that keeps crashing, for a while"}
+        {
+          "term": "reconcile",
+          "plain": "make what's running match what the config says"
+        },
+        {
+          "term": "quarantine",
+          "plain": "stop restarting an agent that keeps crashing, for a while"
+        }
       ],
       "takeaway": "Gas City doesn't prevent crashes; it makes them cheap.",
-      "references": ["engdocs/architecture/health-patrol.md", "engdocs/architecture/controller.md"],
+      "references": [
+        "engdocs/architecture/health-patrol.md",
+        "engdocs/architecture/controller.md"
+      ],
       "diagrams": [],
       "artifact": "The three reconciliation rules: start missing, stop orphans, restart drifted.",
-      "demo": ["gc session reset mayor   # bead, mail and queued work survive"],
+      "demo": {
+        "title": "Kill the mayor; patrol brings it back",
+        "store": "bd",
+        "agent": true,
+        "steps": [
+          {
+            "run": "gc session list | grep -E 'ID|mayor'",
+            "cwd": "city",
+            "say": "The mayor is declared always-on.",
+            "highlight": "mayor"
+          },
+          {
+            "run": "gc session kill mayor",
+            "cwd": "city",
+            "say": "Now I kill it.",
+            "may_fail": true
+          },
+          {
+            "wait_for": "gc session list | grep mayor",
+            "until": "active",
+            "timeout": 600,
+            "cwd": "city",
+            "say": "Want versus have: the next tick restarts it.",
+            "highlight": "active"
+          }
+        ]
+      },
       "verify": [
         "health-patrol.md: Erlang/OTP supervision and 'let it crash'.",
         "health-patrol.md: crash loop quarantine is in memory only."
       ],
-      "builds_on": ["exec-orders"]
+      "builds_on": [
+        "exec-orders"
+      ]
     },
     {
       "day": 32,
@@ -1086,31 +3131,90 @@
       "title": "Events: Watching the Fleet",
       "concept": "Event",
       "what": "An event is an unchangeable record fired when something happens: a bead closes, a session crashes, an order fires.",
-      "what_points": ["Fired, not polled", "Append-only and numbered", "Humans and agents watch"],
+      "what_points": [
+        "Fired, not polled",
+        "Append-only and numbered",
+        "Humans and agents watch"
+      ],
       "why": "You can't steer a fleet you can't see. Events let you and other agents watch everything, and even trigger new work.",
-      "why_points": ["See the whole fleet", "Replay from any point", "Events can trigger orders"],
+      "why_points": [
+        "See the whole fleet",
+        "Replay from any point",
+        "Events can trigger orders"
+      ],
       "how": "Each event has a sequence number, so watchers resume where they stopped. Event-triggered orders read the same stream.",
-      "how_points": ["bead.created, bead.closed", "session.woke, session.crashed", "gc events --follow", "trigger = event closes the loop"],
+      "how_points": [
+        "bead.created, bead.closed",
+        "session.woke, session.crashed",
+        "gc events --follow",
+        "trigger = event closes the loop"
+      ],
       "visual": {
         "type": "flow",
-        "nodes": ["Activity", "Event bus", "Watchers"],
-        "arrows": ["fires", "seq 1, 2, 3 ..."],
+        "nodes": [
+          "Activity",
+          "Event bus",
+          "Watchers"
+        ],
+        "arrows": [
+          "fires",
+          "seq 1, 2, 3 ..."
+        ],
         "caption": "You, agents and orders all read the same stream"
       },
       "analogy": "A departures board: nobody calls you; the board updates and you react.",
       "jargon": [
-        {"term": "sequence number", "plain": "an always-increasing counter, so you can resume where you stopped"}
+        {
+          "term": "sequence number",
+          "plain": "an always-increasing counter, so you can resume where you stopped"
+        }
       ],
       "takeaway": "Events let humans watch the factory, and let the factory react to itself.",
-      "references": ["docs/getting-started/how-gas-city-works.md", "docs/reference/events.md", "docs/getting-started/dashboard.md"],
+      "references": [
+        "docs/getting-started/how-gas-city-works.md",
+        "docs/reference/events.md",
+        "docs/getting-started/dashboard.md"
+      ],
       "diagrams": [],
       "artifact": "A short gc events --follow capture, or the dashboard.",
-      "demo": ["gc events --follow", "gc dashboard"],
+      "demo": {
+        "title": "Watch the event stream while work happens",
+        "store": "bd",
+        "agent": true,
+        "steps": [
+          {
+            "run": "gc events --seq",
+            "cwd": "city",
+            "say": "Every event has a number: resume from anywhere."
+          },
+          {
+            "run": "gc sling hello-factory/claude \"Add a one-line comment at the top of hello.py\"",
+            "save": {
+              "bead": "Created (?:issue: )?([a-z0-9]+-[a-z0-9]+)"
+            },
+            "say": "Make something happen."
+          },
+          {
+            "wait_for": "gc bd show @{bead}",
+            "until": "closed",
+            "timeout": 900,
+            "say": "Work runs."
+          },
+          {
+            "run": "gc events --since 30m | grep -oE '\"type\":\"[a-z._]+\"' | sort | uniq -c | sort -rn | head -8",
+            "cwd": "city",
+            "say": "And the stream told everyone what happened.",
+            "highlight": "bead.closed"
+          }
+        ]
+      },
       "verify": [
         "how-gas-city-works.md: event names such as bead.created, session.crashed, order.fired.",
         "dashboard.md: gc dashboard opens the supervisor's dashboard."
       ],
-      "builds_on": ["health-patrol"]
+      "builds_on": [
+        "health-patrol"
+      ]
     },
     {
       "day": 33,
@@ -1119,26 +3223,95 @@
       "title": "Packs: What Configures the Factory",
       "concept": "Pack",
       "what": "A pack is a directory with a pack.toml that declares agents, formulas and orders. Your city is itself a pack.",
-      "what_points": ["pack.toml plus folders", "Agents, formulas, orders", "City = your local pack"],
+      "what_points": [
+        "pack.toml plus folders",
+        "Agents, formulas, orders",
+        "City = your local pack"
+      ],
       "why": "Coordination that lives in chat and in people's heads leaks. A pack turns it into versioned files you can review and share.",
-      "why_points": ["A versioned method", "Reviewable like code", "Shareable across teams"],
+      "why_points": [
+        "A versioned method",
+        "Reviewable like code",
+        "Shareable across teams"
+      ],
       "how": "Everything sorts into three layers: the portable pack, deployment choices in city.toml, and machine-local state in .gc/.",
-      "how_points": ["Layer 1: pack.toml and its folders", "Layer 2: city.toml", "Layer 3: .gc/, never shared", "Start small; move what you repeat"],
-      "visual": {"type": "image", "diagram": "hand-rolled-to-city", "caption": "From hand-rolled to a city: three layers"},
+      "how_points": [
+        "Layer 1: pack.toml and its folders",
+        "Layer 2: city.toml",
+        "Layer 3: .gc/, never shared",
+        "Start small; move what you repeat"
+      ],
+      "visual": {
+        "type": "image",
+        "diagram": "hand-rolled-to-city",
+        "caption": "From hand-rolled to a city: three layers"
+      },
       "analogy": "A franchise manual: recipes and job roles are the same in every branch, and each branch picks its own address.",
       "jargon": [
-        {"term": "site binding", "plain": "machine-specific settings, such as where a repo lives on this laptop"}
+        {
+          "term": "site binding",
+          "plain": "machine-specific settings, such as where a repo lives on this laptop"
+        }
       ],
       "takeaway": "A pack turns how your team works into versioned, shareable files.",
-      "references": ["docs/guides/understanding-packs.md", "docs/guides/multi-agent-engineering-environment.md"],
-      "diagrams": ["hand-rolled-to-city", "pack-loading"],
+      "references": [
+        "docs/guides/understanding-packs.md",
+        "docs/guides/multi-agent-engineering-environment.md"
+      ],
+      "diagrams": [
+        "hand-rolled-to-city",
+        "pack-loading"
+      ],
       "artifact": "The three-layer table from the multi-agent engineering environment guide.",
-      "demo": ["cat pack.toml", "cat city.toml"],
+      "demo": {
+        "title": "Make a tiny pack",
+        "store": "bd",
+        "agent": false,
+        "setup": [
+          {
+            "write": "packs/review-pack/pack.toml",
+            "content": "[pack]\nname = \"review-pack\"\nschema = 2\nversion = \"1.0.0\"\n",
+            "cwd": "city"
+          },
+          {
+            "write": "packs/review-pack/agents/reviewer/agent.toml",
+            "content": "scope = \"city\"\nprovider = \"claude\"\n",
+            "cwd": "city"
+          },
+          {
+            "write": "packs/review-pack/agents/reviewer/prompt.md",
+            "content": "# Code Reviewer Agent\nYou are an agent in a Gas City workspace. Claim available work and execute it.\n\n## Your tools\n- `gc hook --claim --json` — find and atomically claim one work item\n- `bd show <id>` — see details of a work item\n- `bd close <id>` — mark work as done\n\n## How to work\n1. Claim work: `gc hook --claim --json`\n2. Read the claimed bead and execute the work described in its title\n3. When done, close it: `bd close <id>`\n4. Check for more work. Repeat until the queue is empty.\n\n## Reviewing code\nRead the code and report bugs, security issues and style problems.\n",
+            "cwd": "city"
+          }
+        ],
+        "steps": [
+          {
+            "run": "find packs/review-pack -type f | sort",
+            "cwd": "city",
+            "say": "A pack is just a folder.",
+            "highlight": "pack.toml"
+          },
+          {
+            "run": "cat packs/review-pack/pack.toml",
+            "cwd": "city",
+            "say": "pack.toml names it.",
+            "highlight": "review-pack"
+          },
+          {
+            "run": "sed -n '1,12p' pack.toml",
+            "cwd": "city",
+            "say": "And the city itself is a pack too.",
+            "highlight": "[pack]"
+          }
+        ]
+      },
       "verify": [
         "multi-agent-engineering-environment.md: the three layers table.",
         "understanding-packs.md: a pack with an unknown schema is rejected whole."
       ],
-      "builds_on": ["events"]
+      "builds_on": [
+        "events"
+      ]
     },
     {
       "day": 34,
@@ -1147,27 +3320,104 @@
       "title": "Imports: Reuse Without Copying",
       "concept": "Pack imports",
       "what": "An import pulls a shared pack into your city, so its agents, formulas and orders work as if you'd written them.",
-      "what_points": ["[imports.<binding>]", "A pinned source and version", "Names get qualified"],
+      "what_points": [
+        "[imports.<binding>]",
+        "A pinned source and version",
+        "Names get qualified"
+      ],
       "why": "Teams shouldn't fork a pack to change one setting. Imports plus patches reuse a pack and override only what differs.",
-      "why_points": ["No forks", "Upgrade by moving a pin", "Patch a single field"],
+      "why_points": [
+        "No forks",
+        "Upgrade by moving a pin",
+        "Patch a single field"
+      ],
       "how": "The binding qualifies names: [imports.review] gives review.reviewer, or checkout-service/review.reviewer for a rig import.",
-      "how_points": ["[imports.review] source = ...", "City import: review.reviewer", "Rig import: rig/review.reviewer", "[[patches.agent]] to tweak"],
-      "visual": {"type": "image", "diagram": "import-binding-namespace", "caption": "The binding qualifies the name; the rig adds a prefix"},
+      "how_points": [
+        "[imports.review] source = ...",
+        "City import: review.reviewer",
+        "Rig import: rig/review.reviewer",
+        "[[patches.agent]] to tweak"
+      ],
+      "visual": {
+        "type": "image",
+        "diagram": "import-binding-namespace",
+        "caption": "The binding qualifies the name; the rig adds a prefix"
+      },
       "analogy": "Adding a library to a project: you use it by name and pin the version you trust.",
       "jargon": [
-        {"term": "binding", "plain": "the local name you give an imported pack"},
-        {"term": "patch", "plain": "a small change applied to something that already exists"}
+        {
+          "term": "binding",
+          "plain": "the local name you give an imported pack"
+        },
+        {
+          "term": "patch",
+          "plain": "a small change applied to something that already exists"
+        }
       ],
       "takeaway": "Import packs, pin versions, patch the differences, and never fork.",
-      "references": ["docs/guides/understanding-packs.md", "docs/guides/shareable-packs.md"],
-      "diagrams": ["import-binding-namespace", "pack-loading"],
+      "references": [
+        "docs/guides/understanding-packs.md",
+        "docs/guides/shareable-packs.md"
+      ],
+      "diagrams": [
+        "import-binding-namespace",
+        "pack-loading"
+      ],
       "artifact": "The [imports.gc] block from the pack.toml in Tutorial 01.",
-      "demo": ["gc pack registry search review"],
+      "demo": {
+        "title": "Import the pack; the name gets qualified",
+        "store": "bd",
+        "agent": false,
+        "setup": [
+          {
+            "write": "packs/review-pack/pack.toml",
+            "content": "[pack]\nname = \"review-pack\"\nschema = 2\nversion = \"1.0.0\"\n",
+            "cwd": "city"
+          },
+          {
+            "write": "packs/review-pack/agents/reviewer/agent.toml",
+            "content": "scope = \"city\"\nprovider = \"claude\"\n",
+            "cwd": "city"
+          },
+          {
+            "write": "packs/review-pack/agents/reviewer/prompt.md",
+            "content": "# Code Reviewer Agent\nYou are an agent in a Gas City workspace. Claim available work and execute it.\n\n## Your tools\n- `gc hook --claim --json` — find and atomically claim one work item\n- `bd show <id>` — see details of a work item\n- `bd close <id>` — mark work as done\n\n## How to work\n1. Claim work: `gc hook --claim --json`\n2. Read the claimed bead and execute the work described in its title\n3. When done, close it: `bd close <id>`\n4. Check for more work. Repeat until the queue is empty.\n\n## Reviewing code\nRead the code and report bugs, security issues and style problems.\n",
+            "cwd": "city"
+          },
+          {
+            "run": "grep -q 'imports.review' pack.toml || printf '\\n[imports.review]\\nsource = \"./packs/review-pack\"\\n' >> pack.toml",
+            "cwd": "city",
+            "hidden": true
+          }
+        ],
+        "steps": [
+          {
+            "run": "grep -A1 'imports.review' pack.toml",
+            "cwd": "city",
+            "say": "One import, bound as review.",
+            "highlight": "imports.review"
+          },
+          {
+            "run": "gc agent list | grep -i review",
+            "cwd": "city",
+            "say": "The binding qualifies the name: review.reviewer.",
+            "highlight": "review.reviewer"
+          },
+          {
+            "run": "gc prime review.reviewer | tail -3",
+            "cwd": "city",
+            "say": "Reused, not copied.",
+            "may_fail": true
+          }
+        ]
+      },
       "verify": [
         "understanding-packs.md: city imports give gc.planner; rig imports give checkout-service/gc.planner.",
         "understanding-packs.md: a patch changes an existing agent; it never creates one."
       ],
-      "builds_on": ["packs"]
+      "builds_on": [
+        "packs"
+      ]
     },
     {
       "day": 35,
@@ -1176,26 +3426,82 @@
       "title": "The Whole Job, End to End",
       "concept": "The factory, assembled",
       "what": "A real build is a pipeline of everything we've learned: decompose, drain, review, gap-check, fix, check and ship.",
-      "what_points": ["Decompose a plan", "Drain in parallel", "Review, gap-check, ship"],
+      "what_points": [
+        "Decompose a plan",
+        "Drain in parallel",
+        "Review, gap-check, ship"
+      ],
       "why": "This is Day 1's promise: describe a feature once and come back to a finished branch, at production quality and machine speed.",
-      "why_points": ["Review gives quality", "Parallelism gives speed", "Durable work is never lost"],
+      "why_points": [
+        "Review gives quality",
+        "Parallelism gives speed",
+        "Durable work is never lost"
+      ],
       "how": "The formula is the method, the beads are the work and the orchestrator is the engine, all outside any agent's session.",
-      "how_points": ["Formula = the method", "Beads = the work", "Orchestrator = the engine", "Packs configure; events observe"],
-      "visual": {"type": "image", "diagram": "formula-whole-job", "caption": "One body of work, end to end"},
+      "how_points": [
+        "Formula = the method",
+        "Beads = the work",
+        "Orchestrator = the engine",
+        "Packs configure; events observe"
+      ],
+      "visual": {
+        "type": "image",
+        "diagram": "formula-whole-job",
+        "caption": "One body of work, end to end"
+      },
       "analogy": "Day 1's restaurant, fully open: recipes, stations, tickets, a head chef and a pass where every plate is checked.",
       "jargon": [
-        {"term": "gap analysis", "plain": "comparing the result with the plan to find what's missing"}
+        {
+          "term": "gap analysis",
+          "plain": "comparing the result with the plan to find what's missing"
+        }
       ],
       "takeaway": "Write the method once, and the factory turns it into finished work.",
-      "references": ["docs/guides/understanding-formulas.md", "docs/index.mdx"],
-      "diagrams": ["formula-whole-job", "primitives"],
+      "references": [
+        "docs/guides/understanding-formulas.md",
+        "docs/index.mdx"
+      ],
+      "diagrams": [
+        "formula-whole-job",
+        "primitives"
+      ],
       "artifact": "Put Day 3's primitives diagram next to today's pipeline and name the primitive behind each stage.",
-      "demo": [],
+      "demo": {
+        "title": "The whole factory, from one formula",
+        "store": "bd",
+        "agent": false,
+        "steps": [
+          {
+            "run": "gc formula list | grep -iE 'build|review|plan' | head -8",
+            "cwd": "city",
+            "say": "Real methods shipped with the gascity pack."
+          },
+          {
+            "run": "gc formula show build-from-convoy | head -14",
+            "cwd": "city",
+            "say": "Decompose, drain, review: the whole job as a graph.",
+            "highlight": "drain",
+            "may_fail": true
+          },
+          {
+            "run": "bd list --all --flat | wc -l",
+            "cwd": "city",
+            "say": "Everything this series built is still in the store."
+          },
+          {
+            "run": "gc events --since 720h | wc -l",
+            "cwd": "city",
+            "say": "And every step of it was observable."
+          }
+        ]
+      },
       "verify": [
         "understanding-formulas.md, 'The Whole Job, End To End'.",
         "Same section: the work is the beads, the formula is the method, the orchestrator is the engine."
       ],
-      "builds_on": ["imports"]
+      "builds_on": [
+        "imports"
+      ]
     }
   ]
 }
