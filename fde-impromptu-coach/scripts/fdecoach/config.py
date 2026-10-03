@@ -65,6 +65,39 @@ DEFAULTS: Dict[str, Any] = {
         "min_audio_seconds": 180,
         "audio_clean_preset": "light",
     },
+    "factory": {
+        "enabled": True,
+        "channel": "rajcwork",
+        "series": "Software Factory",
+        "start_date": "2026-10-10",
+        "brief_time": "19:00",
+        "prep_time": "07:00",
+        "reminder_times": ["12:30", "18:30"],
+        "audio_device": "",
+        "max_takes": 3,
+        "min_take_seconds": 60,
+        "intro_seconds": 5,
+        "what_seconds": 35,
+        "why_seconds": 35,
+        "how_seconds": 75,
+        "end_seconds": 15,
+        "outro_seconds": 8,
+        "intro_music": "",
+        "outro_music": "",
+        "music_volume": 0.5,
+        "font_regular": "",
+        "font_bold": "",
+        "publish_mode": "studio",
+        "privacy_status": "public",
+        "playlist_id": "",
+        "tags": ["software factory", "gas city", "ai agents", "multi-agent", "coding agents", "orchestration"],
+        "gascity_repo": "https://github.com/gastownhall/gascity",
+        "gascity_ref": "main",
+        "calendar": True,
+        "brief_event_minutes": 15,
+        "publish_event_time": "21:00",
+        "publish_popup_times": ["12:30", "18:30", "21:00"],
+    },
     "reminders": {
         "times": ["06:30", "07:30", "09:00", "12:30", "17:30", "19:30", "21:00", "22:00"],
         "snooze_minutes": 20,
@@ -116,6 +149,8 @@ class Paths:
         self.state_dir = root / "state"
         self.history = self.state_dir / "history.json"
         self.pron_state = self.state_dir / "pronunciation.json"
+        self.factory_state = self.state_dir / "factory.json"
+        self.factory = root / "factory"
         self.runtime = self.state_dir / "runtime.json"
         self.incoming = self.state_dir / "incoming"
         self.locks = self.state_dir / "locks"
@@ -126,6 +161,7 @@ class Paths:
         self.youtube_token = self.secrets / "youtube_token.json"
         self.bin_dir = root / "bin"
         self.start_command = root / "Start Practice.command"
+        self.video_command = root / "Start Video.command"
 
     def ensure(self) -> None:
         for d in (self.root, self.state_dir, self.incoming, self.locks, self.decks, self.logs, self.secrets):

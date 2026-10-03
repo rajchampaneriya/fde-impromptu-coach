@@ -233,6 +233,53 @@ is the rubric) with a curated 30-paragraph bank
 The audio is still kept and you are told how to fix it
 (`brew install ffmpeg`, then `fde-coach pronounce upload`).
 
+### Software Factory daily video (from 10 October 2026)
+
+One short technical video a day for your public channel (**rajcwork**), and a
+structured way to learn Software Factory concepts through
+[Gas City](https://github.com/gastownhall/gascity). One video, one concept, one
+takeaway, 2:53 long. The 35-day learning path is in
+[`references/factory_learning_path.md`](references/factory_learning_path.md).
+
+| When | What you get |
+|---|---|
+| **The evening before, 19:00** | Tomorrow's brief opens on your Mac: topic, WHAT, WHY, HOW, repository references, existing diagrams, the artifact or demo to prepare, and a 3-minute outline. The same brief is a Google Calendar event, so it reaches your phone and inbox too |
+| **Recording day, 07:00** | Today's kit: minimal blue slides, a prep sheet with a keyword outline, the diagram, the demo, the technical points to verify, and the final 3-minute flow |
+| **When you're ready** | Double-click **`~/FDE-Impromptu/Start Video.command`** (or `fde-coach factory take`, or tell Claude Code "record today's video") |
+
+Each take records **your voice only** while the slides run by themselves:
+5 s intro, WHAT 35 s, WHY 35 s, HOW 75 s, Takeaway 15 s. **Take 1 — Discovery**
+(just explain it), **Take 2 — Improve** (fix unclear bits, cut words, check
+timing and accuracy), **Take 3 — Publish** (clean and conversational). After any
+take you can publish it; after Take 3 the tool stops offering more.
+
+Publishing builds `final.mp4` from the same slides: a branded intro card with
+simple music, your four sections, and an outro card with soft music and
+tomorrow's topic. **Your voice is not processed** (no noise reduction, no
+loudness filter): it is only lined up with the slides. You also get
+`thumbnail.png` and `youtube.txt` (title, description with chapters and Gas City
+links, tags). YouTube Studio opens with the description on your clipboard:
+upload, set **Public**, then paste the link into the dialog (or later:
+`fde-coach factory published --url LINK`).
+
+| You want to… | Do this |
+|---|---|
+| See tomorrow's brief now | `fde-coach factory brief --open` |
+| Prepare today's slides now | `fde-coach factory prep --open` (`--date tomorrow` to preview) |
+| Record the next take | `fde-coach factory take` (max 3) |
+| Publish a specific take | `fde-coach factory publish --take 2` |
+| See the path and your progress | `fde-coach factory plan`, `fde-coach factory status` |
+| Reword a slide or the takeaway | Ask Claude Code ("make today's takeaway simpler"); it writes an override and rebuilds the kit |
+| Use your own music | `fde-coach factory music --intro ~/Music/intro.mp3 --outro ~/Music/outro.mp3` (the YouTube Audio Library has free tracks) |
+| Change the times | `fde-coach config --set factory.brief_time=20:00` · `factory.prep_time=06:30` |
+| Upload by API instead of Studio | `fde-coach config --set factory.publish_mode=api` — only after your Google Cloud project passes YouTube's API audit; until then YouTube locks API uploads as private |
+
+Miss a day and the topic carries over to the next day, so the path never skips
+a concept. A "video not published yet" calendar event at 21:00 disappears as
+soon as you publish. The slides use Calibri from Microsoft Office; ffmpeg is
+needed for the video (`brew install ffmpeg`). Design notes:
+[`references/factory_video_plan.md`](references/factory_video_plan.md).
+
 ### Using Keynote
 
 `fde-coach config --set presentation_app=Keynote` makes the tool open the deck in
@@ -278,13 +325,16 @@ minute** there. PowerPoint on the Mac is the primary, fully timed experience.
 | Question history, streak | `~/FDE-Impromptu/state/history.json` |
 | Decks and thumbnails | `~/FDE-Impromptu/decks/` |
 | Scripts the schedule runs | `~/FDE-Impromptu/src/` (refreshed by `install.sh`) |
-| Videos | `~/Movies/FDE-Impromptu/` |
+| Videos | `~/Movies/FDE-Impromptu/` (Software Factory takes and final videos in `factory/`) |
+| Software Factory briefs, kits, music, overrides | `~/FDE-Impromptu/factory/` |
 | Logs | `~/FDE-Impromptu/logs/` |
 | YouTube and Calendar sign-in | `~/FDE-Impromptu/secrets/` (only readable by you) |
 
-Only three things leave your Mac: the question-writing prompt sent through your
-Claude Code login, the private video and its thumbnail sent to your own YouTube
-channel, and the missed-practice events in your own Google Calendar.
+Only these things leave your Mac: the question-writing prompt sent through your
+Claude Code login, the private practice videos and thumbnails sent to your own
+YouTube channel, and the events in your own Google Calendar (missed-practice
+alerts and the Software Factory briefs). Software Factory videos leave your Mac
+only when you upload them in YouTube Studio (or by API if you switch to it).
 
 ## 7. Uninstall
 

@@ -85,6 +85,9 @@ Next steps
                               $DATA_DIR/bin/fde-coach youtube-auth
                               $DATA_DIR/bin/fde-coach calendar-auth   (missed-practice alerts)
   4. Try a session now:       double-click "$DATA_DIR/Start Practice.command"
+  5. Software Factory videos: brief the evening before, kit in the morning,
+                              then double-click "$DATA_DIR/Start Video.command"
+                              (needs ffmpeg: brew install ffmpeg)
 
 Tip: add ~/.local/bin to your PATH to type just 'fde-coach'.
 MSG

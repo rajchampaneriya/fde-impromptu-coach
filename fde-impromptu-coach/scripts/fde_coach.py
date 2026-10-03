@@ -73,6 +73,13 @@ def cmd_setup(args) -> int:
         "echo\n"
         "echo \"Done. You can close this window.\"\n", encoding="utf-8")
     _chmod_x(paths.start_command)
+    paths.video_command.write_text(
+        "#!/bin/bash\n"
+        "# Double-click to record today's Software Factory video (up to three takes, then publish).\n"
+        f"{_sh(str(wrapper))} factory take\n"
+        "echo\n"
+        "echo \"Done. You can close this window.\"\n", encoding="utf-8")
+    _chmod_x(paths.video_command)
 
     rt = Runtime(paths)
     rt.data["warmup_pending"] = not args.no_warmup
@@ -83,6 +90,7 @@ def cmd_setup(args) -> int:
     print(f"  claude CLI    : {claude or 'NOT FOUND - questions will come from the built-in bank'}")
     print(f"  launcher      : {wrapper}")
     print(f"  double-click  : {paths.start_command}")
+    print(f"  video series  : {paths.video_command}")
     if not args.no_agents:
         # Agent reinstall is a fresh start: clear old error output so doctor
         # does not keep reporting errors from a previous install.
@@ -175,6 +183,20 @@ def cmd_status(args) -> int:
         ps = pron["streak"]
         print(f"Pronunciation: {ps['current']} day(s)  |  best {ps['best']}  |  total {ps['total']}  |  "
               f"due words: {', '.join(pron['due_words']) or '-'}")
+    fac = st.get("factory")
+    if fac and fac.get("enabled"):
+        fs = fac["streak"]
+        line = (f"Software Factory videos: {fac['published']}/{fac['path_days']} published  |  "
+                f"streak {fs['current']} day(s)")
+        ft = fac.get("today")
+        if ft:
+            line += (f"  |  today Day {ft['day']}: "
+                     f"{'PUBLISHED' if ft['published'] else str(ft['takes']) + '/' + str(ft['max_takes']) + ' takes'}")
+        elif fac.get("today_topic"):
+            line += f"  |  today Day {fac['today_topic']['day']}: {fac['today_topic']['title']}"
+        elif fac.get("tomorrow_topic"):
+            line += f"  |  next: Day {fac['tomorrow_topic']['day']} on {fac['start_date']}"
+        print(line)
     t = st["today"]
     if not t:
         print(f"Today ({st['date']}): no deck yet")
@@ -253,8 +275,11 @@ def cmd_calendar_auth(args) -> int:
 
 
 def cmd_calendar_sync(args) -> int:
-    from fdecoach import app
-    for line in app.calendar_sync(_ctx(args), clear=args.clear):
+    from fdecoach import app, factory_session
+    ctx = _ctx(args)
+    for line in app.calendar_sync(ctx, clear=args.clear):
+        print(line)
+    for line in factory_session.calendar_sync(ctx, clear=args.clear):
         print(line)
     return 0
 
@@ -291,9 +316,22 @@ def cmd_doctor(args) -> int:
     line(macos.app_exists(cfg.get("presentation_app", "Microsoft PowerPoint")), "Microsoft PowerPoint installed")
     line(macos.app_exists("QuickTime Player"), "QuickTime Player installed")
     from fdecoach import audio
-    line(audio.has_ffmpeg(), "ffmpeg (pronunciation video)",
-         "found" if audio.has_ffmpeg() else "not found - pronunciation videos are skipped, audio is kept "
+    line(audio.has_ffmpeg(), "ffmpeg (pronunciation and Software Factory videos)",
+         "found" if audio.has_ffmpeg() else "not found - videos are skipped, audio is kept "
          "(brew install ffmpeg)")
+    if cfg.get("factory", {}).get("enabled", True):
+        from fdecoach import factory, factory_deck, factory_session
+        errs = factory.validate_curriculum(factory.load_curriculum())
+        line(not errs, "Software Factory learning path",
+             f"{factory.total_days()} days from {cfg['factory'].get('start_date')}" if not errs
+             else f"{len(errs)} problem(s): {errs[0]}")
+        line(True, "Slide font", factory_deck.font_report(cfg))
+        music = factory_session.music_report(ctx)
+        line(True, "Video music", f"intro: {music['intro']}; outro: {music['outro']}")
+        mode = cfg["factory"].get("publish_mode", "studio")
+        line(True, "Video publishing", "YouTube Studio upload by you (default)" if mode == "studio"
+             else "API upload as " + str(cfg["factory"].get("privacy_status", "public"))
+             + " (needs an audited Google Cloud project, otherwise YouTube locks it private)")
     want_device = str(cfg.get("pronunciation", {}).get("audio_device", ""))
     devices = audio.avfoundation_audio_devices() if audio.has_ffmpeg() else []
     resolved = audio.resolve_audio_device(want_device) if devices else None
@@ -517,6 +555,133 @@ def cmd_pronounce(args) -> int:
     return 2
 
 
+def _parse_date(value: str):
+    from fdecoach.state import today
+    import datetime as dt
+    if not value or value == "today":
+        return today()
+    if value == "tomorrow":
+        return today() + dt.timedelta(days=1)
+    return dt.date.fromisoformat(value)
+
+
+def cmd_factory(args) -> int:
+    from fdecoach import factory, factory_session as FS, macos
+    ctx = _ctx(args)
+    sub = args.factory_command
+    if sub == "take":
+        if args.detach:
+            from fdecoach import app
+            app.spawn_detached(["factory", "take"])
+            print("Software Factory take started in the background: voice recording + slide show "
+                  "(about 3 minutes). Check progress with: fde-coach factory status")
+            return 0
+        res = FS.run_takes(ctx)
+        _print(res)
+        return 0 if res.get("ok") else 1
+    if sub == "prep":
+        kit = FS.prepare(ctx, _parse_date(args.date), rebuild=args.rebuild)
+        if args.open:
+            macos.open_path(Path(kit["prep_html"]))
+            macos.powerpoint_open(Path(kit["deck"]), ctx.cfg.get("presentation_app"))
+        _print({k: kit[k] for k in ("date", "day", "title", "deck", "prep_html", "prep_md", "dir")})
+        return 0
+    if sub == "brief":
+        date = _parse_date(args.date or "tomorrow")
+        n = factory.day_for(FS.fhistory(ctx.paths), ctx.cfg, date, _parse_date("today"))
+        d = factory.topic(n, ctx.paths) if n else None
+        if d is None:
+            print(f"No video planned for {date.isoformat()} (series starts {factory.start_date(ctx.cfg)}, "
+                  f"{factory.total_days()} days).")
+            return 1
+        files = FS.write_brief(ctx, date, d)
+        print(files["markdown"])
+        print(f"(saved: {files['html']})", file=sys.stderr)
+        if args.open:
+            macos.open_path(Path(files["html"]))
+        return 0
+    if sub == "publish":
+        res = FS.publish(ctx, _parse_date(args.date), take=args.take)
+        _print(res)
+        return 0 if res.get("ok") else 1
+    if sub == "published":
+        s = FS.mark_published(ctx, _parse_date(args.date), args.url)
+        print(f"Day {s['day']} marked published: {args.url}")
+        return 0
+    if sub == "status":
+        st = FS.status(ctx)
+        if args.json:
+            _print(st)
+            return 0
+        s = st["streak"]
+        print(f"Software Factory: {st['published']}/{st['path_days']} published  |  streak {s['current']} "
+              f"(best {s['best']})  |  starts {st['start_date']}  |  publish via {st['publish_mode']}")
+        t = st["today"]
+        if t:
+            state = "PUBLISHED" if t["published"] else f"{t['takes']}/{t['max_takes']} takes"
+            extra = "  (carried over)" if t["carried_over"] else ""
+            print(f"Today: Day {t['day']} · {t['title']}  |  {state}{extra}")
+            if t.get("prep"):
+                print(f"  prep : {t['prep']}")
+            if t.get("video"):
+                print(f"  video: {t['video']}")
+            yt = t.get("youtube") or {}
+            if yt.get("url") or yt.get("status") not in (None, "none"):
+                print(f"  youtube: {yt.get('url') or yt.get('status')}")
+        elif st["today_topic"]:
+            print(f"Today: Day {st['today_topic']['day']} · {st['today_topic']['title']} "
+                  f"(kit is built at {st['prep_time']}, or now with: fde-coach factory prep)")
+        if st["tomorrow_topic"]:
+            print(f"Tomorrow: Day {st['tomorrow_topic']['day']} · {st['tomorrow_topic']['title']} "
+                  f"(brief at {st['brief_time']})")
+        return 0
+    if sub == "plan":
+        if args.markdown:
+            text = FS.learning_path_markdown(ctx)
+            if args.write:
+                Path(args.write).expanduser().write_text(text, encoding="utf-8")
+                print(f"Wrote {args.write}")
+            else:
+                print(text)
+            return 0
+        rows = FS.plan_rows(ctx)
+        if args.json:
+            _print(rows)
+            return 0
+        marks = {"published": "\u2713", "today": "\u25b6", "planned": " "}
+        for r in rows:
+            print(f"{marks[r['status']]} Day {r['day']:>2}  {r['date']:<10}  {r['title']}"
+                  + (f"  {r['url']}" if r.get("url") else ""))
+        return 0
+    if sub == "history":
+        rows = FS.history_rows(ctx, limit=args.limit)
+        if args.json:
+            _print(rows)
+            return 0
+        if not rows:
+            print("No Software Factory videos yet.")
+        for r in rows:
+            mark = "\u2713" if r["published"] else "\u2717"
+            print(f"{mark} {r['date']}  Day {r['day']}  {r['title']}  takes: {r['takes']}  "
+                  f"final: {r['final_take'] or '-'}  youtube: {r['youtube']}")
+        return 0
+    if sub == "music":
+        for kind in ("intro", "outro"):
+            src = getattr(args, kind)
+            if src:
+                print(f"{kind}: {FS.copy_music(ctx, Path(src).expanduser(), kind)}")
+        if args.regenerate:
+            FS.remove_generated_music(ctx)
+        for kind, where in FS.music_report(ctx).items():
+            print(f"{kind}: {where}")
+        return 0
+    if sub == "calendar-sync":
+        for line in FS.calendar_sync(ctx, clear=args.clear):
+            print(line)
+        return 0
+    return 2
+
+
 # --------------------------------------------------------------------------- parser
 
 def build_parser() -> argparse.ArgumentParser:
@@ -621,6 +786,49 @@ def build_parser() -> argparse.ArgumentParser:
     pw.add_argument("--remove", action="append", metavar="WORD")
     pw.set_defaults(func=cmd_pronounce)
     psub.add_parser("upload", help="assemble + upload pending pronunciation videos").set_defaults(func=cmd_pronounce)
+
+    s = sub.add_parser("factory", help="Software Factory daily video series (brief, kit, takes, publish)")
+    fsub = s.add_subparsers(dest="factory_command", required=True)
+    fs = fsub.add_parser("take", help="record today's next take (voice + slides, max 3), then publish")
+    fs.add_argument("--detach", action="store_true")
+    fs.set_defaults(func=cmd_factory)
+    fs = fsub.add_parser("prep", help="build the recording kit: slides, prep sheet, outline, checks")
+    fs.add_argument("--date", default="today", help="today (default), tomorrow or YYYY-MM-DD")
+    fs.add_argument("--rebuild", action="store_true", help="re-render after editing an override")
+    fs.add_argument("--open", action="store_true", help="open the prep sheet and the deck")
+    fs.set_defaults(func=cmd_factory)
+    fs = fsub.add_parser("brief", help="the day-before brief (default: tomorrow's video)")
+    fs.add_argument("--date", help="today, tomorrow (default) or YYYY-MM-DD")
+    fs.add_argument("--open", action="store_true")
+    fs.set_defaults(func=cmd_factory)
+    fs = fsub.add_parser("publish", help="assemble the final video from a take and publish it")
+    fs.add_argument("--take", type=int, help="take number (default: the latest)")
+    fs.add_argument("--date", default="today")
+    fs.set_defaults(func=cmd_factory)
+    fs = fsub.add_parser("published", help="record the YouTube link once the video is live")
+    fs.add_argument("--url", required=True)
+    fs.add_argument("--date", default="today")
+    fs.set_defaults(func=cmd_factory)
+    fs = fsub.add_parser("status", help="today's topic, takes, publish state and streak")
+    fs.add_argument("--json", action="store_true")
+    fs.set_defaults(func=cmd_factory)
+    fs = fsub.add_parser("plan", help="the learning path with dates and progress")
+    fs.add_argument("--json", action="store_true")
+    fs.add_argument("--markdown", action="store_true", help="print the learning path document")
+    fs.add_argument("--write", help="with --markdown: write it to this file")
+    fs.set_defaults(func=cmd_factory)
+    fs = fsub.add_parser("history", help="past videos")
+    fs.add_argument("--limit", type=int, default=14)
+    fs.add_argument("--json", action="store_true")
+    fs.set_defaults(func=cmd_factory)
+    fs = fsub.add_parser("music", help="show or set the intro/outro music")
+    fs.add_argument("--intro", help="audio file to use under the intro card")
+    fs.add_argument("--outro", help="audio file to use under the outro card")
+    fs.add_argument("--regenerate", action="store_true", help="rebuild the generated default chords")
+    fs.set_defaults(func=cmd_factory)
+    fs = fsub.add_parser("calendar-sync", help="bring the brief and not-published calendar events up to date")
+    fs.add_argument("--clear", action="store_true")
+    fs.set_defaults(func=cmd_factory)
     return p
 
 

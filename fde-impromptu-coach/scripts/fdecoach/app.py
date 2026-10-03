@@ -545,6 +545,11 @@ def remind(ctx: Ctx) -> str:
         macos.notify(APP_NAME, "Permissions checked. Daily practice is scheduled.")
         rt = ctx.runtime()
     calendar_sync_safe(ctx)
+    try:
+        from . import factory_session
+        factory_session.tick_safe(ctx)
+    except Exception:  # noqa: BLE001 - the video series must never break the FDE reminders
+        log.exception("Software Factory tick unavailable")
 
     date, t = today(), now()
     daily_at = _time_today(ctx.cfg.get("daily_time", "05:30"), date)
@@ -630,10 +635,17 @@ def status(ctx: Ctx) -> Dict[str, Any]:
     except Exception as exc:  # noqa: BLE001 - pronunciation must never break the FDE status
         log.debug("pronunciation status unavailable: %s", exc)
         pron = None
+    try:
+        from . import factory_session
+        factory = factory_session.status(ctx)
+    except Exception as exc:  # noqa: BLE001
+        log.debug("Software Factory status unavailable: %s", exc)
+        factory = None
     return {
         "date": date.isoformat(),
         "streak": stats,
         "pronunciation": pron,
+        "factory": factory,
         "level": s.get("level") if s else plan_slots(history, rt, ctx.cfg, date)["level"],
         "level_adjust": rt.data.get("level_adjust", 0),
         "today": None if not s else {

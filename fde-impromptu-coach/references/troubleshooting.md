@@ -35,6 +35,14 @@ If today is at risk, protect the streak first: record any way you can
 | Pronunciation words never change | every word retired (4 easy answers in a row) | `fde-coach pronounce words --add WORD` — new words enter the schedule immediately |
 | Nothing happened at 05:45 | pronouncing agent not loaded | `fde-coach install-agents` (installs all three agents); check `pronounce.err.log` |
 | Deck file deleted | — | Any command (`fde-coach open`) rebuilds it from the saved questions |
+| No Software Factory brief in the evening | Mac asleep at 19:00, or reminder agent not loaded | It arrives on the next 15-minute tick after waking (until quiet hours). `fde-coach factory brief --open` shows it now; `fde-coach install-agents` if the agent is off |
+| Brief or kit shows yesterday's topic | Yesterday's video wasn't published | By design: topics carry over so none is skipped. Publish it (`fde-coach factory take`), or mark it if it is live: `fde-coach factory published --url LINK --date YYYY-MM-DD` |
+| "The series starts on …" | Before `factory.start_date` | Preview with `fde-coach factory prep --date 2026-10-10 --open`; change the date with `fde-coach config --set factory.start_date=YYYY-MM-DD` |
+| "Take didn't count: take too short" | Ended the show early (Esc) or audio input silent | Takes under `factory.min_take_seconds` don't use up one of the 3. Check the input: `fde-coach doctor` ("Pronunciation audio input"); set another device with `fde-coach config --set factory.audio_device="MacBook Pro Microphone"` |
+| Software Factory video not assembled | ffmpeg missing | `brew install ffmpeg`, then `fde-coach factory publish --take N`. The takes (`.m4a`) are always kept |
+| Slides not in Calibri | Microsoft Office fonts not found | `fde-coach doctor` shows the font used. Point at a font file: `fde-coach config --set factory.font_regular=/path/Calibri.ttf --set "factory.font_bold=/path/Calibri Bold.ttf"`, then `fde-coach factory prep --rebuild` |
+| API upload ends up private | Unaudited Google Cloud project | YouTube locks API uploads from unaudited projects as private. Use `factory.publish_mode=studio` (the default) and upload in YouTube Studio |
+| Learning path finished | Day 35 published | Ask Claude Code to plan the next module (`references/factory_curriculum.md`) |
 | Broke after a Homebrew Python upgrade | the virtual environment points at a removed Python | Re-run `install.sh` (history is kept) |
 | Want to start fresh | — | `bash uninstall.sh --purge`, then `install.sh` |
 

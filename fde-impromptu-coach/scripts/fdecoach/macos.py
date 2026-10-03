@@ -94,6 +94,51 @@ def open_path(path: Path, app: Optional[str] = None) -> bool:
     return subprocess.run(cmd, capture_output=True).returncode == 0
 
 
+def open_url(url: str) -> bool:
+    if dry_run() or not is_macos():
+        log.info("[dry-run] open %s", url)
+        return True
+    return subprocess.run(["/usr/bin/open", url], capture_output=True).returncode == 0
+
+
+def copy_to_clipboard(text: str) -> bool:
+    if dry_run() or not is_macos():
+        log.info("[dry-run] clipboard <- %d characters", len(text))
+        return True
+    try:
+        return subprocess.run(["/usr/bin/pbcopy"], input=text, text=True, timeout=10).returncode == 0
+    except (OSError, subprocess.TimeoutExpired):
+        return False
+
+
+def ask_text(message: str, title: str, buttons: Sequence[str] = ("Later", "Save"), default: str = "Save",
+             timeout_seconds: int = 900) -> Tuple[str, str]:
+    """Dialog with a text field. Returns (button, text); ('', '') on error, GAVE_UP on timeout.
+    In dry-run the next FDE_COACH_DRYRUN_ANSWERS item is the typed text (button = default)."""
+    if dry_run() or not is_macos():
+        answers = [a for a in os.environ.get("FDE_COACH_DRYRUN_ANSWERS", "").split(",") if a]
+        answer = answers.pop(0) if answers else ""
+        os.environ["FDE_COACH_DRYRUN_ANSWERS"] = ",".join(answers)
+        log.info("[dry-run] ask %r -> %r", message[:60], answer)
+        return (default, answer) if answer else (GAVE_UP, "")
+    btns = ", ".join(q(b) for b in buttons)
+    script = f"""
+activate
+try
+    set r to display dialog {q(message)} with title {q(title)} default answer "" buttons {{{btns}}} default button {q(default)} giving up after {int(timeout_seconds)}
+    if gave up of r then return "{GAVE_UP}" & linefeed
+    return (button returned of r) & linefeed & (text returned of r)
+on error number -128
+    return "{GAVE_UP}" & linefeed
+end try
+"""
+    ok, out = osascript(script, timeout=int(timeout_seconds) + 30)
+    if not ok:
+        return "", ""
+    button, _, text = out.partition("\n")
+    return button, text.strip()
+
+
 def quit_app(name: str) -> None:
     osascript(f"tell application {q(name)} to quit", timeout=30)
 

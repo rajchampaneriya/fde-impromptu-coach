@@ -26,11 +26,22 @@ This skill removes the discipline tax. It builds the deck, runs the timer, recor
 
 Miss a day? Reminders escalate on your Mac, iPhone, and calendar until you record.
 
+## Software Factory Daily Video
+
+From 10 October 2026 the coach also runs a daily technical video for a public YouTube channel: a 35-day learning path through Software Factory concepts and [Gas City](https://github.com/gastownhall/gascity), one concept per video, under three minutes.
+
+- **Evening before:** a brief with the topic, WHAT, WHY, HOW, repository references, diagrams, the demo to prepare and a 3-minute outline (Mac + Google Calendar).
+- **Recording day:** minimal blue slides, a keyword outline and the facts to verify.
+- **Up to three voice takes** over self-running slides (Discovery, Improve, Publish), then a finished video with intro and outro music. Your voice is never processed.
+
+See the [learning path](fde-impromptu-coach/references/factory_learning_path.md) and `fde-coach factory --help`.
+
 ## Supported Tools
 
 - Claude Code
 - Microsoft PowerPoint (full automation) or Apple Keynote (manual advance)
 - QuickTime Player (camera + microphone required)
-- YouTube — private uploads only
+- YouTube — private uploads for practice; Software Factory videos are published by you in YouTube Studio
+- ffmpeg — pronunciation and Software Factory videos
 - Apple Reminders + Google Calendar for streak protection
 - **macOS only**

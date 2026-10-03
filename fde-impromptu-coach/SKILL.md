@@ -1,7 +1,7 @@
 ---
 name: fde-impromptu-coach
-description: Daily impromptu-speaking coach for the Forward Deployed Engineer (FDE) role on macOS. Every morning at 05:30 it builds a minimalist blue, Calibri PowerPoint deck with 5 never-repeated, progressively harder impromptu questions (60-second timer per slide, auto-advance), records a ~5-minute QuickTime camera video, uploads it to YouTube as a private video, and protects the daily streak with escalating Mac reminders plus Google Calendar alerts that fire only on missed days. Use this skill whenever the user mentions impromptu practice, FDE or communication or leadership practice, today's questions or practice deck, starting or recording today's session, their practice streak, missed practice, practice reminders or calendar alerts, the 5:30 schedule, practice video uploads, making questions harder or easier or about a topic, or installing, configuring or troubleshooting this routine, even if they do not name the skill.
-compatibility: macOS 12+ with Microsoft PowerPoint, QuickTime Player, Python 3.9+ and Claude Code. YouTube upload needs a Google Cloud OAuth desktop client.
+description: Daily speaking coach for the Forward Deployed Engineer (FDE) role on macOS, with three tracks: a 05:30 impromptu practice (minimalist blue Calibri PowerPoint deck, 5 never-repeated, progressively harder questions, 60 s each, QuickTime camera recording, private YouTube upload), a pen-method pronunciation practice, and a daily Software Factory / Gas City explainer video (day-before brief, recording-day kit with slides and outline, up to 3 voice takes, a video under 3 minutes for the public channel). Mac reminders and Google Calendar alerts protect each streak. Use this skill whenever the user mentions impromptu, FDE, communication or pronunciation practice, today's questions or deck, the Software Factory or Gas City video series, tomorrow's topic, a brief, takes, publishing a video, the learning path, streaks, reminders, calendar alerts, practice video uploads, or installing, configuring or troubleshooting this routine, even if they do not name the skill.
+compatibility: macOS 12+ with Microsoft PowerPoint, QuickTime Player, Python 3.9+ and Claude Code. ffmpeg for the pronunciation and Software Factory videos. YouTube upload needs a Google Cloud OAuth desktop client.
 ---
 
 # FDE Impromptu Coach
@@ -27,9 +27,17 @@ installed yet: see **Install** below.
 3. **Long commands run detached.** A session takes about 5.5 minutes plus saving,
    longer than a tool call should block. Always start it with
    `fde-coach session --detach`, then check `fde-coach status` afterwards.
-4. **Videos stay private.** Never change `youtube.privacy_status` unless the user
-   explicitly asks.
+4. **Practice videos stay private.** Never change `youtube.privacy_status` unless
+   the user explicitly asks. Software Factory videos are the exception: they are
+   made for the user's public channel, but the user publishes them (YouTube
+   Studio, `factory.publish_mode=studio`). Never switch to `api` publishing
+   unless asked.
 5. Today's questions can be replaced only **before** today is recorded.
+6. **Software Factory: one video, one concept, one takeaway, under 3 minutes,
+   at most 3 takes.** Help the user explain, don't script them: give keywords
+   and plain-language definitions, not paragraphs to read. Never process their
+   voice (no noise reduction or loudness filters); a past audio clean-up hurt
+   their recordings.
 
 ## What the user says → what to run
 
@@ -51,6 +59,15 @@ installed yet: see **Install** below.
 | "Connect YouTube" | walk them through README.md → *Google setup*, then `fde-coach youtube-auth` |
 | "Connect Google Calendar", "alert me if I miss" | README.md → *Google setup* (enable Google Calendar API), then `fde-coach calendar-auth` |
 | "Change / stop the calendar alerts" | `fde-coach config --set 'google_calendar.popup_times=[…]'` or `google_calendar.enabled=false`, then `fde-coach calendar-sync` |
+| "What's tomorrow's video?", "send me tomorrow's brief" | `fde-coach factory brief` (prints it; `--open` opens the styled page). It also arrives by itself at `factory.brief_time` (19:00) and as a Google Calendar event |
+| "Prepare today's video", "build my slides / outline" | `fde-coach factory prep --open` (slides, prep sheet, outline, checks to verify; built by itself at `factory.prep_time`) |
+| "Record the video", "start take 1 / next take" | `fde-coach factory take --detach` (voice + auto-advancing slides, ~3 min; Take 1 Discovery, Take 2 Improve, Take 3 Publish; never more than 3) |
+| "Publish today's video", "use take 2" | `fde-coach factory publish --take N` (assembles final.mp4, thumbnail, title/description/chapters; opens YouTube Studio) |
+| "It's live: <link>" | `fde-coach factory published --url LINK` |
+| "Show the learning path", "where am I in the series?" | `fde-coach factory plan` / `fde-coach factory status` |
+| "Change today's wording / takeaway / visual" | write `~/FDE-Impromptu/factory/overrides/<topic-id>.json` (any of what, what_points, why, why_points, how, how_points, visual, analogy, jargon, takeaway, artifact, demo, verify), then `fde-coach factory prep --rebuild` |
+| "Use my own intro/outro music" | `fde-coach factory music --intro FILE --outro FILE` (YouTube Audio Library tracks are a good source) |
+| "Plan the next module" (after Day 35) | follow `references/factory_curriculum.md`: append days to `assets/factory_curriculum.json`, run the tests, re-run `install.sh` |
 | "Something's broken" | `fde-coach doctor`, then `references/troubleshooting.md` |
 | "Tell the coach about me" | `fde-coach config --set 'learner_context=…'` (background, target companies, weak spots; used for every future set) |
 
@@ -102,6 +119,38 @@ Settings live in `~/FDE-Impromptu/config.json`; `fde-coach config` prints them.
    (07:30, 12:30, 18:00, 21:30 + an email) reach the phone, browser or inbox
    only on unrecorded days, even when the Mac is closed.
 
+## The Software Factory video series
+
+A daily explainer for the user's public YouTube channel (`factory.channel`,
+default rajcwork), starting `factory.start_date` (2026-10-10). The learning path
+(`assets/factory_curriculum.json`, readable copy in
+`references/factory_learning_path.md`) has 35 days in six modules, grounded in
+https://github.com/gastownhall/gascity: the big picture, beads, agents and
+sessions, formulas, orders and operations, packs. Topics are consumed in order;
+a day that isn't published carries its topic over.
+
+- **Day before, 19:00:** the brief (topic, WHAT, WHY, HOW, repository references,
+  existing diagrams, artifact or demo, 3-minute outline) opens on the Mac, and a
+  Google Calendar event with the same brief alerts the phone and inbox.
+- **Recording day, 07:00:** the kit is built and its prep sheet opens: speaking
+  outline (keywords), slides, the HOW diagram, demo, points to verify, final flow.
+- **Takes:** `factory take` records voice only while the slides run (5 s intro,
+  WHAT 35 s, WHY 35 s, HOW 75 s, Takeaway 15 s). After each take a dialog offers
+  the next take, listening back, or publishing. Three takes maximum.
+- **Publish:** the final video (intro card with music, the four sections, outro
+  card with soft music; 2:53) plus thumbnail and description with chapters and
+  references. Default `studio` mode: the user uploads in YouTube Studio and
+  pastes the link (`factory published --url`). API uploads from unaudited
+  Google Cloud projects are locked private, so `api` mode is only for audited
+  projects.
+- Reminders at `factory.reminder_times` and a "not published yet" calendar event
+  at 21:00 run only until the day is published.
+
+When helping by hand, read today's prep sheet (`fde-coach factory status` shows
+its path) and coach from it: short sentences, explain jargon right away, one
+takeaway. Verify technical claims against the cited Gas City files before the
+user records.
+
 ## Install
 
 From the unzipped skill folder (normally `~/.claude/skills/fde-impromptu-coach`):
@@ -131,4 +180,9 @@ YouTube setup and an optional `pmset` wake schedule.
 - `references/pronunciation_design.md` — pronunciation paragraph rubric and JSON schema
 - `references/pronunciation_plan.md` — pronunciation practice design plan
 - `references/troubleshooting.md` — symptoms → fixes
+- `references/factory_video_plan.md` — Software Factory video series design
+- `references/factory_curriculum.md` — how to write more days of the learning path
+- `references/factory_learning_path.md` — the 35-day path (generated)
+- `assets/factory_curriculum.json`, `assets/factory_diagrams/` — the path and the Gas City diagrams (MIT)
+- `scripts/fdecoach/factory*.py` — `factory` (curriculum, planning, briefs), `factory_deck` (slides, take deck, thumbnail), `factory_session` (kit, takes, video, publish, reminders, calendar)
 - `references/plan.md` — design plan, risks found in validation, and fixes

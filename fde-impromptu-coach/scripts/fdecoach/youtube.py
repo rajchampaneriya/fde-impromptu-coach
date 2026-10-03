@@ -177,6 +177,7 @@ def add_to_playlist(paths: Paths, video_id: str, playlist_id: str) -> bool:
         log.info("[dry-run] playlist add %s -> %s", video_id, playlist_id)
         return True
     try:
+        from googleapiclient.discovery import build
         service = build("youtube", "v3", credentials=_credentials(paths), cache_discovery=False)
         service.playlistItems().insert(part="snippet", body={
             "snippet": {"playlistId": playlist_id, "resourceId": {"kind": "youtube#video", "videoId": video_id}}

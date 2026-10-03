@@ -1,0 +1,1201 @@
+{
+  "version": 1,
+  "series": "Software Factory",
+  "source": {
+    "repo": "https://github.com/gastownhall/gascity",
+    "ref": "main",
+    "verified_commit": "e244b16f3a764e0654f0784cba648a98e0aed54c",
+    "verified_on": "2026-10-03"
+  },
+  "modules": [
+    {"id": "big-picture", "title": "The Big Picture", "goal": "Know what a software factory is and the shape of Gas City."},
+    {"id": "work", "title": "Work: Beads", "goal": "Understand the unit of work, how it is ordered, grouped and claimed."},
+    {"id": "workers", "title": "Workers: Agents and Sessions", "goal": "Define agents, run sessions and see how agents coordinate."},
+    {"id": "methods", "title": "Methods: Formulas", "goal": "Write a method once and let the orchestrator run it as a graph."},
+    {"id": "automation", "title": "Automation and Operations", "goal": "Make the factory start, supervise and observe its own work."},
+    {"id": "composition", "title": "Composition: Packs", "goal": "Package, share and assemble the whole factory."}
+  ],
+  "days": [
+    {
+      "day": 1,
+      "module": "big-picture",
+      "id": "software-factory",
+      "title": "Software Factory vs. Coding Agent",
+      "concept": "Software factory",
+      "what": "A software factory runs a written-down method across a fleet of coding agents, without you steering every step.",
+      "what_points": ["A fleet, not one agent", "A written-down method", "Runs without you in the loop"],
+      "why": "One coding agent is a faster pair of hands, but it works alone, needs you watching, and loses context when it crashes.",
+      "why_points": ["One session, one train of thought", "You hover and steer", "A crash loses the context"],
+      "how": "You write the method once; an orchestrator splits the job into tracked work, runs independent pieces in parallel and retries failures.",
+      "how_points": ["Write the method once", "Orchestrator splits the job into tracked units", "Parallel where possible, wait where needed", "Retry until the job is done"],
+      "visual": {
+        "type": "compare",
+        "left": {"title": "Interactive session", "points": ["You steer every move", "One agent, one context", "Crash means start over"]},
+        "right": {"title": "Software factory", "points": ["Method written once", "A fleet works in parallel", "Work survives crashes"]},
+        "caption": "Faster hands vs. a system that produces finished work"
+      },
+      "analogy": "A great chef cooks one meal fast. A restaurant kitchen has recipes, stations and tickets, so dinner is served even when one cook goes home.",
+      "jargon": [
+        {"term": "orchestrator", "plain": "the program that hands out work, tracks it and keeps it moving"},
+        {"term": "fleet", "plain": "many coding agents working at the same time"}
+      ],
+      "takeaway": "A coding agent gives you faster hands; a software factory gives you finished work without you in the loop.",
+      "references": ["docs/index.mdx", "docs/getting-started/faq.md"],
+      "diagrams": [],
+      "artifact": "Sketch two columns on paper: interactive session vs. software factory. The HOW slide is that sketch.",
+      "demo": [],
+      "verify": [
+        "docs/index.mdx describes Gas City as the platform for building software factories.",
+        "The FAQ promise: describe a feature once and come back to a finished branch."
+      ],
+      "builds_on": []
+    },
+    {
+      "day": 2,
+      "module": "big-picture",
+      "id": "gas-city-platform",
+      "title": "Gas City: Zero Hardcoded Roles",
+      "concept": "Gas City",
+      "what": "Gas City is an open-source toolkit for building software factories: orchestration infrastructure for multi-agent coding.",
+      "what_points": ["Open source, MIT licence", "Extracted from Gas Town", "A toolkit, not one fixed bot"],
+      "why": "Hardcoded roles lock you into someone else's team shape. Gas City makes every role configuration, so one engine runs many designs.",
+      "why_points": ["No built-in manager or reviewer", "Roles are config plus prompts", "One engine, many orchestrators"],
+      "how": "The engine only knows primitives; packs supply the roles. Swap the packs and you get a different factory, Gas Town included.",
+      "how_points": ["The engine knows primitives only", "Packs bring the roles", "Gas Town is one pack on top", "Your team shape is your pack"],
+      "visual": {
+        "type": "layers",
+        "layers": [
+          {"label": "Your factory", "sub": "Gas Town · Ralph · your own design"},
+          {"label": "Packs", "sub": "roles as prompts and config"},
+          {"label": "Gas City engine", "sub": "orchestrator · bead store · event bus"}
+        ],
+        "caption": "Roles live in packs, not in the binary"
+      },
+      "analogy": "Like a game engine: the engine handles physics and drawing; each game brings its own characters.",
+      "jargon": [
+        {"term": "SDK", "plain": "a toolkit you build your own product with"},
+        {"term": "pack", "plain": "a folder of config that defines agents, methods and schedules"}
+      ],
+      "takeaway": "Gas City hardcodes zero roles, so you can build the factory your team actually needs.",
+      "references": ["README.md", "docs/getting-started/how-gas-city-works.md", "docs/getting-started/coming-from-gastown.md"],
+      "diagrams": ["gastown-agents-by-scope"],
+      "artifact": "Open the Gas Town role table in coming-from-gastown.md and pick two roles to mention: Mayor and Polecat.",
+      "demo": [],
+      "verify": [
+        "how-gas-city-works.md: the orchestrator hardcodes zero roles.",
+        "README and FAQ: Gas City is MIT-licensed.",
+        "coming-from-gastown.md: every Gas Town role maps to a configured agent."
+      ],
+      "builds_on": ["software-factory"]
+    },
+    {
+      "day": 3,
+      "module": "big-picture",
+      "id": "six-primitives",
+      "title": "The Six Primitives",
+      "concept": "Six primitives",
+      "what": "Everything in Gas City is built from six primitives: Agent, Bead, Formula, Rig, Pack and Event.",
+      "what_points": ["Agent = who · Bead = what", "Formula = how · Rig = where", "Pack = configures · Event = observe"],
+      "why": "Six words give you a map. Every feature you meet later is one of them, or a combination of them.",
+      "why_points": ["Small vocabulary, big system", "New features slot into the map", "Easier to explain and debug"],
+      "how": "Packs declare agents and formulas; a formula operates over beads; agents execute beads in a rig; events fire so everyone can watch.",
+      "how_points": ["Pack configures agents and formulas", "Formula operates over beads", "Agents execute beads in a rig", "Events let humans and agents observe"],
+      "visual": {"type": "image", "diagram": "primitives", "caption": "The six primitives and how they relate"},
+      "analogy": "Who, what, how and where are the questions every news story answers. Add who set it up and how you hear about it.",
+      "jargon": [
+        {"term": "primitive", "plain": "a basic building block that isn't made of smaller blocks"}
+      ],
+      "takeaway": "Who, what, how, where, configure, observe: six primitives hold the whole system.",
+      "references": ["docs/getting-started/how-gas-city-works.md"],
+      "diagrams": ["primitives"],
+      "artifact": "The primitives diagram. Practise pointing at each box in order: Pack, Formula, Bead, Agent, Rig, Event.",
+      "demo": [],
+      "verify": [
+        "The six-primitives table in how-gas-city-works.md: Agent WHO, Bead WHAT, Formula HOW, Rig WHERE, Pack CONFIGURES, Event OBSERVE."
+      ],
+      "builds_on": ["gas-city-platform"]
+    },
+    {
+      "day": 4,
+      "module": "big-picture",
+      "id": "machinery",
+      "title": "The Machinery Underneath",
+      "concept": "Orchestrator, store, event bus",
+      "what": "Three pieces of plumbing run the primitives: the orchestrator, the bead store and the event bus.",
+      "what_points": ["Orchestrator runs the work", "Bead store remembers it", "Event bus announces it"],
+      "why": "If progress lived inside an agent's memory, one crash would erase it. In shared state, work survives a crash on either side.",
+      "why_points": ["Agents crash", "Orchestrators restart", "Shared state survives both"],
+      "how": "The orchestrator starts and stops sessions, but reads their progress from the store and event bus instead of waiting for callbacks.",
+      "how_points": ["Orchestrator acts on sessions", "Sessions record progress in beads", "Orchestrator reads the store, not callbacks", "After a crash, resume from the store"],
+      "visual": {
+        "type": "flow",
+        "nodes": ["Orchestrator", "Sessions", "Bead store + events"],
+        "arrows": ["starts", "record progress"],
+        "loop": true,
+        "loop_label": "the orchestrator reads progress back",
+        "caption": "The loop closes through shared state"
+      },
+      "analogy": "A kitchen ticket rail: cooks come and go, but the tickets on the rail say exactly what is done and what is next.",
+      "jargon": [
+        {"term": "bead store", "plain": "the database where every unit of work is recorded"},
+        {"term": "event bus", "plain": "a running feed of 'this just happened' messages"}
+      ],
+      "takeaway": "The orchestrator never waits for a callback; it reads shared state, so work survives a crash on either side.",
+      "references": ["docs/getting-started/how-gas-city-works.md", "engdocs/architecture/nine-concepts.md"],
+      "diagrams": [],
+      "artifact": "Draw the loop by hand once: orchestrator, sessions, store, back to the orchestrator.",
+      "demo": [],
+      "verify": [
+        "how-gas-city-works.md, 'The machinery underneath': Orchestrator, Bead store, Event bus.",
+        "Same page: 'The loop closes through shared state'."
+      ],
+      "builds_on": ["six-primitives"]
+    },
+    {
+      "day": 5,
+      "module": "big-picture",
+      "id": "loop-vs-orchestrator",
+      "title": "Why Not a Bash Loop or CI?",
+      "concept": "Orchestrator vs. loop",
+      "what": "An orchestrator runs work as a graph with a durable memory. A bash loop only restarts an agent; CI only checks a finished change.",
+      "what_points": ["Loop: restart blindly", "CI: verify afterwards", "Orchestrator: plan, run, remember"],
+      "why": "A loop has no model of the work. Every round starts blind, and a crash loses whatever the last round knew.",
+      "why_points": ["No model of the work", "A crash loses knowledge", "CI doesn't produce the change"],
+      "how": "The orchestrator holds each step until its dependencies close, fans ready steps out, retries failures and stores every unit durably.",
+      "how_points": ["Steps wait for their dependencies", "Ready steps fan out", "Failures are retried", "Everything is stored durably"],
+      "visual": {
+        "type": "compare",
+        "left": {"title": "Bash loop", "points": ["Restarts the agent", "Starts blind every round", "A crash loses state"]},
+        "right": {"title": "Orchestrator", "points": ["Runs a graph of steps", "Knows what is done", "Resumes from the store"]},
+        "caption": "CI is complementary: it verifies the change a formula produces"
+      },
+      "analogy": "A loop is an alarm clock that keeps waking you up. An orchestrator is a project manager with a checklist.",
+      "jargon": [
+        {"term": "graph", "plain": "steps joined by 'this finishes before that' arrows"},
+        {"term": "durable", "plain": "saved, so it survives crashes and restarts"}
+      ],
+      "takeaway": "A loop repeats; an orchestrator remembers.",
+      "references": ["docs/getting-started/faq.md"],
+      "diagrams": [],
+      "artifact": "Write the naive loop on a sticky note as the 'before' picture.",
+      "demo": ["while true; do claude -p \"keep working on the task\"; done   # the naive loop"],
+      "verify": [
+        "FAQ: 'Couldn't I get the same thing from a bash loop or CI?'"
+      ],
+      "builds_on": ["machinery"]
+    },
+    {
+      "day": 6,
+      "module": "big-picture",
+      "id": "toolbelt",
+      "title": "The Toolbelt: gc, bd, tmux, Dolt",
+      "concept": "Supporting tools",
+      "what": "Gas City runs on a small toolbelt: gc drives the city, bd manages beads, tmux hosts sessions and Dolt stores the beads.",
+      "what_points": ["gc = the city CLI", "bd = the beads CLI", "tmux = sessions · Dolt = storage"],
+      "why": "When something breaks, knowing which tool owns which job tells you exactly where to look.",
+      "why_points": ["Each tool has one job", "Errors point at a tool", "A lighter start is possible"],
+      "how": "brew install gascity brings the dependencies, and gc init checks them. Set GC_BEADS=file to skip Dolt and bd while you learn.",
+      "how_points": ["brew install gascity", "gc init and gc start check prerequisites", "Every agent session lives in tmux", "GC_BEADS=file for a light start"],
+      "visual": {
+        "type": "layers",
+        "layers": [
+          {"label": "gc", "sub": "cities, rigs, sling, sessions, formulas"},
+          {"label": "bd", "sub": "create, list and close beads"},
+          {"label": "tmux", "sub": "one terminal per agent session"},
+          {"label": "Dolt", "sub": "versioned database behind bd"}
+        ],
+        "caption": "One job per tool"
+      },
+      "analogy": "A workshop: the foreman's clipboard, the job tickets, the workbenches and the filing cabinet.",
+      "jargon": [
+        {"term": "tmux", "plain": "a tool that keeps many terminals running, even in the background"},
+        {"term": "Dolt", "plain": "a SQL database with Git-style version history"}
+      ],
+      "takeaway": "Learn which tool owns which job, and every error message gets easier to read.",
+      "references": ["README.md", "docs/getting-started/installation.md", "docs/getting-started/faq.md"],
+      "diagrams": [],
+      "artifact": "The prerequisites table from the README: tmux, git, jq, dolt, bd, flock.",
+      "demo": ["brew install gascity", "gc version", "export GC_BEADS=file   # skip dolt + bd while learning"],
+      "verify": [
+        "README prerequisites table and the GC_BEADS=file note.",
+        "FAQ: agent sessions run in tmux."
+      ],
+      "builds_on": ["loop-vs-orchestrator"]
+    },
+    {
+      "day": 7,
+      "module": "big-picture",
+      "id": "city-and-rig",
+      "title": "City and Rig: The Factory Floor",
+      "concept": "City and rig",
+      "what": "A city is the directory holding your agents, formulas and settings. A rig is a project, usually a Git repo, registered with it.",
+      "what_points": ["City = the factory floor", "Rig = a project brought in", "Each rig gets its own bead prefix"],
+      "why": "Work needs a home and a boundary: the city holds the method, and each rig keeps its work apart from other projects.",
+      "why_points": ["One home for definitions", "Projects stay isolated", "Repos can live anywhere"],
+      "how": "gc init creates and starts a city. gc rig add registers a project, gives it a bead prefix and keeps its path in .gc/site.toml.",
+      "how_points": ["gc init ~/my-city", "pack.toml and city.toml", "gc rig add ~/my-project", "Bead prefix such as mp-"],
+      "visual": {
+        "type": "code",
+        "lang": "shell",
+        "lines": [
+          "$ gc init ~/my-city",
+          "$ ls ~/my-city",
+          "agents  city.toml  formulas  orders  pack.toml  ...",
+          "$ gc rig add ~/my-project",
+          "Adding rig 'my-project'...",
+          "  Prefix: mp",
+          "  Initialized beads database",
+          "Rig added."
+        ],
+        "caption": "One city, one rig"
+      },
+      "analogy": "The city is the factory building; each rig is a production line for one product.",
+      "jargon": [
+        {"term": "rig", "plain": "a project directory registered with the city"},
+        {"term": "prefix", "plain": "the two letters on every bead ID that show which project it belongs to"}
+      ],
+      "takeaway": "The city is your factory floor; a rig is a project you bring onto it.",
+      "references": ["docs/tutorials/01-cities-and-rigs.md", "docs/getting-started/quickstart.md"],
+      "diagrams": [],
+      "artifact": "Run gc init and gc rig add once, or use the Tutorial 01 transcript on the slide.",
+      "demo": ["gc init ~/my-city", "gc rig add ~/my-project", "gc rig list"],
+      "verify": [
+        "Tutorial 01: gc rig add prints 'Prefix: mp'.",
+        "Tutorial 01: the rig path binding lives in .gc/site.toml."
+      ],
+      "builds_on": ["toolbelt"]
+    },
+    {
+      "day": 8,
+      "module": "work",
+      "id": "first-sling",
+      "title": "Your First Sling: The Work Lifecycle",
+      "concept": "gc sling",
+      "what": "Slinging hands a task to an agent: gc sling creates a bead and routes it, and the city does the rest.",
+      "what_points": ["One command", "Creates a bead", "Routes it to an agent"],
+      "why": "This is the smallest complete loop. Once you see it, every bigger workflow is more of the same.",
+      "why_points": ["Smallest end-to-end job", "Same loop at every scale", "You watch, you don't steer"],
+      "how": "Sling creates a bead and a route. A reconcile tick spawns a session, the agent finds its work, edits the rig and closes the bead.",
+      "how_points": ["Sling creates a bead and a route", "A tick spawns a session", "The agent works in the rig", "The bead closes; events record it"],
+      "visual": {"type": "image", "diagram": "work-lifecycle", "caption": "The work lifecycle after one sling"},
+      "analogy": "Dropping a ticket in the kitchen window: you don't pick the cook, the kitchen picks it up.",
+      "jargon": [
+        {"term": "sling", "plain": "Gas City's verb for creating work and routing it in one go"},
+        {"term": "tick", "plain": "the orchestrator's regular check-in, every 30 seconds by default"}
+      ],
+      "takeaway": "One sling sets the whole loop in motion: bead, session, work, close.",
+      "references": ["docs/tutorials/01-cities-and-rigs.md", "docs/getting-started/quickstart.md"],
+      "diagrams": ["work-lifecycle"],
+      "artifact": "The hello-world sling transcript from Tutorial 01.",
+      "demo": ["cd ~/my-project", "gc sling my-project/claude \"Write hello world in python to the file hello.py\"", "gc bd show <bead-id> --watch"],
+      "verify": [
+        "Tutorial 01: sling prints 'Created mp-…' and attaches the mol-do-work workflow.",
+        "health-patrol.md: the patrol interval defaults to 30 seconds."
+      ],
+      "builds_on": ["city-and-rig"]
+    },
+    {
+      "day": 9,
+      "module": "work",
+      "id": "bead",
+      "title": "The Bead: Work That Survives a Crash",
+      "concept": "Bead",
+      "what": "A bead is one unit of work with an ID, a title, a status and a type.",
+      "what_points": ["ID · title · status · type", "open → in_progress → closed", "Lives in the store, not the agent"],
+      "why": "Agents crash and sessions recycle. Because the work lives in a bead, a fresh agent picks up exactly where the last one stopped.",
+      "why_points": ["Sessions are disposable", "Beads are not", "Ground truth after any restart"],
+      "how": "An agent claims an open bead, which moves it to in progress, and closes it when done. Blocked and deferred are managed for you.",
+      "how_points": ["open: waiting", "in_progress: claimed", "closed: done", "blocked and deferred: managed for you"],
+      "visual": {"type": "image", "diagram": "bead-lifecycle", "caption": "A bead's lifecycle"},
+      "analogy": "A sticky note on a shared board: whoever picks it up moves it to doing, then done. The note outlives any worker.",
+      "jargon": [
+        {"term": "claim", "plain": "an agent takes a bead in one step, so nobody else works on it"}
+      ],
+      "takeaway": "Sessions are disposable; beads are not.",
+      "references": ["docs/tutorials/06-beads.md", "docs/getting-started/how-gas-city-works.md"],
+      "diagrams": ["bead-lifecycle"],
+      "artifact": "A bd list output with the status symbols.",
+      "demo": ["bd create \"Fix the login bug\"", "bd list", "bd close <bead-id>"],
+      "verify": [
+        "Tutorial 06: statuses open, in_progress, blocked, deferred, closed.",
+        "Tutorial 06: bead IDs start with a two-letter prefix."
+      ],
+      "builds_on": ["first-sling"]
+    },
+    {
+      "day": 10,
+      "module": "work",
+      "id": "everything-is-a-bead",
+      "title": "Everything Is a Bead",
+      "concept": "One store for everything",
+      "what": "Tasks, mail, sessions and convoys are all beads that differ only by type.",
+      "what_points": ["task · message", "session · convoy", "One store, one way to query"],
+      "why": "One store means one way to query, one dependency model and one history. That is what makes the system composable.",
+      "why_points": ["No separate databases", "Same tools for everything", "Features compose easily"],
+      "how": "bd list shows formula steps, mail and sessions side by side. A formula run lands as plain task beads tagged with metadata.",
+      "how_points": ["The type column says what it is", "bd list sees everything", "Formula runs become task beads", "Metadata adds structure"],
+      "visual": {
+        "type": "hub",
+        "center": "Bead store",
+        "spokes": ["task", "message", "session", "convoy"],
+        "caption": "Same store, same queries; only the type differs"
+      },
+      "analogy": "One spreadsheet with a 'type' column instead of four separate spreadsheets.",
+      "jargon": [
+        {"term": "metadata", "plain": "extra key-value notes attached to a bead"}
+      ],
+      "takeaway": "When everything is a bead, one set of tools works on everything.",
+      "references": ["docs/tutorials/06-beads.md"],
+      "diagrams": [],
+      "artifact": "The bead types table from Tutorial 06.",
+      "demo": ["bd list --status in_progress --flat   # live sessions show up as beads too"],
+      "verify": [
+        "Tutorial 06 bead types table: task, message, session, convoy.",
+        "Tutorial 06: a formula root carries gc.kind=workflow metadata."
+      ],
+      "builds_on": ["bead"]
+    },
+    {
+      "day": 11,
+      "module": "work",
+      "id": "dependencies",
+      "title": "Dependencies: Order Without a Scheduler",
+      "concept": "Blocking dependencies",
+      "what": "A dependency says one bead must close before another can start.",
+      "what_points": ["A blocks B", "Blocked work is invisible", "Order emerges from the graph"],
+      "why": "No central scheduler decides what runs next. Agents simply only see work that is ready.",
+      "why_points": ["No scheduler bottleneck", "Nobody starts too early", "Parallel by default"],
+      "how": "bd dep A --blocks B adds the edge. B disappears from every agent's work query until A closes; then it shows up as ready.",
+      "how_points": ["bd dep A --blocks B", "B is hidden while A is open", "A closes, B becomes ready", "Only 'blocks' affects visibility"],
+      "visual": {
+        "type": "flow",
+        "nodes": [{"label": "A: Refactor auth", "sub": "open"}, {"label": "B: Update API docs", "sub": "invisible until A closes"}],
+        "arrows": ["blocks"],
+        "caption": "Agents only see ready work"
+      },
+      "analogy": "You can't paint a wall before the plaster dries, so the painter isn't even told about the job yet.",
+      "jargon": [
+        {"term": "edge", "plain": "an arrow that links two beads"},
+        {"term": "ready", "plain": "open, with nothing blocking it"}
+      ],
+      "takeaway": "Agents only see ready work, so the right order emerges from the graph.",
+      "references": ["docs/tutorials/06-beads.md", "docs/getting-started/how-gas-city-works.md"],
+      "diagrams": [],
+      "artifact": "Two beads and one blocks edge.",
+      "demo": ["bd dep mc-a4l --blocks mc-xp7", "bd ready --unassigned --limit=5   # mc-xp7 stays hidden until mc-a4l closes"],
+      "verify": [
+        "Tutorial 06 dependency table: only blocks affects work visibility.",
+        "Check the exact bd ready flags on your bd version: bd ready --help."
+      ],
+      "builds_on": ["everything-is-a-bead"]
+    },
+    {
+      "day": 12,
+      "module": "work",
+      "id": "convoys",
+      "title": "Convoys: Track a Batch as One",
+      "concept": "Convoy",
+      "what": "A convoy is a bead that groups related beads, so you can track a batch of work as one unit.",
+      "what_points": ["A container bead", "Members keep their identity", "Closes itself when all are done"],
+      "why": "Real work comes in batches: a sprint, a deploy, a feature. You want one answer to 'is all of this done yet?'",
+      "why_points": ["One progress view", "No fake dependencies", "Auto-close, no polling"],
+      "how": "gc convoy create links members with tracks edges, which block nothing. When the last member closes, the convoy closes itself.",
+      "how_points": ["gc convoy create \"Sprint 42\" ...", "tracks edges, not blocks", "gc convoy status shows progress", "Auto-close on the last member"],
+      "visual": {"type": "image", "diagram": "convoy-tracks-membership", "caption": "Convoy membership is tracking, not blocking"},
+      "analogy": "A shipping convoy: each truck drives on its own, but you track the convoy's arrival as one event.",
+      "jargon": [
+        {"term": "tracks edge", "plain": "an 'I care about this' link that blocks nothing"}
+      ],
+      "takeaway": "A convoy groups work without making the pieces wait on each other.",
+      "references": ["docs/tutorials/06-beads.md"],
+      "diagrams": ["convoy-tracks-membership"],
+      "artifact": "The gc convoy status output for 'Sprint 42' from Tutorial 06.",
+      "demo": ["gc convoy create \"Sprint 42\" mc-ykp mc-a4l mc-xp7", "gc convoy status <convoy-id>"],
+      "verify": [
+        "Tutorial 06: convoy membership uses tracks edges.",
+        "Tutorial 06: auto-close runs from the on_close hook; owned convoys skip it."
+      ],
+      "builds_on": ["dependencies"]
+    },
+    {
+      "day": 13,
+      "module": "work",
+      "id": "pull-model",
+      "title": "The Pull Model: How Agents Find Work",
+      "concept": "Routing and readiness",
+      "what": "Agents pull their work: each one asks the store for ready work routed to it, then claims one bead.",
+      "what_points": ["Agents pull, nobody pushes", "Routing picks the queue", "Readiness picks the moment"],
+      "why": "Pulling means the sender never needs to know which session exists. Work waits safely until a worker is ready.",
+      "why_points": ["Senders stay decoupled", "No lost hand-offs", "Scale workers freely"],
+      "how": "Sling stamps gc.routed_to on the bead. At startup an agent runs gc hook --claim, which claims one ready bead from its queue.",
+      "how_points": ["Route: gc.routed_to metadata", "Ready: no open blockers", "gc hook --claim takes one bead", "Run it, close it, repeat"],
+      "visual": {
+        "type": "flow",
+        "nodes": ["Work created", "Routed", "Ready", "Claimed"],
+        "arrows": ["gc.routed_to", "no blockers", "gc hook --claim"],
+        "caption": "Routing decides which queue; readiness decides when"
+      },
+      "analogy": "A taxi rank: passengers queue at the right rank, and the next free taxi takes the next passenger.",
+      "jargon": [
+        {"term": "atomic claim", "plain": "taking a bead in one step, so two agents can never grab the same one"}
+      ],
+      "takeaway": "Routing decides which queue a bead lands in; readiness decides whether anyone can see it.",
+      "references": ["docs/tutorials/06-beads.md", "docs/tutorials/02-agents.md"],
+      "diagrams": [],
+      "artifact": "The generic worker prompt printed by gc prime: claim, show, close, repeat.",
+      "demo": ["gc prime   # the generic worker prompt with gc hook --claim"],
+      "verify": [
+        "Tutorial 06, 'How agents find work'.",
+        "Tutorial 02: gc prime output."
+      ],
+      "builds_on": ["convoys"]
+    },
+    {
+      "day": 14,
+      "module": "work",
+      "id": "demo-bead-graph",
+      "title": "Demo: A Tiny Work Graph by Hand",
+      "concept": "Beads in practice",
+      "what": "Today we build a three-bead work graph by hand with bd and watch readiness change as beads close.",
+      "what_points": ["Three beads", "One dependency", "One convoy"],
+      "why": "Doing it by hand once makes the factory's automatic behaviour obvious. A formula creates exactly this, only bigger.",
+      "why_points": ["See readiness change", "Recap of week two", "Sets up formulas"],
+      "how": "Create three beads, add a blocks edge, group them in a convoy, close the blocker and watch the convoy's progress.",
+      "how_points": ["bd create three times", "bd dep A --blocks B", "gc convoy create", "bd close A, then B is ready"],
+      "visual": {
+        "type": "code",
+        "lang": "shell",
+        "lines": [
+          "$ bd create \"Design the page\"     # mc-1",
+          "$ bd create \"Build the page\"      # mc-2",
+          "$ bd create \"Write the docs\"      # mc-3",
+          "$ bd dep mc-1 --blocks mc-2",
+          "$ gc convoy create \"Landing page\" mc-1 mc-2 mc-3",
+          "$ bd close mc-1                    # mc-2 is now ready",
+          "$ gc convoy status <convoy-id>      # 1/3 closed"
+        ],
+        "caption": "Week two in seven commands"
+      },
+      "analogy": "Laying out the ingredients and recipe steps by hand before letting the kitchen run them.",
+      "jargon": [],
+      "takeaway": "A formula simply creates this graph for you, and now you know exactly what it builds.",
+      "references": ["docs/tutorials/06-beads.md"],
+      "diagrams": ["bead-lifecycle", "convoy-tracks-membership"],
+      "artifact": "Run the seven commands in a scratch city (GC_BEADS=file is fine) and keep the convoy status output.",
+      "demo": ["bd create \"Design the page\"", "bd create \"Build the page\"", "bd create \"Write the docs\"", "bd dep <id-1> --blocks <id-2>", "gc convoy create \"Landing page\" <id-1> <id-2> <id-3>", "bd close <id-1>", "gc convoy status <convoy-id>"],
+      "verify": [
+        "Real bead IDs differ from mc-1, mc-2, mc-3: use the IDs bd prints.",
+        "Tutorial 06: gc convoy create syntax."
+      ],
+      "builds_on": ["pull-model"]
+    },
+    {
+      "day": 15,
+      "module": "workers",
+      "id": "agent-role-prompt",
+      "title": "Agents: A Role Is a Prompt",
+      "concept": "Agent",
+      "what": "An agent is a configured worker: a name, a provider, a scope and a prompt template that defines its behaviour.",
+      "what_points": ["An agents/<name>/ folder", "agent.toml = settings", "prompt.template.md = behaviour"],
+      "why": "Because a role is just a prompt you wrote, a new reviewer, planner or tester takes minutes. No plugin, no code.",
+      "why_points": ["No code to write", "Versioned like any file", "As many roles as you need"],
+      "how": "gc agent add scaffolds the folder. agent.toml sets provider and scope; the prompt says how to work. gc prime shows the result.",
+      "how_points": ["gc agent add --name reviewer", "agent.toml: dir and provider", "prompt.template.md: the role", "gc prime my-project/reviewer"],
+      "visual": {
+        "type": "code",
+        "lang": "toml",
+        "lines": [
+          "# agents/reviewer/agent.toml",
+          "dir = \"my-project\"",
+          "provider = \"codex\"",
+          "",
+          "# agents/reviewer/prompt.template.md",
+          "# Code Reviewer Agent",
+          "Claim work: gc hook --claim --json",
+          "Review the code: bugs, security, style."
+        ],
+        "caption": "A reviewer is two small files"
+      },
+      "analogy": "A job description: the same person becomes a reviewer or a planner depending on the description you hand over.",
+      "jargon": [
+        {"term": "provider", "plain": "the coding-agent CLI that runs the agent, such as Claude Code or Codex"},
+        {"term": "prompt template", "plain": "the starting instructions, filled in with details about the city"}
+      ],
+      "takeaway": "A reviewer is nothing more than the prompt you wrote for it.",
+      "references": ["docs/tutorials/02-agents.md", "docs/getting-started/how-gas-city-works.md"],
+      "diagrams": [],
+      "artifact": "The reviewer agent folder from Tutorial 02.",
+      "demo": ["gc agent add --name reviewer", "gc prime my-project/reviewer"],
+      "verify": [
+        "Tutorial 02: agent.toml with dir and provider.",
+        "how-gas-city-works.md: the prompt template is the agent's entire behavioural spec."
+      ],
+      "builds_on": ["demo-bead-graph"]
+    },
+    {
+      "day": 16,
+      "module": "workers",
+      "id": "harnesses",
+      "title": "Harnesses: One Fleet, Many Coding Agents",
+      "concept": "Providers (harnesses)",
+      "what": "Each agent picks its own harness, such as Claude Code, Codex or Gemini CLI, so a mixed fleet is just configuration.",
+      "what_points": ["Sixteen built-in harnesses", "Chosen per agent", "Uses your existing logins"],
+      "why": "Different models are good at different jobs. Mixing them puts the right model on the right role without changing the workflow.",
+      "why_points": ["Right model per role", "No lock-in", "Control cost and speed"],
+      "how": "Set provider in agent.toml and register it in city.toml. An agent has five axes: harness, model, upstream, transport, runtime.",
+      "how_points": ["provider = \"codex\"", "[providers.codex] in city.toml", "option_defaults sets the model", "Five independent axes"],
+      "visual": {
+        "type": "layers",
+        "layers": [
+          {"label": "Harness", "sub": "provider: claude, codex, gemini ..."},
+          {"label": "Model", "sub": "option_defaults.model"},
+          {"label": "Upstream", "sub": "who serves the model"},
+          {"label": "Transport", "sub": "the session"},
+          {"label": "Runtime", "sub": "where it runs: tmux, Kubernetes ..."}
+        ],
+        "caption": "Five axes you can tune per agent"
+      },
+      "analogy": "A band where each musician brings their own instrument, but everyone reads the same sheet music.",
+      "jargon": [
+        {"term": "harness", "plain": "the coding-agent program an agent runs inside"},
+        {"term": "upstream", "plain": "the service that actually serves the model"}
+      ],
+      "takeaway": "In Gas City, a mixed fleet of coding agents is just configuration.",
+      "references": ["docs/guides/configuring-an-agent.md", "docs/guides/harness-recipes.md", "docs/getting-started/faq.md"],
+      "diagrams": [],
+      "artifact": "Two agent.toml snippets side by side: one Claude, one Codex.",
+      "demo": ["gc doctor --fix   # adds missing builtin provider aliases"],
+      "verify": [
+        "FAQ: sixteen built-in harnesses.",
+        "configuring-an-agent.md: the five axes.",
+        "Tutorial 02: register [providers.codex] with base = \"builtin:codex\"."
+      ],
+      "builds_on": ["agent-role-prompt"]
+    },
+    {
+      "day": 17,
+      "module": "workers",
+      "id": "sessions",
+      "title": "Sessions: On-Demand vs. Always-On",
+      "concept": "Session",
+      "what": "A session is a running agent: a live process with its own terminal, state and conversation history.",
+      "what_points": ["Agent = definition", "Session = live process", "On-demand or always-on"],
+      "why": "On-demand sessions save cost: they start for work and stop when idle. Always-on sessions keep a coordinator ready to chat.",
+      "why_points": ["Pay only while working", "A mayor that's always there", "Sessions are disposable"],
+      "how": "Slung work starts on-demand sessions. A named session with mode always stays alive. Watch with peek and logs; poke with nudge.",
+      "how_points": ["gc session list", "gc session peek and logs", "gc session attach mayor", "gc session nudge mayor \"...\""],
+      "visual": {
+        "type": "compare",
+        "left": {"title": "On-demand", "points": ["Starts for slung work", "Shuts down when idle", "The default"]},
+        "right": {"title": "Always-on", "points": ["named_session, mode = always", "Kept alive to chat", "For example, the mayor"]},
+        "caption": "Same primitive, two lifecycles"
+      },
+      "analogy": "Contractors who come in for a job, versus a receptionist who's always at the front desk.",
+      "jargon": [
+        {"term": "named session", "plain": "a session with a stable name the city keeps track of"},
+        {"term": "nudge", "plain": "typing a message straight into a running session"}
+      ],
+      "takeaway": "Agents are definitions; sessions are the live processes, and they're disposable by design.",
+      "references": ["docs/tutorials/03-sessions.md"],
+      "diagrams": [],
+      "artifact": "gc session list output with a reviewer that is creating and a mayor that is active.",
+      "demo": ["gc session list", "gc session peek mayor --lines 3", "gc session logs mayor --tail 2"],
+      "verify": [
+        "Tutorial 03: the on-demand vs. always-on table.",
+        "Tutorial 03: detach from tmux with Ctrl-b d."
+      ],
+      "builds_on": ["harnesses"]
+    },
+    {
+      "day": 18,
+      "module": "workers",
+      "id": "coordination",
+      "title": "Agents Talk Only Through the Store",
+      "concept": "Mail, nudge and sling",
+      "what": "Agents never call each other. They coordinate through the bead store: mail for messages, sling for delegated work.",
+      "what_points": ["No direct connections", "Mail = a message bead", "Sling = delegated work"],
+      "why": "With no references between agents, any of them can crash, restart, scale or switch providers without breaking the others.",
+      "why_points": ["Senders name a destination", "Gas City routes it", "Hand-offs survive crashes"],
+      "how": "A human mails the mayor. The mayor plans and slings tasks to agents, and agents close their beads. Every hop goes through the store.",
+      "how_points": ["gc mail send mayor ...", "The mayor slings to my-project/reviewer", "The reviewer closes the bead", "A nudge only wakes a live session"],
+      "visual": {"type": "image", "diagram": "coordination-through-store", "caption": "Agents coordinate only through the store"},
+      "analogy": "A shared office mailroom: nobody walks into anyone's office; everything goes through the pigeonholes.",
+      "jargon": [
+        {"term": "mail", "plain": "a persistent message stored as a bead"},
+        {"term": "nudge", "plain": "a one-off poke into a live terminal that isn't saved"}
+      ],
+      "takeaway": "No agent holds a reference to another, so any of them can crash, scale or swap.",
+      "references": ["docs/tutorials/04-communication.md", "docs/guides/capabilities-for-coding-agent-users.md"],
+      "diagrams": ["coordination-through-store"],
+      "artifact": "The mail vs. nudge table from Tutorial 04.",
+      "demo": ["gc mail send mayor -s \"Review needed\" -m \"Please look at the auth changes\"", "gc mail inbox mayor"],
+      "verify": [
+        "Tutorial 04 table: mail survives a crash, a nudge does not."
+      ],
+      "builds_on": ["sessions"]
+    },
+    {
+      "day": 19,
+      "module": "workers",
+      "id": "hooks",
+      "title": "Hooks: Wiring a Coding Agent Into the City",
+      "concept": "Hooks",
+      "what": "Hooks connect a plain coding-agent process to Gas City, so it receives mail, picks up work and saves a hand-off by itself.",
+      "what_points": ["A bare provider knows nothing", "Hooks fire at key moments", "gc init wires Claude for you"],
+      "why": "Without hooks you'd run gc mail check and gc prime by hand, on every agent, every turn.",
+      "why_points": ["No manual polling", "Mail appears in context", "A hand-off before memory resets"],
+      "how": "gc init writes a managed .gc/settings.json for Claude. It runs Gas City commands at session start, before each turn and before compaction.",
+      "how_points": [".gc/settings.json for Claude", "Session start: surface pending work", "Each turn: deliver mail and nudges", "Before compaction: save a hand-off"],
+      "visual": {
+        "type": "flow",
+        "nodes": [
+          {"label": "Session start", "sub": "surface pending work"},
+          {"label": "Before each turn", "sub": "deliver mail and nudges"},
+          {"label": "Before compaction", "sub": "save a hand-off"}
+        ],
+        "caption": "Three moments where Gas City steps in"
+      },
+      "analogy": "Phone notifications: apps don't keep asking you; the phone taps them on the shoulder at the right moment.",
+      "jargon": [
+        {"term": "context compaction", "plain": "when a coding agent summarises its conversation to free up memory"}
+      ],
+      "takeaway": "Hooks turn a bare coding agent into a member of the city.",
+      "references": ["docs/tutorials/04-communication.md"],
+      "diagrams": [],
+      "artifact": "The install_agent_hooks line for a non-Claude provider.",
+      "demo": ["# agents/mayor/agent.toml", "install_agent_hooks = [\"codex\"]"],
+      "verify": [
+        "Tutorial 04: Claude is the only provider wired automatically.",
+        "Tutorial 04: hooks fire at session start, before each turn and before compaction."
+      ],
+      "builds_on": ["coordination"]
+    },
+    {
+      "day": 20,
+      "module": "workers",
+      "id": "pools",
+      "title": "Pools: Scaling Workers to Demand",
+      "concept": "Pool",
+      "what": "A pool is one agent definition scaled into several identical workers that share a single queue.",
+      "what_points": ["One definition, many sessions", "One shared queue", "Sized to demand"],
+      "why": "Ten ready tasks shouldn't wait on one worker, and zero tasks shouldn't keep ten sessions running.",
+      "why_points": ["Parallel when busy", "Nothing running when idle", "Floors and caps you control"],
+      "how": "Each tick the orchestrator runs the agent's scale_check to measure demand, then sizes the pool between its floor and cap.",
+      "how_points": ["scale_check measures demand", "min_active_sessions is the floor", "max_active_sessions is the cap", "Idle sessions retire"],
+      "visual": {
+        "type": "flow",
+        "nodes": ["Ready work", "scale_check", "Pool: min ... max sessions"],
+        "arrows": ["measured by", "sizes"],
+        "loop": true,
+        "loop_label": "every tick",
+        "caption": "Demand in, sessions out"
+      },
+      "analogy": "Supermarket checkouts: open more lanes when the queue grows, close them when it's quiet.",
+      "jargon": [
+        {"term": "scale_check", "plain": "a small command that reports how much new work is waiting"},
+        {"term": "crew and polecats", "plain": "Gas Town names for persistent and transient workers: operating styles, not types"}
+      ],
+      "takeaway": "A pool turns one agent definition into exactly as many workers as the work needs.",
+      "references": ["docs/getting-started/how-gas-city-works.md", "docs/reference/config.md", "docs/getting-started/coming-from-gastown.md"],
+      "diagrams": ["gastown-agents-by-scope"],
+      "artifact": "The pool line from gc status in Tutorial 01: 'scaled (min=0, max=2)'.",
+      "demo": ["gc status   # look for a line like: scaled (min=0, max=2)"],
+      "verify": [
+        "docs/reference/config.md: scale_check, min_active_sessions, max_active_sessions.",
+        "coming-from-gastown.md: crew and polecats are operating modes, not types."
+      ],
+      "builds_on": ["hooks"]
+    },
+    {
+      "day": 21,
+      "module": "workers",
+      "id": "demo-reviewer",
+      "title": "Demo: Build a Reviewer and Sling a Review",
+      "concept": "Agents in practice",
+      "what": "Today we define a reviewer agent, sling it a review and watch its session do the work.",
+      "what_points": ["Define the role", "Sling the work", "Watch the session"],
+      "why": "This recap ties week three together: role, harness, session, pull model and coordination, in one small run.",
+      "why_points": ["Week three in one run", "See the prompt land", "See the bead close"],
+      "how": "Scaffold the agent, write its prompt, sling a review, peek at the session and read the result.",
+      "how_points": ["gc agent add --name reviewer", "Write prompt.template.md", "gc sling my-project/reviewer ...", "gc session peek, then read review.md"],
+      "visual": {
+        "type": "code",
+        "lang": "shell",
+        "lines": [
+          "$ gc agent add --name reviewer",
+          "$ $EDITOR agents/reviewer/prompt.template.md",
+          "$ gc sling my-project/reviewer \"Review hello.py and write review.md\"",
+          "Slung mp-p956 → my-project/reviewer",
+          "$ gc session list --template my-project/reviewer",
+          "$ gc session peek <session-id>",
+          "$ cat review.md"
+        ],
+        "caption": "Week three in one run"
+      },
+      "analogy": "Hiring a specialist, handing them a ticket and glancing through the window while they work.",
+      "jargon": [],
+      "takeaway": "A role, a prompt and one sling: that's a new specialist on your factory floor.",
+      "references": ["docs/tutorials/02-agents.md", "docs/tutorials/03-sessions.md"],
+      "diagrams": ["coordination-through-store"],
+      "artifact": "Record the terminal run beforehand, or show the transcript on the slide.",
+      "demo": ["gc agent add --name reviewer", "gc sling my-project/reviewer \"Review hello.py and write review.md with feedback\"", "gc session list --template my-project/reviewer", "gc session peek <session-id>"],
+      "verify": [
+        "Tutorial 02: a custom agent has no default sling formula, so the bead is delivered directly.",
+        "Tutorial 02: the 'suggest' permission mode blocks unattended writes; use a non-blocking mode for slung work."
+      ],
+      "builds_on": ["pools"]
+    },
+    {
+      "day": 22,
+      "module": "methods",
+      "id": "formula",
+      "title": "Formulas: Write the Method Down Once",
+      "concept": "Formula",
+      "what": "A formula is a TOML file that records how a job gets done: its steps, their dependencies and its variables.",
+      "what_points": ["A reusable method", "Steps plus needs", "Not the work itself"],
+      "why": "A method kept in a prompt is improvised every time. Written down, it's repeatable, reviewable and runs across many agents.",
+      "why_points": ["Repeatable", "Reviewable like code", "Runs in parallel"],
+      "how": "Steps declare needs. Steps without needs run in parallel. Pancakes: dry and wet together, then combine, cook and serve.",
+      "how_points": ["[[steps]] with an id and title", "needs = [\"dry\", \"wet\"]", "No needs means parallel", "A DAG: no cycles allowed"],
+      "visual": {"type": "image", "diagram": "pancakes-dag", "caption": "The pancakes formula as a graph"},
+      "analogy": "A recipe card: anyone can cook from it, and two people can mix dry and wet ingredients at the same time.",
+      "jargon": [
+        {"term": "TOML", "plain": "a simple, readable config file format"},
+        {"term": "DAG", "plain": "a graph of steps with arrows and no loops"}
+      ],
+      "takeaway": "Write the method down once, and the orchestrator can run it again and again.",
+      "references": ["docs/tutorials/05-formulas.md", "docs/guides/understanding-formulas.md"],
+      "diagrams": ["pancakes-dag"],
+      "artifact": "formulas/pancakes.toml from Tutorial 05.",
+      "demo": ["gc formula list", "gc formula show pancakes"],
+      "verify": [
+        "Tutorial 05: a formula isn't the work itself (that's a bead); it's the reusable method.",
+        "Tutorial 05: the v2 compiler rejects cycles at compile time."
+      ],
+      "builds_on": ["demo-reviewer"]
+    },
+    {
+      "day": 23,
+      "module": "methods",
+      "id": "formula-apply",
+      "title": "From TOML to Beads: Cook vs. Sling",
+      "concept": "Applying a formula",
+      "what": "Applying a formula compiles it into a recipe, then turns every step into a bead in the store.",
+      "what_points": ["Compile into a recipe", "Instantiate as beads", "The work outlives the file"],
+      "why": "Once the steps are beads, the run no longer depends on the file or on any session. A crash can't erase it.",
+      "why_points": ["Independent of the file", "Independent of sessions", "Inspect before you run"],
+      "how": "gc formula cook creates the beads without routing. gc sling with --formula creates and routes. A finalize step is added.",
+      "how_points": ["gc formula show: preview", "gc formula cook: create only", "gc sling mayor pancakes --formula", "plus a workflow-finalize step"],
+      "visual": {"type": "image", "diagram": "formula-apply-pipeline", "caption": "File, recipe, beads"},
+      "analogy": "Printing tickets from a recipe: the recipe stays in the book, and the printed tickets go on the rail.",
+      "jargon": [
+        {"term": "materialize", "plain": "turn a plan into real records in the store"},
+        {"term": "control step", "plain": "a step the orchestrator completes itself; no agent works on it"}
+      ],
+      "takeaway": "A formula is the method; applying it prints the work as beads that outlive everything.",
+      "references": ["docs/tutorials/05-formulas.md", "docs/guides/understanding-formulas.md"],
+      "diagrams": ["formula-apply-pipeline"],
+      "artifact": "The gc formula cook pancakes output: a root and 'Created: 7'.",
+      "demo": ["gc formula cook pancakes", "gc sling mayor pancakes --formula"],
+      "verify": [
+        "Tutorial 05: 'Created: 7' is the root, five steps and the finalize step.",
+        "Tutorial 05: sling doesn't prompt the agent by default; --nudge does."
+      ],
+      "builds_on": ["formula"]
+    },
+    {
+      "day": 24,
+      "module": "methods",
+      "id": "variables",
+      "title": "Variables: One Method, Many Runs",
+      "concept": "Formula variables",
+      "what": "Variables make a formula reusable: declare them, use {{name}} in the steps and pass values when you cook or sling.",
+      "what_points": ["A [vars] section", "{{name}} placeholders", "--var name=value"],
+      "why": "The same review or release method should work for any branch, feature or priority, without copying the file.",
+      "why_points": ["No copy-paste formulas", "Defaults and required fields", "Validated inputs"],
+      "how": "Variables stay placeholders through compilation and are filled in only when beads are created. Fields validate the input.",
+      "how_points": ["vars.title: required", "vars.branch: default = \"main\"", "vars.priority: enum", "gc formula show --var previews"],
+      "visual": {
+        "type": "code",
+        "lang": "toml",
+        "lines": [
+          "[vars.title]",
+          "required = true",
+          "",
+          "[vars.branch]",
+          "default = \"main\"",
+          "",
+          "[[steps]]",
+          "id = \"implement\"",
+          "title = \"Implement {{title}}\""
+        ],
+        "caption": "gc formula cook feature-work --var title=\"Auth overhaul\""
+      },
+      "analogy": "A form letter: the same letter with a different name and date each time.",
+      "jargon": [
+        {"term": "late binding", "plain": "values are filled in at the last moment, when the work is created"}
+      ],
+      "takeaway": "Variables turn one written method into a method for every situation.",
+      "references": ["docs/tutorials/05-formulas.md"],
+      "diagrams": [],
+      "artifact": "The feature-work formula with title, branch and priority.",
+      "demo": ["gc formula show feature-work --var title=\"Auth system\""],
+      "verify": [
+        "Tutorial 05 variable fields: description, required, default, enum, pattern.",
+        "Tutorial 05: a variable without a default that isn't required stays as the literal {{name}}."
+      ],
+      "builds_on": ["formula-apply"]
+    },
+    {
+      "day": 25,
+      "module": "methods",
+      "id": "v1-vs-v2",
+      "title": "v1 vs. v2 Formulas: Who Is the Engine?",
+      "concept": "Compiler contracts",
+      "what": "Formulas have two contracts. In v1 the agent you sling to is the engine; in v2 the orchestrator is the engine.",
+      "what_points": ["v1: one agent runs it all", "v2: the orchestrator runs a graph", "Choose v2 for new work"],
+      "why": "Only v2 makes each step its own routable bead, so steps can go to different agents, run in parallel and retry on their own.",
+      "why_points": ["Routing per step", "Parallel fan-out", "Checks, retries, drain"],
+      "how": "Opt in with a [requires] table. v1 builds a parent-child molecule; v2 builds a flat graph of blocking edges with a finalize step.",
+      "how_points": ["formula_compiler = \">=2.0.0\"", "v1: a molecule tree", "v2: a flat graph plus finalize", "Graph-only: check, retry, drain"],
+      "visual": {"type": "image", "diagram": "formula-v1-vs-v2", "caption": "Two contracts, two engines"},
+      "analogy": "v1 is one chef cooking the whole menu. v2 is a head chef sending each dish to the right station.",
+      "jargon": [
+        {"term": "molecule", "plain": "v1's container bead with its steps as children"},
+        {"term": "compiler contract", "plain": "the set of rules a formula is compiled under"}
+      ],
+      "takeaway": "In v2 the orchestrator, not a single agent, is the engine.",
+      "references": ["docs/guides/understanding-formulas.md", "docs/reference/specs/formula-spec-v2.md"],
+      "diagrams": ["formula-v1-vs-v2"],
+      "artifact": "The v1 vs. v2 comparison table from Understanding Formulas.",
+      "demo": [],
+      "verify": [
+        "understanding-formulas.md contract table: engine, steps, control flow, routing, shape.",
+        "understanding-formulas.md: 'For new work, choose v2.'"
+      ],
+      "builds_on": ["variables"]
+    },
+    {
+      "day": 26,
+      "module": "methods",
+      "id": "check-retry",
+      "title": "Check and Retry: Work That Verifies Itself",
+      "concept": "check and retry",
+      "what": "check reruns a step until a script says it passed. retry re-dispatches a step that failed for a temporary reason.",
+      "what_points": ["check: your script decides", "retry: just try again", "Both run while the workflow runs"],
+      "why": "An agent saying 'done' isn't proof. A check makes done mean verified, and retry absorbs flaky failures without a human.",
+      "why_points": ["Done means verified", "Flaky failures heal themselves", "Budgets stop runaway loops"],
+      "how": "A check script runs after each attempt: exit 0 means done, anything else starts another attempt, up to max_attempts.",
+      "how_points": ["[steps.check] with a script", "exit 0 means pass", "max_attempts is the budget", "exit 75: re-check, no attempt spent"],
+      "visual": {
+        "type": "flow",
+        "nodes": ["Agent attempt", "verify.sh", "Done"],
+        "arrows": ["then", "exit 0"],
+        "loop": true,
+        "loop_label": "non-zero exit: next attempt, up to max_attempts",
+        "caption": "The step is done when the script says so"
+      },
+      "analogy": "A driving test: you're licensed when the examiner signs off, not when you say you can drive.",
+      "jargon": [
+        {"term": "exit code", "plain": "the number a script returns; 0 means success"}
+      ],
+      "takeaway": "With check, done means verified, not just claimed.",
+      "references": ["docs/tutorials/05-formulas.md", "docs/guides/understanding-formulas.md"],
+      "diagrams": [],
+      "artifact": "The 'checked' formula with scripts/verify.sh from Tutorial 05.",
+      "demo": ["gc formula show checked"],
+      "verify": [
+        "Tutorial 05: check is v2-only.",
+        "Tutorial 05: exit code 75 re-runs the check without spending an attempt.",
+        "understanding-formulas.md: check and retry are mutually exclusive on the same step."
+      ],
+      "builds_on": ["v1-vs-v2"]
+    },
+    {
+      "day": 27,
+      "module": "methods",
+      "id": "drain",
+      "title": "Drain: Fan Out Over a Convoy",
+      "concept": "drain",
+      "what": "drain runs one small workflow per member of a convoy, all in parallel, for a set of work found only at runtime.",
+      "what_points": ["One run per convoy member", "All in parallel", "The set is known only at runtime"],
+      "why": "You rarely know in advance how many tasks a plan will produce. Drain scales the fan-out to whatever is in the convoy now.",
+      "why_points": ["No fixed count", "Real parallelism", "Each item isolated"],
+      "how": "A drain step names an item formula. The orchestrator splits the convoy into one-member units and runs the item formula for each.",
+      "how_points": ["[steps.drain] formula = \"do-work\"", "context = separate: own worktree", "member_access = exclusive", "Sling a convoy at it"],
+      "visual": {"type": "image", "diagram": "formula-drain-fanout", "caption": "drain fans a convoy out into parallel runs"},
+      "analogy": "A teacher handing each student one worksheet from the pile, however many students showed up today.",
+      "jargon": [
+        {"term": "fan-out", "plain": "splitting one job into many parallel jobs"},
+        {"term": "worktree", "plain": "a separate checkout of the same Git repo, for parallel work"}
+      ],
+      "takeaway": "Drain turns a convoy of any size into parallel, isolated runs.",
+      "references": ["docs/guides/understanding-formulas.md", "engdocs/drain-fanout.md"],
+      "diagrams": ["formula-drain-fanout"],
+      "artifact": "The build-from-convoy drain step from Understanding Formulas.",
+      "demo": ["gc sling gc.run-operator <convoy-id> --on build-from-convoy"],
+      "verify": [
+        "understanding-formulas.md: drain is the canonical v2 fan-out.",
+        "understanding-formulas.md: context = separate gives every unit its own git worktree."
+      ],
+      "builds_on": ["check-retry"]
+    },
+    {
+      "day": 28,
+      "module": "methods",
+      "id": "demo-pancakes",
+      "title": "Demo: Write and Run the Pancakes Formula",
+      "concept": "Formulas in practice",
+      "what": "Today we write the pancakes formula, preview it, cook it into beads and sling it to an agent.",
+      "what_points": ["Write it", "Preview it", "Run it"],
+      "why": "This recap connects week four: method, compilation, beads and the orchestrator driving the graph to done.",
+      "why_points": ["Week four in one run", "See steps run in parallel", "See finalize close the root"],
+      "how": "Write formulas/pancakes.toml, preview it with gc formula show, then cook it, sling the root and watch the beads close.",
+      "how_points": ["formulas/pancakes.toml", "gc formula show pancakes", "gc formula cook pancakes", "gc sling worker <root-id>"],
+      "visual": {
+        "type": "code",
+        "lang": "toml",
+        "lines": [
+          "formula = \"pancakes\"",
+          "",
+          "[requires]",
+          "formula_compiler = \">=2.0.0\"",
+          "",
+          "[[steps]]",
+          "id = \"combine\"",
+          "needs = [\"dry\", \"wet\"]",
+          "",
+          "# plus: dry, wet, cook, serve"
+        ],
+        "caption": "gc formula show pancakes lists 6 steps, including finalize"
+      },
+      "analogy": "Cooking from the recipe card you wrote last week, with two helpers mixing in parallel.",
+      "jargon": [],
+      "takeaway": "Write the method, preview it, run it, and the orchestrator drives it to done.",
+      "references": ["docs/tutorials/05-formulas.md"],
+      "diagrams": ["pancakes-dag", "formula-apply-pipeline"],
+      "artifact": "A working pancakes.toml in your scratch city.",
+      "demo": ["gc formula show pancakes", "gc formula cook pancakes", "gc sling worker <root-id>", "bd list"],
+      "verify": [
+        "Tutorial 05: gc formula show prints 6 steps, including workflow-finalize."
+      ],
+      "builds_on": ["drain"]
+    },
+    {
+      "day": 29,
+      "module": "automation",
+      "id": "orders",
+      "title": "Orders: When, Not How",
+      "concept": "Order",
+      "what": "An order pairs a trigger with an action, so a formula or script runs on a schedule, a condition or an event.",
+      "what_points": ["A trigger plus an action", "A formula or a script", "No human dispatch"],
+      "why": "Formulas say how; orders say when. Together, the factory starts its own work: nightly checks, updates, release notes.",
+      "why_points": ["Automation without babysitting", "Schedules and events", "Drop in a file, no restart"],
+      "how": "Put a TOML file in orders/. Triggers: cooldown, cron, condition, event, manual. Cooldown drifts; cron hits fixed clock times.",
+      "how_points": ["orders/pancakes-check.toml", "cooldown, cron, condition, event, manual", "pool = where the work goes", "gc order list, check, run"],
+      "visual": {"type": "image", "diagram": "cooldown-vs-cron", "caption": "Cooldown drifts; cron keeps clock time"},
+      "analogy": "A thermostat: you set the rule once, and it turns the heating on by itself.",
+      "jargon": [
+        {"term": "cooldown", "plain": "wait a fixed interval after the last run"},
+        {"term": "cron", "plain": "run at fixed clock times, such as 3 a.m. every day"}
+      ],
+      "takeaway": "Formulas say how; orders say when, and then nobody has to press go.",
+      "references": ["docs/tutorials/07-orders.md"],
+      "diagrams": ["cooldown-vs-cron"],
+      "artifact": "orders/pancakes-check.toml: cooldown, 5m, pool worker.",
+      "demo": ["gc order list", "gc order check", "gc order run pancakes-check"],
+      "verify": [
+        "Tutorial 07: the orchestrator ticks every 30 seconds.",
+        "Tutorial 07: trigger types table."
+      ],
+      "builds_on": ["demo-pancakes"]
+    },
+    {
+      "day": 30,
+      "module": "automation",
+      "id": "exec-orders",
+      "title": "Exec Orders: Automation Without an LLM",
+      "concept": "Exec order",
+      "what": "An exec order runs a shell script on the orchestrator: no agent, no model, no work beads.",
+      "what_points": ["Just a script", "No tokens spent", "For mechanical jobs"],
+      "why": "Pruning branches or checking disk space needs no intelligence. A script is cheaper, faster and more predictable.",
+      "why_points": ["No model cost", "Predictable", "The right tool for chores"],
+      "how": "Set exec to a script instead of formula. Exec orders take no pool, get ORDER_DIR in their environment and time out after 300 seconds.",
+      "how_points": ["exec = \"scripts/prune-merged.sh\"", "No pool", "[order.env] for settings", "Default timeout: 300 s"],
+      "visual": {
+        "type": "compare",
+        "left": {"title": "Formula order", "points": ["Agents do the work", "Creates work beads", "Routes to a pool"]},
+        "right": {"title": "Exec order", "points": ["A script does the work", "No beads, no model", "Runs on the orchestrator"]},
+        "caption": "Every order has a formula or an exec, never both"
+      },
+      "analogy": "You don't hire a consultant to take out the bins; you set a reminder.",
+      "jargon": [
+        {"term": "exec", "plain": "run a program directly"}
+      ],
+      "takeaway": "Use agents for judgment and scripts for chores.",
+      "references": ["docs/tutorials/07-orders.md", "docs/getting-started/coming-from-gastown.md"],
+      "diagrams": [],
+      "artifact": "The prune-merged exec order snippet from Tutorial 07.",
+      "demo": ["gc order list   # built-in housekeeping orders such as reaper and gate-sweep"],
+      "verify": [
+        "Tutorial 07: exec orders can't have a pool.",
+        "Tutorial 07: default timeouts are 30 s for formula orders and 300 s for exec orders."
+      ],
+      "builds_on": ["orders"]
+    },
+    {
+      "day": 31,
+      "module": "automation",
+      "id": "health-patrol",
+      "title": "Health Patrol: Let It Crash",
+      "concept": "Health patrol",
+      "what": "Health patrol is the orchestrator's supervision loop: it keeps running sessions in line with your config and restarts failures.",
+      "what_points": ["Compare want with have", "Restart, within limits", "Modelled on Erlang/OTP"],
+      "why": "Agents will crash. Rather than prevent every crash, Gas City makes crashes cheap: the work persists and a fresh session resumes it.",
+      "why_points": ["Crashes are expected", "Work persists in beads", "Crash loops get quarantined"],
+      "how": "Each tick compares what config wants with what runs: start missing agents, stop orphans, restart drifted ones.",
+      "how_points": ["Want (config) vs. have (running)", "Start, stop, restart", "Config drift means restart", "Too many restarts: quarantine"],
+      "visual": {
+        "type": "flow",
+        "nodes": ["Config: want", "Running: have", "Fix the difference"],
+        "arrows": ["compare", "act"],
+        "loop": true,
+        "loop_label": "every tick (30 s by default)",
+        "caption": "Reconciliation, the Erlang/OTP way"
+      },
+      "analogy": "A lifeguard doesn't stop people swimming; they watch and pull out anyone in trouble.",
+      "jargon": [
+        {"term": "reconcile", "plain": "make what's running match what the config says"},
+        {"term": "quarantine", "plain": "stop restarting an agent that keeps crashing, for a while"}
+      ],
+      "takeaway": "Gas City doesn't prevent crashes; it makes them cheap.",
+      "references": ["engdocs/architecture/health-patrol.md", "engdocs/architecture/controller.md"],
+      "diagrams": [],
+      "artifact": "The three reconciliation rules: start missing, stop orphans, restart drifted.",
+      "demo": ["gc session reset mayor   # bead, mail and queued work survive"],
+      "verify": [
+        "health-patrol.md: Erlang/OTP supervision and 'let it crash'.",
+        "health-patrol.md: crash loop quarantine is in memory only."
+      ],
+      "builds_on": ["exec-orders"]
+    },
+    {
+      "day": 32,
+      "module": "automation",
+      "id": "events",
+      "title": "Events: Watching the Fleet",
+      "concept": "Event",
+      "what": "An event is an unchangeable record fired when something happens: a bead closes, a session crashes, an order fires.",
+      "what_points": ["Fired, not polled", "Append-only and numbered", "Humans and agents watch"],
+      "why": "You can't steer a fleet you can't see. Events let you and other agents watch everything, and even trigger new work.",
+      "why_points": ["See the whole fleet", "Replay from any point", "Events can trigger orders"],
+      "how": "Each event has a sequence number, so watchers resume where they stopped. Event-triggered orders read the same stream.",
+      "how_points": ["bead.created, bead.closed", "session.woke, session.crashed", "gc events --follow", "trigger = event closes the loop"],
+      "visual": {
+        "type": "flow",
+        "nodes": ["Activity", "Event bus", "Watchers"],
+        "arrows": ["fires", "seq 1, 2, 3 ..."],
+        "caption": "You, agents and orders all read the same stream"
+      },
+      "analogy": "A departures board: nobody calls you; the board updates and you react.",
+      "jargon": [
+        {"term": "sequence number", "plain": "an always-increasing counter, so you can resume where you stopped"}
+      ],
+      "takeaway": "Events let humans watch the factory, and let the factory react to itself.",
+      "references": ["docs/getting-started/how-gas-city-works.md", "docs/reference/events.md", "docs/getting-started/dashboard.md"],
+      "diagrams": [],
+      "artifact": "A short gc events --follow capture, or the dashboard.",
+      "demo": ["gc events --follow", "gc dashboard"],
+      "verify": [
+        "how-gas-city-works.md: event names such as bead.created, session.crashed, order.fired.",
+        "dashboard.md: gc dashboard opens the supervisor's dashboard."
+      ],
+      "builds_on": ["health-patrol"]
+    },
+    {
+      "day": 33,
+      "module": "composition",
+      "id": "packs",
+      "title": "Packs: What Configures the Factory",
+      "concept": "Pack",
+      "what": "A pack is a directory with a pack.toml that declares agents, formulas and orders. Your city is itself a pack.",
+      "what_points": ["pack.toml plus folders", "Agents, formulas, orders", "City = your local pack"],
+      "why": "Coordination that lives in chat and in people's heads leaks. A pack turns it into versioned files you can review and share.",
+      "why_points": ["A versioned method", "Reviewable like code", "Shareable across teams"],
+      "how": "Everything sorts into three layers: the portable pack, deployment choices in city.toml, and machine-local state in .gc/.",
+      "how_points": ["Layer 1: pack.toml and its folders", "Layer 2: city.toml", "Layer 3: .gc/, never shared", "Start small; move what you repeat"],
+      "visual": {"type": "image", "diagram": "hand-rolled-to-city", "caption": "From hand-rolled to a city: three layers"},
+      "analogy": "A franchise manual: recipes and job roles are the same in every branch, and each branch picks its own address.",
+      "jargon": [
+        {"term": "site binding", "plain": "machine-specific settings, such as where a repo lives on this laptop"}
+      ],
+      "takeaway": "A pack turns how your team works into versioned, shareable files.",
+      "references": ["docs/guides/understanding-packs.md", "docs/guides/multi-agent-engineering-environment.md"],
+      "diagrams": ["hand-rolled-to-city", "pack-loading"],
+      "artifact": "The three-layer table from the multi-agent engineering environment guide.",
+      "demo": ["cat pack.toml", "cat city.toml"],
+      "verify": [
+        "multi-agent-engineering-environment.md: the three layers table.",
+        "understanding-packs.md: a pack with an unknown schema is rejected whole."
+      ],
+      "builds_on": ["events"]
+    },
+    {
+      "day": 34,
+      "module": "composition",
+      "id": "imports",
+      "title": "Imports: Reuse Without Copying",
+      "concept": "Pack imports",
+      "what": "An import pulls a shared pack into your city, so its agents, formulas and orders work as if you'd written them.",
+      "what_points": ["[imports.<binding>]", "A pinned source and version", "Names get qualified"],
+      "why": "Teams shouldn't fork a pack to change one setting. Imports plus patches reuse a pack and override only what differs.",
+      "why_points": ["No forks", "Upgrade by moving a pin", "Patch a single field"],
+      "how": "The binding qualifies names: [imports.review] gives review.reviewer, or checkout-service/review.reviewer for a rig import.",
+      "how_points": ["[imports.review] source = ...", "City import: review.reviewer", "Rig import: rig/review.reviewer", "[[patches.agent]] to tweak"],
+      "visual": {"type": "image", "diagram": "import-binding-namespace", "caption": "The binding qualifies the name; the rig adds a prefix"},
+      "analogy": "Adding a library to a project: you use it by name and pin the version you trust.",
+      "jargon": [
+        {"term": "binding", "plain": "the local name you give an imported pack"},
+        {"term": "patch", "plain": "a small change applied to something that already exists"}
+      ],
+      "takeaway": "Import packs, pin versions, patch the differences, and never fork.",
+      "references": ["docs/guides/understanding-packs.md", "docs/guides/shareable-packs.md"],
+      "diagrams": ["import-binding-namespace", "pack-loading"],
+      "artifact": "The [imports.gc] block from the pack.toml in Tutorial 01.",
+      "demo": ["gc pack registry search review"],
+      "verify": [
+        "understanding-packs.md: city imports give gc.planner; rig imports give checkout-service/gc.planner.",
+        "understanding-packs.md: a patch changes an existing agent; it never creates one."
+      ],
+      "builds_on": ["packs"]
+    },
+    {
+      "day": 35,
+      "module": "composition",
+      "id": "whole-job",
+      "title": "The Whole Job, End to End",
+      "concept": "The factory, assembled",
+      "what": "A real build is a pipeline of everything we've learned: decompose, drain, review, gap-check, fix, check and ship.",
+      "what_points": ["Decompose a plan", "Drain in parallel", "Review, gap-check, ship"],
+      "why": "This is Day 1's promise: describe a feature once and come back to a finished branch, at production quality and machine speed.",
+      "why_points": ["Review gives quality", "Parallelism gives speed", "Durable work is never lost"],
+      "how": "The formula is the method, the beads are the work and the orchestrator is the engine, all outside any agent's session.",
+      "how_points": ["Formula = the method", "Beads = the work", "Orchestrator = the engine", "Packs configure; events observe"],
+      "visual": {"type": "image", "diagram": "formula-whole-job", "caption": "One body of work, end to end"},
+      "analogy": "Day 1's restaurant, fully open: recipes, stations, tickets, a head chef and a pass where every plate is checked.",
+      "jargon": [
+        {"term": "gap analysis", "plain": "comparing the result with the plan to find what's missing"}
+      ],
+      "takeaway": "Write the method once, and the factory turns it into finished work.",
+      "references": ["docs/guides/understanding-formulas.md", "docs/index.mdx"],
+      "diagrams": ["formula-whole-job", "primitives"],
+      "artifact": "Put Day 3's primitives diagram next to today's pipeline and name the primitive behind each stage.",
+      "demo": [],
+      "verify": [
+        "understanding-formulas.md, 'The Whole Job, End To End'.",
+        "Same section: the work is the beads, the formula is the method, the orchestrator is the engine."
+      ],
+      "builds_on": ["imports"]
+    }
+  ]
+}
