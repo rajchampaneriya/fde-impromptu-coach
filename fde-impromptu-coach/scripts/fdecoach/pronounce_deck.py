@@ -5,18 +5,16 @@ from __future__ import annotations
 import datetime as dt
 import logging
 import re
-import zipfile
 from pathlib import Path
-from typing import Any, Dict, List, Optional, Sequence, Tuple
+from typing import Any, Dict, List, Sequence, Tuple
 
 log = logging.getLogger("fdecoach")
 from pptx import Presentation
-from pptx.dml.color import RGBColor
 from pptx.enum.text import MSO_ANCHOR, PP_ALIGN
-from pptx.util import Emu, Inches, Pt
+from pptx.util import Emu, Inches
 
-from .deck import (BAR_Y, BLUE, BLUE_SOFT, BLUE_TINT, CONTENT_W, FONT, GRAY, GRAY_LIGHT, MARGIN, NAVY,
-                   SLIDE_H, SLIDE_W, WHITE, _background, _ensure_use_timings, _notes, _register_notes_master,
+from .deck import (BLUE, BLUE_TINT, CONTENT_W, GRAY, MARGIN, NAVY,
+                   SLIDE_H, SLIDE_W, _background, _ensure_use_timings, _notes, _register_notes_master,
                    _rect, _spoiler_guard, _text, _timer, fit_font_size, make_show_copy,
                    set_auto_animations, set_transition)
 
@@ -256,7 +254,6 @@ def render_slide_pngs(session: Dict[str, Any], cfg: Dict[str, Any], out_dir: Pat
         return []
     out_dir.mkdir(parents=True, exist_ok=True)
     get = _fonts()
-    d = slide_durations(cfg)
     date = dt.date.fromisoformat(session["date"])
     paths: List[Path] = []
 

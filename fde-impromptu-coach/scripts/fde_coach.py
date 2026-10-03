@@ -538,7 +538,6 @@ def cmd_pronounce(args) -> int:
         return 0
     if args.pron_command == "words":
         from fdecoach.config import save_config
-        pron = ctx.cfg.setdefault("pronunciation", {})
         if args.add:
             words = [w.strip().lower() for w in args.add if w.strip()]
             user = json.loads(ctx.paths.config.read_text(encoding="utf-8")) if ctx.paths.config.exists() else {}

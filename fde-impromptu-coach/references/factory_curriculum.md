@@ -119,7 +119,7 @@ and run its demo: `fde-coach factory demo capture --date YYYY-MM-DD`.
 ## Ideas for the next modules
 
 - Running a city: the dashboard, `gc status`, troubleshooting a stuck agent,
-  JSON output for scripts (`json-discover-validate` diagram).
+  JSON output for scripts (render the `json-discover-validate` diagram first).
 - Gas Town as a pack: mayor, deacon, witness, refinery, polecats, crew.
 - Building your own factory: a review pack, a planning formula, a nightly order.
 - Production concerns: trust boundaries, remote and hardened cities, storage.

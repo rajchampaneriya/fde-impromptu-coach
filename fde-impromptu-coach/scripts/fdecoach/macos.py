@@ -183,18 +183,6 @@ def powerpoint_open(path: Path, app: str = "Microsoft PowerPoint") -> bool:
     return open_path(path, app)
 
 
-def powerpoint_close(filename: str) -> None:
-    osascript(f"""
-if application "Microsoft PowerPoint" is running then
-    tell application "Microsoft PowerPoint"
-        repeat with p in presentations
-            if name of p is {q(filename)} then close p saving no
-        end repeat
-    end tell
-end if
-""", timeout=30)
-
-
 def powerpoint_start_show(path: Path, app: str = "Microsoft PowerPoint") -> bool:
     """Open the deck (if needed) and start the slide show from slide 1. True if a show window appears."""
     if app != "Microsoft PowerPoint":

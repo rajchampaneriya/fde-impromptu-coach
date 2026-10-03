@@ -41,7 +41,6 @@ CONTENT_W = SLIDE_W - 2 * MARGIN
 BAR_Y, BAR_H = 6.42, 0.11
 
 P_NS = "http://schemas.openxmlformats.org/presentationml/2006/main"
-A_NS = "http://schemas.openxmlformats.org/drawingml/2006/main"
 R_NS = "http://schemas.openxmlformats.org/officeDocument/2006/relationships"
 PPSX_CT = "application/vnd.openxmlformats-officedocument.presentationml.slideshow.main+xml"
 PPTX_CT = "application/vnd.openxmlformats-officedocument.presentationml.presentation.main+xml"

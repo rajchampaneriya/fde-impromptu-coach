@@ -5,7 +5,6 @@ from __future__ import annotations
 import datetime as dt
 import json
 import os
-import re
 import shutil
 import subprocess
 import sys
@@ -19,7 +18,7 @@ ENTRY = SCRIPTS / "fde_coach.py"
 
 from fdecoach import audio, gcal, pronounce as P  # noqa: E402
 from fdecoach.config import Paths, load_config  # noqa: E402
-from fdecoach.state import History, streaks  # noqa: E402
+from fdecoach.state import History  # noqa: E402
 
 from test_coach import Home  # noqa: E402  (same dry-run harness)
 

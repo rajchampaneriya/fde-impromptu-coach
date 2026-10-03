@@ -29,8 +29,6 @@ DIAGRAMS_DIR = ASSETS_DIR / "factory_diagrams"
 VISUAL_TYPES = ("image", "flow", "compare", "hub", "layers", "code")
 SECTIONS = ("intro", "hook", "demo", "picture", "end", "outro")
 SECTION_DEFAULTS = (4, 25, 100, 22, 12, 7)
-SECTION_LABELS = {"intro": "Intro", "hook": "What & why", "demo": "See it (demo)", "picture": "Group it (picture)",
-                  "end": "Takeaway", "outro": "Outro"}
 MAX_VIDEO_SECONDS = 180
 LIMITS = {"title": 60, "concept": 40, "sentence": 150, "takeaway": 130, "slide_point": 40, "point": 60}
 REQUIRED = ("day", "module", "id", "title", "concept", "what", "what_points", "why", "why_points", "how",

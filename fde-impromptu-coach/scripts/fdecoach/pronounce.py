@@ -6,7 +6,6 @@ import datetime as dt
 import json
 import logging
 import re
-from pathlib import Path
 from typing import Any, Dict, List, Optional, Tuple
 
 from .config import ASSETS_DIR, REFERENCES_DIR, Paths
