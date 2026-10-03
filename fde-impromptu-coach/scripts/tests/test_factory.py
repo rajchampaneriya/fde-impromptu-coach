@@ -86,6 +86,20 @@ class TestCurriculum(unittest.TestCase):
                                      "references/factory_learning_path.md")
 
 
+class TestLearningPathDocument(unittest.TestCase):
+    def test_every_day_is_written_out_in_full(self):
+        text = (REFERENCES_DIR / "factory_learning_path.md").read_text(encoding="utf-8")
+        days = F.load_curriculum()["days"]
+        sections = text.split("\n### Day ")[1:]
+        self.assertEqual(len(sections), len(days))
+        for d, sec in zip(days, sections):
+            self.assertTrue(sec.startswith(f"{d['day']}: {d['title']}"), d["day"])
+            for part in ("Takeaway:", "**WHAT**", "**WHY**", "**HOW**", "**See it — demo:", "```",
+                         "**Group it — picture:**", "| Time | Section |", "**Repository references:**",
+                         "**Verify before Take 1:**", "- [ ] "):
+                self.assertIn(part, sec, f"day {d['day']} is missing {part}")
+
+
 class TestPlanning(unittest.TestCase):
     def setUp(self):
         self.tmp = Path(tempfile.mkdtemp())

@@ -319,6 +319,10 @@ class Doc:
         self.blocks.append(("h2", text))
         return self
 
+    def h3(self, text: str) -> "Doc":
+        self.blocks.append(("h3", text))
+        return self
+
     def p(self, text: str) -> "Doc":
         self.blocks.append(("p", text))
         return self
@@ -364,6 +368,8 @@ class Doc:
         for kind, body in self.blocks:
             if kind == "h2":
                 out += [f"## {body}", ""]
+            elif kind == "h3":
+                out += [f"### {body}", ""]
             elif kind == "p":
                 out += [body, ""]
             elif kind == "quote":
@@ -400,6 +406,8 @@ class Doc:
         for kind, body in self.blocks:
             if kind == "h2":
                 out.append(f"<h2>{_inline_html(body)}</h2>")
+            elif kind == "h3":
+                out.append(f"<h3>{_inline_html(body)}</h3>")
             elif kind == "p":
                 out.append(f"<p>{_inline_html(body)}</p>")
             elif kind == "quote":
@@ -610,32 +618,71 @@ def prep_doc(d: Dict[str, Any], date: dt.date, cfg: Dict[str, Any], kit: Dict[st
     return doc
 
 
+def _anchor(text: str) -> str:
+    """GitHub-style heading anchor."""
+    return re.sub(r"[^a-z0-9 -]", "", text.lower()).replace(" ", "-")
+
+
 def learning_path_doc(cfg: Dict[str, Any], cur: Optional[Dict[str, Any]] = None) -> Doc:
-    """The whole path as a document (references/factory_learning_path.md is generated from it)."""
+    """The whole path, every day in full (references/factory_learning_path.md is generated from it)."""
     cur = cur or load_curriculum()
     start = start_date(cfg)
     series = cfg.get("factory", {}).get("series", "Software Factory")
     doc = Doc(f"{series}: the learning path", kicker="Daily video series",
               meta=(f"{total_days(cur)} videos from {start.strftime('%d %B %Y')} · one concept a day · "
                     f"source: {cur['source']['repo']} (verified at {cur['source']['verified_commit'][:10]})"))
-    doc.p("Generated from `assets/factory_curriculum.json` by `fde-coach factory plan --markdown`. "
+    doc.p("Generated from `assets/factory_curriculum.json` by "
+          "`fde-coach factory plan --markdown --write references/factory_learning_path.md`. "
           "Dates assume one video a day; a missed day carries its topic over, so no concept is skipped.")
-    doc.p("Rule for every video: one video, one concept, one clear takeaway. "
+    doc.p("Rule for every video: one video, one concept, one clear takeaway, under three minutes. "
           "Understand → Explain → Demonstrate → Publish → Repeat.")
     doc.p("Every video teaches Greg Tang style: **see it** (a real demo with real output), **group it** "
           "(one picture of the pattern), **name it** (the takeaway). Days 1–7 run in a file-based demo city; "
-          "from Day 8 the demos use the default setup (bd + Dolt).")
+          "from Day 8 the demos use the default setup (bd + Dolt). Your face is never recorded.")
+    seg = segments(cfg)
+    doc.p(f"Video format ({ts(video_seconds(cfg))}): intro {seg['intro']} s · what & why {seg['hook']} s · "
+          f"demo {seg['demo']} s · picture {seg['picture']} s · takeaway {seg['end']} s · outro {seg['outro']} s.")
+
+    doc.h2("All days at a glance")
+    rows = []
+    for d in cur["days"]:
+        date = start + dt.timedelta(days=d["day"] - 1)
+        heading = f"Day {d['day']}: {d['title']}"
+        rows.append([str(d["day"]), date.strftime("%a %d %b"), f"[{d['title']}](#{_anchor(heading)})",
+                     d["demo"]["title"], d["takeaway"]])
+    doc.table(["Day", "Date", "Topic", "Demo", "Takeaway"], rows)
+
     for idx, m in enumerate(cur["modules"], 1):
         days = [d for d in cur["days"] if d["module"] == m["id"]]
         if not days:
             continue
         doc.h2(f"Module {idx}: {m['title']}")
         doc.p(m["goal"])
-        rows = []
         for d in days:
             date = start + dt.timedelta(days=d["day"] - 1)
-            visual = d["visual"]["diagram"] if d["visual"]["type"] == "image" else d["visual"]["type"]
-            rows.append([str(d["day"]), date.strftime("%a %d %b"), d["title"], d["demo"]["title"], d["takeaway"],
-                         visual])
-        doc.table(["Day", "Date", "Topic", "Demo", "Takeaway", "Picture"], rows)
+            doc.h3(f"Day {d['day']}: {d['title']}")
+            doc.p(f"{date.strftime('%A %d %B %Y')} · concept: **{d['concept']}** · builds on: "
+                  + _builds_on(cur, d))
+            doc.quote(f"Takeaway: {d['takeaway']}")
+            doc.p(f"**WHAT** — {d['what']}")
+            doc.bullets(d["what_points"])
+            doc.p(f"**WHY** — {d['why']}")
+            doc.bullets(d["why_points"])
+            doc.p(f"**HOW** — {d['how']}")
+            doc.bullets(d["how_points"])
+            doc.p(f"**See it — demo: {d['demo']['title']}** ({demo_where(d)})")
+            doc.code([c for c, _ in demo_steps(d)])
+            doc.bullets([say for _, say in demo_steps(d) if say])
+            doc.p(f"**Group it — picture:** {visual_summary(d['visual'])}"
+                  + (f" ({d['visual']['caption']})" if d["visual"].get("caption") else "") + ".")
+            doc.p(f"**Say it simply:** {d['analogy']}")
+            if d["jargon"]:
+                doc.bullets([f"**{j['term']}** — {j['plain']}" for j in d["jargon"]])
+            doc.table(["Time", "Section", "Say (keywords, not a script)"], outline_rows(d, cfg))
+            doc.p(f"**Prepare:** {d['artifact']}")
+            doc.p("**Repository references:**")
+            doc.links([(r, repo_url(cfg, r), "") for r in d["references"]]
+                      + [(f"diagram: {n}", diagram_url(cfg, n), "") for n in d["diagrams"]])
+            doc.p("**Verify before Take 1:**")
+            doc.checklist(d["verify"])
     return doc

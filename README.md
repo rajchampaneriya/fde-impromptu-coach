@@ -1,5 +1,7 @@
 # FDE Impromptu Coach
 
+> **Software Factory video series:** the 35-day learning path is in [`fde-impromptu-coach/references/factory_learning_path.md`](fde-impromptu-coach/references/factory_learning_path.md).
+
 A Claude skill that trains you to speak clearly, on camera, without a script. Five minutes every morning. Forever.
 
 ![Architecture](architecture.png)
@@ -35,7 +37,7 @@ From 10 October 2026 the coach also runs a daily technical video for a public Yo
 - **A real demo in every video**, faceless: commands run in a demo city on your Mac and appear as an animated terminal, taught Greg Tang style (see it, group it, name it).
 - **Up to three voice takes** over self-running slides (Discovery, Improve, Publish), then a finished video with intro and outro music. Your voice is never processed.
 
-See the [learning path](fde-impromptu-coach/references/factory_learning_path.md) and `fde-coach factory --help`.
+**📚 The full 35-day learning path, every day written out (WHAT, WHY, HOW, the demo commands, the picture, the 3-minute outline, references and facts to verify): [`fde-impromptu-coach/references/factory_learning_path.md`](fde-impromptu-coach/references/factory_learning_path.md).** Also see `fde-coach factory --help`.
 
 ## Supported Tools
 
