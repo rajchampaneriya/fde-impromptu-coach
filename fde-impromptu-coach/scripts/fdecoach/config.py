@@ -27,6 +27,7 @@ DEFAULTS: Dict[str, Any] = {
     "learner_context": "",
     "questions_per_day": 5,
     "seconds_per_question": 60,
+    "read_seconds": 0,
     "intro_seconds": 10,
     "wrap_up_cue_seconds": 45,
     "start_level": 2,

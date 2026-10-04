@@ -198,11 +198,13 @@ def set_auto_animations(slide, effects: List[Dict[str, Any]]) -> None:
 
 # --------------------------------------------------------------------------- components
 
-def _timer(slide, seconds: int, label: str = "", ticks: bool = True, cue: "Tuple[int, str] | None" = None) -> List[Dict[str, Any]]:
-    """Track + animated bar (+ optional ticks and a delayed cue). Returns animation effects."""
+def _timer(slide, seconds: int, label: str = "", ticks: bool = True, cue: "Tuple[int, str] | None" = None,
+           start_delay: int = 0) -> List[Dict[str, Any]]:
+    """Track + animated bar (+ optional ticks and a delayed cue). start_delay holds the bar
+    full (a read/think phase) before the countdown wipe begins. Returns animation effects."""
     _rect(slide, MARGIN, BAR_Y, CONTENT_W, BAR_H, BLUE_SOFT, name="Timer track")
     bar = _rect(slide, MARGIN, BAR_Y, CONTENT_W, BAR_H, BLUE, name="Timer bar")
-    effects = [{"spid": bar.shape_id, "kind": "wipe", "delay": 0, "dur": seconds * 1000}]
+    effects = [{"spid": bar.shape_id, "kind": "wipe", "delay": start_delay * 1000, "dur": seconds * 1000}]
     if ticks:
         marks = [s for s in (15, 30, 45) if s < seconds] + [seconds]
         for s in marks:
@@ -221,7 +223,7 @@ def _timer(slide, seconds: int, label: str = "", ticks: bool = True, cue: "Tuple
         box = _text(slide, SLIDE_W - MARGIN - 3.0, BAR_Y - 0.5, 3.0, 0.4,
                     [(text, {"size": 18, "bold": True, "color": BLUE})], align=PP_ALIGN.RIGHT,
                     anchor=MSO_ANCHOR.BOTTOM, name="Wrap-up cue")
-        effects.append({"spid": box.shape_id, "kind": "appear", "delay": at * 1000, "dur": 0})
+        effects.append({"spid": box.shape_id, "kind": "appear", "delay": (start_delay + at) * 1000, "dur": 0})
     return effects
 
 
@@ -249,12 +251,15 @@ def _intro_slide(prs, session: Dict[str, Any], stats: Dict[str, Any], cfg: Dict[
     date = dt.date.fromisoformat(session["date"])
     n = len(session["questions"])
     secs = int(cfg.get("seconds_per_question", 60))
+    read = int(cfg.get("read_seconds", 0))
+    format_line = (f"{n} questions  \u00b7  {read}s read + {secs}s answer" if read > 0
+                   else f"{n} questions  \u00b7  {secs} seconds each  \u00b7  no preparation")
     _text(s, MARGIN, 0.7, 9.0, 0.35, [(f"{cfg.get('role', 'Forward Deployed Engineer').upper()}  \u00b7  IMPROMPTU PRACTICE",
                                         {"size": 14, "bold": True, "color": BLUE, "spacing": 150})])
     _text(s, MARGIN, 1.45, 8.0, 1.2, [(f"Day {session['day_number']}", {"size": 66, "color": NAVY})],
           anchor=MSO_ANCHOR.BOTTOM)
     _text(s, MARGIN, 2.75, 8.0, 0.5, [(date.strftime("%A, %d %B %Y"), {"size": 24, "color": GRAY})])
-    _text(s, MARGIN, 3.7, 8.0, 0.45, [(f"{n} questions  \u00b7  {secs} seconds each  \u00b7  no preparation",
+    _text(s, MARGIN, 3.7, 8.0, 0.45, [(format_line,
                                         {"size": 22, "color": NAVY})])
     _text(s, MARGIN, 4.3, 7.8, 0.8, [("Pause. Lead with your point. Land it before the bar runs out.",
                                        {"size": 18, "color": GRAY})])
@@ -300,8 +305,11 @@ def _question_slide(prs, q: Dict[str, Any], idx: int, total: int, level: int, cf
         _text(s, MARGIN, 5.62, 7.6, 0.32, [("Try:  " + q.get("framework", ""), {"size": 13, "color": GRAY_LIGHT})],
               name="Framework hint")
     cue_at = int(cfg.get("wrap_up_cue_seconds", 45))
-    effects = _timer(s, secs, ticks=True, cue=(cue_at, "Wrap up") if 0 < cue_at < secs else None)
-    set_transition(s, secs * 1000)
+    read = int(cfg.get("read_seconds", 0))
+    label = f"Read for {read}s — then answer" if read > 0 else ""
+    effects = _timer(s, secs, ticks=True, label=label,
+                     cue=(cue_at, "Wrap up") if 0 < cue_at < secs else None, start_delay=read)
+    set_transition(s, (read + secs) * 1000)
     set_auto_animations(s, effects)
     notes = [
         f"Competency: {q.get('category_label', '')}   |   Difficulty {q.get('difficulty')}/5   |   Format: {q.get('format')}",
@@ -451,13 +459,14 @@ def make_show_copy(pptx_path: Path, ppsx_path: Path) -> None:
 
 
 def session_seconds(cfg: Dict[str, Any], n_questions: int) -> int:
-    return int(cfg.get("intro_seconds", 10)) + n_questions * int(cfg.get("seconds_per_question", 60))
+    return (int(cfg.get("intro_seconds", 10))
+            + n_questions * (int(cfg.get("read_seconds", 0)) + int(cfg.get("seconds_per_question", 60))))
 
 
 def chapters(session: Dict[str, Any], cfg: Dict[str, Any], offset: float = 0.0) -> List[Tuple[int, str]]:
     """YouTube chapter marks (seconds, title) for an auto-synced recording."""
     intro = int(cfg.get("intro_seconds", 10))
-    per = int(cfg.get("seconds_per_question", 60))
+    per = int(cfg.get("read_seconds", 0)) + int(cfg.get("seconds_per_question", 60))
     marks = [(0, "Intro")]
     for i, q in enumerate(session["questions"], 1):
         start = int(math.floor(offset + intro + (i - 1) * per))
