@@ -229,7 +229,7 @@ def _draw_paragraph(draw, paragraph: str, targets: Sequence[str], xy, wh) -> Non
     pattern = _re.compile(r"\b(" + "|".join(_re.escape(w) for w in words) + r")\b", _re.IGNORECASE)
     toks: List[Tuple[str, bool]] = []
     for piece in _re.findall(r"\S+\s*|\s+", paragraph):
-        toks.append((piece.strip(), bool(pattern.fullmatch(piece.strip()))))
+        toks.append((piece.strip(), bool(pattern.search(piece))))  # search: "word," and "word." count too
     toks = [(w, t) for w, t in toks if w]
     while size >= 26:
         font_pair = lambda target: get(size, True) if target else get(size)  # noqa: E731

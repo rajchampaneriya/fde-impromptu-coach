@@ -79,6 +79,40 @@ class TestParagraphValidation(unittest.TestCase):
             self.assertEqual(err, "", f"bank entry rejected: {err}")
             past.append(e["paragraph"])
 
+    def test_bank_variety(self):
+        seen: dict = {}
+        for i, e in enumerate(P.bank()["paragraphs"]):
+            self.assertTrue(5 <= len(e["target_words"]) <= 6, f"entry {i}")
+            for t in e["target_words"]:
+                self.assertNotIn(t["word"], seen, f"{t['word']!r} is a target in entries {seen.get(t['word'])} and {i}")
+                seen[t["word"]] = i
+                self.assertLessEqual(len(t["tip"]), 80, f"{t['word']}: the warm-up slide cuts tips at 80 chars")
+                self.assertLessEqual(len(t["word"]), 14, f"{t['word']}: too wide for the warm-up slide")
+
+
+class TestBankFallbackAndPrompt(unittest.TestCase):
+    def setUp(self):
+        self.tmp = Path(tempfile.mkdtemp())
+        self.history = _history(self.tmp)
+        self.date = dt.date(2026, 10, 1)
+
+    def tearDown(self):
+        shutil.rmtree(self.tmp, ignore_errors=True)
+
+    def test_bank_prefers_entry_targeting_a_due_word(self):
+        entries = P.bank()["paragraphs"]
+        word = entries[-1]["target_words"][0]["word"]
+        out = P._from_bank(self.history, self.date, [word])
+        self.assertIn(word, [t["word"] for t in out["target_words"]])
+        self.assertEqual(out["source"], "bank")
+
+    def test_prompt_lists_practiced_words_on_one_line(self):
+        cfg = {"pronunciation": {}}
+        prompt = P.build_prompt(cfg, self.date, ["thesis"], [], practiced=["hierarchy", "rhythm"])
+        self.assertIn("hierarchy, rhythm", prompt)
+        # only due words appear as "- word" lines (fake_claude and the rubric rely on that)
+        self.assertEqual(re.findall(r"^- ([a-z']+)$", prompt, re.MULTILINE), ["thesis"])
+
 
 class TestWordScheduling(unittest.TestCase):
     def setUp(self):

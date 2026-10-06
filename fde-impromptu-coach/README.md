@@ -228,8 +228,10 @@ Words are scheduled like flashcards: a word you mark **hard** in the
 after-session dialog comes back tomorrow; each easy answer doubles the gap
 (1, 2, 4, 8 days); after four easy answers in a row a word retires. Paragraphs
 are written fresh every day by Claude Code (`references/pronunciation_design.md`
-is the rubric) with a curated 30-paragraph bank
-(`assets/pronunciation_bank.json`) as the offline fallback. ffmpeg missing?
+is the rubric) with a curated 51-paragraph bank
+(`assets/pronunciation_bank.json`) as the offline fallback: each paragraph
+drills one sound pattern in a different work scenario, and no word is a
+target twice. ffmpeg missing?
 The audio is still kept and you are told how to fix it
 (`brew install ffmpeg`, then `fde-coach pronounce upload`).
 
