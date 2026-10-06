@@ -119,19 +119,24 @@ def validate_paragraph(raw: Any, past_paragraphs: List[str]) -> Tuple[Optional[D
 
 # --------------------------------------------------------------------------- generation
 
-def build_prompt(cfg: Dict[str, Any], date: dt.date, due: List[str], past_paragraphs: List[str]) -> str:
+def build_prompt(cfg: Dict[str, Any], date: dt.date, due: List[str], past_paragraphs: List[str],
+                 practiced: Optional[List[str]] = None) -> str:
     rubric = (REFERENCES_DIR / "pronunciation_design.md").read_text(encoding="utf-8")
     pron = cfg.get("pronunciation", {})
     due_line = "\n".join(f"- {w}" for w in due) or "- (none due: pick 5-6 words the learner is likely to " \
         "struggle with, consistent with the focus sounds below)"
     focus = ", ".join(pron.get("focus_sounds") or []) or "your choice of commonly confused sounds"
     past = "\n".join(f"- {p[:140]}" for p in past_paragraphs[-40:]) or "- (none yet)"
+    # one comma-separated line, not a "- word" list: only due words are listed one per line
+    seen = ", ".join((practiced or [])[-200:]) or "(none yet)"
     return (
         "You are writing today's pronunciation practice for a Forward Deployed Engineer. "
         "Do not use any tools. Do not ask questions. Reply with the JSON object only.\n\n"
         f"# Rubric\n\n{rubric}\n\n"
         f"# Today ({date.isoformat()})\n\n"
         f"# Words due today (use every one of them, or explain in nothing — they are required)\n\n{due_line}\n\n"
+        "# Already practiced — never pick one of these as an extra word yourself\n\n"
+        f"{seen}\n\n"
         f"# Focus sounds\n\n{focus}\n\n"
         "# Past paragraphs — do not repeat or lightly reword any of these\n\n"
         f"{past}\n\n"
@@ -161,9 +166,10 @@ def _from_bank(history: History, date: dt.date, due: List[str]) -> Dict[str, Any
     entries = bank()["paragraphs"]
     fresh = [e for e in entries if not is_duplicate(e["paragraph"], past)]
     pool = fresh or entries
-    # prefer an entry that shares at least one due word, else rotate by date
+    # prefer an entry that drills a due word as a target, else rotate by date
+    due_set = set(due)
     for e in pool:
-        if any(_uses(e["paragraph"], w) > 0 for w in due):
+        if any(t["word"] in due_set for t in e["target_words"]):
             choice = e
             break
     else:
@@ -193,9 +199,10 @@ def generate_content(history: History, cfg: Dict[str, Any], paths: Paths,
     import os
     if os.environ.get("FDE_COACH_SKIP_NETWORK_WAIT") != "1" and not _wait_for_network():
         return _from_bank(history, date, due), ["network unavailable; using the bank"]
+    practiced = [w for w in word_state(history) if w not in due]
     content: Optional[Dict[str, Any]] = None
     for attempt in (1, 2):
-        prompt = build_prompt(cfg, date, due, past)
+        prompt = build_prompt(cfg, date, due, past, practiced)
         try:
             raw = parse_paragraph_output(call_claude(prompt, cfg, paths))
         except Exception as exc:  # noqa: BLE001 - any failure falls back to the bank
