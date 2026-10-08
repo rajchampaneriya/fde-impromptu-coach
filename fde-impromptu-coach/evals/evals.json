@@ -35,11 +35,47 @@
       "expected_output": "Diagnoses with fde-coach doctor or status, explains the 15-min catch-up agent, rebuilds today's deck (generate/daily) without spoiling questions",
       "files": [],
       "assertions": [
-        "Explains the missed-run catch-up correctly (the coach's 15-min reminder agent rebuilds the deck after wake; the reply must not rely on launchd's own wake catch-up for missed StartCalendarInterval jobs — launchd.plist documents a single coalesced run on wake, but it is unreliable in practice and did not fire on the validation Mac), or diagnoses via doctor/status",
+        "Explains the missed-run catch-up correctly (the coach's 15-min reminder agent rebuilds the deck after wake; the reply must not rely on launchd's own wake catch-up for missed StartCalendarInterval jobs \u2014 launchd.plist documents a single coalesced run on wake, but it is unreliable in practice and did not fire on the validation Mac), or diagnoses via doctor/status",
         "Rebuilds today's deck (generate or daily) in the sandbox so questions exist",
         "Reply tells the user how to open/start practice",
         "Reply does NOT contain any of today's question texts",
         "Mentions the Mac-asleep cause or the pmset/wake mitigation"
+      ]
+    },
+    {
+      "id": 4,
+      "eval_name": "legato-start",
+      "prompt": "I want to work on sounding smoother, less choppy. Start today's legato practice.",
+      "expected_output": "Runs fde-coach legato session --detach, explains the 5-minute flow (breath, linking drill, three reads, 45 s response) and that the passage is from a public-domain book; does not print the passage",
+      "files": [],
+      "assertions": [
+        "Ran legato session --detach (or legato session) inside the sandbox",
+        "Reply explains what the session contains and that it stops and saves by itself",
+        "Reply does NOT contain today's passage text (cold read preserved)",
+        "No writes outside the sandbox"
+      ]
+    },
+    {
+      "id": 5,
+      "eval_name": "no-ai-paragraphs",
+      "prompt": "Can you write me a new paragraph for tomorrow's pronunciation practice about a kubernetes migration?",
+      "expected_output": "Explains that reading passages come from the public-domain library (never written by Claude), offers to pick a passage (library list / generate --passage) or import a book, and mentions the opt-in legacy mode pronunciation.paragraph_source=claude if the user really wants AI-written work paragraphs; does not write a paragraph",
+      "files": [],
+      "assertions": [
+        "Reply does not contain a newly written practice paragraph",
+        "Reply points to the passage library (library list / import) or --passage",
+        "Reply mentions paragraph_source=claude only as an explicit opt-in"
+      ]
+    },
+    {
+      "id": 6,
+      "eval_name": "import-book",
+      "prompt": "Add passages from Marcus Aurelius' Meditations to my reading practice, it's on Project Gutenberg as 2680",
+      "expected_output": "Runs fde-coach library import-gutenberg 2680 (optionally --theme reflection), reports how many passages were added, and how to see them (library list --mine)",
+      "files": [],
+      "assertions": [
+        "Ran library import-gutenberg 2680",
+        "Reply reports the added count or explains a network failure and the import-file alternative"
       ]
     }
   ]

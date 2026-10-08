@@ -1,4 +1,5 @@
-"""launchd LaunchAgents: the daily 05:30 run and a 15-minute reminder/self-heal tick."""
+"""launchd LaunchAgents: the daily 05:30 FDE run, the 05:45 pronunciation and 06:00 legato
+runs, and a 15-minute reminder/self-heal tick."""
 from __future__ import annotations
 
 import os
@@ -14,6 +15,8 @@ from .macos import dry_run, is_macos
 DAILY_LABEL = "com.fdecoach.daily"
 REMIND_LABEL = "com.fdecoach.reminder"
 PRON_LABEL = "com.fdecoach.pronounce"
+LEGATO_LABEL = "com.fdecoach.legato"
+ALL_LABELS = ("com.fdecoach.daily", "com.fdecoach.reminder", "com.fdecoach.pronounce", "com.fdecoach.legato")
 REMIND_INTERVAL = 900
 
 
@@ -72,7 +75,17 @@ def build_plists(cfg: Dict[str, Any], paths: Paths, python: str = "") -> Dict[st
         "StandardOutPath": str(paths.logs / "pronounce.out.log"),
         "StandardErrorPath": str(paths.logs / "pronounce.err.log"),
     })
-    return {DAILY_LABEL: daily, REMIND_LABEL: remind, PRON_LABEL: pron}
+    leg_hour, leg_minute = parse_hhmm(cfg.get("legato", {}).get("daily_time", "06:00"))
+    leg = dict(common)
+    leg.update({
+        "Label": LEGATO_LABEL,
+        "ProgramArguments": [python, str(ENTRY_SCRIPT), "legato", "daily"],
+        "StartCalendarInterval": {"Hour": leg_hour, "Minute": leg_minute},
+        "RunAtLoad": False,
+        "StandardOutPath": str(paths.logs / "legato.out.log"),
+        "StandardErrorPath": str(paths.logs / "legato.err.log"),
+    })
+    return {DAILY_LABEL: daily, REMIND_LABEL: remind, PRON_LABEL: pron, LEGATO_LABEL: leg}
 
 
 def _launchctl(*args: str) -> Tuple[int, str]:
@@ -102,7 +115,7 @@ def install(cfg: Dict[str, Any], paths: Paths, python: str = "") -> List[str]:
 def uninstall() -> List[str]:
     out: List[str] = []
     domain = f"gui/{os.getuid()}"
-    for label in (DAILY_LABEL, REMIND_LABEL, PRON_LABEL):
+    for label in ALL_LABELS:
         _launchctl("bootout", f"{domain}/{label}")
         path = agents_dir() / f"{label}.plist"
         if path.exists():
@@ -113,7 +126,7 @@ def uninstall() -> List[str]:
 
 def status() -> Dict[str, bool]:
     result = {}
-    for label in (DAILY_LABEL, REMIND_LABEL, PRON_LABEL):
+    for label in ALL_LABELS:
         code, _ = _launchctl("print", f"gui/{os.getuid()}/{label}")
         result[label] = code == 0 and (agents_dir() / f"{label}.plist").exists()
     return result

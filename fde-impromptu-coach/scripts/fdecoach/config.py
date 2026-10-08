@@ -55,6 +55,10 @@ DEFAULTS: Dict[str, Any] = {
         "daily_time": "05:45",
         "prompt_after_fde": True,
         "words": [],
+        # "library": human-written public-domain passages (Claude only marks up
+        # the hard words); "claude": the original AI-written work paragraphs
+        "paragraph_source": "library",
+        "themes": [],
         "audio_device": "Brio 100",
         "focus_sounds": [],
         "intro_seconds": 10,
@@ -63,6 +67,25 @@ DEFAULTS: Dict[str, Any] = {
         "round2_seconds": 75,
         "round3_seconds": 60,
         "words_seconds": 30,
+        "min_audio_seconds": 180,
+        "audio_clean_preset": "light",
+    },
+    "legato": {
+        "enabled": True,
+        "daily_time": "06:00",
+        "prompt_after_pronunciation": True,
+        "audio_device": "",
+        "themes": [],
+        "include_user_passages": True,
+        "start_level": 1,
+        "sessions_per_level": 7,
+        "intro_seconds": 10,
+        "warmup_seconds": 30,
+        "links_seconds": 45,
+        "round1_seconds": 60,
+        "round2_seconds": 60,
+        "round3_seconds": 60,
+        "respond_seconds": 45,
         "min_audio_seconds": 180,
         "audio_clean_preset": "light",
     },
@@ -93,6 +116,7 @@ DEFAULTS: Dict[str, Any] = {
         "tags": ["impromptu speaking", "forward deployed engineer", "communication practice"],
         "max_attempts": 12,
         "pronunciation_playlist_id": "",
+        "legato_playlist_id": "",
     },
 }
 
@@ -117,6 +141,8 @@ class Paths:
         self.state_dir = root / "state"
         self.history = self.state_dir / "history.json"
         self.pron_state = self.state_dir / "pronunciation.json"
+        self.legato_state = self.state_dir / "legato.json"
+        self.library = root / "library"
         self.runtime = self.state_dir / "runtime.json"
         self.incoming = self.state_dir / "incoming"
         self.locks = self.state_dir / "locks"

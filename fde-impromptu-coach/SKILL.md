@@ -1,6 +1,6 @@
 ---
 name: fde-impromptu-coach
-description: Daily impromptu-speaking coach for the Forward Deployed Engineer (FDE) role on macOS. Every morning at 05:30 it builds a minimalist blue, Calibri PowerPoint deck with 5 never-repeated, progressively harder impromptu questions (60-second timer per slide, auto-advance), records a ~5-minute QuickTime camera video, uploads it to YouTube as a private video, and protects the daily streak with escalating Mac reminders plus Google Calendar alerts that fire only on missed days. Use this skill whenever the user mentions impromptu practice, FDE or communication or leadership practice, today's questions or practice deck, starting or recording today's session, their practice streak, missed practice, practice reminders or calendar alerts, the 5:30 schedule, practice video uploads, making questions harder or easier or about a topic, or installing, configuring or troubleshooting this routine, even if they do not name the skill.
+description: Daily speaking coach for the Forward Deployed Engineer (FDE) role on macOS. At 05:30 a timed PowerPoint deck of 5 never-repeated, progressively harder impromptu questions is recorded on camera and uploaded privately to YouTube; at 05:45 a pen-method pronunciation drill and at 06:00 a legato (smooth, connected speech) drill read verbatim passages from free public-domain books, never AI-written text. Each practice keeps a streak protected by Mac reminders and Google Calendar alerts. Use whenever the user mentions impromptu, FDE, communication or leadership practice, pronunciation, the pen method, legato, linking words, breath or fluency practice, reading passages or adding a book, today's deck, starting or recording a session, streaks, missed practice, reminders, calendar alerts, uploads, making practice harder or easier, or installing, configuring or troubleshooting this routine, even if they do not name the skill.
 compatibility: macOS 12+ with Microsoft PowerPoint, QuickTime Player, Python 3.9+ and Claude Code. YouTube upload needs a Google Cloud OAuth desktop client.
 ---
 
@@ -8,7 +8,17 @@ compatibility: macOS 12+ with Microsoft PowerPoint, QuickTime Player, Python 3.9
 
 A daily, 5-minute, on-camera impromptu speaking routine that trains the
 communication and leadership moments of a Forward Deployed Engineer: executive
-updates, bad news, pushback, discovery, trade-offs, ethics, influence.
+updates, bad news, pushback, discovery, trade-offs, ethics, influence. Two
+5-minute audio practices follow it, both reading **verbatim paragraphs from
+free public-domain books** (Thoreau, Twain, Tagore, Franklin, Gibran, Marcus
+Aurelius, *The Art of Public Speaking* and more; `assets/passages.json`):
+
+* **Pronunciation (pen method), 05:45**: the learner's due hard words plus the
+  passage's own hard words, read three times (Round 2 with a pen between the teeth).
+* **Legato, 06:00**: breath and hum warm-up, a linking drill built from the
+  passage ("turn it off" → tur-ni-toff), three reads (phrase map with breath
+  marks and underlined joins, intoned, spoken clean), then a 45-second
+  impromptu response to the author.
 
 Everything is driven by one CLI. After installation it is at
 `~/FDE-Impromptu/bin/fde-coach` (also linked as `~/.local/bin/fde-coach`).
@@ -30,6 +40,14 @@ installed yet: see **Install** below.
 4. **Videos stay private.** Never change `youtube.privacy_status` unless the user
    explicitly asks.
 5. Today's questions can be replaced only **before** today is recorded.
+6. **Never write or rewrite reading passages.** Pronunciation and legato text
+   comes only from the passage library (built-in, verified against its source
+   editions, or imported by the learner from a free book). Claude's only job
+   there is coach notes for hard words. Don't paraphrase, shorten or "improve"
+   a passage, and don't offer AI-written paragraphs unless the user explicitly
+   asks for the legacy mode (`pronunciation.paragraph_source=claude`).
+7. **Cold read.** Today's passage stays hidden until recorded (`generate` and
+   `history` hide it); show it only when asked (`--reveal`).
 
 ## What the user says → what to run
 
@@ -46,9 +64,18 @@ installed yet: see **Install** below.
 | "Pronunciation practice", "pen method", "start pronunciation" | `fde-coach pronounce session --detach` (audio only, ~5 min: warm-up words, 3 rounds with the pen in Round 2, words again; auto-stops and saves) |
 | "Add a hard word" (pronunciation) | `fde-coach pronounce words --add WORD` (repeat per word; `--remove WORD`, bare `words` lists the pool and what's due) |
 | "Pronunciation streak / status / history" | `fde-coach pronounce status` / `pronounce history` |
+| "Legato practice", "connected speech", "linking practice", "start legato" | `fde-coach legato session --detach` (audio only, ~5 min: breath & hum, linking drill, 3 reads, 45 s response; auto-stops and saves) |
+| "Legato streak / status / history" | `fde-coach legato status` / `legato history` (add `--reveal` to show today's passage before recording) |
+| "Use a specific passage", "read Walden today" | `fde-coach library list` (filter `--theme speaking\|story\|reflection\|india\|nature`, `--level 1-3`), then `fde-coach legato generate --replace --passage ID` (or `pronounce generate --replace --passage ID`) before recording |
+| "Only speeches / Indian authors" | `fde-coach config --set 'legato.themes=["speaking"]'` (same key under `pronunciation`) |
+| "Add a book", "use passages from <free book>" | Project Gutenberg: `fde-coach library import-gutenberg <ebook number>` (from gutenberg.org/ebooks/N; `--max 20 --theme speaking --year 1903`). Any text the user has the right to use: `fde-coach library import-file PATH --author A --title T [--url U]` |
+| "Show a passage / where is it from" | `fde-coach library show ID` (credit, source link, text, target words) |
+| "Flow felt choppy / too easy" (legato) | the after-session tap does it; it moves the flow level (1 short sentences … 3 long, winding ones) |
+| "Turn legato off / move it" | `fde-coach config --set legato.enabled=false` or `--set legato.daily_time=06:15` |
 | "No camera on this Mac", "practise without video" | `fde-coach config --set recording.mode=none` — session runs the deck show only, still counts for the streak, no QuickTime/YouTube |
 | "Upload didn't happen" | `fde-coach upload` |
 | "Connect YouTube" | walk them through README.md → *Google setup*, then `fde-coach youtube-auth` |
+| "Upload legato / pronunciation" | `fde-coach legato upload` / `fde-coach pronounce upload` |
 | "Connect Google Calendar", "alert me if I miss" | README.md → *Google setup* (enable Google Calendar API), then `fde-coach calendar-auth` |
 | "Change / stop the calendar alerts" | `fde-coach config --set 'google_calendar.popup_times=[…]'` or `google_calendar.enabled=false`, then `fde-coach calendar-sync` |
 | "Something's broken" | `fde-coach doctor`, then `references/troubleshooting.md` |
@@ -80,6 +107,25 @@ Settings live in `~/FDE-Impromptu/config.json`; `fde-coach config` prints them.
      slots are filled from the bank. Rewrite and rebuild if the user wants their
      own text in every slot.
 
+## How the reading passages are chosen
+
+- **Library** (`fdecoach/library.py`): 56 built-in passages (50–130 words, pre-1929
+  works whose authors and translators died before 1956), each with author,
+  work, year, section, source link (Standard Ebooks or Project Gutenberg),
+  theme, level and five hand-written pronunciation notes. Learners add more with
+  `library import-gutenberg` / `import-file` (stored in `~/FDE-Impromptu/library/`).
+  `scripts/tools/build_passage_library.py verify` re-downloads the source
+  editions and checks every built-in passage is verbatim.
+- **Legato**: never-read passages first (then the least recently read third),
+  nearest to the learner's flow level (starts at 1, +1 every 7 recorded
+  sessions, nudged by the Choppy/Smooth tap). Breath marks and linking chains
+  are computed from the text (`fdecoach/legato.py`), not generated.
+- **Pronunciation** (default `paragraph_source=library`): prefers a passage that
+  contains the learner's due words; up to 3 due words lead the warm-up list,
+  then the passage's own hard words (6 words total). Coach notes come from the
+  library; Claude is called only to mark up words that have none
+  (`references/pronunciation_annotation.md`). Offline it still works (plain words).
+
 ## The daily flow (for explaining it to the user)
 
 1. **05:30** launchd runs `fde-coach daily`: builds the deck
@@ -95,10 +141,13 @@ Settings live in `~/FDE-Impromptu/config.json`; `fde-coach config` prints them.
    completed, today's Google Calendar event is deleted (so its alerts never
    fire) and the video uploads privately to YouTube with the questions and
    chapter marks in the description.
-3. **Every 15 minutes** a second agent catches up a missed 05:30 run (Mac was
+3. **05:45 / 06:00** the pronunciation and legato agents build their decks and
+   ask to start. Finishing one practice offers the next (FDE → pronunciation →
+   legato), so one "Start now" can run all three back to back.
+4. **Every 15 minutes** a second agent catches up a missed 05:30 run (Mac was
    asleep), shows escalating reminders at the configured times until the day is
-   recorded (last call at 22:00, quiet after 22:45), keeps the calendar events
-   rolling forward and retries failed uploads. Google Calendar alerts
+   recorded (last call at 22:00, quiet after 22:45), keeps every practice's
+   calendar events rolling forward and retries failed uploads. Google Calendar alerts
    (07:30, 12:30, 18:00, 21:30 + an email) reach the phone, browser or inbox
    only on unrecorded days, even when the Mac is closed.
 
@@ -111,7 +160,7 @@ bash ~/.claude/skills/fde-impromptu-coach/install.sh
 ```
 
 It creates a Python virtual environment in `~/FDE-Impromptu/venv`, installs
-`requirements.txt`, writes the launcher, installs the two launchd agents and
+`requirements.txt`, writes the launcher, installs the four launchd agents and
 triggers every macOS permission prompt (Automation for QuickTime, PowerPoint and
 Reminders; camera and microphone for QuickTime; notifications). Tell the user to
 click **OK / Allow** on each. Then `fde-coach doctor` should be all `[ok]`
@@ -123,12 +172,19 @@ YouTube setup and an optional `pmset` wake schedule.
 - `scripts/fde_coach.py` — CLI (`--help` lists all commands)
 - `scripts/fdecoach/` — modules: `app` (flows), `questions`, `deck`, `recorder`,
   `macos` (AppleScript), `youtube`, `gcal` (Google Calendar missed-practice alerts),
-  `scheduler` (launchd), `state`, `config`, plus the pronunciation practice:
-  `pronounce` (words + paragraph), `pronounce_deck` (deck + slide PNGs),
-  `pronounce_session` (record/upload flows), `audio` (ffmpeg clean-up)
+  `scheduler` (launchd), `state`, `config`; the audio practices share
+  `practice` (build/record/video/upload/calendar engine) and `audio` (ffmpeg);
+  pronunciation: `pronounce` (words + passage), `pronounce_deck`,
+  `pronounce_session`; legato: `legato` (breath groups, links, choice),
+  `legato_deck`, `legato_session`; `library` (public-domain passages, imports)
+- `scripts/tools/build_passage_library.py` — builds and `verify`s `assets/passages.json`
+  from `assets/passage_sources.json` + `assets/passage_annotations.json`
 - `scripts/tests/` — `~/FDE-Impromptu/venv/bin/python -m unittest discover -s scripts/tests` (dry-run, safe anywhere; needs the venv because the CLI imports `pptx`)
 - `references/question_design.md` — question rubric and JSON schema
-- `references/pronunciation_design.md` — pronunciation paragraph rubric and JSON schema
+- `references/pronunciation_design.md` — legacy (AI-written) paragraph rubric and JSON schema
+- `references/pronunciation_annotation.md` — coach-note rubric for library mode (Claude marks up words only)
+- `references/legato_design.md` — legato practice design: drills, marks, levels, research basis
+- `references/passage_sources.md` — passage library policy, sources, licences, verifying and importing
 - `references/pronunciation_plan.md` — pronunciation practice design plan
 - `references/troubleshooting.md` — symptoms → fixes
 - `references/plan.md` — design plan, risks found in validation, and fixes

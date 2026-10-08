@@ -1,5 +1,13 @@
 # Pronunciation Practice (pen method) — Implementation Plan
 
+> **v3 update.** The paragraph now comes from the public-domain passage library
+> by default (`pronunciation.paragraph_source=library`): a verbatim book passage
+> chosen to contain due words, hand-written coach notes, Claude used only to
+> annotate words without notes (`references/pronunciation_annotation.md`). The
+> plan below describes the original Claude-written mode, still available as
+> `paragraph_source=claude`. The session flow now runs on the shared engine
+> `fdecoach/practice.py` (also used by the legato practice).
+
 Second daily practice alongside the FDE impromptu session. Same architecture,
 same CLI, same install. The FDE flow (05:30) is untouched except for one
 optional prompt after it finishes.

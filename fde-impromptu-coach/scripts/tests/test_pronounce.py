@@ -19,7 +19,7 @@ ENTRY = SCRIPTS / "fde_coach.py"
 
 from fdecoach import audio, gcal, pronounce as P  # noqa: E402
 from fdecoach.config import Paths, load_config  # noqa: E402
-from fdecoach.state import History, streaks  # noqa: E402
+from fdecoach.state import History  # noqa: E402
 
 from test_coach import Home  # noqa: E402  (same dry-run harness)
 
@@ -173,10 +173,13 @@ class TestEventIds(unittest.TestCase):
 
 
 class TestPronunciationEndToEnd(unittest.TestCase):
+    """The original Claude-writes-the-paragraph mode (now opt-in: paragraph_source=claude).
+    The default library mode is covered in test_legato.TestPronunciationLibraryMode."""
+
     def setUp(self):
         self.h = Home()
         self.h.run("config", "--set", "pronunciation.words=[\"thesis\",\"rhythm\",\"verdict\",\"paradigm\",\"suite\"]",
-                   now="2026-10-01T05:00:00")
+                   "--set", "pronunciation.paragraph_source=claude", now="2026-10-01T05:00:00")
 
     def tearDown(self):
         self.h.cleanup()

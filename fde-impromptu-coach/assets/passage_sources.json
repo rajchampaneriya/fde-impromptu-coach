@@ -1,0 +1,857 @@
+{
+ "about": "Source spec for assets/passages.json. Each passage is cut verbatim from a free public-domain edition by location + start/end anchors; build_passage_library.py downloads the sources, extracts and verifies every passage. Only typographic normalisation is applied (line wrapping, invisible joiners, Gutenberg _italic_ markers, -- dashes, drop-cap capitals).",
+ "books": {
+  "aps": {
+   "source": "gutenberg",
+   "repo": "The-Art-of-Public-Speaking_16317",
+   "file": "16317.txt",
+   "gutenberg_id": 16317,
+   "author": "Dale Carnegie and J. Berg Esenwein",
+   "work": "The Art of Public Speaking",
+   "year": 1915
+  },
+  "allen": {
+   "source": "gutenberg",
+   "repo": "As-a-Man-Thinketh_4507",
+   "file": "4507.txt",
+   "gutenberg_id": 4507,
+   "author": "James Allen",
+   "work": "As a Man Thinketh",
+   "year": 1903
+  },
+  "bennett": {
+   "source": "gutenberg",
+   "repo": "How-to-Live-on-24-Hours-a-Day_2274",
+   "file": "2274.txt",
+   "gutenberg_id": 2274,
+   "author": "Arnold Bennett",
+   "work": "How to Live on 24 Hours a Day",
+   "year": 1908
+  },
+  "bacon": {
+   "source": "gutenberg",
+   "repo": "The-Essays-or-Counsels-Civil-and-Moral_575",
+   "file": "575.txt",
+   "gutenberg_id": 575,
+   "author": "Francis Bacon",
+   "work": "Essays",
+   "year": 1625
+  },
+  "tagore_stories": {
+   "source": "gutenberg",
+   "repo": "Stories-from-Tagore_33525",
+   "file": "33525-0.txt",
+   "gutenberg_id": 33525,
+   "author": "Rabindranath Tagore",
+   "work": "Stories from Tagore",
+   "year": 1918
+  },
+  "jacobs": {
+   "source": "gutenberg",
+   "repo": "Indian-Fairy-Tales_7128",
+   "file": "7128-0.txt",
+   "gutenberg_id": 7128,
+   "author": "Joseph Jacobs (editor)",
+   "work": "Indian Fairy Tales",
+   "year": 1892
+  },
+  "walden": {
+   "source": "standardebooks",
+   "repo": "henry-david-thoreau_walden",
+   "author": "Henry David Thoreau",
+   "work": "Walden",
+   "year": 1854
+  },
+  "tom": {
+   "source": "standardebooks",
+   "repo": "mark-twain_the-adventures-of-tom-sawyer",
+   "author": "Mark Twain",
+   "work": "The Adventures of Tom Sawyer",
+   "year": 1876
+  },
+  "jerome": {
+   "source": "standardebooks",
+   "repo": "jerome-k-jerome_three-men-in-a-boat",
+   "author": "Jerome K. Jerome",
+   "work": "Three Men in a Boat",
+   "year": 1889
+  },
+  "aurelius": {
+   "source": "standardebooks",
+   "repo": "marcus-aurelius_meditations_george-long",
+   "author": "Marcus Aurelius",
+   "translator": "George Long",
+   "work": "Meditations",
+   "year": 1862
+  },
+  "franklin": {
+   "source": "standardebooks",
+   "repo": "benjamin-franklin_the-autobiography-of-benjamin-franklin",
+   "author": "Benjamin Franklin",
+   "work": "The Autobiography of Benjamin Franklin",
+   "year": 1791
+  },
+  "douglass": {
+   "source": "standardebooks",
+   "repo": "frederick-douglass_narrative-of-the-life-of-frederick-douglass",
+   "author": "Frederick Douglass",
+   "work": "Narrative of the Life of Frederick Douglass",
+   "year": 1845
+  },
+  "washington": {
+   "source": "standardebooks",
+   "repo": "booker-t-washington_up-from-slavery",
+   "author": "Booker T. Washington",
+   "work": "Up from Slavery",
+   "year": 1901
+  },
+  "gitanjali": {
+   "source": "standardebooks",
+   "repo": "rabindranath-tagore_gitanjali",
+   "author": "Rabindranath Tagore",
+   "work": "Gitanjali",
+   "year": 1912
+  },
+  "prophet": {
+   "source": "standardebooks",
+   "repo": "kahlil-gibran_the-prophet",
+   "author": "Kahlil Gibran",
+   "work": "The Prophet",
+   "year": 1923
+  },
+  "emerson": {
+   "source": "standardebooks",
+   "repo": "ralph-waldo-emerson_essays",
+   "author": "Ralph Waldo Emerson",
+   "work": "Essays",
+   "year": 1841
+  },
+  "two_cities": {
+   "source": "standardebooks",
+   "repo": "charles-dickens_a-tale-of-two-cities",
+   "author": "Charles Dickens",
+   "work": "A Tale of Two Cities",
+   "year": 1859
+  },
+  "carol": {
+   "source": "standardebooks",
+   "repo": "charles-dickens_a-christmas-carol",
+   "author": "Charles Dickens",
+   "work": "A Christmas Carol",
+   "year": 1843
+  },
+  "austen": {
+   "source": "standardebooks",
+   "repo": "jane-austen_pride-and-prejudice",
+   "author": "Jane Austen",
+   "work": "Pride and Prejudice",
+   "year": 1813
+  },
+  "jungle": {
+   "source": "standardebooks",
+   "repo": "rudyard-kipling_the-jungle-book",
+   "author": "Rudyard Kipling",
+   "work": "The Jungle Book",
+   "year": 1894
+  },
+  "gatsby": {
+   "source": "standardebooks",
+   "repo": "f-scott-fitzgerald_the-great-gatsby",
+   "author": "F. Scott Fitzgerald",
+   "work": "The Great Gatsby",
+   "year": 1925
+  },
+  "dalloway": {
+   "source": "standardebooks",
+   "repo": "virginia-woolf_mrs-dalloway",
+   "author": "Virginia Woolf",
+   "work": "Mrs. Dalloway",
+   "year": 1925
+  },
+  "muir": {
+   "source": "standardebooks",
+   "repo": "john-muir_my-first-summer-in-the-sierra",
+   "author": "John Muir",
+   "work": "My First Summer in the Sierra",
+   "year": 1911
+  },
+  "treasure": {
+   "source": "standardebooks",
+   "repo": "robert-louis-stevenson_treasure-island",
+   "author": "Robert Louis Stevenson",
+   "work": "Treasure Island",
+   "year": 1883
+  },
+  "holmes": {
+   "source": "standardebooks",
+   "repo": "arthur-conan-doyle_the-adventures-of-sherlock-holmes",
+   "author": "Arthur Conan Doyle",
+   "work": "The Adventures of Sherlock Holmes",
+   "year": 1892
+  },
+  "oz": {
+   "source": "standardebooks",
+   "repo": "l-frank-baum_the-wonderful-wizard-of-oz",
+   "author": "L. Frank Baum",
+   "work": "The Wonderful Wizard of Oz",
+   "year": 1900
+  },
+  "alice": {
+   "source": "standardebooks",
+   "repo": "lewis-carroll_alices-adventures-in-wonderland",
+   "author": "Lewis Carroll",
+   "work": "Alice’s Adventures in Wonderland",
+   "year": 1865
+  },
+  "moby": {
+   "source": "standardebooks",
+   "repo": "herman-melville_moby-dick",
+   "author": "Herman Melville",
+   "work": "Moby-Dick",
+   "year": 1851
+  },
+  "wild": {
+   "source": "standardebooks",
+   "repo": "jack-london_the-call-of-the-wild",
+   "author": "Jack London",
+   "work": "The Call of the Wild",
+   "year": 1903
+  },
+  "home_world": {
+   "source": "standardebooks",
+   "repo": "rabindranath-tagore_the-home-and-the-world_surendranath-tagore",
+   "author": "Rabindranath Tagore",
+   "translator": "Surendranath Tagore",
+   "work": "The Home and the World",
+   "year": 1919
+  },
+  "chekhov": {
+   "source": "standardebooks",
+   "repo": "anton-chekhov_short-fiction_constance-garnett",
+   "author": "Anton Chekhov",
+   "translator": "Constance Garnett",
+   "work": "The Lady with the Dog",
+   "year": 1917
+  },
+  "chesterton": {
+   "source": "standardebooks",
+   "repo": "g-k-chesterton_orthodoxy",
+   "author": "G. K. Chesterton",
+   "work": "Orthodoxy",
+   "year": 1908
+  },
+  "thoreau_essays": {
+   "source": "standardebooks",
+   "repo": "henry-david-thoreau_essays",
+   "author": "Henry David Thoreau",
+   "work": "Walking",
+   "year": 1862
+  },
+  "roughing": {
+   "source": "standardebooks",
+   "repo": "mark-twain_roughing-it",
+   "author": "Mark Twain",
+   "work": "Roughing It",
+   "year": 1872
+  }
+ },
+ "passages": [
+  {
+   "id": "aps-plunge",
+   "book": "aps",
+   "loc": [
+    0,
+    50
+   ],
+   "section": "Acquiring Confidence Before an Audience",
+   "theme": "speaking"
+  },
+  {
+   "id": "aps-prepare",
+   "book": "aps",
+   "loc": [
+    0,
+    63
+   ],
+   "section": "Acquiring Confidence Before an Audience",
+   "theme": "speaking"
+  },
+  {
+   "id": "aps-deep-breath",
+   "book": "aps",
+   "loc": [
+    0,
+    77
+   ],
+   "section": "Acquiring Confidence Before an Audience",
+   "theme": "speaking"
+  },
+  {
+   "id": "aps-practise",
+   "book": "aps",
+   "loc": [
+    0,
+    113
+   ],
+   "section": "The Sin of Monotony",
+   "theme": "speaking"
+  },
+  {
+   "id": "aps-lens",
+   "book": "aps",
+   "loc": [
+    0,
+    366
+   ],
+   "section": "Pause and Power",
+   "theme": "speaking"
+  },
+  {
+   "id": "aps-silence",
+   "book": "aps",
+   "loc": [
+    0,
+    368
+   ],
+   "section": "Pause and Power",
+   "theme": "speaking"
+  },
+  {
+   "id": "aps-take-time",
+   "book": "aps",
+   "loc": [
+    0,
+    381
+   ],
+   "section": "Pause and Power",
+   "theme": "speaking"
+  },
+  {
+   "id": "aps-ready-speaker",
+   "book": "aps",
+   "loc": [
+    0,
+    698
+   ],
+   "section": "Fluency Through Preparation",
+   "theme": "speaking"
+  },
+  {
+   "id": "aps-breath",
+   "book": "aps",
+   "loc": [
+    0,
+    792
+   ],
+   "section": "The Voice",
+   "theme": "speaking"
+  },
+  {
+   "id": "washington-miss-lord",
+   "book": "washington",
+   "loc": [
+    6,
+    10
+   ],
+   "section": "Chapter IV",
+   "theme": "speaking"
+  },
+  {
+   "id": "washington-twenty-minutes",
+   "book": "washington",
+   "loc": [
+    6,
+    11
+   ],
+   "section": "Chapter IV",
+   "theme": "speaking"
+  },
+  {
+   "id": "washington-idea-per-word",
+   "book": "washington",
+   "loc": [
+    14,
+    5
+   ],
+   "section": "Chapter XII",
+   "theme": "speaking"
+  },
+  {
+   "id": "washington-bucket",
+   "book": "washington",
+   "loc": [
+    16,
+    5
+   ],
+   "end": "from the mouth of the Amazon River.",
+   "section": "Chapter XIV (Atlanta Exposition Address, 1895)",
+   "theme": "speaking"
+  },
+  {
+   "id": "washington-message",
+   "book": "washington",
+   "loc": [
+    17,
+    16
+   ],
+   "end": "help him very much.",
+   "section": "Chapter XV: The Secret of Success in Public Speaking",
+   "theme": "speaking"
+  },
+  {
+   "id": "franklin-spectator",
+   "book": "franklin",
+   "loc": [
+    3,
+    6
+   ],
+   "end": "discovered some of my faults, and corrected them.",
+   "section": "Part I",
+   "theme": "speaking"
+  },
+  {
+   "id": "franklin-diffidence",
+   "book": "franklin",
+   "loc": [
+    3,
+    9
+   ],
+   "start": "I continued this method some few years",
+   "end": "or it is so, if I am not mistaken.",
+   "section": "Part I",
+   "theme": "speaking"
+  },
+  {
+   "id": "douglass-sheridan",
+   "book": "douglass",
+   "loc": [
+    8,
+    5
+   ],
+   "end": "a powerful vindication of human rights.",
+   "section": "Chapter VII",
+   "theme": "speaking"
+  },
+  {
+   "id": "prophet-talking",
+   "book": "prophet",
+   "loc": [
+    20,
+    2
+   ],
+   "span": 6,
+   "section": "On Talking",
+   "theme": "speaking"
+  },
+  {
+   "id": "prophet-truth-within",
+   "book": "prophet",
+   "loc": [
+    20,
+    9
+   ],
+   "span": 6,
+   "section": "On Talking",
+   "theme": "speaking"
+  },
+  {
+   "id": "bacon-studies",
+   "book": "bacon",
+   "loc": [
+    0,
+    269
+   ],
+   "start": "Reading maketh a full man",
+   "end": "logic and rhetoric able to contend.",
+   "section": "Of Studies",
+   "theme": "speaking"
+  },
+  {
+   "id": "emerson-genius",
+   "book": "emerson",
+   "loc": [
+    1,
+    0
+   ],
+   "start": "To believe your own thought",
+   "end": "but what they thought.",
+   "section": "Self-Reliance",
+   "theme": "reflection"
+  },
+  {
+   "id": "emerson-trust",
+   "book": "emerson",
+   "loc": [
+    1,
+    2
+   ],
+   "section": "Self-Reliance",
+   "theme": "reflection"
+  },
+  {
+   "id": "gatsby-advice",
+   "book": "gatsby",
+   "loc": [
+    2,
+    0
+   ],
+   "span": 3,
+   "end": "not a few veteran bores.",
+   "section": "Chapter I",
+   "theme": "story"
+  },
+  {
+   "id": "tagore-cabuliwallah",
+   "book": "tagore_stories",
+   "loc": [
+    0,
+    42
+   ],
+   "span": 2,
+   "section": "The Cabuliwallah",
+   "theme": "india"
+  },
+  {
+   "id": "aurelius-morning",
+   "book": "aurelius",
+   "loc": [
+    1,
+    0
+   ],
+   "end": "nor can I be angry with my kinsman, nor hate him.",
+   "section": "Book II",
+   "theme": "reflection"
+  },
+  {
+   "id": "aurelius-last-act",
+   "book": "aurelius",
+   "loc": [
+    1,
+    4
+   ],
+   "end": "with the portion which has been given to thee.",
+   "section": "Book II",
+   "theme": "reflection"
+  },
+  {
+   "id": "walden-woods",
+   "book": "walden",
+   "loc": [
+    1,
+    18
+   ],
+   "end": "unless it was quite necessary.",
+   "section": "Where I Lived, and What I Lived For",
+   "theme": "reflection"
+  },
+  {
+   "id": "walden-simplicity",
+   "book": "walden",
+   "loc": [
+    1,
+    19
+   ],
+   "start": "Our life is frittered away by detail.",
+   "end": "keep your accounts on your thumbnail.",
+   "section": "Where I Lived, and What I Lived For",
+   "theme": "reflection"
+  },
+  {
+   "id": "walden-drummer",
+   "book": "walden",
+   "loc": [
+    17,
+    14
+   ],
+   "end": "Shall he turn his spring into summer?",
+   "section": "Conclusion",
+   "theme": "reflection"
+  },
+  {
+   "id": "bennett-daily-miracle",
+   "book": "bennett",
+   "loc": [
+    0,
+    27
+   ],
+   "section": "The Daily Miracle",
+   "theme": "reflection"
+  },
+  {
+   "id": "allen-gardener",
+   "book": "allen",
+   "loc": [
+    0,
+    39
+   ],
+   "section": "Effect of Thought on Circumstances",
+   "theme": "reflection"
+  },
+  {
+   "id": "gitanjali-35",
+   "book": "gitanjali",
+   "loc": [
+    1,
+    128
+   ],
+   "span": 8,
+   "section": "Poem 35",
+   "theme": "india"
+  },
+  {
+   "id": "gitanjali-13",
+   "book": "gitanjali",
+   "loc": [
+    1,
+    45
+   ],
+   "span": 7,
+   "section": "Poem 13",
+   "theme": "india"
+  },
+  {
+   "id": "prophet-work",
+   "book": "prophet",
+   "loc": [
+    7,
+    12
+   ],
+   "span": 8,
+   "section": "On Work",
+   "theme": "reflection"
+  },
+  {
+   "id": "thoreau-walking",
+   "book": "thoreau_essays",
+   "loc": [
+    22,
+    0
+   ],
+   "section": "",
+   "theme": "nature"
+  },
+  {
+   "id": "muir-sierra-day",
+   "book": "muir",
+   "loc": [
+    2,
+    20
+   ],
+   "section": "Chapter II",
+   "theme": "nature"
+  },
+  {
+   "id": "chesterton-yachtsman",
+   "book": "chesterton",
+   "loc": [
+    2,
+    2
+   ],
+   "end": "I am not here concerned to deny that he looked a fool.",
+   "section": "Introduction in Defence of Everything Else",
+   "theme": "story"
+  },
+  {
+   "id": "twain-saturday",
+   "book": "tom",
+   "loc": [
+    2,
+    1
+   ],
+   "section": "Chapter II",
+   "theme": "story"
+  },
+  {
+   "id": "twain-coyote",
+   "book": "roughing",
+   "loc": [
+    5,
+    1
+   ],
+   "start": "The coyote is a long, slim",
+   "end": "the rest of his face is apologizing for it.",
+   "section": "Chapter V",
+   "theme": "story"
+  },
+  {
+   "id": "dickens-best-of-times",
+   "book": "two_cities",
+   "loc": [
+    2,
+    1
+   ],
+   "section": "Book I, Chapter I",
+   "theme": "story"
+  },
+  {
+   "id": "dickens-scrooge",
+   "book": "carol",
+   "loc": [
+    1,
+    6
+   ],
+   "section": "Stave I",
+   "theme": "story"
+  },
+  {
+   "id": "austen-truth",
+   "book": "austen",
+   "loc": [
+    0,
+    0
+   ],
+   "span": 2,
+   "section": "Chapter I",
+   "theme": "story"
+  },
+  {
+   "id": "kipling-father-wolf",
+   "book": "jungle",
+   "loc": [
+    1,
+    0
+   ],
+   "end": "the mouth of the cave where they all lived.",
+   "section": "Mowgli’s Brothers",
+   "theme": "india"
+  },
+  {
+   "id": "stevenson-treasure",
+   "book": "treasure",
+   "loc": [
+    3,
+    1
+   ],
+   "section": "Chapter I",
+   "theme": "story"
+  },
+  {
+   "id": "doyle-the-woman",
+   "book": "holmes",
+   "loc": [
+    0,
+    0
+   ],
+   "end": "he would have placed himself in a false position.",
+   "section": "A Scandal in Bohemia",
+   "theme": "story"
+  },
+  {
+   "id": "baum-kansas",
+   "book": "oz",
+   "loc": [
+    1,
+    1
+   ],
+   "end": "and Dorothy a little bed in another corner.",
+   "section": "Chapter I",
+   "theme": "story"
+  },
+  {
+   "id": "carroll-rabbit",
+   "book": "alice",
+   "loc": [
+    2,
+    1
+   ],
+   "span": 2,
+   "section": "Chapter I",
+   "theme": "story"
+  },
+  {
+   "id": "melville-ishmael",
+   "book": "moby",
+   "loc": [
+    3,
+    1
+   ],
+   "end": "regulating the circulation.",
+   "section": "Chapter I: Loomings",
+   "theme": "story"
+  },
+  {
+   "id": "london-buck",
+   "book": "wild",
+   "loc": [
+    1,
+    1
+   ],
+   "section": "Chapter I",
+   "theme": "story"
+  },
+  {
+   "id": "woolf-flowers",
+   "book": "dalloway",
+   "loc": [
+    0,
+    0
+   ],
+   "span": 3,
+   "end": "plunged at Bourton into the open air.",
+   "section": "Opening",
+   "theme": "story"
+  },
+  {
+   "id": "tagore-vermilion",
+   "book": "home_world",
+   "loc": [
+    0,
+    0
+   ],
+   "section": "Bimala’s Story",
+   "theme": "india"
+  },
+  {
+   "id": "chekhov-seafront",
+   "book": "chekhov",
+   "loc": [
+    187,
+    0
+   ],
+   "section": "",
+   "theme": "story"
+  },
+  {
+   "id": "jerome-museum",
+   "book": "jerome",
+   "loc": [
+    1,
+    3
+   ],
+   "section": "Chapter I",
+   "theme": "story"
+  },
+  {
+   "id": "jacobs-tiger",
+   "book": "jacobs",
+   "loc": [
+    0,
+    416
+   ],
+   "span": 4,
+   "section": "The Tiger, the Brahman, and the Jackal",
+   "theme": "india"
+  },
+  {
+   "id": "gatsby-green-light",
+   "book": "gatsby",
+   "loc": [
+    10,
+    159
+   ],
+   "section": "Chapter IX",
+   "theme": "story"
+  },
+  {
+   "id": "douglass-twelve",
+   "book": "douglass",
+   "loc": [
+    8,
+    4
+   ],
+   "end": "when the slave was retaken the third time.",
+   "section": "Chapter VII",
+   "theme": "speaking"
+  }
+ ]
+}

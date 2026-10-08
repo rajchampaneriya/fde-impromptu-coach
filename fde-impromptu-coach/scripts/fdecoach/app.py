@@ -250,11 +250,16 @@ def prompt_start(ctx: Ctx, reason: str = "reminder", fired_count: int = 0, last_
 def run_session(ctx: Ctx, force: bool = False, max_tries: int = 2) -> Dict[str, Any]:
     try:
         with file_lock(ctx.paths, "session"):
-            return _run_session_locked(ctx, force, max_tries)
+            result = _run_session_locked(ctx, force, max_tries)
     except LockBusy:
         msg = "A practice session is already running."
         log.info(msg)
         return {"ok": False, "error": msg}
+    # Offered after the session lock is released: the old in-lock check always
+    # saw the lock as held, so the pronunciation prompt never appeared.
+    if result.get("ok") and not result.get("already_recorded"):
+        offer_pronunciation(ctx)
+    return result
 
 
 def _run_session_locked(ctx: Ctx, force: bool, max_tries: int) -> Dict[str, Any]:
@@ -293,27 +298,19 @@ def _run_session_locked(ctx: Ctx, force: bool, max_tries: int) -> Dict[str, Any]
                   ended_early=bool(result.get("ended_early")))
     ask_feedback(ctx, date)
     upload_async(ctx)
-    offer_pronunciation(ctx)
     return result
 
 
 def offer_pronunciation(ctx: Ctx) -> None:
-    """After the FDE session: one prompt for the pronunciation practice."""
-    pron_cfg = ctx.cfg.get("pronunciation", {})
-    if not pron_cfg.get("prompt_after_fde", True) or lock_is_held(ctx.paths, "session"):
+    """After the FDE session: one prompt for the pronunciation practice (which in
+    turn offers legato). Runs in this process once the session lock is free."""
+    if lock_is_held(ctx.paths, "session"):
         return
     try:
-        from . import pronounce_session
-        history = pronounce_session.pron_history(ctx.paths)
-        s = history.get(today())
-        if s and s.get("recorded"):
-            return
+        from . import practice
+        practice.offer(ctx, practice.spec_for("pronunciation"), after="FDE")
     except Exception:  # noqa: BLE001 - never disturb the FDE flow
-        return
-    answer = macos.dialog("FDE practice saved. Pronunciation practice next? (5 min, audio only)",
-                          APP_NAME, ["Later", "Start now"], "Start now", timeout_seconds=300)
-    if answer == "Start now":
-        spawn_detached(["pronounce", "session"])
+        log.exception("follow-up practice offer failed")
 
 
 def mark_recorded(ctx: Ctx, date: dt.date, video: Optional[str], offset: Optional[float] = None,
@@ -519,6 +516,15 @@ def calendar_sync(ctx: Ctx, clear: bool = False) -> List[str]:
         return ["Google Calendar sync already running."]
 
 
+def calendar_sync_all(ctx: Ctx, clear: bool = False) -> List[str]:
+    """FDE alerts plus the audio practices' alerts (pronunciation, legato)."""
+    from . import practice
+    out = calendar_sync(ctx, clear=clear)
+    for spec in practice.all_specs():
+        out += practice.calendar_sync(ctx, spec, clear=clear)
+    return out
+
+
 def calendar_sync_safe(ctx: Ctx) -> None:
     """Never let a calendar problem interrupt recording or reminders."""
     try:
@@ -550,6 +556,11 @@ def remind(ctx: Ctx) -> str:
     daily_at = _time_today(ctx.cfg.get("daily_time", "05:30"), date)
     if any(lock_is_held(ctx.paths, name) for name in ("session", "prompt", "generate")):
         return "busy"
+    try:
+        from . import practice
+        practice.tick(ctx)  # audio practices: roll calendar alerts forward, retry uploads
+    except Exception:  # noqa: BLE001 - never break the FDE reminder
+        log.exception("audio practice tick failed")
     session = ctx.history().get(date)
     if session and session.get("recorded"):
         upload_pending(ctx)
@@ -630,10 +641,17 @@ def status(ctx: Ctx) -> Dict[str, Any]:
     except Exception as exc:  # noqa: BLE001 - pronunciation must never break the FDE status
         log.debug("pronunciation status unavailable: %s", exc)
         pron = None
+    try:
+        from . import legato_session
+        leg = legato_session.status(ctx)
+    except Exception as exc:  # noqa: BLE001 - legato must never break the FDE status
+        log.debug("legato status unavailable: %s", exc)
+        leg = None
     return {
         "date": date.isoformat(),
         "streak": stats,
         "pronunciation": pron,
+        "legato": leg,
         "level": s.get("level") if s else plan_slots(history, rt, ctx.cfg, date)["level"],
         "level_adjust": rt.data.get("level_adjust", 0),
         "today": None if not s else {
