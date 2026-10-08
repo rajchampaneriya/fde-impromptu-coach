@@ -85,6 +85,8 @@ Next steps
                               $DATA_DIR/bin/fde-coach youtube-auth
                               $DATA_DIR/bin/fde-coach calendar-auth   (missed-practice alerts)
   4. Try a session now:       double-click "$DATA_DIR/Start Practice.command"
+                              (it offers pronunciation and legato practice afterwards)
+  5. Browse the reading passages (public-domain books): $DATA_DIR/bin/fde-coach library list
 
 Tip: add ~/.local/bin to your PATH to type just 'fde-coach'.
 MSG

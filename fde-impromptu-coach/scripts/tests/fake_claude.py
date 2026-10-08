@@ -3,6 +3,7 @@
 prompt and answers with a Claude-Code-style JSON envelope.
 
 FAKE_CLAUDE_MODE: ok (default) | error | garbage | dupes | partial | fenced
+Also answers the pronunciation annotation prompts (library mode).
 """
 import json
 import os
@@ -30,6 +31,8 @@ def main() -> int:
     if mode == "garbage":
         print("I cannot help with that")
         return 0
+    if "pronunciation annotation" in prompt.lower():
+        return annotate(prompt)
     if "pronunciation practice" in prompt.lower():
         return pronounce(prompt, mode)
     slots = re.findall(r"- slot (\d+): category `([a-z_]+)`[^\n]*difficulty (\d)", prompt)
@@ -83,6 +86,26 @@ def pronounce(prompt: str, mode: str) -> int:
                           "tip": "Slow down on this word."} for w in words],
         "focus_sounds": ["th"],
     })
+    print(json.dumps({"type": "result", "subtype": "success", "is_error": False, "result": body}))
+    return 0
+
+
+def annotate(prompt: str) -> int:
+    """Library mode: Claude only marks up words. Passage mode picks the five
+    longest words of the passage; word mode annotates the listed words."""
+    if "# Passage (copy words exactly from here)" in prompt:
+        text = prompt.split("# Passage (copy words exactly from here)", 1)[1].split("Return only")[0]
+        words = []
+        for w in sorted(set(re.findall(r"[A-Za-z]{4,}", text)), key=lambda x: (-len(x), x)):
+            if w.lower() not in words:
+                words.append(w.lower())
+        words = words[:5]
+    else:
+        block = prompt.split("# Words to annotate", 1)[1].split("Return only")[0]
+        words = re.findall(r"^- ([a-z']+)$", block, re.MULTILINE)
+    body = json.dumps({"target_words": [{"word": w, "respelling": w.upper(), "stress": w.upper(),
+                                         "tip": "Slow down on this word."} for w in words],
+                       "focus_sounds": ["stress"]})
     print(json.dumps({"type": "result", "subtype": "success", "is_error": False, "result": body}))
     return 0
 

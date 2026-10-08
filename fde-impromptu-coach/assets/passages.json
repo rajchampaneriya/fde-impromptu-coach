@@ -1,0 +1,3050 @@
+{
+ "version": 1,
+ "about": "Source spec for assets/passages.json. Each passage is cut verbatim from a free public-domain edition by location + start/end anchors; build_passage_library.py downloads the sources, extracts and verifies every passage. Only typographic normalisation is applied (line wrapping, invisible joiners, Gutenberg _italic_ markers, -- dashes, drop-cap capitals).",
+ "passages": [
+  {
+   "id": "aps-plunge",
+   "text": "Apply horse-sense to ridding yourself of self-consciousness and fear: face an audience as frequently as you can, and you will soon stop shying. You can never attain freedom from stage-fright by reading a treatise. A book may give you excellent suggestions on how best to conduct yourself in the water, but sooner or later you must get wet, perhaps even strangle and be \"half scared to death.\" There are a great many \"wetless\" bathing suits worn at the seashore, but no one ever learns to swim in them. To plunge is the only way.",
+   "author": "Dale Carnegie and J. Berg Esenwein",
+   "work": "The Art of Public Speaking",
+   "year": 1915,
+   "section": "Acquiring Confidence Before an Audience",
+   "theme": "speaking",
+   "words": 94,
+   "level": 2,
+   "source": {
+    "name": "Project Gutenberg",
+    "url": "https://www.gutenberg.org/ebooks/16317",
+    "gutenberg_id": 16317,
+    "license": "Public domain in the USA"
+   },
+   "pronunciation": {
+    "target_words": [
+     {
+      "word": "audience",
+      "respelling": "AW-dee-uns",
+      "stress": "AW-dee-uns",
+      "tip": "Open 'aw', then two light beats: AW-dee-uns."
+     },
+     {
+      "word": "treatise",
+      "respelling": "TREE-tis",
+      "stress": "TREE-tis",
+      "tip": "Two beats; the end is '-tis', not '-tize'."
+     },
+     {
+      "word": "suggestions",
+      "respelling": "sug-JES-chunz",
+      "stress": "sug-JES-chunz",
+      "tip": "Stress JES; the 'st' melts into 'ch': -chunz."
+     },
+     {
+      "word": "excellent",
+      "respelling": "EK-suh-lunt",
+      "stress": "EK-suh-lunt",
+      "tip": "Stress EK; the c is an 's' sound."
+     },
+     {
+      "word": "attain",
+      "respelling": "uh-TAYN",
+      "stress": "uh-TAYN",
+      "tip": "A weak 'uh', then a full TAYN."
+     }
+    ],
+    "focus_sounds": [
+     "schwa",
+     "st as ch"
+    ]
+   }
+  },
+  {
+   "id": "aps-prepare",
+   "text": "It is not enough to be absorbed by your subject—to acquire self-confidence you must have something in which to be confident. If you go before an audience without any preparation, or previous knowledge of your subject, you ought to be self-conscious—you ought to be ashamed to steal the time of your audience. Prepare yourself. Know what you are going to talk about, and, in general, how you are going to say it. Have the first few sentences worked out completely so that you may not be troubled in the beginning to find words. Know your subject better than your hearers know it, and you have nothing to fear.",
+   "author": "Dale Carnegie and J. Berg Esenwein",
+   "work": "The Art of Public Speaking",
+   "year": 1915,
+   "section": "Acquiring Confidence Before an Audience",
+   "theme": "speaking",
+   "words": 108,
+   "level": 2,
+   "source": {
+    "name": "Project Gutenberg",
+    "url": "https://www.gutenberg.org/ebooks/16317",
+    "gutenberg_id": 16317,
+    "license": "Public domain in the USA"
+   },
+   "pronunciation": {
+    "target_words": [
+     {
+      "word": "absorbed",
+      "respelling": "ub-ZORBD",
+      "stress": "ub-ZORBD",
+      "tip": "The s buzzes like z; end on a soft 'd'."
+     },
+     {
+      "word": "preparation",
+      "respelling": "prep-uh-RAY-shun",
+      "stress": "prep-uh-RAY-shun",
+      "tip": "Stress RAY; the first beat is 'prep', not 'pree'."
+     },
+     {
+      "word": "previous",
+      "respelling": "PREE-vee-us",
+      "stress": "PREE-vee-us",
+      "tip": "Stress PREE; three beats, lip on teeth for v."
+     },
+     {
+      "word": "knowledge",
+      "respelling": "NOL-ij",
+      "stress": "NOL-ij",
+      "tip": "Silent k; two beats ending in a soft j."
+     },
+     {
+      "word": "completely",
+      "respelling": "kum-PLEET-lee",
+      "stress": "kum-PLEET-lee",
+      "tip": "Stress PLEET; keep the t before 'lee'."
+     }
+    ],
+    "focus_sounds": [
+     "silent letters",
+     "v"
+    ]
+   }
+  },
+  {
+   "id": "aps-deep-breath",
+   "text": "Take a deep breath, relax, and begin in a quiet conversational tone as though you were speaking to one large friend. You will not find it half so bad as you imagined; really, it is like taking a cold plunge: after you are in, the water is fine. In fact, having spoken a few times you will even anticipate the plunge with exhilaration. To stand before an audience and make them think your thoughts after you is one of the greatest pleasures you can ever know. Instead of fearing it, you ought to be as anxious as the fox hounds straining at their leashes, or the race horses tugging at their reins.",
+   "author": "Dale Carnegie and J. Berg Esenwein",
+   "work": "The Art of Public Speaking",
+   "year": 1915,
+   "section": "Acquiring Confidence Before an Audience",
+   "theme": "speaking",
+   "words": 112,
+   "level": 2,
+   "source": {
+    "name": "Project Gutenberg",
+    "url": "https://www.gutenberg.org/ebooks/16317",
+    "gutenberg_id": 16317,
+    "license": "Public domain in the USA"
+   },
+   "pronunciation": {
+    "target_words": [
+     {
+      "word": "conversational",
+      "respelling": "kon-ver-SAY-shuh-nul",
+      "stress": "kon-ver-SAY-shuh-nul",
+      "tip": "Stress SAY; five beats, the end stays light."
+     },
+     {
+      "word": "anticipate",
+      "respelling": "an-TIS-uh-payt",
+      "stress": "an-TIS-uh-payt",
+      "tip": "Stress TIS; the c is an 's'."
+     },
+     {
+      "word": "exhilaration",
+      "respelling": "ig-zil-uh-RAY-shun",
+      "stress": "ig-zil-uh-RAY-shun",
+      "tip": "Starts 'ig-zil'; the h is silent. Stress RAY."
+     },
+     {
+      "word": "pleasures",
+      "respelling": "PLEZH-erz",
+      "stress": "PLEZH-erz",
+      "tip": "The s is 'zh', as in 'measure'."
+     },
+     {
+      "word": "anxious",
+      "respelling": "ANK-shus",
+      "stress": "ANK-shus",
+      "tip": "Two beats: the x splits into k + sh."
+     }
+    ],
+    "focus_sounds": [
+     "zh",
+     "x sounds"
+    ]
+   }
+  },
+  {
+   "id": "aps-practise",
+   "text": "When you have mastered the mechanics of speech outlined in the next few chapters you will no longer be troubled with monotony. The complete knowledge of these principles and the ability to apply them will give you great variety in your powers of expression. But they cannot be mastered and applied by thinking or reading about them—you must practise, practise, PRACTISE. If no one else will listen to you, listen to yourself—you must always be your own best critic, and the severest one of all.",
+   "author": "Dale Carnegie and J. Berg Esenwein",
+   "work": "The Art of Public Speaking",
+   "year": 1915,
+   "section": "The Sin of Monotony",
+   "theme": "speaking",
+   "words": 85,
+   "level": 2,
+   "source": {
+    "name": "Project Gutenberg",
+    "url": "https://www.gutenberg.org/ebooks/16317",
+    "gutenberg_id": 16317,
+    "license": "Public domain in the USA"
+   },
+   "pronunciation": {
+    "target_words": [
+     {
+      "word": "mechanics",
+      "respelling": "muh-KAN-iks",
+      "stress": "muh-KAN-iks",
+      "tip": "The ch is a hard k; stress KAN."
+     },
+     {
+      "word": "monotony",
+      "respelling": "muh-NOT-uh-nee",
+      "stress": "muh-NOT-uh-nee",
+      "tip": "Stress NOT; four beats."
+     },
+     {
+      "word": "principles",
+      "respelling": "PRIN-suh-pulz",
+      "stress": "PRIN-suh-pulz",
+      "tip": "Stress PRIN; the c is 's'; end in a soft 'pulz'."
+     },
+     {
+      "word": "variety",
+      "respelling": "vuh-RY-uh-tee",
+      "stress": "vuh-RY-uh-tee",
+      "tip": "Stress RY; four beats, teeth on lip for v."
+     },
+     {
+      "word": "severest",
+      "respelling": "suh-VEER-ist",
+      "stress": "suh-VEER-ist",
+      "tip": "Stress VEER; three beats."
+     }
+    ],
+    "focus_sounds": [
+     "schwa",
+     "second-syllable stress"
+    ]
+   }
+  },
+  {
+   "id": "aps-lens",
+   "text": "You can light a match by holding it beneath a lens and concentrating the sun's rays. You would not expect the match to flame if you jerked the lens back and forth quickly. Pause, and the lens gathers the heat. Your thoughts will not set fire to the minds of your hearers unless you pause to gather the force that comes by a second or two of concentration. Maple trees and gas wells are rarely tapped continually; when a stronger flow is wanted, a pause is made, nature has time to gather her reserve forces, and when the tree or the well is reopened, a stronger flow is the result.",
+   "author": "Dale Carnegie and J. Berg Esenwein",
+   "work": "The Art of Public Speaking",
+   "year": 1915,
+   "section": "Pause and Power",
+   "theme": "speaking",
+   "words": 110,
+   "level": 2,
+   "source": {
+    "name": "Project Gutenberg",
+    "url": "https://www.gutenberg.org/ebooks/16317",
+    "gutenberg_id": 16317,
+    "license": "Public domain in the USA"
+   },
+   "pronunciation": {
+    "target_words": [
+     {
+      "word": "concentrating",
+      "respelling": "KON-sun-tray-ting",
+      "stress": "KON-sun-tray-ting",
+      "tip": "Stress KON here; the second c is 's'."
+     },
+     {
+      "word": "concentration",
+      "respelling": "kon-sun-TRAY-shun",
+      "stress": "kon-sun-TRAY-shun",
+      "tip": "The stress jumps to TRAY in the noun."
+     },
+     {
+      "word": "continually",
+      "respelling": "kun-TIN-yoo-uh-lee",
+      "stress": "kun-TIN-yoo-uh-lee",
+      "tip": "Stress TIN; five beats, 'yoo' in the middle."
+     },
+     {
+      "word": "jerked",
+      "respelling": "JERKT",
+      "stress": "JERKT",
+      "tip": "One beat; the -ed is a quick 't'."
+     },
+     {
+      "word": "thoughts",
+      "respelling": "THAWTS",
+      "stress": "THAWTS",
+      "tip": "Tongue out for th, then a crisp 'ts'."
+     }
+    ],
+    "focus_sounds": [
+     "stress shift",
+     "th",
+     "-ed endings"
+    ]
+   }
+  },
+  {
+   "id": "aps-silence",
+   "text": "Silence has been called the father of speech. It should be. Too many of our public speeches have no fathers. They ramble along without pause or break. Like Tennyson's brook, they run on forever. Listen to little children, the policeman on the corner, the family conversation around the table, and see how many pauses they naturally use, for they are unconscious of effects. When we get before an audience, we throw most of our natural methods of expression to the wind, and strive after artificial effects. Get back to the methods of nature—and pause.",
+   "author": "Dale Carnegie and J. Berg Esenwein",
+   "work": "The Art of Public Speaking",
+   "year": 1915,
+   "section": "Pause and Power",
+   "theme": "speaking",
+   "words": 94,
+   "level": 1,
+   "source": {
+    "name": "Project Gutenberg",
+    "url": "https://www.gutenberg.org/ebooks/16317",
+    "gutenberg_id": 16317,
+    "license": "Public domain in the USA"
+   },
+   "pronunciation": {
+    "target_words": [
+     {
+      "word": "naturally",
+      "respelling": "NACH-ruh-lee",
+      "stress": "NACH-ruh-lee",
+      "tip": "Usually three beats: NACH-ruh-lee."
+     },
+     {
+      "word": "unconscious",
+      "respelling": "un-KON-shus",
+      "stress": "un-KON-shus",
+      "tip": "Stress KON; the 'sc' is 'sh'."
+     },
+     {
+      "word": "artificial",
+      "respelling": "ar-tih-FISH-ul",
+      "stress": "ar-tih-FISH-ul",
+      "tip": "Stress FISH; the c is 'sh'."
+     },
+     {
+      "word": "methods",
+      "respelling": "METH-udz",
+      "stress": "METH-udz",
+      "tip": "Tongue out for th, then a buzzing 'dz'."
+     },
+     {
+      "word": "policeman",
+      "respelling": "puh-LEES-mun",
+      "stress": "puh-LEES-mun",
+      "tip": "Stress LEES; the end is a light 'mun'."
+     }
+    ],
+    "focus_sounds": [
+     "sh spellings",
+     "th"
+    ]
+   }
+  },
+  {
+   "id": "aps-take-time",
+   "text": "Take time, you have just as much of it as our richest multimillionaire. Your audience will wait for you. It is a sign of smallness to hurry. The great redwood trees of California had burst through the soil five hundred years before Socrates drank his cup of hemlock poison, and are only in their prime today. Nature shames us with our petty haste. Silence is one of the most eloquent things in the world. Master it, and use it through pause.",
+   "author": "Dale Carnegie and J. Berg Esenwein",
+   "work": "The Art of Public Speaking",
+   "year": 1915,
+   "section": "Pause and Power",
+   "theme": "speaking",
+   "words": 81,
+   "level": 1,
+   "source": {
+    "name": "Project Gutenberg",
+    "url": "https://www.gutenberg.org/ebooks/16317",
+    "gutenberg_id": 16317,
+    "license": "Public domain in the USA"
+   },
+   "pronunciation": {
+    "target_words": [
+     {
+      "word": "socrates",
+      "respelling": "SOK-ruh-teez",
+      "stress": "SOK-ruh-teez",
+      "tip": "Three beats ending 'teez', not 'Sock-rates'."
+     },
+     {
+      "word": "eloquent",
+      "respelling": "EL-uh-kwunt",
+      "stress": "EL-uh-kwunt",
+      "tip": "Stress EL; the 'qu' is 'kw'."
+     },
+     {
+      "word": "poison",
+      "respelling": "POY-zun",
+      "stress": "POY-zun",
+      "tip": "The s buzzes: POY-zun."
+     },
+     {
+      "word": "hemlock",
+      "respelling": "HEM-lok",
+      "stress": "HEM-lok",
+      "tip": "Stress HEM; keep the l clear."
+     },
+     {
+      "word": "smallness",
+      "respelling": "SMAWL-nis",
+      "stress": "SMAWL-nis",
+      "tip": "A dark l, then a light 'nis'."
+     }
+    ],
+    "focus_sounds": [
+     "kw",
+     "z spellings"
+    ]
+   }
+  },
+  {
+   "id": "aps-ready-speaker",
+   "text": "Have you ever stopped to analyze that expression, \"a ready speaker?\" Readiness, in its prime sense, is preparedness, and they are most ready who are best prepared. Quick firing depends more on the alert finger than on the hair trigger. Your fluency will be in direct ratio to two important conditions: your knowledge of what you are going to say, and your being accustomed to telling what you know to an audience. This gives us the second great element of fluency—to preparation must be added the ease that arises from practise; of which more presently.",
+   "author": "Dale Carnegie and J. Berg Esenwein",
+   "work": "The Art of Public Speaking",
+   "year": 1915,
+   "section": "Fluency Through Preparation",
+   "theme": "speaking",
+   "words": 95,
+   "level": 2,
+   "source": {
+    "name": "Project Gutenberg",
+    "url": "https://www.gutenberg.org/ebooks/16317",
+    "gutenberg_id": 16317,
+    "license": "Public domain in the USA"
+   },
+   "pronunciation": {
+    "target_words": [
+     {
+      "word": "analyze",
+      "respelling": "AN-uh-lyz",
+      "stress": "AN-uh-lyz",
+      "tip": "Stress AN; end in 'lyz' with a buzzing z."
+     },
+     {
+      "word": "preparedness",
+      "respelling": "prih-PAIR-id-nis",
+      "stress": "prih-PAIR-id-nis",
+      "tip": "Stress PAIR; four beats: -id-nis."
+     },
+     {
+      "word": "accustomed",
+      "respelling": "uh-KUS-tumd",
+      "stress": "uh-KUS-tumd",
+      "tip": "Stress KUS; end in a soft 'md'."
+     },
+     {
+      "word": "fluency",
+      "respelling": "FLOO-un-see",
+      "stress": "FLOO-un-see",
+      "tip": "Stress FLOO; three beats."
+     },
+     {
+      "word": "presently",
+      "respelling": "PREZ-unt-lee",
+      "stress": "PREZ-unt-lee",
+      "tip": "The s is a z: PREZ-unt-lee."
+     }
+    ],
+    "focus_sounds": [
+     "z spellings",
+     "-edness"
+    ]
+   }
+  },
+  {
+   "id": "aps-breath",
+   "text": "Breath is the very basis of voice. As a bullet with little powder behind it will not have force and carrying power, so the voice that has little breath behind it will be weak. Not only will deep breathing—breathing from the diaphragm—give the voice a better support, but it will give it a stronger resonance by improving the general health.",
+   "author": "Dale Carnegie and J. Berg Esenwein",
+   "work": "The Art of Public Speaking",
+   "year": 1915,
+   "section": "The Voice",
+   "theme": "speaking",
+   "words": 60,
+   "level": 2,
+   "source": {
+    "name": "Project Gutenberg",
+    "url": "https://www.gutenberg.org/ebooks/16317",
+    "gutenberg_id": 16317,
+    "license": "Public domain in the USA"
+   },
+   "pronunciation": {
+    "target_words": [
+     {
+      "word": "diaphragm",
+      "respelling": "DY-uh-fram",
+      "stress": "DY-uh-fram",
+      "tip": "Silent g. Three beats: DY-uh-fram."
+     },
+     {
+      "word": "resonance",
+      "respelling": "REZ-uh-nuns",
+      "stress": "REZ-uh-nuns",
+      "tip": "The s is a z; stress REZ."
+     },
+     {
+      "word": "breathing",
+      "respelling": "BREE-thing",
+      "stress": "BREE-thing",
+      "tip": "Voiced th (it buzzes), with a long ee."
+     },
+     {
+      "word": "breath",
+      "respelling": "BRETH",
+      "stress": "BRETH",
+      "tip": "Short e; voiceless th, just air."
+     },
+     {
+      "word": "basis",
+      "respelling": "BAY-sis",
+      "stress": "BAY-sis",
+      "tip": "Stress BAY; two hissing s sounds."
+     }
+    ],
+    "focus_sounds": [
+     "voiced vs voiceless th",
+     "silent g"
+    ]
+   }
+  },
+  {
+   "id": "washington-miss-lord",
+   "text": "Whatever ability I may have as a public speaker I owe in a measure to Miss Lord. When she found out that I had some inclination in this direction, she gave me private lessons in the matter of breathing, emphasis, and articulation. Simply to be able to talk in public for the sake of talking has never had the least attraction to me. In fact, I consider that there is nothing so empty and unsatisfactory as mere abstract public speaking; but from my early childhood I have had a desire to do something to make the world better, and then to be able to speak to the world about that thing.",
+   "author": "Booker T. Washington",
+   "work": "Up from Slavery",
+   "year": 1901,
+   "section": "Chapter IV",
+   "theme": "speaking",
+   "words": 111,
+   "level": 3,
+   "source": {
+    "name": "Standard Ebooks",
+    "url": "https://standardebooks.org/ebooks/booker-t-washington/up-from-slavery",
+    "license": "Public domain (Standard Ebooks' own edits are CC0)"
+   },
+   "pronunciation": {
+    "target_words": [
+     {
+      "word": "articulation",
+      "respelling": "ar-tik-yuh-LAY-shun",
+      "stress": "ar-tik-yuh-LAY-shun",
+      "tip": "Stress LAY; keep the t in 'tik' crisp."
+     },
+     {
+      "word": "emphasis",
+      "respelling": "EM-fuh-sis",
+      "stress": "EM-fuh-sis",
+      "tip": "Stress EM; the ph is f."
+     },
+     {
+      "word": "inclination",
+      "respelling": "in-kluh-NAY-shun",
+      "stress": "in-kluh-NAY-shun",
+      "tip": "Stress NAY; four beats."
+     },
+     {
+      "word": "unsatisfactory",
+      "respelling": "un-sat-is-FAK-tuh-ree",
+      "stress": "un-sat-is-FAK-tuh-ree",
+      "tip": "Stress FAK; six beats, keep the 'tuh'."
+     },
+     {
+      "word": "abstract",
+      "respelling": "AB-strakt",
+      "stress": "AB-strakt",
+      "tip": "As an adjective, stress AB; the verb is ab-STRAKT."
+     }
+    ],
+    "focus_sounds": [
+     "-tion stress",
+     "noun/adjective stress"
+    ]
+   }
+  },
+  {
+   "id": "washington-twenty-minutes",
+   "text": "The debating societies at Hampton were a constant source of delight to me. These were held on Saturday evening; and during my whole life at Hampton I do not recall that I missed a single meeting. I not only attended the weekly debating society, but was instrumental in organizing an additional society. I noticed that between the time when supper was over and the time to begin evening study there were about twenty minutes which the young men usually spent in idle gossip. About twenty of us formed a society for the purpose of utilizing this time in debate or in practice in public speaking. Few persons ever derived more happiness or benefit from the use of twenty minutes of time than we did in this way.",
+   "author": "Booker T. Washington",
+   "work": "Up from Slavery",
+   "year": 1901,
+   "section": "Chapter IV",
+   "theme": "speaking",
+   "words": 127,
+   "level": 2,
+   "source": {
+    "name": "Standard Ebooks",
+    "url": "https://standardebooks.org/ebooks/booker-t-washington/up-from-slavery",
+    "license": "Public domain (Standard Ebooks' own edits are CC0)"
+   },
+   "pronunciation": {
+    "target_words": [
+     {
+      "word": "societies",
+      "respelling": "suh-SY-uh-teez",
+      "stress": "suh-SY-uh-teez",
+      "tip": "Stress SY; four beats ending in 'teez'."
+     },
+     {
+      "word": "instrumental",
+      "respelling": "in-struh-MEN-tul",
+      "stress": "in-struh-MEN-tul",
+      "tip": "Stress MEN; keep the 'str' cluster tight."
+     },
+     {
+      "word": "utilizing",
+      "respelling": "YOO-tuh-ly-zing",
+      "stress": "YOO-tuh-ly-zing",
+      "tip": "Starts with 'yoo'; stress YOO."
+     },
+     {
+      "word": "gossip",
+      "respelling": "GOS-ip",
+      "stress": "GOS-ip",
+      "tip": "Two beats; the end is a quick 'ip'."
+     },
+     {
+      "word": "derived",
+      "respelling": "dih-RYVD",
+      "stress": "dih-RYVD",
+      "tip": "Stress RYVD; end with v + d."
+     }
+    ],
+    "focus_sounds": [
+     "str clusters",
+     "yoo starts"
+    ]
+   }
+  },
+  {
+   "id": "washington-idea-per-word",
+   "text": "In regard to the addresses which I was to make in the North, I recall just one piece of advice which the General gave me. He said: “Give them an idea for every word.” I think it would be hard to improve upon this advice; and it might be made to apply to all public speaking. From that time to the present I have always tried to keep his advice in mind.",
+   "author": "Booker T. Washington",
+   "work": "Up from Slavery",
+   "year": 1901,
+   "section": "Chapter XII",
+   "theme": "speaking",
+   "words": 72,
+   "level": 2,
+   "source": {
+    "name": "Standard Ebooks",
+    "url": "https://standardebooks.org/ebooks/booker-t-washington/up-from-slavery",
+    "license": "Public domain (Standard Ebooks' own edits are CC0)"
+   },
+   "pronunciation": {
+    "target_words": [
+     {
+      "word": "addresses",
+      "respelling": "uh-DRES-iz",
+      "stress": "uh-DRES-iz",
+      "tip": "Speeches: stress DRES; end in a buzzing 'iz'."
+     },
+     {
+      "word": "advice",
+      "respelling": "ud-VYS",
+      "stress": "ud-VYS",
+      "tip": "The noun ends in a hiss; the verb 'advise' ends in z."
+     },
+     {
+      "word": "improve",
+      "respelling": "im-PROOV",
+      "stress": "im-PROOV",
+      "tip": "Stress PROOV; finish on a buzzing v."
+     },
+     {
+      "word": "regard",
+      "respelling": "rih-GARD",
+      "stress": "rih-GARD",
+      "tip": "A short 'rih', then stress GARD."
+     },
+     {
+      "word": "general",
+      "respelling": "JEN-rul",
+      "stress": "JEN-rul",
+      "tip": "Two beats in normal speech: JEN-rul."
+     }
+    ],
+    "focus_sounds": [
+     "s vs z endings",
+     "v"
+    ]
+   }
+  },
+  {
+   "id": "washington-bucket",
+   "text": "A ship lost at sea for many days suddenly sighted a friendly vessel. From the mast of the unfortunate vessel was seen a signal, “Water, water; we die of thirst!” The answer from the friendly vessel at once came back, “Cast down your bucket where you are.” A second time the signal, “Water, water; send us water!” ran up from the distressed vessel, and was answered, “Cast down your bucket where you are.” And a third and fourth signal for water was answered, “Cast down your bucket where you are.” The captain of the distressed vessel, at last heading the injunction, cast down his bucket, and it came up full of fresh, sparkling water from the mouth of the Amazon River.",
+   "author": "Booker T. Washington",
+   "work": "Up from Slavery",
+   "year": 1901,
+   "section": "Chapter XIV (Atlanta Exposition Address, 1895)",
+   "theme": "speaking",
+   "words": 121,
+   "level": 2,
+   "source": {
+    "name": "Standard Ebooks",
+    "url": "https://standardebooks.org/ebooks/booker-t-washington/up-from-slavery",
+    "license": "Public domain (Standard Ebooks' own edits are CC0)"
+   },
+   "pronunciation": {
+    "target_words": [
+     {
+      "word": "unfortunate",
+      "respelling": "un-FOR-chuh-nit",
+      "stress": "un-FOR-chuh-nit",
+      "tip": "Stress FOR; t becomes 'ch'; the end is '-nit'."
+     },
+     {
+      "word": "vessel",
+      "respelling": "VES-ul",
+      "stress": "VES-ul",
+      "tip": "Teeth on lip for v; two beats."
+     },
+     {
+      "word": "thirst",
+      "respelling": "THURST",
+      "stress": "THURST",
+      "tip": "Tongue out for th, then 'urst'."
+     },
+     {
+      "word": "injunction",
+      "respelling": "in-JUNK-shun",
+      "stress": "in-JUNK-shun",
+      "tip": "Stress JUNK; the 'ct' becomes k + sh."
+     },
+     {
+      "word": "distressed",
+      "respelling": "dih-STREST",
+      "stress": "dih-STREST",
+      "tip": "Stress STREST; the -ed is a crisp t."
+     }
+    ],
+    "focus_sounds": [
+     "th",
+     "-tion",
+     "v"
+    ]
+   }
+  },
+  {
+   "id": "washington-message",
+   "text": "I believe that one always does himself and his audience an injustice when he speaks merely for the sake of speaking. I do not believe that one should speak unless, deep down in his heart, he feels convinced that he has a message to deliver. When one feels, from the bottom of his feet to the top of his head, that he has something to say that is going to help some individual or some cause, then let him say it; and in delivering his message I do not believe that many of the artificial rules of elocution can, under such circumstances, help him very much.",
+   "author": "Booker T. Washington",
+   "work": "Up from Slavery",
+   "year": 1901,
+   "section": "Chapter XV: The Secret of Success in Public Speaking",
+   "theme": "speaking",
+   "words": 106,
+   "level": 3,
+   "source": {
+    "name": "Standard Ebooks",
+    "url": "https://standardebooks.org/ebooks/booker-t-washington/up-from-slavery",
+    "license": "Public domain (Standard Ebooks' own edits are CC0)"
+   },
+   "pronunciation": {
+    "target_words": [
+     {
+      "word": "injustice",
+      "respelling": "in-JUS-tis",
+      "stress": "in-JUS-tis",
+      "tip": "Stress JUS; the end is a quick '-tis'."
+     },
+     {
+      "word": "convinced",
+      "respelling": "kun-VINST",
+      "stress": "kun-VINST",
+      "tip": "Stress VINST; the -ced is a crisp 'st'."
+     },
+     {
+      "word": "individual",
+      "respelling": "in-duh-VIJ-oo-ul",
+      "stress": "in-duh-VIJ-oo-ul",
+      "tip": "Stress VIJ; the d turns into 'j'."
+     },
+     {
+      "word": "elocution",
+      "respelling": "el-uh-KYOO-shun",
+      "stress": "el-uh-KYOO-shun",
+      "tip": "Stress KYOO; four beats."
+     },
+     {
+      "word": "circumstances",
+      "respelling": "SUR-kum-stan-siz",
+      "stress": "SUR-kum-stan-siz",
+      "tip": "Stress SUR; five beats, keep the 'st'."
+     }
+    ],
+    "focus_sounds": [
+     "d as j",
+     "-tion"
+    ]
+   }
+  },
+  {
+   "id": "franklin-spectator",
+   "text": "About this time I met with an odd volume of the Spectator. It was the third. I had never before seen any of them. I bought it, read it over and over, and was much delighted with it. I thought the writing excellent, and wished, if possible, to imitate it. With this view I took some of the papers, and, making short hints of the sentiment in each sentence, laid them by a few days, and then, without looking at the book, tried to complete the papers again, by expressing each hinted sentiment at length, and as fully as it had been expressed before, in any suitable words that should come to hand. Then I compared my Spectator with the original, discovered some of my faults, and corrected them.",
+   "author": "Benjamin Franklin",
+   "work": "The Autobiography of Benjamin Franklin",
+   "year": 1791,
+   "section": "Part I",
+   "theme": "speaking",
+   "words": 129,
+   "level": 2,
+   "source": {
+    "name": "Standard Ebooks",
+    "url": "https://standardebooks.org/ebooks/benjamin-franklin/the-autobiography-of-benjamin-franklin",
+    "license": "Public domain (Standard Ebooks' own edits are CC0)"
+   },
+   "pronunciation": {
+    "target_words": [
+     {
+      "word": "volume",
+      "respelling": "VOL-yoom",
+      "stress": "VOL-yoom",
+      "tip": "Stress VOL; ends 'yoom' or 'yum'."
+     },
+     {
+      "word": "imitate",
+      "respelling": "IM-ih-tayt",
+      "stress": "IM-ih-tayt",
+      "tip": "Stress IM; a full 'tayt' at the end."
+     },
+     {
+      "word": "sentiment",
+      "respelling": "SEN-tuh-munt",
+      "stress": "SEN-tuh-munt",
+      "tip": "Stress SEN; three light beats."
+     },
+     {
+      "word": "original",
+      "respelling": "uh-RIJ-uh-nul",
+      "stress": "uh-RIJ-uh-nul",
+      "tip": "Stress RIJ; the g is soft like j."
+     },
+     {
+      "word": "expressing",
+      "respelling": "ik-SPRES-ing",
+      "stress": "ik-SPRES-ing",
+      "tip": "Stress SPRES; the x splits into k + s."
+     }
+    ],
+    "focus_sounds": [
+     "soft g",
+     "schwa"
+    ]
+   }
+  },
+  {
+   "id": "franklin-diffidence",
+   "text": "I continued this method some few years, but gradually left it, retaining only the habit of expressing myself in terms of modest diffidence; never using, when I advanced anything that may possibly be disputed, the words “certainly,” “undoubtedly,” or any others that give the air of positiveness to an opinion; but rather say, I conceive or apprehend a thing to be so-and-so; it appears to me, or I should think it so or so, for such and such reasons; or I imagine it to be so; or it is so, if I am not mistaken.",
+   "author": "Benjamin Franklin",
+   "work": "The Autobiography of Benjamin Franklin",
+   "year": 1791,
+   "section": "Part I",
+   "theme": "speaking",
+   "words": 95,
+   "level": 3,
+   "source": {
+    "name": "Standard Ebooks",
+    "url": "https://standardebooks.org/ebooks/benjamin-franklin/the-autobiography-of-benjamin-franklin",
+    "license": "Public domain (Standard Ebooks' own edits are CC0)"
+   },
+   "pronunciation": {
+    "target_words": [
+     {
+      "word": "diffidence",
+      "respelling": "DIF-ih-duns",
+      "stress": "DIF-ih-duns",
+      "tip": "Stress DIF; three beats."
+     },
+     {
+      "word": "undoubtedly",
+      "respelling": "un-DOW-tid-lee",
+      "stress": "un-DOW-tid-lee",
+      "tip": "Silent b; stress DOW."
+     },
+     {
+      "word": "positiveness",
+      "respelling": "POZ-ih-tiv-nis",
+      "stress": "POZ-ih-tiv-nis",
+      "tip": "The s is a z; stress POZ."
+     },
+     {
+      "word": "apprehend",
+      "respelling": "ap-rih-HEND",
+      "stress": "ap-rih-HEND",
+      "tip": "Stress the last beat: HEND."
+     },
+     {
+      "word": "certainly",
+      "respelling": "SUR-tun-lee",
+      "stress": "SUR-tun-lee",
+      "tip": "Stress SUR; the middle is a quick 'tn'."
+     }
+    ],
+    "focus_sounds": [
+     "silent b",
+     "z spellings"
+    ]
+   }
+  },
+  {
+   "id": "douglass-sheridan",
+   "text": "In the same book, I met with one of Sheridan’s mighty speeches on and in behalf of Catholic emancipation. These were choice documents to me. I read them over and over again with unabated interest. They gave tongue to interesting thoughts of my own soul, which had frequently flashed through my mind, and died away for want of utterance. The moral which I gained from the dialogue was the power of truth over the conscience of even a slaveholder. What I got from Sheridan was a bold denunciation of slavery, and a powerful vindication of human rights.",
+   "author": "Frederick Douglass",
+   "work": "Narrative of the Life of Frederick Douglass",
+   "year": 1845,
+   "section": "Chapter VII",
+   "theme": "speaking",
+   "words": 97,
+   "level": 1,
+   "source": {
+    "name": "Standard Ebooks",
+    "url": "https://standardebooks.org/ebooks/frederick-douglass/narrative-of-the-life-of-frederick-douglass",
+    "license": "Public domain (Standard Ebooks' own edits are CC0)"
+   },
+   "pronunciation": {
+    "target_words": [
+     {
+      "word": "emancipation",
+      "respelling": "ih-man-suh-PAY-shun",
+      "stress": "ih-man-suh-PAY-shun",
+      "tip": "Stress PAY; the c is 's'."
+     },
+     {
+      "word": "utterance",
+      "respelling": "UT-er-uns",
+      "stress": "UT-er-uns",
+      "tip": "Stress UT; three beats."
+     },
+     {
+      "word": "conscience",
+      "respelling": "KON-shuns",
+      "stress": "KON-shuns",
+      "tip": "Two beats: the 'sci' is sh."
+     },
+     {
+      "word": "denunciation",
+      "respelling": "dih-nun-see-AY-shun",
+      "stress": "dih-nun-see-AY-shun",
+      "tip": "Stress AY; six beats, 'see' before it."
+     },
+     {
+      "word": "vindication",
+      "respelling": "vin-dih-KAY-shun",
+      "stress": "vin-dih-KAY-shun",
+      "tip": "Stress KAY; lip on teeth for v."
+     }
+    ],
+    "focus_sounds": [
+     "-tion stress",
+     "sh spellings"
+    ]
+   }
+  },
+  {
+   "id": "prophet-talking",
+   "text": "You talk when you cease to be at peace with your thoughts; And when you can no longer dwell in the solitude of your heart you live in your lips, and sound is a diversion and a pastime. And in much of your talking, thinking is half murdered. For thought is a bird of space, that in a cage of words may indeed unfold its wings but cannot fly. There are those among you who seek the talkative through fear of being alone. The silence of aloneness reveals to their eyes their naked selves and they would escape.",
+   "author": "Kahlil Gibran",
+   "work": "The Prophet",
+   "year": 1923,
+   "section": "On Talking",
+   "theme": "speaking",
+   "words": 98,
+   "level": 2,
+   "source": {
+    "name": "Standard Ebooks",
+    "url": "https://standardebooks.org/ebooks/kahlil-gibran/the-prophet",
+    "license": "Public domain (Standard Ebooks' own edits are CC0)"
+   },
+   "pronunciation": {
+    "target_words": [
+     {
+      "word": "solitude",
+      "respelling": "SOL-ih-tood",
+      "stress": "SOL-ih-tood",
+      "tip": "Stress SOL; ends 'tood' (US) or 'tyood' (UK)."
+     },
+     {
+      "word": "diversion",
+      "respelling": "dih-VUR-zhun",
+      "stress": "dih-VUR-zhun",
+      "tip": "Stress VUR; the s is 'zh'."
+     },
+     {
+      "word": "pastime",
+      "respelling": "PAS-tym",
+      "stress": "PAS-tym",
+      "tip": "Two beats, one t; stress PAS."
+     },
+     {
+      "word": "talkative",
+      "respelling": "TAWK-uh-tiv",
+      "stress": "TAWK-uh-tiv",
+      "tip": "Silent l; stress TAWK."
+     },
+     {
+      "word": "aloneness",
+      "respelling": "uh-LOHN-nis",
+      "stress": "uh-LOHN-nis",
+      "tip": "Stress LOHN; hold the double n briefly."
+     }
+    ],
+    "focus_sounds": [
+     "silent l",
+     "zh"
+    ]
+   }
+  },
+  {
+   "id": "prophet-truth-within",
+   "text": "And there are those who have the truth within them, but they tell it not in words. In the bosom of such as these the spirit dwells in rhythmic silence. When you meet your friend on the roadside or in the market place, let the spirit in you move your lips and direct your tongue. Let the voice within your voice speak to the ear of his ear; For his soul will keep the truth of your heart as the taste of the wine is remembered When the colour is forgotten and the vessel is no more.",
+   "author": "Kahlil Gibran",
+   "work": "The Prophet",
+   "year": 1923,
+   "section": "On Talking",
+   "theme": "speaking",
+   "words": 97,
+   "level": 2,
+   "source": {
+    "name": "Standard Ebooks",
+    "url": "https://standardebooks.org/ebooks/kahlil-gibran/the-prophet",
+    "license": "Public domain (Standard Ebooks' own edits are CC0)"
+   },
+   "pronunciation": {
+    "target_words": [
+     {
+      "word": "bosom",
+      "respelling": "BUUZ-um",
+      "stress": "BUUZ-um",
+      "tip": "'uu' as in 'book'; the s buzzes like z."
+     },
+     {
+      "word": "rhythmic",
+      "respelling": "RITH-mik",
+      "stress": "RITH-mik",
+      "tip": "Silent h after r; voiced th: RITH-mik."
+     },
+     {
+      "word": "tongue",
+      "respelling": "TUNG",
+      "stress": "TUNG",
+      "tip": "One beat: TUNG. The '-ue' is silent."
+     },
+     {
+      "word": "remembered",
+      "respelling": "rih-MEM-berd",
+      "stress": "rih-MEM-berd",
+      "tip": "Stress MEM; end on a soft 'd'."
+     },
+     {
+      "word": "colour",
+      "respelling": "KUL-er",
+      "stress": "KUL-er",
+      "tip": "Sounds like 'culler'; the o is a short u."
+     }
+    ],
+    "focus_sounds": [
+     "silent letters",
+     "voiced th"
+    ]
+   }
+  },
+  {
+   "id": "bacon-studies",
+   "text": "Reading maketh a full man; conference a ready man; and writing an exact man. And therefore, if a man write little, he had need have a great memory; if he confer little, he had need have a present wit: and if he read little, he had need have much cunning, to seem to know, that he doth not. Histories make men wise; poets witty; the mathematics subtile; natural philosophy deep; moral grave; logic and rhetoric able to contend.",
+   "author": "Francis Bacon",
+   "work": "Essays",
+   "year": 1625,
+   "section": "Of Studies",
+   "theme": "speaking",
+   "words": 78,
+   "level": 2,
+   "source": {
+    "name": "Project Gutenberg",
+    "url": "https://www.gutenberg.org/ebooks/575",
+    "gutenberg_id": 575,
+    "license": "Public domain in the USA"
+   },
+   "pronunciation": {
+    "target_words": [
+     {
+      "word": "maketh",
+      "respelling": "MAY-kith",
+      "stress": "MAY-kith",
+      "tip": "Old -eth ending: tongue out at the end."
+     },
+     {
+      "word": "conference",
+      "respelling": "KON-fruns",
+      "stress": "KON-fruns",
+      "tip": "Two or three beats; stress KON."
+     },
+     {
+      "word": "subtile",
+      "respelling": "SUT-ul",
+      "stress": "SUT-ul",
+      "tip": "Old spelling of 'subtle'; the b is silent."
+     },
+     {
+      "word": "philosophy",
+      "respelling": "fih-LOS-uh-fee",
+      "stress": "fih-LOS-uh-fee",
+      "tip": "Stress LOS; the ph is f."
+     },
+     {
+      "word": "rhetoric",
+      "respelling": "RET-uh-rik",
+      "stress": "RET-uh-rik",
+      "tip": "Silent h; stress RET."
+     }
+    ],
+    "focus_sounds": [
+     "silent letters",
+     "first-syllable stress"
+    ]
+   }
+  },
+  {
+   "id": "emerson-genius",
+   "text": "To believe your own thought, to believe that what is true for you in your private heart is true for all men—that is genius. Speak your latent conviction, and it shall be the universal sense; for the inmost in due time becomes the outmost, and our first thought is rendered back to us by the trumpets of the Last Judgment. Familiar as the voice of the mind is to each, the highest merit we ascribe to Moses, Plato and Milton is that they set at naught books and traditions, and spoke not what men, but what they thought.",
+   "author": "Ralph Waldo Emerson",
+   "work": "Essays",
+   "year": 1841,
+   "section": "Self-Reliance",
+   "theme": "reflection",
+   "words": 98,
+   "level": 3,
+   "source": {
+    "name": "Standard Ebooks",
+    "url": "https://standardebooks.org/ebooks/ralph-waldo-emerson/essays",
+    "license": "Public domain (Standard Ebooks' own edits are CC0)"
+   },
+   "pronunciation": {
+    "target_words": [
+     {
+      "word": "genius",
+      "respelling": "JEEN-yus",
+      "stress": "JEEN-yus",
+      "tip": "Two beats: JEEN-yus."
+     },
+     {
+      "word": "latent",
+      "respelling": "LAY-tunt",
+      "stress": "LAY-tunt",
+      "tip": "Stress LAY; a quick 'tunt'."
+     },
+     {
+      "word": "conviction",
+      "respelling": "kun-VIK-shun",
+      "stress": "kun-VIK-shun",
+      "tip": "Stress VIK; lip on teeth for v."
+     },
+     {
+      "word": "universal",
+      "respelling": "yoo-nih-VUR-sul",
+      "stress": "yoo-nih-VUR-sul",
+      "tip": "Stress VUR; starts with 'yoo'."
+     },
+     {
+      "word": "naught",
+      "respelling": "NAWT",
+      "stress": "NAWT",
+      "tip": "Silent gh: NAWT."
+     }
+    ],
+    "focus_sounds": [
+     "silent gh",
+     "-tion"
+    ]
+   }
+  },
+  {
+   "id": "emerson-trust",
+   "text": "Trust thyself: every heart vibrates to that iron string. Accept the place the divine providence has found for you, the society of your contemporaries, the connection of events. Great men have always done so, and confided themselves childlike to the genius of their age, betraying their perception that the absolutely trustworthy was seated at their heart, working through their hands, predominating in all their being. And we are now men, and must accept in the highest mind the same transcendent destiny; and not minors and invalids in a protected corner, not cowards fleeing before a revolution, but guides, redeemers and benefactors, obeying the Almighty effort and advancing on Chaos and the Dark.",
+   "author": "Ralph Waldo Emerson",
+   "work": "Essays",
+   "year": 1841,
+   "section": "Self-Reliance",
+   "theme": "reflection",
+   "words": 112,
+   "level": 3,
+   "source": {
+    "name": "Standard Ebooks",
+    "url": "https://standardebooks.org/ebooks/ralph-waldo-emerson/essays",
+    "license": "Public domain (Standard Ebooks' own edits are CC0)"
+   },
+   "pronunciation": {
+    "target_words": [
+     {
+      "word": "vibrates",
+      "respelling": "VY-brayts",
+      "stress": "VY-brayts",
+      "tip": "Stress VY; end on a crisp 'ts'."
+     },
+     {
+      "word": "contemporaries",
+      "respelling": "kun-TEM-puh-rer-eez",
+      "stress": "kun-TEM-puh-rer-eez",
+      "tip": "Stress TEM; six beats."
+     },
+     {
+      "word": "predominating",
+      "respelling": "prih-DOM-ih-nay-ting",
+      "stress": "prih-DOM-ih-nay-ting",
+      "tip": "Stress DOM; five beats."
+     },
+     {
+      "word": "transcendent",
+      "respelling": "tran-SEN-dunt",
+      "stress": "tran-SEN-dunt",
+      "tip": "Stress SEN; the 'sc' is a single s."
+     },
+     {
+      "word": "chaos",
+      "respelling": "KAY-os",
+      "stress": "KAY-os",
+      "tip": "The ch is a k: KAY-os."
+     }
+    ],
+    "focus_sounds": [
+     "ch as k",
+     "long-word stress"
+    ]
+   }
+  },
+  {
+   "id": "gatsby-advice",
+   "text": "In my younger and more vulnerable years my father gave me some advice that I’ve been turning over in my mind ever since. “Whenever you feel like criticizing anyone,” he told me, “just remember that all the people in this world haven’t had the advantages that you’ve had.” He didn’t say any more, but we’ve always been unusually communicative in a reserved way, and I understood that he meant a great deal more than that. In consequence, I’m inclined to reserve all judgements, a habit that has opened up many curious natures to me and also made me the victim of not a few veteran bores.",
+   "author": "F. Scott Fitzgerald",
+   "work": "The Great Gatsby",
+   "year": 1925,
+   "section": "Chapter I",
+   "theme": "story",
+   "words": 106,
+   "level": 3,
+   "source": {
+    "name": "Standard Ebooks",
+    "url": "https://standardebooks.org/ebooks/f-scott-fitzgerald/the-great-gatsby",
+    "license": "Public domain (Standard Ebooks' own edits are CC0)"
+   },
+   "pronunciation": {
+    "target_words": [
+     {
+      "word": "vulnerable",
+      "respelling": "VUL-ner-uh-bul",
+      "stress": "VUL-ner-uh-bul",
+      "tip": "Stress VUL; say both the l and the n."
+     },
+     {
+      "word": "criticizing",
+      "respelling": "KRIT-ih-sy-zing",
+      "stress": "KRIT-ih-sy-zing",
+      "tip": "Stress KRIT; the second c is s."
+     },
+     {
+      "word": "communicative",
+      "respelling": "kuh-MYOO-nih-kuh-tiv",
+      "stress": "kuh-MYOO-nih-kuh-tiv",
+      "tip": "Stress MYOO; six beats."
+     },
+     {
+      "word": "judgements",
+      "respelling": "JUJ-munts",
+      "stress": "JUJ-munts",
+      "tip": "Two beats: the 'dg' is j."
+     },
+     {
+      "word": "veteran",
+      "respelling": "VET-er-un",
+      "stress": "VET-er-un",
+      "tip": "Stress VET; three beats (or two: VET-run)."
+     }
+    ],
+    "focus_sounds": [
+     "v",
+     "long-word stress"
+    ]
+   }
+  },
+  {
+   "id": "tagore-cabuliwallah",
+   "text": "My five years' old daughter Mini cannot live without chattering. I really believe that in all her life she has not wasted a minute in silence. Her mother is often vexed at this, and would stop her prattle, but I would not. To see Mini quiet is unnatural, and I cannot bear it long. And so my own talk with her is always lively. One morning, for instance, when I was in the midst of the seventeenth chapter of my new novel, my little Mini stole into the room, and putting her hand into mine, said: \"Father! Ramdayal the door-keeper calls a crow a krow! He doesn't know anything, does he?\"",
+   "author": "Rabindranath Tagore",
+   "work": "Stories from Tagore",
+   "year": 1918,
+   "section": "The Cabuliwallah",
+   "theme": "india",
+   "words": 111,
+   "level": 1,
+   "source": {
+    "name": "Project Gutenberg",
+    "url": "https://www.gutenberg.org/ebooks/33525",
+    "gutenberg_id": 33525,
+    "license": "Public domain in the USA"
+   },
+   "pronunciation": {
+    "target_words": [
+     {
+      "word": "daughter",
+      "respelling": "DAW-ter",
+      "stress": "DAW-ter",
+      "tip": "Silent gh: DAW-ter."
+     },
+     {
+      "word": "chattering",
+      "respelling": "CHAT-er-ing",
+      "stress": "CHAT-er-ing",
+      "tip": "Stress CHAT; the t is light and quick."
+     },
+     {
+      "word": "vexed",
+      "respelling": "VEKST",
+      "stress": "VEKST",
+      "tip": "One beat: VEKST."
+     },
+     {
+      "word": "prattle",
+      "respelling": "PRAT-ul",
+      "stress": "PRAT-ul",
+      "tip": "Stress PRAT; end with a dark l."
+     },
+     {
+      "word": "seventeenth",
+      "respelling": "sev-un-TEENTH",
+      "stress": "sev-un-TEENTH",
+      "tip": "Stress TEENTH; finish with th."
+     }
+    ],
+    "focus_sounds": [
+     "-teen numbers",
+     "silent gh"
+    ]
+   }
+  },
+  {
+   "id": "aurelius-morning",
+   "text": "Begin the morning by saying to thyself, I shall meet with the busybody, the ungrateful, arrogant, deceitful, envious, unsocial. All these things happen to them by reason of their ignorance of what is good and evil. But I who have seen the nature of the good that it is beautiful, and of the bad that it is ugly, and the nature of him who does wrong, that it is akin to me, not only of the same blood or seed, but that it participates in the same intelligence and the same portion of the divinity, I can neither be injured by any of them, for no one can fix on me what is ugly, nor can I be angry with my kinsman, nor hate him.",
+   "author": "Marcus Aurelius",
+   "work": "Meditations",
+   "year": 1862,
+   "section": "Book II",
+   "theme": "reflection",
+   "words": 125,
+   "level": 3,
+   "source": {
+    "name": "Standard Ebooks",
+    "url": "https://standardebooks.org/ebooks/marcus-aurelius/meditations/george-long",
+    "license": "Public domain (Standard Ebooks' own edits are CC0)"
+   },
+   "translator": "George Long",
+   "pronunciation": {
+    "target_words": [
+     {
+      "word": "busybody",
+      "respelling": "BIZ-ee-bod-ee",
+      "stress": "BIZ-ee-bod-ee",
+      "tip": "The u sounds like i: BIZ-ee."
+     },
+     {
+      "word": "arrogant",
+      "respelling": "AIR-uh-gunt",
+      "stress": "AIR-uh-gunt",
+      "tip": "Stress AIR; three beats."
+     },
+     {
+      "word": "deceitful",
+      "respelling": "dih-SEET-ful",
+      "stress": "dih-SEET-ful",
+      "tip": "Stress SEET; the c is s."
+     },
+     {
+      "word": "participates",
+      "respelling": "par-TIS-ih-payts",
+      "stress": "par-TIS-ih-payts",
+      "tip": "Stress TIS; end in 'payts'."
+     },
+     {
+      "word": "divinity",
+      "respelling": "dih-VIN-ih-tee",
+      "stress": "dih-VIN-ih-tee",
+      "tip": "Stress VIN; four beats."
+     }
+    ],
+    "focus_sounds": [
+     "schwa",
+     "c as s"
+    ]
+   }
+  },
+  {
+   "id": "aurelius-last-act",
+   "text": "Every moment think steadily as a Roman and a man to do what thou hast in hand with perfect and simple dignity, and feeling of affection, and freedom, and justice; and to give thyself relief from all other thoughts. And thou wilt give thyself relief, if thou doest every act of thy life as if it were the last, laying aside all carelessness and passionate aversion from the commands of reason, and all hypocrisy, and self-love, and discontent with the portion which has been given to thee.",
+   "author": "Marcus Aurelius",
+   "work": "Meditations",
+   "year": 1862,
+   "section": "Book II",
+   "theme": "reflection",
+   "words": 87,
+   "level": 3,
+   "source": {
+    "name": "Standard Ebooks",
+    "url": "https://standardebooks.org/ebooks/marcus-aurelius/meditations/george-long",
+    "license": "Public domain (Standard Ebooks' own edits are CC0)"
+   },
+   "translator": "George Long",
+   "pronunciation": {
+    "target_words": [
+     {
+      "word": "steadily",
+      "respelling": "STED-ih-lee",
+      "stress": "STED-ih-lee",
+      "tip": "Stress STED; the 'ea' is a short e."
+     },
+     {
+      "word": "dignity",
+      "respelling": "DIG-nih-tee",
+      "stress": "DIG-nih-tee",
+      "tip": "Stress DIG; say both the g and the n."
+     },
+     {
+      "word": "passionate",
+      "respelling": "PASH-uh-nit",
+      "stress": "PASH-uh-nit",
+      "tip": "Stress PASH; ends in '-nit'."
+     },
+     {
+      "word": "aversion",
+      "respelling": "uh-VUR-zhun",
+      "stress": "uh-VUR-zhun",
+      "tip": "Stress VUR; 'zh' at the end."
+     },
+     {
+      "word": "hypocrisy",
+      "respelling": "hih-POK-ruh-see",
+      "stress": "hih-POK-ruh-see",
+      "tip": "Stress POK; the y is a short i."
+     }
+    ],
+    "focus_sounds": [
+     "zh",
+     "-ate endings"
+    ]
+   }
+  },
+  {
+   "id": "walden-woods",
+   "text": "I went to the woods because I wished to live deliberately, to front only the essential facts of life, and see if I could not learn what it had to teach, and not, when I came to die, discover that I had not lived. I did not wish to live what was not life, living is so dear; nor did I wish to practise resignation, unless it was quite necessary.",
+   "author": "Henry David Thoreau",
+   "work": "Walden",
+   "year": 1854,
+   "section": "Where I Lived, and What I Lived For",
+   "theme": "reflection",
+   "words": 70,
+   "level": 3,
+   "source": {
+    "name": "Standard Ebooks",
+    "url": "https://standardebooks.org/ebooks/henry-david-thoreau/walden",
+    "license": "Public domain (Standard Ebooks' own edits are CC0)"
+   },
+   "pronunciation": {
+    "target_words": [
+     {
+      "word": "deliberately",
+      "respelling": "dih-LIB-er-it-lee",
+      "stress": "dih-LIB-er-it-lee",
+      "tip": "Stress LIB; five beats, '-it-lee' at the end."
+     },
+     {
+      "word": "essential",
+      "respelling": "ih-SEN-shul",
+      "stress": "ih-SEN-shul",
+      "tip": "Stress SEN; the t is sh."
+     },
+     {
+      "word": "discover",
+      "respelling": "dih-SKUV-er",
+      "stress": "dih-SKUV-er",
+      "tip": "Stress SKUV; the o sounds like u."
+     },
+     {
+      "word": "resignation",
+      "respelling": "rez-ig-NAY-shun",
+      "stress": "rez-ig-NAY-shun",
+      "tip": "The s is z; the g is sounded here. Stress NAY."
+     },
+     {
+      "word": "practise",
+      "respelling": "PRAK-tis",
+      "stress": "PRAK-tis",
+      "tip": "Two beats: PRAK-tis."
+     }
+    ],
+    "focus_sounds": [
+     "-ately",
+     "z spellings"
+    ]
+   }
+  },
+  {
+   "id": "walden-simplicity",
+   "text": "Our life is frittered away by detail. An honest man has hardly need to count more than his ten fingers, or in extreme cases he may add his ten toes, and lump the rest. Simplicity, simplicity, simplicity! I say, let your affairs be as two or three, and not a hundred or a thousand; instead of a million count half a dozen, and keep your accounts on your thumbnail.",
+   "author": "Henry David Thoreau",
+   "work": "Walden",
+   "year": 1854,
+   "section": "Where I Lived, and What I Lived For",
+   "theme": "reflection",
+   "words": 69,
+   "level": 2,
+   "source": {
+    "name": "Standard Ebooks",
+    "url": "https://standardebooks.org/ebooks/henry-david-thoreau/walden",
+    "license": "Public domain (Standard Ebooks' own edits are CC0)"
+   },
+   "pronunciation": {
+    "target_words": [
+     {
+      "word": "frittered",
+      "respelling": "FRIT-erd",
+      "stress": "FRIT-erd",
+      "tip": "Stress FRIT; a quick tap for the tt."
+     },
+     {
+      "word": "detail",
+      "respelling": "DEE-tayl",
+      "stress": "DEE-tayl",
+      "tip": "Stress DEE (dih-TAYL is also accepted)."
+     },
+     {
+      "word": "extreme",
+      "respelling": "ik-STREEM",
+      "stress": "ik-STREEM",
+      "tip": "Stress STREEM; the x is k + s."
+     },
+     {
+      "word": "simplicity",
+      "respelling": "sim-PLIS-ih-tee",
+      "stress": "sim-PLIS-ih-tee",
+      "tip": "Stress PLIS; the c is s."
+     },
+     {
+      "word": "thumbnail",
+      "respelling": "THUM-nayl",
+      "stress": "THUM-nayl",
+      "tip": "Silent b; tongue out for th."
+     }
+    ],
+    "focus_sounds": [
+     "th",
+     "silent b"
+    ]
+   }
+  },
+  {
+   "id": "walden-drummer",
+   "text": "Why should we be in such desperate haste to succeed and in such desperate enterprises? If a man does not keep pace with his companions, perhaps it is because he hears a different drummer. Let him step to the music which he hears, however measured or far away. It is not important that he should mature as soon as an apple tree or an oak. Shall he turn his spring into summer?",
+   "author": "Henry David Thoreau",
+   "work": "Walden",
+   "year": 1854,
+   "section": "Conclusion",
+   "theme": "reflection",
+   "words": 72,
+   "level": 1,
+   "source": {
+    "name": "Standard Ebooks",
+    "url": "https://standardebooks.org/ebooks/henry-david-thoreau/walden",
+    "license": "Public domain (Standard Ebooks' own edits are CC0)"
+   },
+   "pronunciation": {
+    "target_words": [
+     {
+      "word": "desperate",
+      "respelling": "DES-prit",
+      "stress": "DES-prit",
+      "tip": "Two beats in speech: DES-prit."
+     },
+     {
+      "word": "enterprises",
+      "respelling": "EN-ter-pry-ziz",
+      "stress": "EN-ter-pry-ziz",
+      "tip": "Stress EN; end in 'pry-ziz'."
+     },
+     {
+      "word": "companions",
+      "respelling": "kum-PAN-yunz",
+      "stress": "kum-PAN-yunz",
+      "tip": "Stress PAN; 'yunz' at the end."
+     },
+     {
+      "word": "measured",
+      "respelling": "MEZH-erd",
+      "stress": "MEZH-erd",
+      "tip": "The s is zh: MEZH-erd."
+     },
+     {
+      "word": "mature",
+      "respelling": "muh-CHOOR",
+      "stress": "muh-CHOOR",
+      "tip": "Stress the end; 'muh-TOOR' is fine too."
+     }
+    ],
+    "focus_sounds": [
+     "zh",
+     "dropped syllables"
+    ]
+   }
+  },
+  {
+   "id": "bennett-daily-miracle",
+   "text": "Philosophers have explained space. They have not explained time. It is the inexplicable raw material of everything. With it, all is possible; without it, nothing. The supply of time is truly a daily miracle, an affair genuinely astonishing when one examines it. You wake up in the morning, and lo! your purse is magically filled with twenty-four hours of the unmanufactured tissue of the universe of your life! It is yours. It is the most precious of possessions. A highly singular commodity, showered upon you in a manner as singular as the commodity itself!",
+   "author": "Arnold Bennett",
+   "work": "How to Live on 24 Hours a Day",
+   "year": 1908,
+   "section": "The Daily Miracle",
+   "theme": "reflection",
+   "words": 94,
+   "level": 1,
+   "source": {
+    "name": "Project Gutenberg",
+    "url": "https://www.gutenberg.org/ebooks/2274",
+    "gutenberg_id": 2274,
+    "license": "Public domain in the USA"
+   },
+   "pronunciation": {
+    "target_words": [
+     {
+      "word": "inexplicable",
+      "respelling": "in-ik-SPLIK-uh-bul",
+      "stress": "in-ik-SPLIK-uh-bul",
+      "tip": "Stress SPLIK; five beats."
+     },
+     {
+      "word": "genuinely",
+      "respelling": "JEN-yoo-in-lee",
+      "stress": "JEN-yoo-in-lee",
+      "tip": "Stress JEN; ends 'in-lee', not 'ine-lee'."
+     },
+     {
+      "word": "unmanufactured",
+      "respelling": "un-man-yuh-FAK-cherd",
+      "stress": "un-man-yuh-FAK-cherd",
+      "tip": "Stress FAK; the t becomes 'ch'."
+     },
+     {
+      "word": "tissue",
+      "respelling": "TISH-oo",
+      "stress": "TISH-oo",
+      "tip": "The ss is 'sh': TISH-oo."
+     },
+     {
+      "word": "commodity",
+      "respelling": "kuh-MOD-ih-tee",
+      "stress": "kuh-MOD-ih-tee",
+      "tip": "Stress MOD; four beats."
+     }
+    ],
+    "focus_sounds": [
+     "sh spellings",
+     "long-word stress"
+    ]
+   }
+  },
+  {
+   "id": "allen-gardener",
+   "text": "Just as a gardener cultivates his plot, keeping it free from weeds, and growing the flowers and fruits which he requires, so may a man tend the garden of his mind, weeding out all the wrong, useless, and impure thoughts, and cultivating toward perfection the flowers and fruits of right, useful, and pure thoughts. By pursuing this process, a man sooner or later discovers that he is the master-gardener of his soul, the director of his life. He also reveals, within himself, the laws of thought, and understands, with ever-increasing accuracy, how the thought-forces and mind elements operate in the shaping of his character, circumstances, and destiny.",
+   "author": "James Allen",
+   "work": "As a Man Thinketh",
+   "year": 1903,
+   "section": "Effect of Thought on Circumstances",
+   "theme": "reflection",
+   "words": 107,
+   "level": 3,
+   "source": {
+    "name": "Project Gutenberg",
+    "url": "https://www.gutenberg.org/ebooks/4507",
+    "gutenberg_id": 4507,
+    "license": "Public domain in the USA"
+   },
+   "pronunciation": {
+    "target_words": [
+     {
+      "word": "cultivates",
+      "respelling": "KUL-tih-vayts",
+      "stress": "KUL-tih-vayts",
+      "tip": "Stress KUL; end in a crisp 'ts'."
+     },
+     {
+      "word": "pursuing",
+      "respelling": "per-SOO-ing",
+      "stress": "per-SOO-ing",
+      "tip": "Stress SOO; three beats."
+     },
+     {
+      "word": "director",
+      "respelling": "dih-REK-ter",
+      "stress": "dih-REK-ter",
+      "tip": "Stress REK; 'dy-REK-ter' is accepted too."
+     },
+     {
+      "word": "accuracy",
+      "respelling": "AK-yer-uh-see",
+      "stress": "AK-yer-uh-see",
+      "tip": "Stress AK; the cc is k, then 'yer'."
+     },
+     {
+      "word": "character",
+      "respelling": "KAIR-ik-ter",
+      "stress": "KAIR-ik-ter",
+      "tip": "The ch is a k; stress KAIR."
+     }
+    ],
+    "focus_sounds": [
+     "ch as k",
+     "schwa"
+    ]
+   }
+  },
+  {
+   "id": "gitanjali-35",
+   "text": "Where the mind is without fear and the head is held high; Where knowledge is free; Where the world has not been broken up into fragments by narrow domestic walls; Where words come out from the depth of truth; Where tireless striving stretches its arms towards perfection; Where the clear stream of reason has not lost its way into the dreary desert sand of dead habit; Where the mind is led forward by thee into ever-widening thought and action— Into that heaven of freedom, my Father, let my country awake.",
+   "author": "Rabindranath Tagore",
+   "work": "Gitanjali",
+   "year": 1912,
+   "section": "Poem 35",
+   "theme": "india",
+   "words": 90,
+   "level": 3,
+   "source": {
+    "name": "Standard Ebooks",
+    "url": "https://standardebooks.org/ebooks/rabindranath-tagore/gitanjali",
+    "license": "Public domain (Standard Ebooks' own edits are CC0)"
+   },
+   "pronunciation": {
+    "target_words": [
+     {
+      "word": "fragments",
+      "respelling": "FRAG-munts",
+      "stress": "FRAG-munts",
+      "tip": "Stress FRAG; end on 'nts'."
+     },
+     {
+      "word": "domestic",
+      "respelling": "duh-MES-tik",
+      "stress": "duh-MES-tik",
+      "tip": "Stress MES; a light 'duh' first."
+     },
+     {
+      "word": "tireless",
+      "respelling": "TYR-lis",
+      "stress": "TYR-lis",
+      "tip": "Two beats: TYR-lis."
+     },
+     {
+      "word": "striving",
+      "respelling": "STRY-ving",
+      "stress": "STRY-ving",
+      "tip": "A tight 'str', then a long i."
+     },
+     {
+      "word": "desert",
+      "respelling": "DEZ-ert",
+      "stress": "DEZ-ert",
+      "tip": "Noun: DEZ-ert. 'dih-ZURT' is dessert, or to desert."
+     }
+    ],
+    "focus_sounds": [
+     "str clusters",
+     "noun/verb stress"
+    ]
+   }
+  },
+  {
+   "id": "gitanjali-13",
+   "text": "The song that I came to sing remains unsung to this day. I have spent my days in stringing and in unstringing my instrument. The time has not come true, the words have not been rightly set; only there is the agony of wishing in my heart. The blossom has not opened; only the wind is sighing by. I have not seen his face, nor have I listened to his voice; only I have heard his gentle footsteps from the road before my house. The livelong day has passed in spreading his seat on the floor; but the lamp has not been lit and I cannot ask him into my house. I live in the hope of meeting with him; but this meeting is not yet.",
+   "author": "Rabindranath Tagore",
+   "work": "Gitanjali",
+   "year": 1912,
+   "section": "Poem 13",
+   "theme": "india",
+   "words": 126,
+   "level": 2,
+   "source": {
+    "name": "Standard Ebooks",
+    "url": "https://standardebooks.org/ebooks/rabindranath-tagore/gitanjali",
+    "license": "Public domain (Standard Ebooks' own edits are CC0)"
+   },
+   "pronunciation": {
+    "target_words": [
+     {
+      "word": "unstringing",
+      "respelling": "un-STRING-ing",
+      "stress": "un-STRING-ing",
+      "tip": "Stress STRING; soft ng, no hard g."
+     },
+     {
+      "word": "instrument",
+      "respelling": "IN-struh-munt",
+      "stress": "IN-struh-munt",
+      "tip": "Stress IN; a tight 'str'."
+     },
+     {
+      "word": "agony",
+      "respelling": "AG-uh-nee",
+      "stress": "AG-uh-nee",
+      "tip": "Stress AG; three beats."
+     },
+     {
+      "word": "sighing",
+      "respelling": "SY-ing",
+      "stress": "SY-ing",
+      "tip": "Silent gh: SY-ing."
+     },
+     {
+      "word": "livelong",
+      "respelling": "LIV-lawng",
+      "stress": "LIV-lawng",
+      "tip": "Short i: LIV, as in the verb 'live'."
+     }
+    ],
+    "focus_sounds": [
+     "ng",
+     "silent gh"
+    ]
+   }
+  },
+  {
+   "id": "prophet-work",
+   "text": "And I say that life is indeed darkness save when there is urge, And all urge is blind save when there is knowledge, And all knowledge is vain save when there is work, And all work is empty save when there is love; And when you work with love you bind yourself to yourself, and to one another, and to God. And what is it to work with love? It is to weave the cloth with threads drawn from your heart, even as if your beloved were to wear that cloth. It is to build a house with affection, even as if your beloved were to dwell in that house.",
+   "author": "Kahlil Gibran",
+   "work": "The Prophet",
+   "year": 1923,
+   "section": "On Work",
+   "theme": "reflection",
+   "words": 110,
+   "level": 3,
+   "source": {
+    "name": "Standard Ebooks",
+    "url": "https://standardebooks.org/ebooks/kahlil-gibran/the-prophet",
+    "license": "Public domain (Standard Ebooks' own edits are CC0)"
+   },
+   "pronunciation": {
+    "target_words": [
+     {
+      "word": "urge",
+      "respelling": "URJ",
+      "stress": "URJ",
+      "tip": "One beat; end on a soft j."
+     },
+     {
+      "word": "beloved",
+      "respelling": "bih-LUV-id",
+      "stress": "bih-LUV-id",
+      "tip": "As a noun here: three beats, bih-LUV-id."
+     },
+     {
+      "word": "weave",
+      "respelling": "WEEV",
+      "stress": "WEEV",
+      "tip": "Round the lips for w; end on a buzzing v."
+     },
+     {
+      "word": "threads",
+      "respelling": "THREDZ",
+      "stress": "THREDZ",
+      "tip": "th + r together; end on 'dz'."
+     },
+     {
+      "word": "dwell",
+      "respelling": "DWEL",
+      "stress": "DWEL",
+      "tip": "d + w together; a dark l at the end."
+     }
+    ],
+    "focus_sounds": [
+     "v / w",
+     "th clusters"
+    ]
+   }
+  },
+  {
+   "id": "thoreau-walking",
+   "text": "I wish to speak a word for nature, for absolute freedom and wildness, as contrasted with a freedom and culture merely civil—to regard man as an inhabitant, or a part and parcel of nature, rather than a member of society. I wish to make an extreme statement, if so I may make an emphatic one, for there are enough champions of civilization: the minister and the school-committee, and every one of you will take care of that.",
+   "author": "Henry David Thoreau",
+   "work": "Walking",
+   "year": 1862,
+   "section": "",
+   "theme": "nature",
+   "words": 77,
+   "level": 3,
+   "source": {
+    "name": "Standard Ebooks",
+    "url": "https://standardebooks.org/ebooks/henry-david-thoreau/essays",
+    "license": "Public domain (Standard Ebooks' own edits are CC0)"
+   },
+   "pronunciation": {
+    "target_words": [
+     {
+      "word": "absolute",
+      "respelling": "AB-suh-loot",
+      "stress": "AB-suh-loot",
+      "tip": "Stress AB; ends 'loot'."
+     },
+     {
+      "word": "wildness",
+      "respelling": "WYLD-nis",
+      "stress": "WYLD-nis",
+      "tip": "Long i; say the d before 'nis'."
+     },
+     {
+      "word": "inhabitant",
+      "respelling": "in-HAB-ih-tunt",
+      "stress": "in-HAB-ih-tunt",
+      "tip": "Stress HAB; four beats."
+     },
+     {
+      "word": "emphatic",
+      "respelling": "em-FAT-ik",
+      "stress": "em-FAT-ik",
+      "tip": "Stress FAT, unlike EM-phasis."
+     },
+     {
+      "word": "civilization",
+      "respelling": "siv-uh-luh-ZAY-shun",
+      "stress": "siv-uh-luh-ZAY-shun",
+      "tip": "Stress ZAY; five beats."
+     }
+    ],
+    "focus_sounds": [
+     "stress shift",
+     "-tion"
+    ]
+   }
+  },
+  {
+   "id": "muir-sierra-day",
+   "text": "Another glorious Sierra day in which one seems to be dissolved and absorbed and sent pulsing onward we know not where. Life seems neither long nor short, and we take no more heed to save time or make haste than do the trees and stars. This is true freedom, a good practical sort of immortality. Yonder rises another white skyland. How sharply the yellow pine spires and the palm-like crowns of the sugar pines are outlined on its smooth white domes. And hark! the grand thunder billows booming, rolling from ridge to ridge, followed by the faithful shower.",
+   "author": "John Muir",
+   "work": "My First Summer in the Sierra",
+   "year": 1911,
+   "section": "Chapter II",
+   "theme": "nature",
+   "words": 98,
+   "level": 1,
+   "source": {
+    "name": "Standard Ebooks",
+    "url": "https://standardebooks.org/ebooks/john-muir/my-first-summer-in-the-sierra",
+    "license": "Public domain (Standard Ebooks' own edits are CC0)"
+   },
+   "pronunciation": {
+    "target_words": [
+     {
+      "word": "glorious",
+      "respelling": "GLOR-ee-us",
+      "stress": "GLOR-ee-us",
+      "tip": "Stress GLOR; three beats."
+     },
+     {
+      "word": "dissolved",
+      "respelling": "dih-ZOLVD",
+      "stress": "dih-ZOLVD",
+      "tip": "The ss is z; end on 'lvd'."
+     },
+     {
+      "word": "immortality",
+      "respelling": "im-or-TAL-ih-tee",
+      "stress": "im-or-TAL-ih-tee",
+      "tip": "Stress TAL; five beats."
+     },
+     {
+      "word": "sugar",
+      "respelling": "SHUUG-er",
+      "stress": "SHUUG-er",
+      "tip": "The s is 'sh'; 'uu' as in 'book'."
+     },
+     {
+      "word": "faithful",
+      "respelling": "FAYTH-ful",
+      "stress": "FAYTH-ful",
+      "tip": "Tongue out for th, then 'ful'."
+     }
+    ],
+    "focus_sounds": [
+     "z spellings",
+     "th"
+    ]
+   }
+  },
+  {
+   "id": "chesterton-yachtsman",
+   "text": "I have often had a fancy for writing a romance about an English yachtsman who slightly miscalculated his course and discovered England under the impression that it was a new island in the South Seas. I always find, however, that I am either too busy or too lazy to write this fine work, so I may as well give it away for the purposes of philosophical illustration. There will probably be a general impression that the man who landed (armed to the teeth and talking by signs) to plant the British flag on that barbaric temple which turned out to be the Pavilion at Brighton, felt rather a fool. I am not here concerned to deny that he looked a fool.",
+   "author": "G. K. Chesterton",
+   "work": "Orthodoxy",
+   "year": 1908,
+   "section": "Introduction in Defence of Everything Else",
+   "theme": "story",
+   "words": 121,
+   "level": 3,
+   "source": {
+    "name": "Standard Ebooks",
+    "url": "https://standardebooks.org/ebooks/g-k-chesterton/orthodoxy",
+    "license": "Public domain (Standard Ebooks' own edits are CC0)"
+   },
+   "pronunciation": {
+    "target_words": [
+     {
+      "word": "yachtsman",
+      "respelling": "YOTS-mun",
+      "stress": "YOTS-mun",
+      "tip": "The 'ch' is silent: YOTS-mun."
+     },
+     {
+      "word": "miscalculated",
+      "respelling": "mis-KAL-kyuh-lay-tid",
+      "stress": "mis-KAL-kyuh-lay-tid",
+      "tip": "Stress KAL; six beats."
+     },
+     {
+      "word": "romance",
+      "respelling": "roh-MANS",
+      "stress": "roh-MANS",
+      "tip": "Stress MANS (ROH-mans is also heard)."
+     },
+     {
+      "word": "illustration",
+      "respelling": "il-uh-STRAY-shun",
+      "stress": "il-uh-STRAY-shun",
+      "tip": "Stress STRAY; four beats."
+     },
+     {
+      "word": "pavilion",
+      "respelling": "puh-VIL-yun",
+      "stress": "puh-VIL-yun",
+      "tip": "Stress VIL; 'yun' at the end."
+     }
+    ],
+    "focus_sounds": [
+     "silent letters",
+     "-tion"
+    ]
+   }
+  },
+  {
+   "id": "twain-saturday",
+   "text": "Saturday morning was come, and all the summer world was bright and fresh, and brimming with life. There was a song in every heart; and if the heart was young the music issued at the lips. There was cheer in every face and a spring in every step. The locust-trees were in bloom and the fragrance of the blossoms filled the air. Cardiff Hill, beyond the village and above it, was green with vegetation and it lay just far enough away to seem a Delectable Land, dreamy, reposeful, and inviting.",
+   "author": "Mark Twain",
+   "work": "The Adventures of Tom Sawyer",
+   "year": 1876,
+   "section": "Chapter II",
+   "theme": "story",
+   "words": 90,
+   "level": 2,
+   "source": {
+    "name": "Standard Ebooks",
+    "url": "https://standardebooks.org/ebooks/mark-twain/the-adventures-of-tom-sawyer",
+    "license": "Public domain (Standard Ebooks' own edits are CC0)"
+   },
+   "pronunciation": {
+    "target_words": [
+     {
+      "word": "issued",
+      "respelling": "ISH-ood",
+      "stress": "ISH-ood",
+      "tip": "The ss is 'sh': ISH-ood."
+     },
+     {
+      "word": "fragrance",
+      "respelling": "FRAY-gruns",
+      "stress": "FRAY-gruns",
+      "tip": "Stress FRAY; two beats."
+     },
+     {
+      "word": "vegetation",
+      "respelling": "vej-ih-TAY-shun",
+      "stress": "vej-ih-TAY-shun",
+      "tip": "Stress TAY; the g is j."
+     },
+     {
+      "word": "delectable",
+      "respelling": "dih-LEK-tuh-bul",
+      "stress": "dih-LEK-tuh-bul",
+      "tip": "Stress LEK; four beats."
+     },
+     {
+      "word": "reposeful",
+      "respelling": "rih-POHZ-ful",
+      "stress": "rih-POHZ-ful",
+      "tip": "Stress POHZ; the s is z."
+     }
+    ],
+    "focus_sounds": [
+     "soft g",
+     "sh spellings"
+    ]
+   }
+  },
+  {
+   "id": "twain-coyote",
+   "text": "The coyote is a long, slim, sick and sorry-looking skeleton, with a gray wolf-skin stretched over it, a tolerably bushy tail that forever sags down with a despairing expression of forsakenness and misery, a furtive and evil eye, and a long, sharp face, with slightly lifted lip and exposed teeth. He has a general slinking expression all over. The coyote is a living, breathing allegory of Want. He is always hungry. He is always poor, out of luck and friendless. The meanest creatures despise him, and even the fleas would desert him for a velocipede. He is so spiritless and cowardly that even while his exposed teeth are pretending a threat, the rest of his face is apologizing for it.",
+   "author": "Mark Twain",
+   "work": "Roughing It",
+   "year": 1872,
+   "section": "Chapter V",
+   "theme": "story",
+   "words": 120,
+   "level": 2,
+   "source": {
+    "name": "Standard Ebooks",
+    "url": "https://standardebooks.org/ebooks/mark-twain/roughing-it",
+    "license": "Public domain (Standard Ebooks' own edits are CC0)"
+   },
+   "pronunciation": {
+    "target_words": [
+     {
+      "word": "coyote",
+      "respelling": "ky-OH-tee",
+      "stress": "ky-OH-tee",
+      "tip": "Twain says ky-o-te; 'KY-oht' is also used."
+     },
+     {
+      "word": "tolerably",
+      "respelling": "TOL-er-uh-blee",
+      "stress": "TOL-er-uh-blee",
+      "tip": "Stress TOL; four beats."
+     },
+     {
+      "word": "allegory",
+      "respelling": "AL-uh-gor-ee",
+      "stress": "AL-uh-gor-ee",
+      "tip": "Stress AL; four beats."
+     },
+     {
+      "word": "velocipede",
+      "respelling": "vuh-LOS-uh-peed",
+      "stress": "vuh-LOS-uh-peed",
+      "tip": "Stress LOS; an old word for a bicycle."
+     },
+     {
+      "word": "apologizing",
+      "respelling": "uh-POL-uh-jy-zing",
+      "stress": "uh-POL-uh-jy-zing",
+      "tip": "Stress POL; the g is j."
+     }
+    ],
+    "focus_sounds": [
+     "schwa",
+     "soft g"
+    ]
+   }
+  },
+  {
+   "id": "dickens-best-of-times",
+   "text": "It was the best of times, it was the worst of times, it was the age of wisdom, it was the age of foolishness, it was the epoch of belief, it was the epoch of incredulity, it was the season of Light, it was the season of Darkness, it was the spring of hope, it was the winter of despair, we had everything before us, we had nothing before us, we were all going direct to Heaven, we were all going direct the other way—in short, the period was so far like the present period, that some of its noisiest authorities insisted on its being received, for good or for evil, in the superlative degree of comparison only.",
+   "author": "Charles Dickens",
+   "work": "A Tale of Two Cities",
+   "year": 1859,
+   "section": "Book I, Chapter I",
+   "theme": "story",
+   "words": 118,
+   "level": 3,
+   "source": {
+    "name": "Standard Ebooks",
+    "url": "https://standardebooks.org/ebooks/charles-dickens/a-tale-of-two-cities",
+    "license": "Public domain (Standard Ebooks' own edits are CC0)"
+   },
+   "pronunciation": {
+    "target_words": [
+     {
+      "word": "epoch",
+      "respelling": "EP-uk",
+      "stress": "EP-uk",
+      "tip": "Stress EP; the ch is k ('EE-pok' in the UK)."
+     },
+     {
+      "word": "incredulity",
+      "respelling": "in-kruh-DOO-lih-tee",
+      "stress": "in-kruh-DOO-lih-tee",
+      "tip": "Stress DOO; five beats."
+     },
+     {
+      "word": "authorities",
+      "respelling": "uh-THOR-ih-teez",
+      "stress": "uh-THOR-ih-teez",
+      "tip": "Stress THOR; tongue out for th."
+     },
+     {
+      "word": "superlative",
+      "respelling": "soo-PUR-luh-tiv",
+      "stress": "soo-PUR-luh-tiv",
+      "tip": "Stress PUR; four beats."
+     },
+     {
+      "word": "comparison",
+      "respelling": "kum-PAIR-ih-sun",
+      "stress": "kum-PAIR-ih-sun",
+      "tip": "Stress PAIR; four beats."
+     }
+    ],
+    "focus_sounds": [
+     "th",
+     "ch as k"
+    ]
+   }
+  },
+  {
+   "id": "dickens-scrooge",
+   "text": "Oh! but he was a tight-fisted hand at the grindstone, Scrooge! a squeezing, wrenching, grasping, scraping, clutching, covetous old sinner! Hard and sharp as flint, from which no steel had ever struck out generous fire; secret, and self-contained, and solitary as an oyster. The cold within him froze his old features, nipped his pointed nose, shrivelled his cheek, stiffened his gait; made his eyes red, his thin lips blue; and spoke out shrewdly in his grating voice. A frosty rime was on his head, and on his eyebrows, and his wiry chin. He carried his own low temperature always about with him; he iced his office in the dog-days, and didn’t thaw it one degree at Christmas.",
+   "author": "Charles Dickens",
+   "work": "A Christmas Carol",
+   "year": 1843,
+   "section": "Stave I",
+   "theme": "story",
+   "words": 117,
+   "level": 2,
+   "source": {
+    "name": "Standard Ebooks",
+    "url": "https://standardebooks.org/ebooks/charles-dickens/a-christmas-carol",
+    "license": "Public domain (Standard Ebooks' own edits are CC0)"
+   },
+   "pronunciation": {
+    "target_words": [
+     {
+      "word": "squeezing",
+      "respelling": "SKWEE-zing",
+      "stress": "SKWEE-zing",
+      "tip": "'skw', then a buzzing z."
+     },
+     {
+      "word": "wrenching",
+      "respelling": "REN-ching",
+      "stress": "REN-ching",
+      "tip": "Silent w: REN-ching."
+     },
+     {
+      "word": "covetous",
+      "respelling": "KUV-ih-tus",
+      "stress": "KUV-ih-tus",
+      "tip": "Stress KUV; the o is a short u."
+     },
+     {
+      "word": "solitary",
+      "respelling": "SOL-ih-tair-ee",
+      "stress": "SOL-ih-tair-ee",
+      "tip": "Stress SOL; four beats."
+     },
+     {
+      "word": "temperature",
+      "respelling": "TEM-pruh-cher",
+      "stress": "TEM-pruh-cher",
+      "tip": "Three beats: TEM-pruh-cher."
+     }
+    ],
+    "focus_sounds": [
+     "silent w",
+     "consonant clusters"
+    ]
+   }
+  },
+  {
+   "id": "austen-truth",
+   "text": "It is a truth universally acknowledged, that a single man in possession of a good fortune, must be in want of a wife. However little known the feelings or views of such a man may be on his first entering a neighbourhood, this truth is so well fixed in the minds of the surrounding families, that he is considered as the rightful property of some one or other of their daughters.",
+   "author": "Jane Austen",
+   "work": "Pride and Prejudice",
+   "year": 1813,
+   "section": "Chapter I",
+   "theme": "story",
+   "words": 71,
+   "level": 3,
+   "source": {
+    "name": "Standard Ebooks",
+    "url": "https://standardebooks.org/ebooks/jane-austen/pride-and-prejudice",
+    "license": "Public domain (Standard Ebooks' own edits are CC0)"
+   },
+   "pronunciation": {
+    "target_words": [
+     {
+      "word": "acknowledged",
+      "respelling": "ak-NOL-ijd",
+      "stress": "ak-NOL-ijd",
+      "tip": "Silent k after c; stress NOL."
+     },
+     {
+      "word": "possession",
+      "respelling": "puh-ZESH-un",
+      "stress": "puh-ZESH-un",
+      "tip": "The first ss is z, the second is sh."
+     },
+     {
+      "word": "neighbourhood",
+      "respelling": "NAY-ber-huud",
+      "stress": "NAY-ber-huud",
+      "tip": "Silent gh; 'NAY' like 'neigh'."
+     },
+     {
+      "word": "fortune",
+      "respelling": "FOR-chun",
+      "stress": "FOR-chun",
+      "tip": "The t becomes 'ch'."
+     },
+     {
+      "word": "rightful",
+      "respelling": "RYT-ful",
+      "stress": "RYT-ful",
+      "tip": "Silent gh; say the t."
+     }
+    ],
+    "focus_sounds": [
+     "silent gh",
+     "z and sh"
+    ]
+   }
+  },
+  {
+   "id": "kipling-father-wolf",
+   "text": "It was seven o’clock of a very warm evening in the Seeonee hills when Father Wolf woke up from his day’s rest, scratched himself, yawned, and spread out his paws one after the other to get rid of the sleepy feeling in the tips. Mother Wolf lay with her big gray nose dropped across her four tumbling, squealing cubs, and the moon shone into the mouth of the cave where they all lived.",
+   "author": "Rudyard Kipling",
+   "work": "The Jungle Book",
+   "year": 1894,
+   "section": "Mowgli’s Brothers",
+   "theme": "india",
+   "words": 73,
+   "level": 3,
+   "source": {
+    "name": "Standard Ebooks",
+    "url": "https://standardebooks.org/ebooks/rudyard-kipling/the-jungle-book",
+    "license": "Public domain (Standard Ebooks' own edits are CC0)"
+   },
+   "pronunciation": {
+    "target_words": [
+     {
+      "word": "scratched",
+      "respelling": "SKRACHT",
+      "stress": "SKRACHT",
+      "tip": "One beat: 'skr' + 'acht'."
+     },
+     {
+      "word": "yawned",
+      "respelling": "YAWND",
+      "stress": "YAWND",
+      "tip": "One beat; end on 'nd'."
+     },
+     {
+      "word": "tumbling",
+      "respelling": "TUM-bling",
+      "stress": "TUM-bling",
+      "tip": "Two beats; say the b."
+     },
+     {
+      "word": "evening",
+      "respelling": "EEV-ning",
+      "stress": "EEV-ning",
+      "tip": "Two beats in speech: EEV-ning."
+     },
+     {
+      "word": "squealing",
+      "respelling": "SKWEE-ling",
+      "stress": "SKWEE-ling",
+      "tip": "'skw', a long ee, then a clear l."
+     }
+    ],
+    "focus_sounds": [
+     "-ed endings",
+     "consonant clusters"
+    ]
+   }
+  },
+  {
+   "id": "stevenson-treasure",
+   "text": "Squire Trelawney, Doctor Livesey, and the rest of these gentlemen having asked me to write down the whole particulars about Treasure Island, from the beginning to the end, keeping nothing back but the bearings of the island, and that only because there is still treasure not yet lifted, I take up my pen in the year of grace 17—, and go back to the time when my father kept the Admiral Benbow Inn, and the brown old seaman, with the saber cut, first took up his lodging under our roof.",
+   "author": "Robert Louis Stevenson",
+   "work": "Treasure Island",
+   "year": 1883,
+   "section": "Chapter I",
+   "theme": "story",
+   "words": 90,
+   "level": 3,
+   "source": {
+    "name": "Standard Ebooks",
+    "url": "https://standardebooks.org/ebooks/robert-louis-stevenson/treasure-island",
+    "license": "Public domain (Standard Ebooks' own edits are CC0)"
+   },
+   "pronunciation": {
+    "target_words": [
+     {
+      "word": "bearings",
+      "respelling": "BAIR-ingz",
+      "stress": "BAIR-ingz",
+      "tip": "Stress BAIR; end on a buzzing 'ngz'."
+     },
+     {
+      "word": "treasure",
+      "respelling": "TREZH-er",
+      "stress": "TREZH-er",
+      "tip": "The s is zh, as in 'measure'."
+     },
+     {
+      "word": "admiral",
+      "respelling": "AD-mer-ul",
+      "stress": "AD-mer-ul",
+      "tip": "Stress AD; three beats."
+     },
+     {
+      "word": "saber",
+      "respelling": "SAY-ber",
+      "stress": "SAY-ber",
+      "tip": "Stress SAY; a long a."
+     },
+     {
+      "word": "lodging",
+      "respelling": "LOJ-ing",
+      "stress": "LOJ-ing",
+      "tip": "The dg is j: LOJ-ing."
+     }
+    ],
+    "focus_sounds": [
+     "zh",
+     "soft g"
+    ]
+   }
+  },
+  {
+   "id": "doyle-the-woman",
+   "text": "To Sherlock Holmes she is always the woman. I have seldom heard him mention her under any other name. In his eyes she eclipses and predominates the whole of her sex. It was not that he felt any emotion akin to love for Irene Adler. All emotions, and that one particularly, were abhorrent to his cold, precise but admirably balanced mind. He was, I take it, the most perfect reasoning and observing machine that the world has seen, but as a lover he would have placed himself in a false position.",
+   "author": "Arthur Conan Doyle",
+   "work": "The Adventures of Sherlock Holmes",
+   "year": 1892,
+   "section": "A Scandal in Bohemia",
+   "theme": "story",
+   "words": 91,
+   "level": 1,
+   "source": {
+    "name": "Standard Ebooks",
+    "url": "https://standardebooks.org/ebooks/arthur-conan-doyle/the-adventures-of-sherlock-holmes",
+    "license": "Public domain (Standard Ebooks' own edits are CC0)"
+   },
+   "pronunciation": {
+    "target_words": [
+     {
+      "word": "eclipses",
+      "respelling": "ih-KLIP-siz",
+      "stress": "ih-KLIP-siz",
+      "tip": "Stress KLIP; end 'siz'."
+     },
+     {
+      "word": "abhorrent",
+      "respelling": "ub-HOR-unt",
+      "stress": "ub-HOR-unt",
+      "tip": "Stress HOR; the h is sounded."
+     },
+     {
+      "word": "precise",
+      "respelling": "prih-SYS",
+      "stress": "prih-SYS",
+      "tip": "Stress SYS; end on a hiss."
+     },
+     {
+      "word": "admirably",
+      "respelling": "AD-mer-uh-blee",
+      "stress": "AD-mer-uh-blee",
+      "tip": "Stress AD, not ad-MY-ruh-blee."
+     },
+     {
+      "word": "machine",
+      "respelling": "muh-SHEEN",
+      "stress": "muh-SHEEN",
+      "tip": "The ch is sh; stress SHEEN."
+     }
+    ],
+    "focus_sounds": [
+     "sh spellings",
+     "first-syllable stress"
+    ]
+   }
+  },
+  {
+   "id": "baum-kansas",
+   "text": "Dorothy lived in the midst of the great Kansas prairies, with Uncle Henry, who was a farmer, and Aunt Em, who was the farmer’s wife. Their house was small, for the lumber to build it had to be carried by wagon many miles. There were four walls, a floor and a roof, which made one room; and this room contained a rusty looking cookstove, a cupboard for the dishes, a table, three or four chairs, and the beds. Uncle Henry and Aunt Em had a big bed in one corner, and Dorothy a little bed in another corner.",
+   "author": "L. Frank Baum",
+   "work": "The Wonderful Wizard of Oz",
+   "year": 1900,
+   "section": "Chapter I",
+   "theme": "story",
+   "words": 98,
+   "level": 2,
+   "source": {
+    "name": "Standard Ebooks",
+    "url": "https://standardebooks.org/ebooks/l-frank-baum/the-wonderful-wizard-of-oz",
+    "license": "Public domain (Standard Ebooks' own edits are CC0)"
+   },
+   "pronunciation": {
+    "target_words": [
+     {
+      "word": "prairies",
+      "respelling": "PRAIR-eez",
+      "stress": "PRAIR-eez",
+      "tip": "Stress PRAIR; two beats."
+     },
+     {
+      "word": "lumber",
+      "respelling": "LUM-ber",
+      "stress": "LUM-ber",
+      "tip": "Stress LUM; a light 'ber'."
+     },
+     {
+      "word": "cupboard",
+      "respelling": "KUB-erd",
+      "stress": "KUB-erd",
+      "tip": "The p is silent: KUB-erd."
+     },
+     {
+      "word": "wagon",
+      "respelling": "WAG-un",
+      "stress": "WAG-un",
+      "tip": "Stress WAG; a light 'un'."
+     },
+     {
+      "word": "contained",
+      "respelling": "kun-TAYND",
+      "stress": "kun-TAYND",
+      "tip": "Stress TAYND."
+     }
+    ],
+    "focus_sounds": [
+     "silent p",
+     "schwa"
+    ]
+   }
+  },
+  {
+   "id": "carroll-rabbit",
+   "text": "Alice was beginning to get very tired of sitting by her sister on the bank, and of having nothing to do: once or twice she had peeped into the book her sister was reading, but it had no pictures or conversations in it, “and what is the use of a book,” thought Alice “without pictures or conversations?” So she was considering in her own mind (as well as she could, for the hot day made her feel very sleepy and stupid), whether the pleasure of making a daisy-chain would be worth the trouble of getting up and picking the daisies, when suddenly a White Rabbit with pink eyes ran close by her.",
+   "author": "Lewis Carroll",
+   "work": "Alice’s Adventures in Wonderland",
+   "year": 1865,
+   "section": "Chapter I",
+   "theme": "story",
+   "words": 112,
+   "level": 3,
+   "source": {
+    "name": "Standard Ebooks",
+    "url": "https://standardebooks.org/ebooks/lewis-carroll/alices-adventures-in-wonderland",
+    "license": "Public domain (Standard Ebooks' own edits are CC0)"
+   },
+   "pronunciation": {
+    "target_words": [
+     {
+      "word": "peeped",
+      "respelling": "PEEPT",
+      "stress": "PEEPT",
+      "tip": "One beat; the -ed is a crisp t."
+     },
+     {
+      "word": "pictures",
+      "respelling": "PIK-cherz",
+      "stress": "PIK-cherz",
+      "tip": "The t becomes ch: PIK-cherz."
+     },
+     {
+      "word": "considering",
+      "respelling": "kun-SID-er-ing",
+      "stress": "kun-SID-er-ing",
+      "tip": "Stress SID; four beats."
+     },
+     {
+      "word": "trouble",
+      "respelling": "TRUB-ul",
+      "stress": "TRUB-ul",
+      "tip": "The 'ou' is a short u; a dark l."
+     },
+     {
+      "word": "daisies",
+      "respelling": "DAY-zeez",
+      "stress": "DAY-zeez",
+      "tip": "Both s sounds buzz: DAY-zeez."
+     }
+    ],
+    "focus_sounds": [
+     "-ed endings",
+     "z"
+    ]
+   }
+  },
+  {
+   "id": "melville-ishmael",
+   "text": "Call me Ishmael. Some years ago—never mind how long precisely—having little or no money in my purse, and nothing particular to interest me on shore, I thought I would sail about a little and see the watery part of the world. It is a way I have of driving off the spleen and regulating the circulation.",
+   "author": "Herman Melville",
+   "work": "Moby-Dick",
+   "year": 1851,
+   "section": "Chapter I: Loomings",
+   "theme": "story",
+   "words": 56,
+   "level": 2,
+   "source": {
+    "name": "Standard Ebooks",
+    "url": "https://standardebooks.org/ebooks/herman-melville/moby-dick",
+    "license": "Public domain (Standard Ebooks' own edits are CC0)"
+   },
+   "pronunciation": {
+    "target_words": [
+     {
+      "word": "particular",
+      "respelling": "per-TIK-yuh-ler",
+      "stress": "per-TIK-yuh-ler",
+      "tip": "Stress TIK; keep the 'yuh'."
+     },
+     {
+      "word": "spleen",
+      "respelling": "SPLEEN",
+      "stress": "SPLEEN",
+      "tip": "A tight 'spl' cluster."
+     },
+     {
+      "word": "regulating",
+      "respelling": "REG-yuh-lay-ting",
+      "stress": "REG-yuh-lay-ting",
+      "tip": "Stress REG; 'yuh' in the middle."
+     },
+     {
+      "word": "circulation",
+      "respelling": "sur-kyuh-LAY-shun",
+      "stress": "sur-kyuh-LAY-shun",
+      "tip": "Stress LAY; four beats."
+     },
+     {
+      "word": "watery",
+      "respelling": "WAW-ter-ee",
+      "stress": "WAW-ter-ee",
+      "tip": "Three beats; 'WAW-tree' in fast speech."
+     }
+    ],
+    "focus_sounds": [
+     "kyuh / yuh",
+     "consonant clusters"
+    ]
+   }
+  },
+  {
+   "id": "london-buck",
+   "text": "Buck did not read the newspapers, or he would have known that trouble was brewing, not alone for himself, but for every tidewater dog, strong of muscle and with warm, long hair, from Puget Sound to San Diego. Because men, groping in the Arctic darkness, had found a yellow metal, and because steamship and transportation companies were booming the find, thousands of men were rushing into the Northland. These men wanted dogs, and the dogs they wanted were heavy dogs, with strong muscles by which to toil, and furry coats to protect them from the frost.",
+   "author": "Jack London",
+   "work": "The Call of the Wild",
+   "year": 1903,
+   "section": "Chapter I",
+   "theme": "story",
+   "words": 96,
+   "level": 3,
+   "source": {
+    "name": "Standard Ebooks",
+    "url": "https://standardebooks.org/ebooks/jack-london/the-call-of-the-wild",
+    "license": "Public domain (Standard Ebooks' own edits are CC0)"
+   },
+   "pronunciation": {
+    "target_words": [
+     {
+      "word": "muscle",
+      "respelling": "MUS-ul",
+      "stress": "MUS-ul",
+      "tip": "Silent c: MUS-ul."
+     },
+     {
+      "word": "arctic",
+      "respelling": "ARK-tik",
+      "stress": "ARK-tik",
+      "tip": "Say both c sounds: ARK-tik."
+     },
+     {
+      "word": "transportation",
+      "respelling": "trans-per-TAY-shun",
+      "stress": "trans-per-TAY-shun",
+      "tip": "Stress TAY; five beats."
+     },
+     {
+      "word": "toil",
+      "respelling": "TOYL",
+      "stress": "TOYL",
+      "tip": "'oy', then a dark l."
+     },
+     {
+      "word": "newspapers",
+      "respelling": "NOOZ-pay-perz",
+      "stress": "NOOZ-pay-perz",
+      "tip": "The s is z: NOOZ-pay-perz."
+     }
+    ],
+    "focus_sounds": [
+     "silent c",
+     "z spellings"
+    ]
+   }
+  },
+  {
+   "id": "woolf-flowers",
+   "text": "Mrs. Dalloway said she would buy the flowers herself. For Lucy had her work cut out for her. The doors would be taken off their hinges; Rumpelmayer’s men were coming. And then, thought Clarissa Dalloway, what a morning—fresh as if issued to children on a beach. What a lark! What a plunge! For so it had always seemed to her, when, with a little squeak of the hinges, which she could hear now, she had burst open the French windows and plunged at Bourton into the open air.",
+   "author": "Virginia Woolf",
+   "work": "Mrs. Dalloway",
+   "year": 1925,
+   "section": "Opening",
+   "theme": "story",
+   "words": 88,
+   "level": 1,
+   "source": {
+    "name": "Standard Ebooks",
+    "url": "https://standardebooks.org/ebooks/virginia-woolf/mrs-dalloway",
+    "license": "Public domain (Standard Ebooks' own edits are CC0)"
+   },
+   "pronunciation": {
+    "target_words": [
+     {
+      "word": "flowers",
+      "respelling": "FLOW-erz",
+      "stress": "FLOW-erz",
+      "tip": "Two beats: FLOW-erz."
+     },
+     {
+      "word": "hinges",
+      "respelling": "HIN-jiz",
+      "stress": "HIN-jiz",
+      "tip": "The g is j: HIN-jiz."
+     },
+     {
+      "word": "plunge",
+      "respelling": "PLUNJ",
+      "stress": "PLUNJ",
+      "tip": "One beat; end on a soft j."
+     },
+     {
+      "word": "squeak",
+      "respelling": "SKWEEK",
+      "stress": "SKWEEK",
+      "tip": "'skw', then a long ee."
+     },
+     {
+      "word": "windows",
+      "respelling": "WIN-dohz",
+      "stress": "WIN-dohz",
+      "tip": "End on a buzzing z."
+     }
+    ],
+    "focus_sounds": [
+     "soft g",
+     "kw"
+    ]
+   }
+  },
+  {
+   "id": "tagore-vermilion",
+   "text": "Mother, today there comes back to mind the vermilion mark at the parting of your hair, the sari which you used to wear, with its wide red border, and those wonderful eyes of yours, full of depth and peace. They came at the start of my life’s journey, like the first streak of dawn, giving me golden provision to carry me on my way.",
+   "author": "Rabindranath Tagore",
+   "work": "The Home and the World",
+   "year": 1919,
+   "section": "Bimala’s Story",
+   "theme": "india",
+   "words": 64,
+   "level": 3,
+   "source": {
+    "name": "Standard Ebooks",
+    "url": "https://standardebooks.org/ebooks/rabindranath-tagore/the-home-and-the-world/surendranath-tagore",
+    "license": "Public domain (Standard Ebooks' own edits are CC0)"
+   },
+   "translator": "Surendranath Tagore",
+   "pronunciation": {
+    "target_words": [
+     {
+      "word": "vermilion",
+      "respelling": "ver-MIL-yun",
+      "stress": "ver-MIL-yun",
+      "tip": "Stress MIL; 'yun' at the end."
+     },
+     {
+      "word": "wonderful",
+      "respelling": "WUN-der-ful",
+      "stress": "WUN-der-ful",
+      "tip": "The o is a short u."
+     },
+     {
+      "word": "journey",
+      "respelling": "JUR-nee",
+      "stress": "JUR-nee",
+      "tip": "Stress JUR; two beats."
+     },
+     {
+      "word": "provision",
+      "respelling": "pruh-VIZH-un",
+      "stress": "pruh-VIZH-un",
+      "tip": "Stress VIZH; the s is zh."
+     },
+     {
+      "word": "streak",
+      "respelling": "STREEK",
+      "stress": "STREEK",
+      "tip": "A tight 'str', then a long ee."
+     }
+    ],
+    "focus_sounds": [
+     "zh",
+     "str"
+    ]
+   }
+  },
+  {
+   "id": "chekhov-seafront",
+   "text": "It was said that a new person had appeared on the seafront: a lady with a little dog. Dmitri Dmitritch Gurov, who had by then been a fortnight at Yalta, and so was fairly at home there, had begun to take an interest in new arrivals. Sitting in Verney’s pavilion, he saw, walking on the seafront, a fair-haired young lady of medium height, wearing a beret; a white Pomeranian dog was running behind her.",
+   "author": "Anton Chekhov",
+   "work": "The Lady with the Dog",
+   "year": 1917,
+   "section": "",
+   "theme": "story",
+   "words": 74,
+   "level": 2,
+   "source": {
+    "name": "Standard Ebooks",
+    "url": "https://standardebooks.org/ebooks/anton-chekhov/short-fiction/constance-garnett",
+    "license": "Public domain (Standard Ebooks' own edits are CC0)"
+   },
+   "translator": "Constance Garnett",
+   "pronunciation": {
+    "target_words": [
+     {
+      "word": "fortnight",
+      "respelling": "FORT-nyt",
+      "stress": "FORT-nyt",
+      "tip": "Silent gh; stress FORT."
+     },
+     {
+      "word": "arrivals",
+      "respelling": "uh-RY-vulz",
+      "stress": "uh-RY-vulz",
+      "tip": "Stress RY; end on 'vulz'."
+     },
+     {
+      "word": "medium",
+      "respelling": "MEE-dee-um",
+      "stress": "MEE-dee-um",
+      "tip": "Stress MEE; three beats."
+     },
+     {
+      "word": "beret",
+      "respelling": "buh-RAY",
+      "stress": "buh-RAY",
+      "tip": "Silent t: buh-RAY."
+     },
+     {
+      "word": "pomeranian",
+      "respelling": "pom-uh-RAY-nee-un",
+      "stress": "pom-uh-RAY-nee-un",
+      "tip": "Stress RAY; five beats."
+     }
+    ],
+    "focus_sounds": [
+     "silent letters",
+     "French loanwords"
+    ]
+   }
+  },
+  {
+   "id": "jerome-museum",
+   "text": "I remember going to the British Museum one day to read up the treatment for some slight ailment of which I had a touch—hay fever, I fancy it was. I got down the book, and read all I came to read; and then, in an unthinking moment, I idly turned the leaves, and began to indolently study diseases, generally. I forget which was the first distemper I plunged into—some fearful, devastating scourge, I know—and, before I had glanced half down the list of “premonitory symptoms,” it was borne in upon me that I had fairly got it.",
+   "author": "Jerome K. Jerome",
+   "work": "Three Men in a Boat",
+   "year": 1889,
+   "section": "Chapter I",
+   "theme": "story",
+   "words": 97,
+   "level": 3,
+   "source": {
+    "name": "Standard Ebooks",
+    "url": "https://standardebooks.org/ebooks/jerome-k-jerome/three-men-in-a-boat",
+    "license": "Public domain (Standard Ebooks' own edits are CC0)"
+   },
+   "pronunciation": {
+    "target_words": [
+     {
+      "word": "museum",
+      "respelling": "myoo-ZEE-um",
+      "stress": "myoo-ZEE-um",
+      "tip": "Stress ZEE; three beats."
+     },
+     {
+      "word": "diseases",
+      "respelling": "dih-ZEE-ziz",
+      "stress": "dih-ZEE-ziz",
+      "tip": "Two buzzing z sounds."
+     },
+     {
+      "word": "scourge",
+      "respelling": "SKURJ",
+      "stress": "SKURJ",
+      "tip": "One beat; end on a soft j."
+     },
+     {
+      "word": "premonitory",
+      "respelling": "prih-MON-ih-tor-ee",
+      "stress": "prih-MON-ih-tor-ee",
+      "tip": "Stress MON; five beats."
+     },
+     {
+      "word": "symptoms",
+      "respelling": "SIMP-tumz",
+      "stress": "SIMP-tumz",
+      "tip": "Say the p: SIMP-tumz."
+     }
+    ],
+    "focus_sounds": [
+     "z spellings",
+     "consonant clusters"
+    ]
+   }
+  },
+  {
+   "id": "jacobs-tiger",
+   "text": "Once upon a time, a tiger was caught in a trap. He tried in vain to get out through the bars, and rolled and bit with rage and grief when he failed. By chance a poor Brahman came by. \"Let me out of this cage, oh pious one!\" cried the tiger. \"Nay, my friend,\" replied the Brahman mildly, \"you would probably eat me if I did.\" \"Not at all!\" swore the tiger with many oaths; \"on the contrary, I should be for ever grateful, and serve you as a slave!\"",
+   "author": "Joseph Jacobs (editor)",
+   "work": "Indian Fairy Tales",
+   "year": 1892,
+   "section": "The Tiger, the Brahman, and the Jackal",
+   "theme": "india",
+   "words": 90,
+   "level": 1,
+   "source": {
+    "name": "Project Gutenberg",
+    "url": "https://www.gutenberg.org/ebooks/7128",
+    "gutenberg_id": 7128,
+    "license": "Public domain in the USA"
+   },
+   "pronunciation": {
+    "target_words": [
+     {
+      "word": "pious",
+      "respelling": "PY-us",
+      "stress": "PY-us",
+      "tip": "Two beats: PY-us."
+     },
+     {
+      "word": "mildly",
+      "respelling": "MYLD-lee",
+      "stress": "MYLD-lee",
+      "tip": "Say the d before 'lee'."
+     },
+     {
+      "word": "probably",
+      "respelling": "PROB-uh-blee",
+      "stress": "PROB-uh-blee",
+      "tip": "Three beats, not 'probly'."
+     },
+     {
+      "word": "oaths",
+      "respelling": "OHTHS",
+      "stress": "OHTHS",
+      "tip": "Tongue out for th, then a hiss."
+     },
+     {
+      "word": "grateful",
+      "respelling": "GRAYT-ful",
+      "stress": "GRAYT-ful",
+      "tip": "Stress GRAYT; a crisp t."
+     }
+    ],
+    "focus_sounds": [
+     "th + s",
+     "dropped syllables"
+    ]
+   }
+  },
+  {
+   "id": "gatsby-green-light",
+   "text": "And as I sat there brooding on the old, unknown world, I thought of Gatsby’s wonder when he first picked out the green light at the end of Daisy’s dock. He had come a long way to this blue lawn, and his dream must have seemed so close that he could hardly fail to grasp it. He did not know that it was already behind him, somewhere back in that vast obscurity beyond the city, where the dark fields of the republic rolled on under the night.",
+   "author": "F. Scott Fitzgerald",
+   "work": "The Great Gatsby",
+   "year": 1925,
+   "section": "Chapter IX",
+   "theme": "story",
+   "words": 87,
+   "level": 3,
+   "source": {
+    "name": "Standard Ebooks",
+    "url": "https://standardebooks.org/ebooks/f-scott-fitzgerald/the-great-gatsby",
+    "license": "Public domain (Standard Ebooks' own edits are CC0)"
+   },
+   "pronunciation": {
+    "target_words": [
+     {
+      "word": "brooding",
+      "respelling": "BROO-ding",
+      "stress": "BROO-ding",
+      "tip": "A long oo; a light d."
+     },
+     {
+      "word": "unknown",
+      "respelling": "un-NOHN",
+      "stress": "un-NOHN",
+      "tip": "Silent k; stress NOHN."
+     },
+     {
+      "word": "grasp",
+      "respelling": "GRASP",
+      "stress": "GRASP",
+      "tip": "End on 'sp'; don't say 'graps'."
+     },
+     {
+      "word": "obscurity",
+      "respelling": "ub-SKYOOR-ih-tee",
+      "stress": "ub-SKYOOR-ih-tee",
+      "tip": "Stress SKYOOR; five beats."
+     },
+     {
+      "word": "republic",
+      "respelling": "rih-PUB-lik",
+      "stress": "rih-PUB-lik",
+      "tip": "Stress PUB."
+     }
+    ],
+    "focus_sounds": [
+     "sp / sk clusters",
+     "silent k"
+    ]
+   }
+  },
+  {
+   "id": "douglass-twelve",
+   "text": "I was now about twelve years old, and the thought of being a slave for life began to bear heavily upon my heart. Just about this time, I got hold of a book entitled “The Columbian Orator.” Every opportunity I got, I used to read this book. Among much of other interesting matter, I found in it a dialogue between a master and his slave. The slave was represented as having run away from his master three times. The dialogue represented the conversation which took place between them, when the slave was retaken the third time.",
+   "author": "Frederick Douglass",
+   "work": "Narrative of the Life of Frederick Douglass",
+   "year": 1845,
+   "section": "Chapter VII",
+   "theme": "speaking",
+   "words": 96,
+   "level": 1,
+   "source": {
+    "name": "Standard Ebooks",
+    "url": "https://standardebooks.org/ebooks/frederick-douglass/narrative-of-the-life-of-frederick-douglass",
+    "license": "Public domain (Standard Ebooks' own edits are CC0)"
+   },
+   "pronunciation": {
+    "target_words": [
+     {
+      "word": "twelve",
+      "respelling": "TWELV",
+      "stress": "TWELV",
+      "tip": "t + w together; end on a buzzing v."
+     },
+     {
+      "word": "entitled",
+      "respelling": "in-TY-tuld",
+      "stress": "in-TY-tuld",
+      "tip": "Stress TY; a dark l before the d."
+     },
+     {
+      "word": "orator",
+      "respelling": "OR-uh-ter",
+      "stress": "OR-uh-ter",
+      "tip": "Stress OR; three beats."
+     },
+     {
+      "word": "opportunity",
+      "respelling": "op-er-TOO-nih-tee",
+      "stress": "op-er-TOO-nih-tee",
+      "tip": "Stress TOO; five beats."
+     },
+     {
+      "word": "dialogue",
+      "respelling": "DY-uh-log",
+      "stress": "DY-uh-log",
+      "tip": "Stress DY; the '-ue' is silent."
+     }
+    ],
+    "focus_sounds": [
+     "v",
+     "silent letters"
+    ]
+   }
+  }
+ ]
+}

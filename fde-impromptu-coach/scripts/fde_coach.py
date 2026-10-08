@@ -4,7 +4,9 @@
 Daily impromptu-speaking practice for the Forward Deployed Engineer role:
 5 fresh questions in a Calibri/blue PowerPoint deck (60 s per slide, auto-advance),
 recorded with QuickTime, uploaded to YouTube as a private video, with a streak
-protected by escalating reminders.
+protected by escalating reminders. Two audio practices read verbatim passages
+from free public-domain books: pronunciation (pen method) and legato
+(smooth, connected speech).
 
 Run `fde_coach.py --help` for commands. Python 3.9+.
 """
@@ -175,6 +177,13 @@ def cmd_status(args) -> int:
         ps = pron["streak"]
         print(f"Pronunciation: {ps['current']} day(s)  |  best {ps['best']}  |  total {ps['total']}  |  "
               f"due words: {', '.join(pron['due_words']) or '-'}")
+    leg = st.get("legato")
+    if leg:
+        ls = leg["streak"]
+        state = "off" if not leg.get("enabled", True) else (
+            "recorded today" if (leg.get("today") or {}).get("recorded") else "not recorded today")
+        print(f"Legato: {ls['current']} day(s)  |  best {ls['best']}  |  total {ls['total']}  |  "
+              f"flow level {leg.get('next_flow_level', 1)}/3  |  {state}")
     t = st["today"]
     if not t:
         print(f"Today ({st['date']}): no deck yet")
@@ -247,14 +256,14 @@ def cmd_calendar_auth(args) -> int:
     from fdecoach import app, gcal
     ctx = _ctx(args)
     print(gcal.authorize(ctx.paths))
-    for line in app.calendar_sync(ctx):
+    for line in app.calendar_sync_all(ctx):
         print(line)
     return 0
 
 
 def cmd_calendar_sync(args) -> int:
     from fdecoach import app
-    for line in app.calendar_sync(_ctx(args), clear=args.clear):
+    for line in app.calendar_sync_all(_ctx(args), clear=args.clear):
         print(line)
     return 0
 
@@ -314,6 +323,12 @@ def cmd_doctor(args) -> int:
              "found" if cam and mic else
              "not found - run sessions on a Mac with a camera, make camera-less practice the default "
              "(config --set recording.mode=none), or practise and mark the day: fde-coach complete --no-video")
+    try:
+        from fdecoach import library
+        built, mine = len(library.builtin()), len(library.user_passages(paths))
+        line(built > 0, "Passage library (public-domain books)", f"{built} built-in + {mine} imported")
+    except Exception as exc:  # noqa: BLE001
+        line(False, "Passage library (public-domain books)", f"unreadable: {exc}")
     rec = paths.recordings_dir(cfg, create=False)
     if rec.exists():
         free = shutil.disk_usage(str(rec)).free / 1e9
@@ -449,11 +464,17 @@ def cmd_pronounce(args) -> int:
         _print(pronounce_session.daily(ctx))
         return 0
     if args.pron_command == "generate":
-        session, created = pronounce_session.ensure_today(ctx, replace=args.replace)
-        _print({"date": session["date"], "day_number": session["day_number"], "source": session["source"],
+        opts = {"passage_id": args.passage} if args.passage else {}
+        session, created = pronounce_session.ensure_today(ctx, replace=args.replace, **opts)
+        info = {"date": session["date"], "day_number": session["day_number"], "source": session["source"],
                 "created": created, "deck": session["deck_path"],
                 "words": session["words"], "notes": session.get("notes", []),
-                "paragraph": "hidden until you record (fde-coach pronounce history)"})
+                "paragraph": session["paragraph"] if args.reveal
+                else "hidden until you record (fde-coach pronounce history --reveal)"}
+        if session.get("passage"):
+            from fdecoach.library import credit_line
+            info["passage"] = credit_line(session["passage"])
+        _print(info)
         return 0
     if args.pron_command == "status":
         st = pronounce_session.status(ctx)
@@ -465,10 +486,12 @@ def cmd_pronounce(args) -> int:
               f"total {s['total']}  |  due words: {', '.join(st['due_words']) or '-'}")
         t = st["today"]
         if not t:
-            print(f"Today ({st['date'] if 'date' in st else ''}): no deck yet (built at the pronunciation daily run)")
+            print(f"Today ({st['date']}): no deck yet (built at the pronunciation daily run)")
         else:
             state = "RECORDED" if t["recorded"] else "NOT RECORDED YET"
             print(f"Today: Day {t['day_number']}  |  {state}  |  words: {', '.join(t.get('words') or [])}")
+            if t.get("passage"):
+                print(f"  passage: {t['passage']}")
             if t.get("audio"):
                 print(f"  audio: {t['audio']}")
             if t["recorded"]:
@@ -478,7 +501,7 @@ def cmd_pronounce(args) -> int:
             print(f"Pending uploads: {', '.join(st['pending_uploads'])}")
         return 0
     if args.pron_command == "history":
-        rows = pronounce_session.history_rows(ctx, limit=args.limit)
+        rows = pronounce_session.history_rows(ctx, limit=args.limit, reveal_today=args.reveal)
         if args.json:
             _print(rows)
             return 0
@@ -487,11 +510,12 @@ def cmd_pronounce(args) -> int:
         for r in rows:
             mark = "✓" if r["recorded"] else "✗"
             print(f"{mark} {r['date']}  Day {r['day']}  youtube: {r['youtube']}  words: {', '.join(r['words'])}")
+            if r.get("passage"):
+                print(f"     — {r['passage']}")
             print(f"     {r['paragraph']}")
         return 0
     if args.pron_command == "words":
         from fdecoach.config import save_config
-        pron = ctx.cfg.setdefault("pronunciation", {})
         if args.add:
             words = [w.strip().lower() for w in args.add if w.strip()]
             user = json.loads(ctx.paths.config.read_text(encoding="utf-8")) if ctx.paths.config.exists() else {}
@@ -513,6 +537,139 @@ def cmd_pronounce(args) -> int:
     if args.pron_command == "upload":
         for line in pronounce_session.upload_pending(ctx, interactive=True):
             print(line)
+        return 0
+    return 2
+
+
+def cmd_legato(args) -> int:
+    from fdecoach import app, legato_session
+    from fdecoach.library import credit_line
+    ctx = _ctx(args)
+    c = args.leg_command
+    if c == "session":
+        if args.detach:
+            app.spawn_detached(["legato", "session"] + (["--force"] if args.force else []))
+            print("Legato session started in the background: audio recording + slide show "
+                  "(about 5 minutes). Check progress with: fde-coach legato status")
+            return 0
+        res = legato_session.run_session(ctx, force=args.force)
+        _print(res)
+        return 0 if res.get("ok") else 1
+    if c == "daily":
+        _print(legato_session.daily(ctx))
+        return 0
+    if c == "generate":
+        session, created = legato_session.ensure_today(ctx, replace=args.replace, passage_id=args.passage)
+        _print({"date": session["date"], "day_number": session["day_number"], "created": created,
+                "deck": session["deck_path"], "passage": credit_line(session.get("passage") or {}),
+                "passage_id": session.get("passage_id"), "flow_level": session.get("flow_level"),
+                "linking_drill": len(session.get("chains") or []), "notes": session.get("notes", []),
+                "paragraph": session["paragraph"] if args.reveal
+                else "hidden until you record (fde-coach legato history --reveal)"})
+        return 0
+    if c == "status":
+        st = legato_session.status(ctx)
+        if args.json:
+            _print(st)
+            return 0
+        s = st["streak"]
+        print(f"Legato streak: {s['current']} day(s)  |  best {s['best']}  |  total {s['total']}  |  "
+              f"next flow level {st.get('next_flow_level', 1)}/3")
+        if not st.get("enabled", True):
+            print("Legato practice is off (turn on: fde-coach config --set legato.enabled=true)")
+        t = st["today"]
+        if not t:
+            print(f"Today ({st['date']}): no deck yet (built at the legato daily run, or: fde-coach legato generate)")
+        else:
+            state = "RECORDED" if t["recorded"] else "NOT RECORDED YET"
+            print(f"Today: Day {t['day_number']}  |  {state}  |  passage: {t.get('passage') or '-'}")
+            if t.get("audio"):
+                print(f"  audio: {t['audio']}")
+            if t["recorded"]:
+                yt = t.get("youtube") or {}
+                print(f"  youtube: {yt.get('url') or yt.get('status')}")
+        if st["pending_uploads"]:
+            print(f"Pending uploads: {', '.join(st['pending_uploads'])}")
+        return 0
+    if c == "history":
+        rows = legato_session.history_rows(ctx, limit=args.limit, reveal_today=args.reveal)
+        if args.json:
+            _print(rows)
+            return 0
+        if not rows:
+            print("No legato sessions yet.")
+        for r in rows:
+            mark = "\u2713" if r["recorded"] else "\u2717"
+            print(f"{mark} {r['date']}  Day {r['day']}  flow L{r.get('flow_level') or '-'}  "
+                  f"feedback: {r.get('feedback') or '-'}  youtube: {r['youtube']}")
+            print(f"     — {r.get('passage') or ''}")
+            print(f"     {r['paragraph']}")
+        return 0
+    if c == "upload":
+        for line in legato_session.upload_pending(ctx, interactive=True):
+            print(line)
+        return 0
+    return 2
+
+
+def cmd_library(args) -> int:
+    from fdecoach import library
+    ctx = _ctx(args)
+    c = args.lib_command
+    if c == "list":
+        items = library.all_passages(ctx.paths)
+        if args.theme:
+            items = [p for p in items if p.get("theme") == args.theme]
+        if args.level:
+            items = [p for p in items if int(p.get("level", 0)) == args.level]
+        if args.mine:
+            items = [p for p in items if p.get("origin") == "user"]
+        if args.json:
+            _print([{k: v for k, v in p.items() if k != "text"} for p in items])
+            return 0
+        for p in items:
+            print(f"{p['id']:28} L{p.get('level', '?')} {p.get('words', 0):4}w  {p.get('theme', ''):10} "
+                  f"{library.credit_line(p, short=True)}")
+        themes = sorted({p.get("theme", "") for p in library.all_passages(ctx.paths)})
+        print(f"\n{len(items)} passage(s). Themes: {', '.join(themes)}. "
+              "Levels: 1 short sentences, 2 medium, 3 long winding sentences.")
+        return 0
+    if c == "show":
+        p = library.get(ctx.paths, args.id)
+        if p is None:
+            print(f"No passage {args.id!r}. See: fde-coach library list")
+            return 1
+        src = p.get("source") or {}
+        print(library.credit_line(p))
+        print(f"{src.get('name', '')}  {src.get('url', '')}  ({src.get('license', '')})")
+        print(f"{p.get('words')} words  |  level {p.get('level')}  |  theme {p.get('theme')}\n")
+        print(p["text"])
+        words = (p.get("pronunciation") or {}).get("target_words") or []
+        if words:
+            print("\nPronunciation targets: " + ", ".join(f"{t['word']} ({t.get('stress', '')})" for t in words))
+        return 0
+    if c == "import-gutenberg":
+        res = library.import_gutenberg(ctx.paths, args.book_id, max_n=args.max, theme=args.theme or "",
+                                       year=args.year)
+        print(f"{res['title'] or 'Book ' + str(args.book_id)} — {res['author'] or 'unknown author'}: "
+              f"{res['added']} passage(s) added, {res['skipped']} already in the library "
+              f"({res['candidates']} readable paragraphs picked). Saved in {res['library_file']}")
+        if res["added"]:
+            print("They join the rotation for legato (and pronunciation, once Claude has marked up their hard words).")
+        return 0
+    if c == "import-file":
+        res = library.import_file(ctx.paths, Path(args.path), author=args.author, title=args.title, year=args.year,
+                                  url=args.url or "", theme=args.theme or "", max_n=args.max)
+        print(f"{res['title']} — {res['author']}: {res['added']} passage(s) added, {res['skipped']} skipped. "
+              f"Saved in {res['library_file']}")
+        return 0
+    if c == "remove":
+        p = library.get(ctx.paths, args.id)
+        if p is not None and p.get("origin") == "builtin":
+            print("Built-in passages can't be removed. To steer the choice use themes, e.g. "
+                  "fde-coach config --set 'legato.themes=[\"speaking\",\"india\"]'")
+            return 1
+        print("Removed." if library.remove_user(ctx.paths, args.id) else f"No imported passage {args.id!r}.")
         return 0
     return 2
 
@@ -608,12 +765,15 @@ def build_parser() -> argparse.ArgumentParser:
     psub.add_parser("daily", help="scheduled run: build the deck, notify, ask to start").set_defaults(func=cmd_pronounce)
     pg = psub.add_parser("generate", help="build today's paragraph + deck")
     pg.add_argument("--replace", action="store_true")
+    pg.add_argument("--passage", metavar="ID", help="use this library passage (see: fde-coach library list)")
+    pg.add_argument("--reveal", action="store_true", help="print the paragraph (spoils the cold read)")
     pg.set_defaults(func=cmd_pronounce)
     pst = psub.add_parser("status", help="pronunciation streak, today's state, words")
     pst.add_argument("--json", action="store_true")
     pst.set_defaults(func=cmd_pronounce)
     ph = psub.add_parser("history", help="past pronunciation sessions")
     ph.add_argument("--limit", type=int, default=14)
+    ph.add_argument("--reveal", action="store_true", help="also show today's paragraph before recording")
     ph.add_argument("--json", action="store_true")
     ph.set_defaults(func=cmd_pronounce)
     pw = psub.add_parser("words", help="manage the hard-word pool")
@@ -621,6 +781,58 @@ def build_parser() -> argparse.ArgumentParser:
     pw.add_argument("--remove", action="append", metavar="WORD")
     pw.set_defaults(func=cmd_pronounce)
     psub.add_parser("upload", help="assemble + upload pending pronunciation videos").set_defaults(func=cmd_pronounce)
+
+    s = sub.add_parser("legato", help="daily legato practice (smooth, connected speech)")
+    lsub = s.add_subparsers(dest="leg_command", required=True)
+    ls = lsub.add_parser("session", help="record today's legato session (audio only)")
+    ls.add_argument("--force", action="store_true")
+    ls.add_argument("--detach", action="store_true")
+    ls.set_defaults(func=cmd_legato)
+    lsub.add_parser("daily", help="scheduled run: build the deck, notify, ask to start").set_defaults(func=cmd_legato)
+    lg = lsub.add_parser("generate", help="build today's passage + deck")
+    lg.add_argument("--replace", action="store_true", help="a different passage (only before recording)")
+    lg.add_argument("--passage", metavar="ID", help="use this library passage (see: fde-coach library list)")
+    lg.add_argument("--reveal", action="store_true", help="print the passage (spoils the cold read)")
+    lg.set_defaults(func=cmd_legato)
+    lst = lsub.add_parser("status", help="legato streak and today's state")
+    lst.add_argument("--json", action="store_true")
+    lst.set_defaults(func=cmd_legato)
+    lh = lsub.add_parser("history", help="past legato sessions")
+    lh.add_argument("--limit", type=int, default=14)
+    lh.add_argument("--json", action="store_true")
+    lh.add_argument("--reveal", action="store_true", help="also show today's passage before recording")
+    lh.set_defaults(func=cmd_legato)
+    lsub.add_parser("upload", help="assemble + upload pending legato videos").set_defaults(func=cmd_legato)
+
+    s = sub.add_parser("library", help="reading passages from free, public-domain books")
+    lb = s.add_subparsers(dest="lib_command", required=True)
+    bl = lb.add_parser("list", help="list passages")
+    bl.add_argument("--theme")
+    bl.add_argument("--level", type=int, choices=[1, 2, 3])
+    bl.add_argument("--mine", action="store_true", help="only passages you imported")
+    bl.add_argument("--json", action="store_true")
+    bl.set_defaults(func=cmd_library)
+    bs = lb.add_parser("show", help="show one passage with its source")
+    bs.add_argument("id")
+    bs.set_defaults(func=cmd_library)
+    bg = lb.add_parser("import-gutenberg", help="add readable paragraphs from a Project Gutenberg book")
+    bg.add_argument("book_id", type=int, help="the number in gutenberg.org/ebooks/NUMBER")
+    bg.add_argument("--max", type=int, default=20, help="paragraphs to add, spread through the book (default 20)")
+    bg.add_argument("--theme", help="label, e.g. speaking, story, reflection, india")
+    bg.add_argument("--year", type=int, help="first publication year, for the credit line")
+    bg.set_defaults(func=cmd_library)
+    bf = lb.add_parser("import-file", help="add paragraphs from a text file you have the right to use")
+    bf.add_argument("path")
+    bf.add_argument("--author", required=True)
+    bf.add_argument("--title", required=True)
+    bf.add_argument("--year", type=int)
+    bf.add_argument("--url", help="where the text comes from (shown in the credit)")
+    bf.add_argument("--theme")
+    bf.add_argument("--max", type=int, default=20)
+    bf.set_defaults(func=cmd_library)
+    br = lb.add_parser("remove", help="remove a passage you imported")
+    br.add_argument("id")
+    br.set_defaults(func=cmd_library)
     return p
 
 

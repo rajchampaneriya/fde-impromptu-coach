@@ -75,10 +75,41 @@ escalating reminders.
 | Learner has no iPhone, so Apple Reminders sync does not reach them away from the Mac | Google Calendar "missed practice" events (calendar.events scope, same OAuth client): one per unrecorded day for today + 2 days, 5 alerts (4 popup, 1 email); recording deletes the day's event, so alerts only fire on missed days and still arrive when the Mac is off |
 | Tests on the user's Mac must never call the real Claude CLI, launchctl, camera or YouTube | `FDE_COACH_DRYRUN`, `FDE_COACH_NO_CLAUDE_DISCOVERY`, `FDE_COACH_AGENTS_DIR`, isolated data folder |
 
-## 6. Validation results
+## 6. v3: legato practice and human-written passages
+
+Request: add legato (smooth, connected speech) practice, and use paragraphs by
+human writers from free books instead of AI-generated text.
+
+| Change | Detail |
+|---|---|
+| Passage library | 56 verbatim passages from 34 pre-1929 works (authors/translators died before 1956), Standard Ebooks / Project Gutenberg, each with credit + link, theme, level and 5 hand-written pronunciation notes (280 words). `scripts/tools/build_passage_library.py build/verify/review`; learners add books with `library import-gutenberg` / `import-file` |
+| Legato practice | 06:00, own streak: breath & hum → linking drill from the passage → phrase map (`/` breaths, underlined joins) → intone → clean read → 45 s impromptu response. Marks computed from the text; flow level 1–3 with Choppy/Smooth calibration (`references/legato_design.md`) |
+| Pronunciation | Default `paragraph_source=library`: passage chosen to contain due words; Claude only annotates words lacking notes; credit on slides and in the YouTube description. The Claude-written paragraph remains as `paragraph_source=claude` |
+| Shared engine | `practice.py` runs build / record / video / upload / calendar / status for every audio practice from a spec; `pronounce_session` keeps its public API |
+| Chained sessions | FDE → "Pronunciation next?" → "Legato next?", each run in-process after the previous session releases its lock |
+
+Bugs found while reviewing v2 and fixed:
+
+| # | Bug | Fix |
+|---|---|---|
+| 1 | The after-FDE "Pronunciation practice next?" prompt never appeared: it checked `lock_is_held("session")` while the same session still held the lock (and a spawned session would have collided with that lock) | Offer after the lock is released and run the next session in-process |
+| 2 | `uninstall.sh` removed only two of the three agents; `com.fdecoach.pronounce` kept firing at 05:45 after uninstall | Removes all four agents |
+| 3 | `calendar-sync --clear`, `google_calendar.enabled=false` and uninstall left the pronunciation alerts in Google Calendar | `calendar-sync` covers every practice; the 15-minute tick keeps audio-practice alerts rolling forward too |
+| 4 | Pending pronunciation uploads were never listed (`History.pending_uploads` looks for `video_path`; audio sessions have `audio_path`) | Audio-aware `practice.pending_uploads`; failed uploads retried by the tick, capped at `youtube.max_attempts` |
+| 5 | `youtube.add_to_playlist` used an unimported `build` → NameError, swallowed, so playlists were never filled | Import added |
+| 6 | `pronounce history` showed today's paragraph before recording (the deck hides it) | Hidden until recorded; `--reveal` to show |
+| 7 | `pronounce status` printed "Today ():" (the status dict had no date) | Date included |
+| 8 | Warm-up slide footer overlapped the timer label | Footer moved above it |
+
+## 7. Validation results
 
 - `quick_validate.py`: skill valid (name, description ≤ 1024 chars, allowed keys).
 - Python: `py_compile`, `pyflakes` clean; `vermin` minimum version 3.7 (target 3.9 OK).
+- v3: 84 tests (58 original + 26 new: library integrity and provenance, verbatim reconstruction of every
+  passage from its reading marks, breath/link rules, legato end-to-end, flow calibration, no-repeat rotation,
+  chained offers, calendar coverage of all practices, pronunciation library mode with and without Claude,
+  imported-passage mark-up, real-ffmpeg video length). Decks rendered with LibreOffice and inspected; video
+  frames rendered with an Arial-metric font and inspected; `build_passage_library.py verify`: 56/56 verbatim.
 - Unit + end-to-end suite (`scripts/tests`, 32 tests, also run on Python 3.9): novelty, bank integrity, streak and level
   maths, 24-day no-repeat run, Claude output parsing, Claude failure modes (error, garbage,
   duplicates, partial, fenced) falling back to the bank, full daily → record → upload flow,

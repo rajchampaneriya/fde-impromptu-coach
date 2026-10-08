@@ -4,6 +4,11 @@ Five minutes a day, on camera, answering five questions you have never seen,
 each one a little harder than the last. Built for the communication and
 leadership side of the **Forward Deployed Engineer** role.
 
+Two short audio practices follow, reading **real paragraphs by human writers
+from free, public-domain books**, never AI-written text:
+**pronunciation** with the pen method (05:45) and **legato**, smooth connected
+speech (06:00). Each has its own streak.
+
 Every morning at **05:30** your Mac:
 
 1. writes 5 fresh impromptu questions (Claude Code, with a curated fallback bank),
@@ -59,8 +64,9 @@ Optional: `install.sh --time 06:00` to use a different daily time.
 
 The installer creates `~/FDE-Impromptu/` (history, decks, logs, settings), a
 Python virtual environment, the launcher `~/FDE-Impromptu/bin/fde-coach` (also
-linked to `~/.local/bin/fde-coach`), and two background jobs (launchd agents).
-It also copies the scripts to `~/FDE-Impromptu/src`, because macOS blocks
+linked to `~/.local/bin/fde-coach`), and four background jobs (launchd agents:
+05:30 FDE, 05:45 pronunciation, 06:00 legato, and a 15-minute reminder tick).
+It also copies the scripts and assets to `~/FDE-Impromptu/src`, because macOS blocks
 background jobs from reading protected folders such as Downloads and Documents;
 the schedule always runs from that copy.
 
@@ -195,6 +201,9 @@ at or before `event_time`. Turn the feature off with
 | Recorded some other way (e.g. on your phone) | `fde-coach complete --video ~/path/to/video.mov` |
 | Save disk space | `fde-coach config --set keep_recordings_days=14` (deletes local copies older than 14 days that are already on YouTube) |
 | Check today's calendar alert | `fde-coach status` ("armed" means it will alert you until you record) |
+| Legato practice now | `fde-coach legato session` (or "start legato" to Claude Code) |
+| Read a particular book today | `fde-coach library list`, then `fde-coach legato generate --replace --passage ID` |
+| Add passages from a free book | `fde-coach library import-gutenberg 2680` (the number in gutenberg.org/ebooks/N) |
 | Something went wrong | `fde-coach doctor`, then `references/troubleshooting.md` |
 
 During a session: look at the camera, not the slide. Each slide shows the
@@ -210,9 +219,10 @@ list what a strong answer does and a five-point self-review checklist.
 
 A second daily practice at **05:45** (its own streak, reminders and calendar
 alerts). A 7-slide deck trains the words you find hard to pronounce: warm-up
-words with respellings, the paragraph three times (once with a pen held
+words with respellings, today's passage three times (once with a pen held
 horizontally between your teeth — over-articulate — then without it, slow and
-clear), and the words again. It records **audio only** with QuickTime, keeps
+clear), and the words again. The passage is a verbatim paragraph from a
+public-domain book, credited on the slides and in the video description. It records **audio only** with QuickTime, keeps
 the `.m4a` in `~/Movies/FDE-Impromptu/pronunciation/`, assembles a
 slides-plus-voice MP4 with ffmpeg and uploads it privately to YouTube.
 
@@ -226,14 +236,67 @@ slides-plus-voice MP4 with ffmpeg and uploads it privately to YouTube.
 
 Words are scheduled like flashcards: a word you mark **hard** in the
 after-session dialog comes back tomorrow; each easy answer doubles the gap
-(1, 2, 4, 8 days); after four easy answers in a row a word retires. Paragraphs
-are written fresh every day by Claude Code (`references/pronunciation_design.md`
-is the rubric) with a curated 51-paragraph bank
-(`assets/pronunciation_bank.json`) as the offline fallback: each paragraph
-drills one sound pattern in a different work scenario, and no word is a
-target twice. ffmpeg missing?
+(1, 2, 4, 8 days); after four easy answers in a row a word retires. Each day
+picks a passage that contains your due words where possible; up to three due
+words lead the warm-up list, then the passage's own hard words (six in all),
+each with a hand-written respelling and tip. Claude Code is asked only to mark
+up words that have no notes yet (`references/pronunciation_annotation.md`); it
+never writes or edits the text, and without it the practice still works.
+
+Prefer the original AI-written work paragraphs? `fde-coach config --set
+pronunciation.paragraph_source=claude` brings back the Claude-written paragraph
+(`references/pronunciation_design.md`) with its 51-paragraph bank as fallback.
+ffmpeg missing?
 The audio is still kept and you are told how to fix it
 (`brew install ffmpeg`, then `fde-coach pronounce upload`).
+
+### Legato practice (smooth, connected speech)
+
+A third daily practice at **06:00**, audio only, about 5 minutes, its own
+streak, reminders and calendar alerts. Finishing the pronunciation practice
+offers it straight away. An 8-slide deck:
+
+1. **Breath & hum** (30 s): low breath, an 8-count hum opening into "mah", a
+   glide on one breath.
+2. **Linking drill** (45 s): joins taken from today's passage, e.g.
+   *turn it off → tur-ni-toff*, each twice, slowly, then at speed.
+3. **Read 1 · phrase map** (60 s): the passage with `/` where to breathe, `//` at
+   sentence ends, and the joined words underlined.
+4. **Read 2 · intone** (60 s): the same, chanted on one note, so every gap shows.
+5. **Read 3 · speak it** (60 s): clean text, natural voice, same thread.
+6. **Respond** (45 s): an impromptu answer to the author ("Agree or disagree:
+   one reason, one example", "Retell it to a colleague", …).
+
+After the session tap **Choppy / Mostly smooth / Smooth**. Passages get longer,
+more winding sentences as your *flow level* rises (1–3: up one level every 7
+sessions, nudged by your taps). The breath marks and joins are computed from
+the book's own text; the words are never changed.
+
+| You want to… | Do this |
+|---|---|
+| Start it now | `fde-coach legato session --detach` |
+| Streak and today's passage | `fde-coach legato status` |
+| Past sessions (with the passages) | `fde-coach legato history` |
+| Only certain themes | `fde-coach config --set 'legato.themes=["speaking","india"]'` |
+| Change the time / turn it off | `fde-coach config --set legato.daily_time=06:15` / `legato.enabled=false` |
+
+More detail: `references/legato_design.md`.
+
+### Reading passages from real books
+
+56 built-in passages from 34 public-domain works by 29 writers: *The Art of
+Public Speaking* (Carnegie & Esenwein) on pause, breath and fluency; Booker T.
+Washington, Franklin and Douglass on learning to speak; Tagore's *Gitanjali*
+and *The Cabuliwallah*; Gibran's *On Talking*; Marcus Aurelius, Thoreau,
+Emerson; and stories by Twain, Dickens, Austen, Fitzgerald, Woolf and others.
+Each is verbatim from a free Standard Ebooks or Project Gutenberg edition, with
+the link on the closing slide. `fde-coach library list` browses them,
+`library show ID` prints one.
+
+Add any free book: `fde-coach library import-gutenberg NUMBER` keeps up to 20
+readable paragraphs spread through the book; `fde-coach library import-file
+PATH --author … --title …` takes any text you have the right to use. Policy,
+licences and how to re-verify the built-in passages: `references/passage_sources.md`.
 
 ### Using Keynote
 
@@ -278,15 +341,19 @@ minute** there. PowerPoint on the Mac is the primary, fully timed experience.
 |---|---|
 | Settings | `~/FDE-Impromptu/config.json` |
 | Question history, streak | `~/FDE-Impromptu/state/history.json` |
+| Pronunciation / legato history | `~/FDE-Impromptu/state/pronunciation.json`, `legato.json` |
+| Passages you imported | `~/FDE-Impromptu/library/passages.json` |
 | Decks and thumbnails | `~/FDE-Impromptu/decks/` |
 | Scripts the schedule runs | `~/FDE-Impromptu/src/` (refreshed by `install.sh`) |
-| Videos | `~/Movies/FDE-Impromptu/` |
+| Videos | `~/Movies/FDE-Impromptu/` (audio practices in `pronunciation/` and `legato/`) |
 | Logs | `~/FDE-Impromptu/logs/` |
 | YouTube and Calendar sign-in | `~/FDE-Impromptu/secrets/` (only readable by you) |
 
-Only three things leave your Mac: the question-writing prompt sent through your
-Claude Code login, the private video and its thumbnail sent to your own YouTube
-channel, and the missed-practice events in your own Google Calendar.
+Only these things leave your Mac: the question-writing prompt (and, for
+pronunciation, the word mark-up prompt) sent through your Claude Code login, the
+private videos sent to your own YouTube channel, and the missed-practice events
+in your own Google Calendar. `library import-gutenberg` downloads a book from
+gutenberg.org; nothing is sent there.
 
 ## 7. Uninstall
 

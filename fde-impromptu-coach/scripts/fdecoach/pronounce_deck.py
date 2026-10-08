@@ -5,22 +5,34 @@ from __future__ import annotations
 import datetime as dt
 import logging
 import re
-import zipfile
 from pathlib import Path
-from typing import Any, Dict, List, Optional, Sequence, Tuple
+from typing import Any, Dict, List, Sequence, Tuple
 
 log = logging.getLogger("fdecoach")
 from pptx import Presentation
-from pptx.dml.color import RGBColor
 from pptx.enum.text import MSO_ANCHOR, PP_ALIGN
-from pptx.util import Emu, Inches, Pt
+from pptx.util import Emu, Inches
 
-from .deck import (BAR_Y, BLUE, BLUE_SOFT, BLUE_TINT, CONTENT_W, FONT, GRAY, GRAY_LIGHT, MARGIN, NAVY,
-                   SLIDE_H, SLIDE_W, WHITE, _background, _ensure_use_timings, _notes, _register_notes_master,
+from .deck import (BAR_Y, BLUE, BLUE_TINT, CONTENT_W, GRAY, MARGIN, NAVY,
+                   SLIDE_H, SLIDE_W, _background, _ensure_use_timings, _notes, _register_notes_master,
                    _rect, _spoiler_guard, _text, _timer, fit_font_size, make_show_copy,
                    set_auto_animations, set_transition)
 
 HEADER = "PRONUNCIATION PRACTICE"
+
+
+def _from_book(session: Dict[str, Any]) -> bool:
+    return bool(session.get("passage"))
+
+
+def target_rule(session: Dict[str, Any]) -> str:
+    return ("Bold words are today's targets — land every one." if _from_book(session)
+            else "Every target word appears twice — land both.")
+
+
+def credit(session: Dict[str, Any], short: bool = True) -> str:
+    from .library import credit_line
+    return credit_line(session["passage"], short=short) if _from_book(session) else ""
 
 
 def _pron(cfg: Dict[str, Any]) -> Dict[str, Any]:
@@ -81,8 +93,11 @@ def _intro_slide(prs, session: Dict[str, Any], stats: Dict[str, Any], cfg: Dict[
     _text(s, MARGIN, 3.6, 11.0, 1.6, [
         ("Hold a pen between your teeth for Round 2 only.", {"size": 22, "color": NAVY, "newline": True}),
         ("Read slowly. Exaggerate the consonants.", {"size": 22, "color": NAVY, "newline": True}),
-        ("Every target word appears twice — land both.", {"size": 22, "color": NAVY, "newline": True}),
+        (target_rule(session), {"size": 22, "color": NAVY, "newline": True}),
     ], line_spacing=1.3)
+    if _from_book(session):
+        _text(s, MARGIN, 5.25, 11.5, 0.4, [("Today’s passage:  ", {"size": 15, "bold": True, "color": BLUE}),
+                                            (credit(session), {"size": 15, "color": GRAY})])
     px, pw = 9.25, SLIDE_W - MARGIN - 9.25
     _rect(s, px, 1.45, pw, 1.6, BLUE_TINT)
     _text(s, px, 1.7, pw, 0.9, [(str(int(stats.get("current", 0))), {"size": 54, "bold": True, "color": BLUE})],
@@ -109,10 +124,10 @@ def _words_slide(prs, session: Dict[str, Any], cfg: Dict[str, Any], seconds: int
         tip = (t.get("tip") or "").strip()
         if tip and show_tips:
             runs.append((tip[:80], {"size": 13, "color": GRAY, "newline": True}))
-    _text(s, MARGIN, 1.3, CONTENT_W, 4.75, runs, line_spacing=1.0)
+    _text(s, MARGIN, 1.3, CONTENT_W, 4.6, runs, line_spacing=1.0)
     foot = "Each word slowly, then at normal speed." if again else "Say each word twice, slowly."
-    _text(s, MARGIN, 6.05, CONTENT_W, 0.35, [(foot, {"size": 18, "color": GRAY})])
-    effects = _timer(s, seconds, label=label, ticks=False)
+    # The instruction rides on the timer label: as a separate line it overlapped the label.
+    effects = _timer(s, seconds, label=f"{label}  ·  {foot}", ticks=False)
     set_transition(s, seconds * 1000)
     set_auto_animations(s, effects)
 
@@ -125,13 +140,17 @@ def _round_slide(prs, session: Dict[str, Any], cfg: Dict[str, Any], seconds: int
     if cue:
         _text(s, SLIDE_W - MARGIN - 4.2, 0.6, 4.2, 0.5, [(cue, {"size": 20, "bold": True, "color": BLUE})],
               align=PP_ALIGN.RIGHT)
-    size = fit_font_size(session["paragraph"], CONTENT_W, 4.55, sizes=(32, 30, 28, 26, 24, 22))
+    size = fit_font_size(session["paragraph"], CONTENT_W, 4.4, sizes=(32, 30, 28, 26, 24, 22))
     runs = _paragraph_runs(session["paragraph"], session["target_words"], size)
-    _text(s, MARGIN, 1.4, CONTENT_W, 4.55, runs, line_spacing=1.15)
+    _text(s, MARGIN, 1.4, CONTENT_W, 4.4, runs, line_spacing=1.15)
+    if _from_book(session):
+        _text(s, SLIDE_W - MARGIN - 6.4, BAR_Y - 0.42, 6.4, 0.3, [("— " + credit(session), {"size": 13, "color": GRAY})],
+              align=PP_ALIGN.RIGHT, name="Credit")
     effects = _timer(s, seconds, label=label, ticks=False)
     set_transition(s, seconds * 1000)
     set_auto_animations(s, effects)
-    _notes(s, f"{cue or 'Read naturally.'} Land every bold word twice before the bar runs out.")
+    twice = "" if _from_book(session) else " twice"
+    _notes(s, f"{cue or 'Read naturally.'} Land every bold word{twice} before the bar runs out.")
 
 
 def _closing_slide(prs, session: Dict[str, Any]) -> None:
@@ -142,6 +161,14 @@ def _closing_slide(prs, session: Dict[str, Any]) -> None:
     _text(s, MARGIN, 1.3, CONTENT_W, 0.9, [("That’s today’s pronunciation.", {"size": 44, "color": NAVY})])
     _text(s, MARGIN, 2.3, CONTENT_W, 0.5, [("Recording stops on its own. Listen back once: find one word to sharpen.",
                                             {"size": 18, "color": GRAY})])
+    if _from_book(session):
+        src = session["passage"].get("source") or {}
+        _text(s, MARGIN, 3.3, CONTENT_W, 1.2, [
+            ("TODAY’S PASSAGE", {"size": 13, "bold": True, "color": BLUE, "spacing": 150}),
+            (credit(session, short=False), {"size": 18, "color": NAVY, "newline": True, "space_before": 6}),
+            (f"{src.get('name', '')}  ·  {src.get('url', '')}  ·  public domain",
+             {"size": 14, "color": GRAY, "newline": True, "space_before": 4}),
+        ], name="Credit")
     set_transition(s, None)
 
 
@@ -256,7 +283,6 @@ def render_slide_pngs(session: Dict[str, Any], cfg: Dict[str, Any], out_dir: Pat
         return []
     out_dir.mkdir(parents=True, exist_ok=True)
     get = _fonts()
-    d = slide_durations(cfg)
     date = dt.date.fromisoformat(session["date"])
     paths: List[Path] = []
 
@@ -275,8 +301,10 @@ def render_slide_pngs(session: Dict[str, Any], cfg: Dict[str, Any], out_dir: Pat
     dr.text((128, 400), date.strftime("%A, %d %B %Y"), font=get(56), fill=_GRAY)
     for i, line in enumerate(["Hold a pen between your teeth for Round 2 only.",
                               "Read slowly. Exaggerate the consonants.",
-                              "Every target word appears twice — land both."]):
+                              target_rule(session)]):
         dr.text((128, 520 + i * 70), line, font=get(44, True), fill=_NAVY)
+    if _from_book(session):
+        dr.text((128, 800), "Today’s passage: " + credit(session), font=get(34), fill=_GRAY)
     save(img, 1, "intro")
 
     def words_img(idx: int, name: str, title: str, foot: str) -> None:
@@ -304,7 +332,10 @@ def render_slide_pngs(session: Dict[str, Any], cfg: Dict[str, Any], out_dir: Pat
         if cue:
             w = dr.textlength(cue, font=get(44, True))
             dr.text((_W - 128 - w, 72), cue, font=get(44, True), fill=_BLUE)
-        _draw_paragraph(dr, session["paragraph"], session["target_words"], (128, 200), (1664, 780))
+        _draw_paragraph(dr, session["paragraph"], session["target_words"], (128, 200), (1664, 740))
+        if _from_book(session):
+            line = "— " + credit(session)
+            dr.text((_W - 128 - dr.textlength(line, font=get(30)), 950), line, font=get(30), fill=_GRAY)
         dr.rectangle((128, 1000, _W - 128, 1020), fill=_SOFT)
         save(img, idx, name)
 
@@ -313,5 +344,10 @@ def render_slide_pngs(session: Dict[str, Any], cfg: Dict[str, Any], out_dir: Pat
     dr.text((128, 200), "That’s today’s pronunciation.", font=get(90, True), fill=_NAVY)
     dr.text((128, 360), "Recording stops on its own. Listen back once: find one word to sharpen.",
             font=get(42), fill=_GRAY)
+    if _from_book(session):
+        src = session["passage"].get("source") or {}
+        dr.text((128, 520), "TODAY’S PASSAGE", font=get(32, True), fill=_BLUE)
+        dr.text((128, 580), credit(session, short=False), font=get(40), fill=_NAVY)
+        dr.text((128, 650), f"{src.get('name', '')}  ·  {src.get('url', '')}  ·  public domain", font=get(32), fill=_GRAY)
     save(img, 7, "closing")
     return paths

@@ -1,14 +1,23 @@
-"""Pronunciation practice content: flashcard word scheduling and daily
-paragraph generation (headless claude -p with a curated bank fallback)."""
+"""Pronunciation practice content: flashcard word scheduling and the daily
+paragraph.
+
+Default (`pronunciation.paragraph_source = "library"`): the paragraph is a
+verbatim passage from a public-domain book (fdecoach.library), chosen to
+contain the learner's due words where possible. Its hard words come with
+hand-written coach notes; Claude is asked only to mark up words that have no
+notes yet (respelling + one tip) and never writes the text itself.
+
+Legacy (`"claude"`): headless claude -p writes a work-context paragraph, with
+the curated AI-written bank as the fallback."""
 from __future__ import annotations
 
 import datetime as dt
 import json
 import logging
 import re
-from pathlib import Path
-from typing import Any, Dict, List, Optional, Tuple
+from typing import Any, Dict, List, Optional, Sequence, Tuple
 
+from . import library
 from .config import ASSETS_DIR, REFERENCES_DIR, Paths
 from .questions import call_claude, is_duplicate
 from .state import History
@@ -20,6 +29,9 @@ MIN_WORDS = 90
 MAX_WORDS = 140
 MIN_USES = 2
 GAP_STEPS = (1, 2, 4, 8)
+MAX_SESSION_WORDS = 6
+MAX_DUE_IN_LIBRARY = 3
+FALLBACK_TIP = "Slowly, syllable by syllable, then at normal speed."
 RETIRE_AFTER = 4
 
 
@@ -189,9 +201,16 @@ def past_paragraphs(history: History) -> List[str]:
 
 
 def generate_content(history: History, cfg: Dict[str, Any], paths: Paths,
-                     date: dt.date) -> Tuple[Dict[str, Any], List[str]]:
-    """Returns (content, notes). Content always produced: Claude first, one retry,
-    then the curated bank."""
+                     date: dt.date, **options: Any) -> Tuple[Dict[str, Any], List[str]]:
+    """Returns (content, notes). Content is always produced."""
+    if str(cfg.get("pronunciation", {}).get("paragraph_source", "library")) == "claude":
+        return claude_content(history, cfg, paths, date)
+    return library_content(history, cfg, paths, date, passage_id=options.get("passage_id"))
+
+
+def claude_content(history: History, cfg: Dict[str, Any], paths: Paths,
+                   date: dt.date) -> Tuple[Dict[str, Any], List[str]]:
+    """Legacy mode: Claude writes the paragraph, one retry, then the curated bank."""
     due = due_words(history, cfg, date)
     past = past_paragraphs(history)
     notes: List[str] = []
@@ -216,3 +235,136 @@ def generate_content(history: History, cfg: Dict[str, Any], paths: Paths,
         notes.append(f"attempt {attempt}: {err}")
         log.info("Pronunciation attempt %d rejected: %s", attempt, err)
     return _from_bank(history, date, due), notes
+
+
+# --------------------------------------------------------------------------- library mode
+
+def used_passages(history: History) -> List[str]:
+    return [s["passage_id"] for _, s in sorted(history.sessions.items()) if s.get("passage_id")]
+
+
+def _known_annotation(word: str, history: History) -> Optional[Dict[str, Any]]:
+    """A word's coach note from the learner's own word log or any library passage."""
+    cached = history.data.get("annotations", {}).get(word)
+    if cached:
+        return dict(cached, word=word)
+    for p in library.builtin():
+        for t in (p.get("pronunciation") or {}).get("target_words", []):
+            if t["word"] == word:
+                return dict(t)
+    return None
+
+
+def build_annotation_prompt(text: str = "", words: Sequence[str] = (), count: int = 5) -> str:
+    """Claude only marks up words; it never writes or edits the passage."""
+    rubric = (REFERENCES_DIR / "pronunciation_annotation.md").read_text(encoding="utf-8")
+    if text:
+        task = (f"Pick exactly {count} words from the passage below that a fluent professional is most likely to "
+                "mispronounce, copying each word exactly as it appears (lowercase). Do not change the passage.\n\n"
+                f"# Passage (copy words exactly from here)\n\n{text}")
+    else:
+        task = "Annotate exactly these words:\n\n# Words to annotate\n\n" + "\n".join(f"- {w}" for w in words)
+    return ("You are writing coach notes for a pronunciation annotation task (pen method practice). "
+            "Do not use any tools. Do not ask questions. Reply with the JSON object only.\n\n"
+            f"# Rubric\n\n{rubric}\n\n# Task\n\n{task}\n\n"
+            "Return only the JSON object described in the Output schema section.")
+
+
+def _clean_note(t: Dict[str, Any]) -> Optional[Dict[str, Any]]:
+    word = str(t.get("word", "")).strip().lower()
+    if not word or " " in word:
+        return None
+    stress = str(t.get("stress") or t.get("respelling") or "").strip()[:60]
+    return {"word": word, "respelling": str(t.get("respelling") or stress).strip()[:60], "stress": stress,
+            "tip": str(t.get("tip", "")).strip()[:80]}
+
+
+def annotate_with_claude(cfg: Dict[str, Any], paths: Paths, text: str = "", words: Sequence[str] = (),
+                         count: int = 5) -> Dict[str, Any]:
+    """{"target_words": [...], "focus_sounds": [...]} or raises. Words picked
+    from a passage must really occur in it."""
+    raw = parse_paragraph_output(call_claude(build_annotation_prompt(text, words, count), cfg, paths))
+    if not isinstance(raw, dict) or not isinstance(raw.get("target_words"), list):
+        raise ValueError("annotation is not a JSON object with target_words")
+    notes = [n for n in (_clean_note(t) for t in raw["target_words"] if isinstance(t, dict)) if n]
+    if text:
+        notes = [n for n in notes if _uses(text, n["word"]) >= 1][:count]
+        if len(notes) < 3:
+            raise ValueError("annotation picked words that are not in the passage")
+    else:
+        want = {w.lower() for w in words}
+        notes = [n for n in notes if n["word"] in want]
+    return {"target_words": notes, "focus_sounds": [str(s) for s in raw.get("focus_sounds") or []][:4]}
+
+
+def _passage_notes(p: Dict[str, Any], cfg: Dict[str, Any], paths: Paths, notes: List[str]) -> Optional[Dict[str, Any]]:
+    ann = p.get("pronunciation")
+    if ann and ann.get("target_words"):
+        return ann
+    if p.get("origin") != "user" or not library_claude_ok(cfg):
+        return None
+    try:
+        ann = annotate_with_claude(cfg, paths, text=p["text"])
+    except Exception as exc:  # noqa: BLE001 - fall back to an annotated passage
+        notes.append(f"could not mark up {p['id']}: {exc}")
+        return None
+    library.update_user(paths, p["id"], lambda e: e.update(pronunciation=ann))
+    return ann
+
+
+def library_claude_ok(cfg: Dict[str, Any]) -> bool:
+    from .questions import resolve_claude
+    return bool(resolve_claude(cfg))
+
+
+def library_content(history: History, cfg: Dict[str, Any], paths: Paths, date: dt.date,
+                    passage_id: Optional[str] = None) -> Tuple[Dict[str, Any], List[str]]:
+    pron = cfg.get("pronunciation", {})
+    notes: List[str] = []
+    due = due_words(history, cfg, date)
+    passages = library.by_theme(library.all_passages(paths, bool(pron.get("include_user_passages", True))),
+                                pron.get("themes") or [])
+    annotated = [p for p in passages if (p.get("pronunciation") or {}).get("target_words")]
+    if passage_id:
+        chosen = library.get(paths, passage_id)
+        if chosen is None:
+            raise ValueError(f"no passage with id {passage_id!r} (see: fde-coach library list)")
+    else:
+        def score(p: Dict[str, Any]) -> float:
+            return sum(1.0 for w in due if _uses(p["text"], w)) + (0.5 if p in annotated else 0.0)
+        chosen = library.choose(passages, used_passages(history), date, "pronunciation", score=score)
+    ann = _passage_notes(chosen, cfg, paths, notes)
+    if ann is None:
+        chosen = library.choose(annotated or library.builtin(), used_passages(history), date, "pronunciation")
+        ann = chosen.get("pronunciation") or {"target_words": [], "focus_sounds": []}
+    text = chosen["text"]
+
+    # Due words first (those in the passage before the others), then the passage's own hard words.
+    due_sorted = sorted(due, key=lambda w: 0 if _uses(text, w) else 1)[:MAX_DUE_IN_LIBRARY]
+    missing = [w for w in due_sorted if _known_annotation(w, history) is None]
+    fresh: Dict[str, Dict[str, Any]] = {}
+    if missing and library_claude_ok(cfg):
+        try:
+            got = annotate_with_claude(cfg, paths, words=missing)
+            fresh = {t["word"]: t for t in got["target_words"]}
+        except Exception as exc:  # noqa: BLE001 - plain words still work on the slide
+            notes.append(f"word mark-up unavailable: {exc}")
+    targets: List[Dict[str, Any]] = []
+    for w in due_sorted:
+        note = _known_annotation(w, history) or fresh.get(w) or {"word": w, "respelling": "", "stress": "",
+                                                                    "tip": FALLBACK_TIP}
+        targets.append(dict(note, word=w))
+    for t in ann.get("target_words", []):
+        if len(targets) >= MAX_SESSION_WORDS:
+            break
+        if t["word"] not in {x["word"] for x in targets}:
+            targets.append(dict(t))
+    known = history.data.setdefault("annotations", {})
+    for t in targets:  # remember every coach note so a word keeps it when it comes back
+        if t.get("stress"):
+            known[t["word"]] = {k: t[k] for k in ("respelling", "stress", "tip") if k in t}
+        t["in_text"] = _uses(text, t["word"]) > 0
+    meta = {k: chosen.get(k) for k in ("id", "author", "work", "year", "section", "translator", "source", "level")
+            if chosen.get(k) is not None}
+    return {"paragraph": text, "target_words": targets, "focus_sounds": list(ann.get("focus_sounds") or []),
+            "passage": meta, "source": "library" if chosen.get("origin") != "user" else "library-user"}, notes

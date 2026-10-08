@@ -5,12 +5,13 @@ set -euo pipefail
 DATA_DIR="${FDE_COACH_HOME:-$HOME/FDE-Impromptu}"
 SKILL_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
-for label in com.fdecoach.daily com.fdecoach.reminder; do
+# All four agents (older versions forgot com.fdecoach.pronounce, which kept firing after uninstall)
+for label in com.fdecoach.daily com.fdecoach.reminder com.fdecoach.pronounce com.fdecoach.legato; do
   launchctl bootout "gui/$(id -u)/$label" >/dev/null 2>&1 || true
   rm -f "$HOME/Library/LaunchAgents/$label.plist"
   echo "Removed $label"
 done
-# Remove upcoming Google Calendar missed-practice alerts (best effort; needs the launcher)
+# Remove upcoming Google Calendar missed-practice alerts for every practice (best effort; needs the launcher)
 if [ -x "$DATA_DIR/bin/fde-coach" ]; then
   "$DATA_DIR/bin/fde-coach" calendar-sync --clear >/dev/null 2>&1 && echo "Removed upcoming Google Calendar alerts" || true
 fi

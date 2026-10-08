@@ -79,6 +79,8 @@ def _text(slide, x: float, y: float, w: float, h: float, runs: Sequence[Tuple[st
         f.size = Pt(style.get("size", 18))
         f.bold = bool(style.get("bold", False))
         f.italic = bool(style.get("italic", False))
+        if style.get("underline"):
+            f.underline = True
         f.color.rgb = style.get("color", NAVY)
         if style.get("spacing"):
             run._r.get_or_add_rPr().set("spc", str(int(style["spacing"])))

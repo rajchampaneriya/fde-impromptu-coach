@@ -30,10 +30,20 @@ If today is at risk, protect the streak first: record any way you can
 | Calendar: "authorization expired" | OAuth app in Testing, or access removed | publish the app (In production), then `fde-coach calendar-auth` |
 | Leftover "FDE practice not recorded yet" events | tool uninstalled without cleanup | `fde-coach calendar-sync --clear`, or delete them in Google Calendar |
 | Upload status "missing" | video file moved or deleted | Put it back at the recorded path, or upload it by hand |
-| Pronunciation video skipped | ffmpeg not installed | `brew install ffmpeg`; the .m4a is always kept. Retry with `fde-coach pronounce upload` |
+| Pronunciation or legato video skipped | ffmpeg not installed | `brew install ffmpeg`; the .m4a is always kept. Retry with `fde-coach pronounce upload` / `fde-coach legato upload` (the 15-minute tick also retries) |
 | Pronunciation audio not saved | QuickTime save quirk on macOS 26 | Same fallbacks as the FDE recording; the guided dialog asks you to press ⌘S. The .m4a lands in `~/Movies/FDE-Impromptu/pronunciation/` |
 | Pronunciation words never change | every word retired (4 easy answers in a row) | `fde-coach pronounce words --add WORD` — new words enter the schedule immediately |
-| Nothing happened at 05:45 | pronouncing agent not loaded | `fde-coach install-agents` (installs all three agents); check `pronounce.err.log` |
+| Nothing happened at 05:45 | pronouncing agent not loaded | `fde-coach install-agents` (installs all four agents); check `pronounce.err.log` |
+| Nothing happened at 06:00 | legato agent not loaded, or legato turned off | `fde-coach install-agents`; `fde-coach legato status` says if it is off (`config --set legato.enabled=true`); check `legato.err.log` |
+| No "Pronunciation practice next?" after the FDE session (older versions) | the prompt checked the session lock while still holding it, so it never showed | Fixed: the next practice is offered after the lock is released (FDE → pronunciation → legato). Turn the prompts off with `pronunciation.prompt_after_fde=false` / `legato.prompt_after_pronunciation=false` |
+| Pronunciation warm-up shows words without respellings | a due word has no coach notes yet and Claude Code was unavailable | It still works; the notes are added the next time Claude Code answers. `fde-coach doctor` shows the Claude CLI |
+| Want the old AI-written work paragraphs back | — | `fde-coach config --set pronunciation.paragraph_source=claude` |
+| Same few passages keep coming | a narrow `themes` filter, or every passage has been read once | `fde-coach config --set 'legato.themes=[]'` (same under `pronunciation`); add books with `fde-coach library import-gutenberg N` |
+| `library import-gutenberg` fails | offline, wrong ebook number, or the book has no plain-text edition | Check gutenberg.org/ebooks/N; download the .txt yourself and use `library import-file PATH --author … --title …` |
+| Imported book added 0 passages | its paragraphs are mostly dialogue, verse or very long | Try `--max 40`, or another book; prose of 50–130-word paragraphs works best |
+| Worried a built-in passage was altered | — | `python3 scripts/tools/build_passage_library.py verify` re-downloads the editions and compares every passage |
+| YouTube playlist never filled (older versions) | `add_to_playlist` raised NameError | Fixed; set `youtube.pronunciation_playlist_id` / `youtube.legato_playlist_id` |
+| Old pronunciation agent kept firing after uninstall | `uninstall.sh` skipped `com.fdecoach.pronounce` | Fixed (removes all four agents). Clean up by hand: `launchctl bootout gui/$(id -u)/com.fdecoach.pronounce` |
 | Deck file deleted | — | Any command (`fde-coach open`) rebuilds it from the saved questions |
 | Broke after a Homebrew Python upgrade | the virtual environment points at a removed Python | Re-run `install.sh` (history is kept) |
 | Want to start fresh | — | `bash uninstall.sh --purge`, then `install.sh` |
