@@ -22,6 +22,7 @@ from .deck import (BAR_Y, BLUE, BLUE_TINT, CONTENT_W, GRAY, GRAY_LIGHT, MARGIN, 
                    _timer, fit_font_size, make_show_copy, set_auto_animations, set_transition)
 from .legato import marked_tokens, phrase_map
 from .library import credit_line
+from .pronounce_deck import _draw_mixed, _symbol_font
 
 log = logging.getLogger("fdecoach")
 
@@ -38,11 +39,13 @@ INTRO_LINES = [
     "Breathe only at  /  — a fuller breath at  //.",
     "Smooth is not fast. Keep the voice moving.",
 ]
-ROUNDS = [  # (label, cue, marked)
-    ("Read 1 · phrase map", "One breath per phrase.", True),
-    ("Read 2 · intone", "Chant it on one note. No gaps.", True),
-    ("Read 3 · speak it", "Natural voice. Keep the thread.", False),
+ROUNDS = [  # (label, cue, marked, intonation)
+    ("Read 1 · phrase map", "One breath per phrase.", True, True),
+    ("Read 2 · intone", "Chant it on one note. No gaps.", True, False),
+    ("Read 3 · speak it", "Natural voice. Keep the thread.", False, False),
 ]
+
+LEGEND = "bold = stress · ‿ = link · ↗ rise · ↘ fall · / short pause · // long pause"
 
 
 def _leg(cfg: Dict[str, Any]) -> Dict[str, Any]:
@@ -76,20 +79,22 @@ def credit(session: Dict[str, Any], short: bool = True) -> str:
 
 # --------------------------------------------------------------------------- runs
 
-def _marked_runs(text: str, size: int, marked: bool) -> List[Tuple[str, Dict[str, Any]]]:
+def _marked_runs(text: str, size: int, marked: bool, intonation: bool = False) -> List[Tuple[str, Dict[str, Any]]]:
     if not marked:
         return [(text, {"size": size, "color": NAVY})]
     runs: List[Tuple[str, Dict[str, Any]]] = []
     for t in marked_tokens(text):
         space = " " if t["space"] else ""
+        join = "‿" if (intonation and t["linked"]) else (space if t["linked"] else "")
         if t["chain"]:
-            # the space inside a link is underlined too, so the join reads as one word
-            runs.append((t["text"] + (space if t["linked"] else ""),
-                         {"size": size, "color": BLUE, "underline": True}))
+            # the join inside a link is underlined too, so it reads as one word
+            runs.append((t["text"] + join, {"size": size, "color": BLUE, "underline": True, "bold": intonation}))
             if not t["linked"] and not t["mark"]:
                 runs.append((space, {"size": size, "color": NAVY}))
         else:
             runs.append((t["text"] + ("" if t["mark"] else space), {"size": size, "color": NAVY}))
+        if intonation and t["pitch"]:
+            runs.append((t["pitch"], {"size": size - 2, "bold": True, "color": GRAY_LIGHT}))
         if t["mark"]:
             runs.append((f" {t['mark']} ", {"size": size - 2, "bold": True, "color": GRAY_LIGHT}))
     return [r for r in runs if r[0]]
@@ -167,7 +172,8 @@ def _links_slide(prs, session: Dict[str, Any], seconds: int) -> None:
               "turn it off becomes tur-ni-toff. No glottal stop, no gap.")
 
 
-def _round_slide(prs, session: Dict[str, Any], seconds: int, label: str, cue: str, marked: bool) -> None:
+def _round_slide(prs, session: Dict[str, Any], seconds: int, label: str, cue: str, marked: bool,
+                 intonation: bool = False) -> None:
     s = prs.slides.add_slide(prs.slide_layouts[6])
     _background(s)
     _label(s, label)
@@ -176,7 +182,10 @@ def _round_slide(prs, session: Dict[str, Any], seconds: int, label: str, cue: st
     text = session["paragraph"]
     probe = phrase_map(text) if marked else text
     size = fit_font_size(probe, CONTENT_W, 4.4, sizes=(30, 28, 26, 24, 22, 20))
-    _text(s, MARGIN, 1.4, CONTENT_W, 4.4, _marked_runs(text, size, marked), line_spacing=1.2, name="Passage")
+    _text(s, MARGIN, 1.4, CONTENT_W, 4.4, _marked_runs(text, size, marked, intonation), line_spacing=1.2,
+          name="Passage")
+    if intonation:
+        _text(s, MARGIN, BAR_Y - 0.42, 7.0, 0.3, [(LEGEND, {"size": 12, "color": GRAY_LIGHT})], name="Legend")
     _text(s, SLIDE_W - MARGIN - 6.4, BAR_Y - 0.42, 6.4, 0.3, [("— " + credit(session), {"size": 13, "color": GRAY})],
           align=PP_ALIGN.RIGHT, name="Credit")
     effects = _timer(s, seconds, label=label, ticks=False)
@@ -231,8 +240,8 @@ def build_deck(session: Dict[str, Any], stats: Dict[str, Any], cfg: Dict[str, An
     _intro_slide(prs, session, stats, cfg)
     _warmup_slide(prs, cfg, d[1])
     _links_slide(prs, session, d[2])
-    for (label, cue, marked), secs in zip(ROUNDS, d[3:6]):
-        _round_slide(prs, session, secs, label, cue, marked)
+    for (label, cue, marked, intonation), secs in zip(ROUNDS, d[3:6]):
+        _round_slide(prs, session, secs, label, cue, marked, intonation)
     _respond_slide(prs, session, d[6])
     _closing_slide(prs, session)
     _register_notes_master(prs)
@@ -257,14 +266,20 @@ _W, _H = 1920, 1080
 _NAVY, _BLUE, _GRAY, _LIGHT, _SOFT = "#0B2545", "#1F5FBF", "#5B6B7F", "#8A98A9", "#DCE7F7"
 
 
-def _draw_marked(draw, get, text: str, marked: bool, xy: Tuple[int, int], wh: Tuple[int, int]) -> None:
+def _draw_marked(draw, get, text: str, marked: bool, xy: Tuple[int, int], wh: Tuple[int, int],
+                 intonation: bool = False) -> None:
     """Wrapped passage; underlines joins (including the joined space); grey
-    breath marks. Original spacing is kept ("men—that" stays joined)."""
+    breath marks and pitch arrows. Original spacing is kept ("men—that" stays
+    joined)."""
     pieces: List[Tuple[str, str, bool, bool]] = []  # (text, kind, joined_to_next, space_after)
     for t in marked_tokens(text):
         kind = "chain" if (marked and t["chain"]) else "plain"
         has_mark = marked and bool(t["mark"])
         pieces.append((t["text"], kind, marked and t["linked"], t["space"] or has_mark))
+        if intonation and t["linked"]:
+            pieces.append(("‿", "tie", False, False))
+        if intonation and t["pitch"]:
+            pieces.append((t["pitch"], "mark", False, True))
         if has_mark:
             pieces.append((t["mark"], "mark", False, t["space"] or True))
     size = 46
@@ -284,14 +299,16 @@ def _draw_marked(draw, get, text: str, marked: bool, xy: Tuple[int, int], wh: Tu
             break
         size -= 2
     font = get(size)
+    sym = _symbol_font(size)
     space = draw.textlength(" ", font=font)
     x0, y = xy
     for line in lines:
         x = x0
         for i, (word, kind, joined, space_after) in enumerate(line):
-            color = {"chain": _BLUE, "mark": _LIGHT, "plain": _NAVY}[kind]
-            draw.text((x, y), word, font=font, fill=color)
-            w = draw.textlength(word, font=font)
+            color = {"chain": _BLUE, "mark": _LIGHT, "tie": _BLUE, "plain": _NAVY}[kind]
+            f = sym if kind == "mark" else (get(size, True) if (intonation and kind == "chain") else font)
+            draw.text((x, y), word, font=f, fill=color)
+            w = draw.textlength(word, font=f)
             gap = space if space_after else 0
             if kind == "chain":
                 end = x + w + (gap if joined and i < len(line) - 1 else 0)
@@ -352,12 +369,14 @@ def render_slide_pngs(session: Dict[str, Any], cfg: Dict[str, Any], out_dir: Pat
     dr.text((128, 980), "Each one twice: slowly with the join, then at speed.", font=get(38), fill=_GRAY)
     save(img, 3, "links")
 
-    for idx, (label, cue, marked) in enumerate(ROUNDS, start=4):
+    for idx, (label, cue, marked, intonation) in enumerate(ROUNDS, start=4):
         img, dr = slide()
         dr.text((128, 80), label.upper(), font=get(34, True), fill=_BLUE)
         w = dr.textlength(cue, font=get(44, True))
         dr.text((_W - 128 - w, 72), cue, font=get(44, True), fill=_BLUE)
-        _draw_marked(dr, get, session["paragraph"], marked, (128, 200), (1664, 730))
+        _draw_marked(dr, get, session["paragraph"], marked, (128, 200), (1664, 730), intonation)
+        if intonation:
+            _draw_mixed(dr, (128, 148), LEGEND, 30, _GRAY, get)
         line = "— " + credit(session)
         dr.text((_W - 128 - dr.textlength(line, font=get(30)), 950), line, font=get(30), fill=_GRAY)
         dr.rectangle((128, 1000, _W - 128, 1020), fill=_SOFT)

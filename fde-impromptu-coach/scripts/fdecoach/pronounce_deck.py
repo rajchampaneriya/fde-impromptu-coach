@@ -13,12 +13,14 @@ from pptx import Presentation
 from pptx.enum.text import MSO_ANCHOR, PP_ALIGN
 from pptx.util import Emu, Inches
 
-from .deck import (BAR_Y, BLUE, BLUE_TINT, CONTENT_W, GRAY, MARGIN, NAVY,
+from .deck import (BAR_Y, BLUE, BLUE_TINT, CONTENT_W, GRAY, GRAY_LIGHT, MARGIN, NAVY,
                    SLIDE_H, SLIDE_W, _background, _ensure_use_timings, _notes, _register_notes_master,
                    _rect, _spoiler_guard, _text, _timer, fit_font_size, make_show_copy,
                    set_auto_animations, set_transition)
+from .legato import marked_tokens
 
 HEADER = "PRONUNCIATION PRACTICE"
+LEGEND = "bold = stress · ‿ = link · ↗ rise · ↘ fall · / short pause · // long pause"
 
 
 def _from_book(session: Dict[str, Any]) -> bool:
@@ -63,20 +65,37 @@ def chapters(session: Dict[str, Any], cfg: Dict[str, Any], offset: float = 0.0) 
 
 # --------------------------------------------------------------------------- runs
 
-def _paragraph_runs(paragraph: str, targets: Sequence[str], size: int) -> List[Tuple[str, Dict[str, Any]]]:
-    """Paragraph split into runs; target words bold blue."""
+def _paragraph_runs(paragraph: str, targets: Sequence[str], size: int,
+                    notated: bool = False) -> List[Tuple[str, Dict[str, Any]]]:
+    """Paragraph split into runs; target words bold blue. With `notated`, add
+    legato-style pitch arrows, pause marks and '‿' joins (Round 1 only)."""
+    if not notated:
+        words = [t["word"].lower() for t in targets]
+        pattern = re.compile(r"\b(" + "|".join(re.escape(w) for w in words) + r")\b", re.IGNORECASE)
+        runs: List[Tuple[str, Dict[str, Any]]] = []
+        pos = 0
+        for m in pattern.finditer(paragraph):
+            if m.start() > pos:
+                runs.append((paragraph[pos:m.start()], {"size": size, "color": NAVY}))
+            runs.append((m.group(0), {"size": size, "bold": True, "color": BLUE}))
+            pos = m.end()
+        if pos < len(paragraph):
+            runs.append((paragraph[pos:], {"size": size, "color": NAVY}))
+        return runs
     words = [t["word"].lower() for t in targets]
-    pattern = re.compile(r"\b(" + "|".join(re.escape(w) for w in words) + r")\b", re.IGNORECASE)
-    runs: List[Tuple[str, Dict[str, Any]]] = []
-    pos = 0
-    for m in pattern.finditer(paragraph):
-        if m.start() > pos:
-            runs.append((paragraph[pos:m.start()], {"size": size, "color": NAVY}))
-        runs.append((m.group(0), {"size": size, "bold": True, "color": BLUE}))
-        pos = m.end()
-    if pos < len(paragraph):
-        runs.append((paragraph[pos:], {"size": size, "color": NAVY}))
-    return runs
+    plain = {"size": size, "color": NAVY}
+    mark = {"size": size - 2, "bold": True, "color": GRAY_LIGHT}
+    runs = []
+    for t in marked_tokens(paragraph):
+        bare = re.sub(r"^[^\w]+|[^\w']+$", "", t["text"].replace("’", "'")).lower()
+        hit = bare in words
+        suffix = "‿" if t["linked"] else ("" if t["mark"] else (" " if t["space"] else ""))
+        runs.append((t["text"] + suffix, {"size": size, "bold": hit, "color": BLUE if hit else NAVY}))
+        if t["pitch"]:
+            runs.append((t["pitch"], mark))
+        if t["mark"]:
+            runs.append((f" {t['mark']} ", mark))
+    return [r for r in runs if r[0]]
 
 
 # --------------------------------------------------------------------------- slides
@@ -133,7 +152,7 @@ def _words_slide(prs, session: Dict[str, Any], cfg: Dict[str, Any], seconds: int
 
 
 def _round_slide(prs, session: Dict[str, Any], cfg: Dict[str, Any], seconds: int, label: str,
-                 cue: str = "") -> None:
+                 cue: str = "", notated: bool = False) -> None:
     s = prs.slides.add_slide(prs.slide_layouts[6])
     _background(s)
     _text(s, MARGIN, 0.7, 8.0, 0.35, [(label.upper(), {"size": 14, "bold": True, "color": BLUE, "spacing": 150})])
@@ -141,8 +160,10 @@ def _round_slide(prs, session: Dict[str, Any], cfg: Dict[str, Any], seconds: int
         _text(s, SLIDE_W - MARGIN - 4.2, 0.6, 4.2, 0.5, [(cue, {"size": 20, "bold": True, "color": BLUE})],
               align=PP_ALIGN.RIGHT)
     size = fit_font_size(session["paragraph"], CONTENT_W, 4.4, sizes=(32, 30, 28, 26, 24, 22))
-    runs = _paragraph_runs(session["paragraph"], session["target_words"], size)
+    runs = _paragraph_runs(session["paragraph"], session["target_words"], size, notated)
     _text(s, MARGIN, 1.4, CONTENT_W, 4.4, runs, line_spacing=1.15)
+    if notated:
+        _text(s, MARGIN, BAR_Y - 0.42, 7.0, 0.3, [(LEGEND, {"size": 12, "color": GRAY_LIGHT})], name="Legend")
     if _from_book(session):
         _text(s, SLIDE_W - MARGIN - 6.4, BAR_Y - 0.42, 6.4, 0.3, [("— " + credit(session), {"size": 13, "color": GRAY})],
               align=PP_ALIGN.RIGHT, name="Credit")
@@ -180,7 +201,7 @@ def build_deck(session: Dict[str, Any], stats: Dict[str, Any], cfg: Dict[str, An
     d = slide_durations(cfg)
     _intro_slide(prs, session, stats, cfg)
     _words_slide(prs, session, cfg, d[1], "Warm-up words")
-    _round_slide(prs, session, cfg, d[2], "Round 1 · without pen")
+    _round_slide(prs, session, cfg, d[2], "Round 1 · without pen", notated=True)
     _round_slide(prs, session, cfg, d[3], "Round 2 · pen between teeth", "Pen between teeth. Over-articulate.")
     _round_slide(prs, session, cfg, d[4], "Round 3 · pen out", "Pen out. Slow and clear.")
     _words_slide(prs, session, cfg, d[5], "Words again", again=True)
@@ -204,7 +225,7 @@ def build_deck(session: Dict[str, Any], stats: Dict[str, Any], cfg: Dict[str, An
 # --------------------------------------------------------------------------- PNG renders (video)
 
 _W, _H = 1920, 1080
-_NAVY, _BLUE, _GRAY, _SOFT, _TINT = "#0B2545", "#1F5FBF", "#5B6B7F", "#DCE7F7", "#F1F6FD"
+_NAVY, _BLUE, _GRAY, _LIGHT, _SOFT, _TINT = "#0B2545", "#1F5FBF", "#5B6B7F", "#8A98A9", "#DCE7F7", "#F1F6FD"
 
 
 def _fonts():
@@ -232,32 +253,67 @@ def _fonts():
     return get
 
 
-def _wrap_words(words: List[Tuple[str, bool]], draw, font_pair, max_w: int) -> List[List[Tuple[str, bool]]]:
-    """Greedy wrap of (word, is_target) pairs; returns lines."""
+_SYM_CACHE: Dict[Tuple[int], Any] = {}
+
+
+def _symbol_font(size: int):
+    """Apple Symbols has the pitch/link glyphs (↗ ↘ ‿) that Arial lacks."""
+    from PIL import ImageFont
+    if size not in _SYM_CACHE:
+        _SYM_CACHE[size] = ImageFont.truetype("/System/Library/Fonts/Apple Symbols.ttf", size)
+    return _SYM_CACHE[size]
+
+
+def _draw_mixed(draw, xy, text: str, size: int, fill, get=None) -> None:
+    """Draw text char-by-char, switching to Apple Symbols for ↗ ↘ ‿."""
+    if get is None:
+        get = _fonts()
+    f = get(size)
+    x, y = xy
+    for ch in text:
+        cf = _symbol_font(size) if ch in "↗↘‿" else f
+        draw.text((x, y), ch, font=cf, fill=fill)
+        x += draw.textlength(ch, font=cf)
+
+
+def _wrap_words(words: List[Tuple[str, bool, str]], draw, font_pair, max_w: int) -> List[List[Tuple[str, bool, str]]]:
+    """Greedy wrap of (word, is_target, kind) triples; returns lines."""
     lines, line, w = [], [], 0
-    for word, target in words:
+    for word, target, kind in words:
         f = font_pair(target)
         ww = draw.textlength(word + " ", font=f)
         if line and w + ww > max_w:
             lines.append(line)
             line, w = [], 0
-        line.append((word, target))
+        line.append((word, target, kind))
         w += ww
     if line:
         lines.append(line)
     return lines
 
 
-def _draw_paragraph(draw, paragraph: str, targets: Sequence[str], xy, wh) -> None:
+def _draw_paragraph(draw, paragraph: str, targets: Sequence[str], xy, wh, notated: bool = False) -> None:
     get = _fonts()
     size = 44
     words = [t["word"].lower() for t in targets]
-    import re as _re
-    pattern = _re.compile(r"\b(" + "|".join(_re.escape(w) for w in words) + r")\b", _re.IGNORECASE)
-    toks: List[Tuple[str, bool]] = []
-    for piece in _re.findall(r"\S+\s*|\s+", paragraph):
-        toks.append((piece.strip(), bool(pattern.search(piece))))  # search: "word," and "word." count too
-    toks = [(w, t) for w, t in toks if w]
+    if not notated:
+        import re as _re
+        pattern = _re.compile(r"\b(" + "|".join(_re.escape(w) for w in words) + r")\b", _re.IGNORECASE)
+        toks: List[Tuple[str, bool, str]] = []
+        for piece in _re.findall(r"\S+\s*|\s+", paragraph):
+            if piece.strip():  # search: "word," and "word." count as targets too
+                toks.append((piece.strip(), bool(pattern.search(piece)), "word"))
+    else:
+        toks = []
+        for t in marked_tokens(paragraph):
+            bare = re.sub(r"^[^\w]+|[^\w']+$", "", t["text"].replace("’", "'")).lower()
+            toks.append((t["text"], bare in words, "word"))
+            if t["linked"]:
+                toks.append(("‿", False, "tie"))
+            if t["pitch"]:
+                toks.append((t["pitch"], False, "mark"))
+            if t["mark"]:
+                toks.append((t["mark"], False, "mark"))
     while size >= 26:
         font_pair = lambda target: get(size, True) if target else get(size)  # noqa: E731
         lines = _wrap_words(toks, draw, font_pair, wh[0])
@@ -267,10 +323,11 @@ def _draw_paragraph(draw, paragraph: str, targets: Sequence[str], xy, wh) -> Non
     x0, y0 = xy
     for line in lines:
         x = x0
-        for word, target in line:
-            f = get(size, True) if target else get(size)
-            draw.text((x, y0), word, font=f, fill=_BLUE if target else _NAVY)
-            x += draw.textlength(word + " ", font=f)
+        for word, target, kind in line:
+            f = _symbol_font(size) if kind in ("mark", "tie") else (get(size, True) if target else get(size))
+            fill = _BLUE if (target or kind == "tie") else (_LIGHT if kind == "mark" else _NAVY)
+            draw.text((x, y0), word, font=f, fill=fill)
+            x += draw.textlength(word, font=f) + (draw.textlength(" ", font=f) if kind == "word" else 0)
         y0 += int(size * 1.35)
 
 
@@ -332,7 +389,10 @@ def render_slide_pngs(session: Dict[str, Any], cfg: Dict[str, Any], out_dir: Pat
         if cue:
             w = dr.textlength(cue, font=get(44, True))
             dr.text((_W - 128 - w, 72), cue, font=get(44, True), fill=_BLUE)
-        _draw_paragraph(dr, session["paragraph"], session["target_words"], (128, 200), (1664, 740))
+        _draw_paragraph(dr, session["paragraph"], session["target_words"], (128, 200), (1664, 740),
+                        notated=(name == "round1"))
+        if name == "round1":
+            _draw_mixed(dr, (128, 148), LEGEND, 30, _GRAY, get)
         if _from_book(session):
             line = "— " + credit(session)
             dr.text((_W - 128 - dr.textlength(line, font=get(30)), 950), line, font=get(30), fill=_GRAY)

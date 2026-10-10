@@ -147,6 +147,10 @@ class TestLegatoAnalysis(unittest.TestCase):
             rebuilt = "".join(t["text"] + (" " if t["space"] else "") for t in toks).strip()
             self.assertEqual(rebuilt, p["text"], p["id"])
             self.assertEqual(toks[-1]["mark"], "//", p["id"])
+            self.assertEqual(toks[-1]["pitch"], "↘", p["id"])
+            for t in toks:
+                self.assertEqual(t["pitch"], {"//": "↘", "/": "↗"}.get(t["mark"], ""), p["id"])
+            self.assertIn("↘//", L.phrase_map(p["text"]), p["id"])
 
     def test_breath_groups_and_links(self):
         for p in _lib():

@@ -251,6 +251,11 @@ class TestPronunciationEndToEnd(unittest.TestCase):
                 self.assertIn(f'advTm="{adv}"', z.read(f"ppt/slides/{name}.xml").decode(), name)
             self.assertNotIn("advTm", z.read("ppt/slides/slide7.xml").decode())
             self.assertIn("notesMasterIdLst", z.read("ppt/presentation.xml").decode())
+            round1 = z.read("ppt/slides/slide3.xml").decode()
+            self.assertIn("↘", round1, "round 1 carries pitch notation")
+            self.assertIn("↗", round1, "round 1 carries pitch notation")
+            self.assertIn("‿", round1, "round 1 carries link notation")
+            self.assertNotIn("↗", z.read("ppt/slides/slide4.xml").decode(), "round 2 stays clean")
 
     def test_launchd_pronounce_agent(self):
         import plistlib

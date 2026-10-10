@@ -225,21 +225,24 @@ def drill_chains(text: str, limit: int = MAX_CHAINS) -> List[Dict[str, Any]]:
 
 def marked_tokens(text: str) -> List[Dict[str, Any]]:
     """Per token: text, linked (into the next token), chain (part of any link),
-    mark ('/', '//' or '') after it. Used by the deck and the video frames."""
+    mark ('/', '//' or '') after it, pitch ('↗' before a short breath, '↘' at a
+    sentence end, else ''). Used by the deck and the video frames."""
     toks = _tokenize(text)
     linked = set(links(text))
     in_chain = linked | {i + 1 for i in linked}
     marks = {b - 1: m for _, b, m in breath_groups(text)}
-    return [{"text": t, "space": sp, "linked": i in linked, "chain": i in in_chain, "mark": marks.get(i, "")}
+    return [{"text": t, "space": sp, "linked": i in linked, "chain": i in in_chain,
+             "mark": marks.get(i, ""), "pitch": {"//": "↘", "/": "↗"}.get(marks.get(i, ""), "")}
             for i, (t, sp) in enumerate(toks)]
 
 
 def phrase_map(text: str) -> str:
-    """Plain-text version for the YouTube description: '‿' joins, '/' breaths."""
+    """Plain-text version for the YouTube description: '‿' joins, '/' breaths,
+    '↗'/'↘' pitch moves."""
     out = []
     for t in marked_tokens(text):
         if t["mark"]:
-            out.append(t["text"] + f" {t['mark']} ")
+            out.append(t["text"] + f" {t['pitch']}{t['mark']} ")
         elif t["linked"]:
             out.append(t["text"] + "‿")
         else:
