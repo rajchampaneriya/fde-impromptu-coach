@@ -192,6 +192,13 @@ def choose(passages: List[Dict[str, Any]], used: Sequence[str], date: dt.date, s
     if not pool:
         last_read = {pid: i for i, pid in enumerate(used)}
         pool = sorted(passages, key=lambda p: last_read.get(p["id"], -1))[:max(1, len(passages) // 3)]
+    recent_ids = used[-3:]
+    author_of = {p["id"]: p["author"] for p in passages}
+    recent_authors = {author_of[i] for i in recent_ids if i in author_of}
+    if recent_authors:
+        varied = [p for p in pool if p["author"] not in recent_authors]
+        if varied:
+            pool = varied
     rng = random.Random(f"{date.isoformat()}:{salt}")
     rng.shuffle(pool)
 

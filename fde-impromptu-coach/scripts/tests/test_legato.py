@@ -83,6 +83,13 @@ class TestPassageLibrary(unittest.TestCase):
         again = library.choose(ps, everything, d, "t")
         self.assertIn(again["id"], everything[:2], "after a full cycle the least recently read come back")
 
+    def test_choose_avoids_same_author_consecutively(self):
+        ps = [p for p in _lib() if p["author"] == "Frederick Douglass"][:2] + \
+             [p for p in _lib() if p["author"] == "Virginia Woolf"][:1]
+        d = dt.date(2026, 10, 12)
+        picked = library.choose(ps, [ps[0]["id"]], d, "legato")
+        self.assertEqual(picked["author"], "Virginia Woolf")
+
     def test_import_gutenberg_offline(self):
         para = ("It was a quiet morning in the valley, and the river ran slowly under the old stone bridge. "
                 "The farmers walked out early, talking of rain and of the price of grain at the market. "
