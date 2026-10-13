@@ -89,6 +89,21 @@ DEFAULTS: Dict[str, Any] = {
         "min_audio_seconds": 180,
         "audio_clean_preset": "light",
     },
+    "learn": {
+        "enabled": True,
+        "repo_path": "",                    # your local clone of the public learning repo (learn init sets it)
+        "track_dir": "fde-first-principles",
+        "repo_url": "",                     # default: the clone's origin remote
+        "drop_time": "05:50",               # the topic drops; the deadline is the next drop
+        "event_time": "06:00",              # Google Calendar event with the whole task
+        "event_minutes": 15,
+        "nudge_time": "21:00",              # "not shipped yet" event, deleted when you ship
+        "nudge_popups": ["18:00", "21:00"],
+        "rest_days": ["Sun"],
+        "calendar": True,
+        "push": True,
+        "color_id": "9",
+    },
     "reminders": {
         "times": ["06:30", "07:30", "09:00", "12:30", "17:30", "19:30", "21:00", "22:00"],
         "snooze_minutes": 20,

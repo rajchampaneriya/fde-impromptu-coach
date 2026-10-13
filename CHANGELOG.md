@@ -1,5 +1,27 @@
 # Changelog
 
+## v4 — FDE Learn: a daily first-principles learning track
+
+**New**
+
+- **`fde-learn` skill** (new folder next to `fde-impromptu-coach/`; `install.sh` links it into
+  `~/.claude/skills`). One topic a day, no menus, hints instead of answers, explain-back in your own words,
+  two takes for the video, ideas parked in `later.md`.
+- **`fde-coach learn`**: `init`, `drop`, `today`, `done`, `status`, `pause`, `resume`, `sync`. State lives in
+  your public learning repo (`fde-first-principles/progress.json`, `TODAY.md`, one folder per topic with a
+  journal README and the embedded YouTube video). Only the files the coach writes are committed at the drop;
+  `done` commits the track folder after a secret and file-size check, then pushes (failed pushes are retried).
+- **Schedule**: a 05:50 `com.fdecoach.learn` agent, catch-up by the 15-minute reminder agent, Sundays off.
+  The deadline is the next drop; missed topics return at minimum scope (never skipped); partial work ships
+  labelled partial.
+- **Google Calendar**: a 06:00 event with the whole task, a 21:00 "not shipped yet" event (alerts 18:00 and
+  21:00) deleted when you ship, and tomorrow's event created as soon as you ship. Same OAuth as before.
+- **Curriculum**: 59 topics in 6 projects (`assets/learning_path.json`), 50 starter notebooks with TODO cells
+  and self-checks, the fictional Acme Fibre dataset and small `lab/` helpers (`assets/learn_starters/`).
+  Every starter notebook was run end to end with reference solutions against a simulated Ollama.
+- 7 new tests (`scripts/tests/test_learn.py`): full drop → ship → miss → partial → rest-day cycle against a
+  local git remote, secret scan, push retry, missed-drop catch-up, launchd agent, curriculum integrity.
+
 ## v3 — Legato practice and human-written passages
 
 **New**

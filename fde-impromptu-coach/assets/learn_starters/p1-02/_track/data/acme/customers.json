@@ -1,0 +1,14 @@
+[
+  {"id": "AC1001", "name": "Priya Kulkarni", "area": "Kothrud", "plan": "Plus", "status": "active", "tenure_months": 26, "balance_due": 0, "complaints_last_30_days": 0},
+  {"id": "AC1002", "name": "Rahul Mehta", "area": "Baner", "plan": "Basic", "status": "payment_overdue", "tenure_months": 8, "balance_due": 799, "complaints_last_30_days": 0},
+  {"id": "AC1003", "name": "Sneha Patil", "area": "Kothrud", "plan": "Pro", "status": "active", "tenure_months": 14, "balance_due": 0, "complaints_last_30_days": 2},
+  {"id": "AC1004", "name": "Arjun Nair", "area": "Hinjewadi", "plan": "Plus", "status": "active", "tenure_months": 3, "balance_due": 0, "complaints_last_30_days": 0},
+  {"id": "AC1005", "name": "Fatima Shaikh", "area": "Viman Nagar", "plan": "Basic", "status": "active", "tenure_months": 40, "balance_due": 0, "complaints_last_30_days": 1},
+  {"id": "AC1006", "name": "Vikram Joshi", "area": "Baner", "plan": "Pro", "status": "active", "tenure_months": 5, "balance_due": 0, "complaints_last_30_days": 0},
+  {"id": "AC1007", "name": "Ananya Deshpande", "area": "Aundh", "plan": "Plus", "status": "active", "tenure_months": 18, "balance_due": 0, "complaints_last_30_days": 0},
+  {"id": "AC1008", "name": "Imran Qureshi", "area": "Hadapsar", "plan": "Basic", "status": "payment_overdue", "tenure_months": 11, "balance_due": 699, "complaints_last_30_days": 0},
+  {"id": "AC1009", "name": "Meera Iyer", "area": "Kharadi", "plan": "Pro", "status": "active", "tenure_months": 30, "balance_due": 0, "complaints_last_30_days": 0},
+  {"id": "AC1010", "name": "Rohan Gupta", "area": "Wakad", "plan": "Plus", "status": "active", "tenure_months": 2, "balance_due": 0, "complaints_last_30_days": 0},
+  {"id": "AC1011", "name": "Kavya Reddy", "area": "Kothrud", "plan": "Basic", "status": "active", "tenure_months": 7, "balance_due": 0, "complaints_last_30_days": 0},
+  {"id": "AC1012", "name": "Sanjay Bhosale", "area": "Hadapsar", "plan": "Plus", "status": "active", "tenure_months": 52, "balance_due": 0, "complaints_last_30_days": 0}
+]

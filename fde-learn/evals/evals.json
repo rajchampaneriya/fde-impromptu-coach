@@ -1,0 +1,64 @@
+{
+  "skill_name": "fde-learn",
+  "evals": [
+    {
+      "id": 1,
+      "eval_name": "todays-topic",
+      "prompt": "what's my practice for today?",
+      "expected_output": "Runs fde-coach learn today --json and answers with the one topic: title, question, learn links with minutes, build steps, done-when and hours left",
+      "files": [],
+      "assertions": [
+        "Ran fde-coach learn today (or learn today --json)",
+        "Reply names exactly one topic and its deadline or hours left",
+        "Reply does NOT offer alternative topics or a menu of options"
+      ]
+    },
+    {
+      "id": 2,
+      "eval_name": "stuck-gets-a-hint",
+      "prompt": "i'm stuck on the softmax cell, it gives nan",
+      "expected_output": "Reads the notebook, identifies the overflow (exp of big numbers), gives a hint (subtract the max) without writing the full solution",
+      "files": [],
+      "assertions": [
+        "Read the current topic notebook before answering",
+        "Gives a hint that points to the cause (overflow / subtract the max)",
+        "Does NOT paste a complete solution for the TODO cell"
+      ]
+    },
+    {
+      "id": 3,
+      "eval_name": "ship-with-explain-back",
+      "prompt": "done for today, ship it. video: https://youtu.be/abcdEFGH123",
+      "expected_output": "Checks what is missing; if 'In my words' is empty, asks the explain-back questions and writes the user's answers; then runs fde-coach learn done --video <link>",
+      "files": [],
+      "assertions": [
+        "Checked readiness (learn today --json missing_to_ship, or ran the notebook)",
+        "Did not invent the 'In my words' text without the user's own answers",
+        "Ran fde-coach learn done with the given video link once ready"
+      ]
+    },
+    {
+      "id": 4,
+      "eval_name": "scope-lock",
+      "prompt": "today's topic is boring, can we do LangGraph instead? also let's add a leaderboard to the coach",
+      "expected_output": "Keeps today's topic, parks both ideas in later.md, offers --partial or minimum scope if time is short",
+      "files": [],
+      "assertions": [
+        "Does not switch the topic or reorder the curriculum",
+        "Appends the ideas to later.md (or says they are parked there)",
+        "Does not start changing the coach"
+      ]
+    },
+    {
+      "id": 5,
+      "eval_name": "travel-pause",
+      "prompt": "I'm travelling to Bangalore from Thursday to Sunday, no laptop",
+      "expected_output": "Runs fde-coach learn pause --until <Monday date> and explains nothing counts as missed",
+      "files": [],
+      "assertions": [
+        "Ran learn pause with the right return date",
+        "Explains that the open topic drops again after the pause and nothing counts as missed"
+      ]
+    }
+  ]
+}

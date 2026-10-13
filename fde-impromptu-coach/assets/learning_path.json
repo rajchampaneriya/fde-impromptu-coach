@@ -1,0 +1,3082 @@
+{
+ "version": 1,
+ "track": "fde-first-principles",
+ "title": "FDE First Principles",
+ "about": "A daily, project-based path from software architect to first-principles AI engineer for the Forward Deployed Engineer role. One topic drops every morning; you learn, build and explain it on video within 24 hours. Maths appears only on the day a project needs it.",
+ "minutes": {
+  "learn": 20,
+  "build": 40,
+  "record": 10
+ },
+ "projects": [
+  {
+   "n": 1,
+   "slug": "measure-before-you-believe",
+   "title": "Measure before you believe",
+   "goal": "Build one customer-support assistant three ways (rules, one model call, an agent loop), measure all three, and recommend one with evidence.",
+   "math": "fractions and averages, error bars, percentiles"
+  },
+  {
+   "n": 2,
+   "slug": "meaning-as-numbers",
+   "title": "Meaning as numbers",
+   "goal": "Build semantic search from scratch with NumPy, measure it, and plug it into project 1.",
+   "math": "vectors, length, dot product, cosine similarity, matrix × vector"
+  },
+  {
+   "n": 3,
+   "slug": "learn-a-formula",
+   "title": "Learn a formula from data",
+   "goal": "Let the computer find your hosting-cost formula, then a yes/no classifier, by gradient descent.",
+   "math": "lines and slopes, loss, derivatives, gradient descent, overfitting, sigmoid"
+  },
+  {
+   "n": 4,
+   "slug": "backprop-by-hand",
+   "title": "Backprop by hand (micrograd)",
+   "goal": "Build a tiny autograd engine and neural-net library, then train it.",
+   "math": "the chain rule"
+  },
+  {
+   "n": 5,
+   "slug": "tiny-gpt",
+   "title": "Tiny GPT",
+   "goal": "Go from counting letters to a small Transformer that writes Shakespeare-like text.",
+   "math": "probability, logarithms, softmax, matrix multiplication, attention"
+  },
+  {
+   "n": 6,
+   "slug": "back-to-the-customer",
+   "title": "Back to the customer",
+   "goal": "Explain project 1's failures from first principles, harden the agent, and make the final recommendation like an FDE.",
+   "math": "nothing new: you reuse everything"
+  }
+ ],
+ "topics": [
+  {
+   "id": "p1-01",
+   "day": 1,
+   "project": 1,
+   "step": 1,
+   "folder": "1-measure-before-you-believe/01-an-llm-call-is-http",
+   "slug": "an-llm-call-is-http",
+   "title": "An LLM call is just an HTTP request",
+   "question": "What exactly travels over the wire when you 'call an LLM'?",
+   "why": "Every agent framework hides this one request. When a customer's agent misbehaves, this is the level you debug at.",
+   "setup": [
+    "Ollama is already on your Mac. Pull a small model: `ollama pull qwen3:4b` (8 GB Mac: `ollama pull llama3.2:3b` and change MODEL in the notebook).",
+    "In your fde-first-principles folder run `uv sync` once. In VS Code, open the notebook and pick the `.venv` kernel."
+   ],
+   "learn": [
+    {
+     "title": "Ollama API: generate a chat message",
+     "url": "https://docs.ollama.com/api/chat",
+     "minutes": 10,
+     "how": "Read the request body and the response fields. Note which numbers are tokens and which are nanoseconds."
+    },
+    {
+     "title": "Deep Dive into LLMs like ChatGPT (Andrej Karpathy): chapter 'inference'",
+     "url": "https://www.youtube.com/watch?v=7xTGNNLPyMI&t=1561s",
+     "minutes": 5,
+     "how": "Watch 26:01 to 31:09: why the same prompt gives different answers."
+    }
+   ],
+   "math": null,
+   "build": [
+    "Send one POST request to http://localhost:11434/api/chat with the `requests` library (no SDK) and `stream: false`.",
+    "Print the whole JSON response. Find the reply text, prompt_eval_count, eval_count and total_duration.",
+    "Turn total_duration (nanoseconds) into seconds. Compute tokens per second.",
+    "Send the same request 5 times with temperature 0.8, then 5 times with temperature 0 and a seed. Compare the answers."
+   ],
+   "artifact": "notebook",
+   "expect": [
+    "notebook.ipynb"
+   ],
+   "done_when": [
+    "The notebook runs top to bottom without errors.",
+    "It prints tokens in, tokens out and seconds for one call.",
+    "It shows the 5 answers at temperature 0.8 and the 5 at temperature 0.",
+    "README.md explains, in your words, why the answers differ."
+   ],
+   "minimum": "One raw HTTP call with tokens and seconds printed.",
+   "record": [
+    "Show the raw JSON. Point to the reply, the token counts and the time.",
+    "Show the 5 different answers and say why they differ.",
+    "Say what this means for a customer who wants 'the same answer every time'.",
+    "Two takes at most, then upload to YouTube as Unlisted and paste the link."
+   ],
+   "parking": "Make the same call to a paid API later and compare the JSON shape.",
+   "starter": [
+    "notebook.ipynb"
+   ]
+  },
+  {
+   "id": "p1-02",
+   "day": 2,
+   "project": 1,
+   "step": 2,
+   "folder": "1-measure-before-you-believe/02-workflow-or-agent",
+   "slug": "workflow-or-agent",
+   "title": "Workflow or agent? Map the decisions first",
+   "question": "Which steps in this process truly need a model, and what does a wrong answer cost?",
+   "why": "Customers often ask for 'an agent'. A good FDE first finds where the real uncertainty is. Usually most steps are plain software.",
+   "setup": [],
+   "learn": [
+    {
+     "title": "Building effective agents (Anthropic)",
+     "url": "https://www.anthropic.com/engineering/building-effective-agents",
+     "minutes": 20,
+     "how": "Read 'What are agents?' and 'When (and when not) to use agents', then skim the five workflow patterns. Stop at 'Combining and customizing these patterns'."
+    }
+   ],
+   "math": null,
+   "build": [
+    "Read the Acme Fibre brief: data/acme/README.md (a fictional broadband company in Pune).",
+    "In Excalidraw, draw how one customer email becomes a reply: receive → understand → look up the customer → find the policy → write → check → send or escalate.",
+    "Colour every step: grey = plain code, blue = needs a model, orange = needs a human.",
+    "Next to every blue step, write one sentence: what goes wrong if the model is wrong, and who notices.",
+    "Write the article's pattern that fits best (prompt chaining, routing or agent) on the diagram."
+   ],
+   "artifact": "diagram",
+   "expect": [
+    "diagram.excalidraw.svg|diagram.excalidraw.png|*.excalidraw.svg|*.excalidraw.png|*.excalidraw|*.svg|*.png"
+   ],
+   "done_when": [
+    "The diagram has at least 6 steps, each coloured grey, blue or orange.",
+    "Every blue step has a 'cost of a wrong answer' note.",
+    "The pattern name is on the diagram.",
+    "Saved in this folder as diagram.excalidraw.svg (or .png with the scene embedded)."
+   ],
+   "minimum": "Six coloured steps, saved.",
+   "record": [
+    "Walk through the diagram as if the customer's CTO is listening.",
+    "Point to the one step where a model really earns its place.",
+    "Say which step you would NOT give to a model, and why.",
+    "Two takes at most, then upload to YouTube as Unlisted and paste the link."
+   ],
+   "parking": "Draw the same map for your real communication agent (keep it private).",
+   "starter": [
+    "_track/data/acme/README.md",
+    "_track/data/acme/customers.json",
+    "_track/data/acme/kb.md",
+    "_track/data/acme/outages.json",
+    "_track/data/acme/policy.md"
+   ]
+  },
+  {
+   "id": "p1-03",
+   "day": 3,
+   "project": 1,
+   "step": 3,
+   "folder": "1-measure-before-you-believe/03-test-set-first",
+   "slug": "test-set-first",
+   "title": "Write the test set before the system",
+   "question": "How will you know the system works, before you build it?",
+   "why": "Evals are the contract between you and the customer. Writing them first turns 'it feels good' into numbers.",
+   "setup": [],
+   "learn": [
+    {
+     "title": "Your AI Product Needs Evals (Hamel Husain)",
+     "url": "https://hamel.dev/blog/posts/evals/",
+     "minutes": 15,
+     "how": "Read 'Motivation' and 'Level 1: Unit Tests' (steps 1 to 3). Skim the rest."
+    },
+    {
+     "title": "Rules of Machine Learning (Google): rules 1 to 3",
+     "url": "https://developers.google.com/machine-learning/guides/rules-of-ml#before_machine_learning",
+     "minutes": 5,
+     "how": "Three short rules. Notice rule 2: metrics first."
+    }
+   ],
+   "math": {
+    "idea": "Counting and proportions",
+    "plain": "A proportion is a count divided by the total. 6 billing cases out of 30 is 6 ÷ 30 = 0.2 = 20%."
+   },
+   "build": [
+    "Open data/acme/cases.jsonl. Read the 10 example cases and their fields.",
+    "Add at least 20 cases of your own: angry customers, Hinglish, two problems in one email, missing details, a prompt-injection attempt, one that only a human should handle.",
+    "In the notebook, load and validate every case, then draw a bar chart of cases per intent.",
+    "Fix every case that fails validation."
+   ],
+   "artifact": "notebook",
+   "expect": [
+    "notebook.ipynb",
+    "/data/acme/cases.jsonl"
+   ],
+   "done_when": [
+    "data/acme/cases.jsonl has at least 30 cases.",
+    "Every intent has at least 3 cases.",
+    "Validation passes and the bar chart is shown.",
+    "At least 3 Hinglish cases and 1 prompt-injection case are tagged."
+   ],
+   "minimum": "20 cases that pass validation.",
+   "record": [
+    "Show 3 tricky cases and say why each one is in the set.",
+    "Show the bar chart. Which intent is tested least?",
+    "Say why you wrote the tests before the system.",
+    "Two takes at most, then upload to YouTube as Unlisted and paste the link."
+   ],
+   "parking": "Ask a model to draft 50 more cases, then review every one by hand.",
+   "starter": [
+    "_track/data/acme/cases.jsonl",
+    "notebook.ipynb"
+   ]
+  },
+  {
+   "id": "p1-04",
+   "day": 4,
+   "project": 1,
+   "step": 4,
+   "folder": "1-measure-before-you-believe/04-rules-baseline",
+   "slug": "rules-baseline",
+   "title": "Version A: rules and templates (the honest baseline)",
+   "question": "How far can plain code go before you need a model?",
+   "why": "A baseline tells you what the model has to beat. Many 'AI projects' never measure one.",
+   "setup": [],
+   "learn": [
+    {
+     "title": "Building effective agents: 'Appendix 1, A. Customer support'",
+     "url": "https://www.anthropic.com/engineering/building-effective-agents",
+     "minutes": 5,
+     "how": "Short: why support is a good fit for AI, and how to measure it."
+    },
+    {
+     "title": "Accuracy, recall, precision (Google ML Crash Course)",
+     "url": "https://developers.google.com/machine-learning/crash-course/classification/accuracy-precision-recall",
+     "minutes": 15,
+     "how": "Read the accuracy part closely. Skim the rest; we come back to it."
+    }
+   ],
+   "math": {
+    "idea": "Accuracy",
+    "plain": "Accuracy = correct answers ÷ all answers. One number hides which mistakes you make, so also count the mistakes per intent."
+   },
+   "build": [
+    "Write classify(message) with keywords (for example 'bill', 'refund' → billing). Add Hinglish words too.",
+    "Write one reply template per intent. Fill in the first name, area and outage ticket.",
+    "Run version A on every case and compute the intent accuracy.",
+    "Show the mistakes per intent. Read 5 wrong cases and write why the rules failed."
+   ],
+   "artifact": "notebook",
+   "expect": [
+    "notebook.ipynb"
+   ],
+   "done_when": [
+    "Version A runs on every case without crashing.",
+    "Intent accuracy is printed.",
+    "A table of mistakes per intent is shown.",
+    "5 failures have a one-line reason each."
+   ],
+   "minimum": "Intent accuracy printed for all cases.",
+   "record": [
+    "Show the accuracy number.",
+    "Show one case where keywords failed (Hinglish is a good one).",
+    "Say what a model would need to do to beat this.",
+    "Two takes at most, then upload to YouTube as Unlisted and paste the link."
+   ],
+   "parking": "Try regular expressions for customer IDs and amounts.",
+   "starter": [
+    "_track/lab/__init__.py",
+    "_track/lab/acme.py",
+    "notebook.ipynb"
+   ]
+  },
+  {
+   "id": "p1-05",
+   "day": 5,
+   "project": 1,
+   "step": 5,
+   "folder": "1-measure-before-you-believe/05-a-grader-you-can-trust",
+   "slug": "a-grader-you-can-trust",
+   "title": "A grader you can trust",
+   "question": "What exactly makes a reply 'correct' for this customer?",
+   "why": "If you cannot write the check, you cannot promise the behaviour. This is where vague requirements become concrete.",
+   "setup": [],
+   "learn": [
+    {
+     "title": "Define success criteria and build evaluations (Claude docs)",
+     "url": "https://platform.claude.com/docs/en/test-and-evaluate/develop-tests",
+     "minutes": 15,
+     "how": "Read the eval design principles and the code-based grading examples. Skip model-based grading for now."
+    }
+   ],
+   "math": null,
+   "build": [
+    "Open lab/evals.py. Implement policy_violations() and score() (TODOs 1 to 7).",
+    "Run the tests in the notebook until they all pass.",
+    "Score version A on every case and print the summary table.",
+    "Find one case where your grader itself is wrong (hint: 'Please do not share your OTP'). Fix it."
+   ],
+   "artifact": "code",
+   "expect": [
+    "notebook.ipynb",
+    "/lab/evals.py"
+   ],
+   "done_when": [
+    "All tests in the notebook pass.",
+    "Version A has a score table: intent, facts, policy, human, passed.",
+    "You found and fixed at least one case where the grader was wrong."
+   ],
+   "minimum": "score() works and the tests pass.",
+   "record": [
+    "Show score() and explain each check in one sentence.",
+    "Show the case where your grader was wrong.",
+    "Say why 'passed' needs every check to pass.",
+    "Two takes at most, then upload to YouTube as Unlisted and paste the link."
+   ],
+   "parking": "Add a model-based grader for tone later, and test the grader too.",
+   "starter": [
+    "_track/lab/evals.py",
+    "notebook.ipynb"
+   ]
+  },
+  {
+   "id": "p1-06",
+   "day": 6,
+   "project": 1,
+   "step": 6,
+   "folder": "1-measure-before-you-believe/06-one-llm-call",
+   "slug": "one-llm-call",
+   "title": "Version B: one model call with the right context",
+   "question": "What does the model need to see to answer like a trained support agent?",
+   "why": "Most real wins come from one well-fed call, not from agents. The context is the product.",
+   "setup": [
+    "lab/llm.py is given: it is your day 1 call plus a cache (re-runs are free), timing and token counts. Read it once."
+   ],
+   "learn": [
+    {
+     "title": "Ollama: structured outputs",
+     "url": "https://docs.ollama.com/capabilities/structured-outputs",
+     "minutes": 5,
+     "how": "How to make the model answer in a JSON shape you choose."
+    },
+    {
+     "title": "Building effective agents: 'Building block: The augmented LLM' and 'Workflow: Routing'",
+     "url": "https://www.anthropic.com/engineering/building-effective-agents",
+     "minutes": 10,
+     "how": "Re-read these two sections."
+    }
+   ],
+   "math": null,
+   "build": [
+    "Write a system prompt with Acme's rules (data/acme/policy.md) in your own words.",
+    "For each case, put the customer card and the right help articles into the user message. Today the articles are hand-picked by intent ('oracle' context): the best case. Project 2 replaces this with real search.",
+    "Ask for JSON {intent, reply, needs_human} using a JSON schema.",
+    "Run version B on every case (cached), score it, and compare with version A."
+   ],
+   "artifact": "notebook",
+   "expect": [
+    "notebook.ipynb"
+   ],
+   "done_when": [
+    "Version B runs on every case; answers are cached.",
+    "Score table: A and B side by side.",
+    "JSON parse failures are counted.",
+    "3 cases where B beat A and 3 where it lost, one line each."
+   ],
+   "minimum": "Version B scored on every case.",
+   "record": [
+    "Show your prompt and explain each part.",
+    "Show A versus B.",
+    "Show one case B got wrong and say why you think it failed.",
+    "Two takes at most, then upload to YouTube as Unlisted and paste the link."
+   ],
+   "parking": "Try a bigger model (qwen3:8b) on the failures only.",
+   "starter": [
+    "_track/lab/llm.py",
+    "notebook.ipynb"
+   ]
+  },
+  {
+   "id": "p1-07",
+   "day": 7,
+   "project": 1,
+   "step": 7,
+   "folder": "1-measure-before-you-believe/07-error-bars",
+   "slug": "error-bars",
+   "title": "Why 30 test cases can lie: error bars",
+   "question": "How big must a difference be before you believe it?",
+   "why": "Customers will ask 'is the new version better?'. With small test sets the honest answer is often 'we can't tell yet'.",
+   "setup": [],
+   "learn": [
+    {
+     "title": "A statistical approach to model evaluations (Anthropic)",
+     "url": "https://www.anthropic.com/research/statistical-approach-to-model-evals",
+     "minutes": 10,
+     "how": "Read the introduction and Recommendation #1 only. Don't worry about the formulas: today's notebook builds them by simulation."
+    },
+    {
+     "title": "Seeing Theory: Basic probability (Brown University)",
+     "url": "https://seeing-theory.brown.edu/basic-probability/",
+     "minutes": 10,
+     "how": "Play with the coin flips. How often do 10 fair flips give 7 or more heads?"
+    }
+   ],
+   "math": {
+    "idea": "Standard error and a 95% range",
+    "plain": "If a system is right with probability p, a test of n cases wobbles by about √(p × (1 − p) ÷ n). About 95% of the time the truth is within 2 wobbles of what you measured."
+   },
+   "build": [
+    "Simulate a system that is truly 80% right, tested on 30 cases, 10,000 times. Plot the measured accuracies.",
+    "From the simulation: how often does a 30-case test show 70% or less?",
+    "Write se(p, n). Check that it matches the spread you simulated.",
+    "Draw A and B with ± 2 × se error bars. Do they overlap?",
+    "How many cases would you need for ± 5%?"
+   ],
+   "artifact": "notebook",
+   "expect": [
+    "notebook.ipynb"
+   ],
+   "done_when": [
+    "Histogram of 10,000 simulated test results.",
+    "se() matches the simulation.",
+    "Bar chart of A and B with error bars.",
+    "One sentence: is B really better than A?"
+   ],
+   "minimum": "The simulation histogram and one sentence about it.",
+   "record": [
+    "Explain the histogram like a weather forecast.",
+    "Show A and B with error bars.",
+    "Say how many test cases you would ask the customer for, and why.",
+    "Two takes at most, then upload to YouTube as Unlisted and paste the link."
+   ],
+   "parking": "Read Recommendation #4 (paired differences) and try it on A and B.",
+   "starter": [
+    "notebook.ipynb"
+   ]
+  },
+  {
+   "id": "p1-08",
+   "day": 8,
+   "project": 1,
+   "step": 8,
+   "folder": "1-measure-before-you-believe/08-agent-loop-from-scratch",
+   "slug": "agent-loop-from-scratch",
+   "title": "Version C: an agent loop from scratch",
+   "question": "What is an 'agent', really, once you remove the framework?",
+   "why": "An agent is a loop: the model asks for a tool, your code runs it, the result goes back. Knowing this lets you debug any framework a customer uses.",
+   "setup": [
+    "lab/acme_tools.py is given: four tools and their JSON schemas. Today is about the loop."
+   ],
+   "learn": [
+    {
+     "title": "Ollama: tool calling",
+     "url": "https://docs.ollama.com/capabilities/tool-calling",
+     "minutes": 10,
+     "how": "Read a single tool call, then the agent-loop example."
+    },
+    {
+     "title": "Building effective agents: 'Agents' and 'Appendix 2: Prompt engineering your tools'",
+     "url": "https://www.anthropic.com/engineering/building-effective-agents",
+     "minutes": 10,
+     "how": "Notice: the loop has a stop condition and a step limit."
+    }
+   ],
+   "math": null,
+   "build": [
+    "Write run_agent(case): send the email and the tools; while the reply has tool_calls, run each tool, add a 'tool' message, and call the model again. Stop after 6 steps.",
+    "At the end, ask for the same JSON as version B.",
+    "Print the full trace (each tool call and its result) for 2 cases.",
+    "Run on the first 10 cases. Count the steps per case."
+   ],
+   "artifact": "notebook",
+   "expect": [
+    "notebook.ipynb"
+   ],
+   "done_when": [
+    "run_agent() always stops, never more than 6 steps.",
+    "Two full traces are shown.",
+    "Version C ran on at least 10 cases and the step counts are printed."
+   ],
+   "minimum": "One full trace of a working loop.",
+   "record": [
+    "Show a trace and narrate each step.",
+    "Point to the line that makes it an 'agent'.",
+    "Say one risk you saw: a wrong tool, an extra step or a loop.",
+    "Two takes at most, then upload to YouTube as Unlisted and paste the link."
+   ],
+   "parking": "Add a tool that changes data (issue_refund), but only in project 6, with a human check.",
+   "starter": [
+    "_track/lab/acme_tools.py",
+    "notebook.ipynb"
+   ]
+  },
+  {
+   "id": "p1-09",
+   "day": 9,
+   "project": 1,
+   "step": 9,
+   "folder": "1-measure-before-you-believe/09-success-cost-latency",
+   "slug": "success-cost-latency",
+   "title": "Run all three: success, cost, latency",
+   "question": "Is the extra intelligence worth its price and its wait?",
+   "why": "Every architecture choice trades quality, cost and speed. Customers decide with a table, not a demo.",
+   "setup": [
+    "Move your code into lab/: version B (day 6) into lab/version_b.py and the agent loop (day 8) into lab/agent.py. Keep the signatures written at the top of each file."
+   ],
+   "learn": [
+    {
+     "title": "Your AI Product Needs Evals: 'Logging Traces' and 'Looking At Your Traces'",
+     "url": "https://hamel.dev/blog/posts/evals/",
+     "minutes": 10,
+     "how": "Why you keep every input, output, token count and time."
+    },
+    {
+     "title": "Building effective agents: 'When (and when not) to use agents'",
+     "url": "https://www.anthropic.com/engineering/building-effective-agents",
+     "minutes": 5,
+     "how": "Re-read it with your numbers in mind."
+    }
+   ],
+   "math": {
+    "idea": "Mean, median and 95th percentile",
+    "plain": "The mean is pulled up by a few slow calls. The median is the middle call. p95 is the time that 95% of calls beat: the number users feel on a bad day."
+   },
+   "build": [
+    "Run version C on every case (cached). Collect tokens and seconds for A, B and C (A uses 0 tokens).",
+    "Write percentile(values, q) by sorting, and check it against numpy.",
+    "Look up one paid model's price per million input and output tokens and fill in the prices.",
+    "One table: pass rate ± 2 se, median and p95 seconds, tokens per email, cost per 1,000 emails, cost per correct reply. Two charts: pass rate vs cost, pass rate vs p95."
+   ],
+   "artifact": "notebook",
+   "expect": [
+    "notebook.ipynb",
+    "/lab/version_b.py",
+    "/lab/agent.py"
+   ],
+   "done_when": [
+    "One table with 3 rows (A, B, C) and all the columns.",
+    "Two charts.",
+    "One paragraph: which version would you ship today, and what would change your mind?"
+   ],
+   "minimum": "The table with pass rate and median seconds.",
+   "record": [
+    "Walk through the table row by row.",
+    "Say which version you would ship and why.",
+    "Say what the cheapest version is missing.",
+    "Two takes at most, then upload to YouTube as Unlisted and paste the link."
+   ],
+   "parking": "Run the same table on a paid API with a hard monthly spending cap.",
+   "starter": [
+    "_track/lab/agent.py",
+    "_track/lab/version_b.py",
+    "notebook.ipynb"
+   ]
+  },
+  {
+   "id": "p1-10",
+   "day": 10,
+   "project": 1,
+   "step": 10,
+   "folder": "1-measure-before-you-believe/10-read-the-failures",
+   "slug": "read-the-failures",
+   "title": "Read the failures, not the averages",
+   "question": "Why does it fail, and which fix matters most?",
+   "why": "Averages tell you that something is wrong. Only reading failures tells you what to change. This is the most valuable hour in any AI project.",
+   "setup": [],
+   "learn": [
+    {
+     "title": "A Field Guide to Rapidly Improving AI Products (Hamel Husain)",
+     "url": "https://hamel.dev/blog/posts/field-guide/",
+     "minutes": 20,
+     "how": "Read 'The Most Common Mistake: Skipping Error Analysis' and 'A Simple Data Viewer'. Stop there."
+    }
+   ],
+   "math": null,
+   "build": [
+    "The notebook writes every failed case (A, B, C) into failures.csv.",
+    "Read at least 20 failures one by one in the viewer. Write a short note for each in failures.csv (this is called open coding).",
+    "Group the notes into 4 to 7 categories (wrong intent, missing fact, broke a rule, invented a fact, wrong tool, bad JSON…). Write the category next to each note.",
+    "Reload: count failures per category per version and draw the chart."
+   ],
+   "artifact": "notebook",
+   "expect": [
+    "notebook.ipynb",
+    "failures.csv"
+   ],
+   "done_when": [
+    "At least 20 failures have a note and a category.",
+    "A table: category × version.",
+    "The top 3 categories, each with one example case id."
+   ],
+   "minimum": "10 failures labelled and counted.",
+   "record": [
+    "Show the category table.",
+    "Read one failure aloud and explain its category.",
+    "Say which single fix would remove the most failures.",
+    "Two takes at most, then upload to YouTube as Unlisted and paste the link."
+   ],
+   "parking": "Build a tiny HTML page to browse traces.",
+   "starter": [
+    "notebook.ipynb"
+   ]
+  },
+  {
+   "id": "p1-11",
+   "day": 11,
+   "project": 1,
+   "step": 11,
+   "folder": "1-measure-before-you-believe/11-recommendation-first-draft",
+   "slug": "recommendation-first-draft",
+   "title": "The recommendation, first draft (an ADR)",
+   "question": "What would you tell the customer to build, and what would change your mind?",
+   "why": "FDEs are trusted when advice is backed by evidence and honest about uncertainty. An architecture decision record (ADR) makes both visible.",
+   "setup": [],
+   "learn": [
+    {
+     "title": "Documenting Architecture Decisions (Michael Nygard)",
+     "url": "https://cognitect.com/blog/2011/11/15/documenting-architecture-decisions",
+     "minutes": 10,
+     "how": "Short. Use its parts: Context, Decision, Status, Consequences."
+    }
+   ],
+   "math": null,
+   "build": [
+    "Fill in decision.md (one page): context, options A/B/C, the evidence table from day 9 with error bars, decision, consequences, risks, 'what would change my mind'.",
+    "Draw the chosen design in Excalidraw: email in → steps → model calls → human check → reply out.",
+    "List the open questions projects 2 to 6 will answer."
+   ],
+   "artifact": "doc",
+   "expect": [
+    "decision.md",
+    "diagram.excalidraw.svg|diagram.excalidraw.png|*.excalidraw.svg|*.excalidraw.png|*.excalidraw|*.svg|*.png"
+   ],
+   "done_when": [
+    "decision.md fits on one page and every section is filled.",
+    "The evidence has error bars.",
+    "A diagram of the chosen design.",
+    "At least 3 open questions."
+   ],
+   "minimum": "decision.md with the decision and the evidence table.",
+   "record": [
+    "Give a 5-minute readout to an imaginary CTO, using the diagram, not the notebook.",
+    "End with what you will test next.",
+    "Two takes at most, then upload to YouTube as Unlisted and paste the link."
+   ],
+   "parking": "Turn the readout into a one-slide summary.",
+   "starter": [
+    "decision.md"
+   ]
+  },
+  {
+   "id": "p2-01",
+   "day": 12,
+   "project": 2,
+   "step": 1,
+   "folder": "2-meaning-as-numbers/01-vectors",
+   "slug": "vectors",
+   "title": "Vectors: a list of numbers that points somewhere",
+   "question": "How can a computer hold 'meaning' in numbers?",
+   "why": "Embeddings, search and attention are all vectors. You will explain this to customers who think AI 'reads' text like a person.",
+   "setup": [],
+   "learn": [
+    {
+     "title": "Vectors, what even are they? (3Blue1Brown, Linear Algebra chapter 1)",
+     "url": "https://www.3blue1brown.com/lessons/vectors",
+     "minutes": 15,
+     "how": "Watch the video or read the text version. Hold on to one idea: a vector is an arrow and a list of numbers."
+    }
+   ],
+   "math": {
+    "idea": "A vector and its length",
+    "plain": "A vector is a list of numbers, like [3, 4]. Its length is √(3² + 4²) = 5: Pythagoras, for any number of dimensions."
+   },
+   "build": [
+    "Describe 6 Acme emails with 3 numbers you choose: [money, urgency, technical], each 0 to 1.",
+    "Plot two of the dimensions as arrows.",
+    "Write length(v) with a plain loop (no numpy). Check it against np.linalg.norm.",
+    "Write add(a, b) and scale(v, k). Plot the results. What changed?"
+   ],
+   "artifact": "notebook",
+   "expect": [
+    "notebook.ipynb"
+   ],
+   "done_when": [
+    "6 hand-made vectors and an arrow plot.",
+    "length() matches numpy for all 6.",
+    "One sentence on what scaling does to an arrow."
+   ],
+   "minimum": "length() works and matches numpy.",
+   "record": [
+    "Show your 6 vectors and why you chose those numbers.",
+    "Show where Pythagoras is in length().",
+    "Say what gets lost when meaning becomes 3 numbers.",
+    "Two takes at most, then upload to YouTube as Unlisted and paste the link."
+   ],
+   "parking": "Try 5 dimensions. Can you still draw it?",
+   "starter": [
+    "notebook.ipynb"
+   ]
+  },
+  {
+   "id": "p2-02",
+   "day": 13,
+   "project": 2,
+   "step": 2,
+   "folder": "2-meaning-as-numbers/02-dot-product-and-cosine",
+   "slug": "dot-product-and-cosine",
+   "title": "Dot product and cosine: measuring 'alike'",
+   "question": "How do you measure that two meanings are close?",
+   "why": "Every vector search a customer buys ranks results with this formula. You should be able to compute it by hand.",
+   "setup": [],
+   "learn": [
+    {
+     "title": "The Illustrated Word2vec (Jay Alammar): 'Personality Embeddings' only",
+     "url": "https://jalammar.github.io/illustrated-word2vec/",
+     "minutes": 15,
+     "how": "Read the first part only. It explains vectors and cosine similarity with a personality test."
+    },
+    {
+     "title": "Transformers, the tech behind LLMs (3Blue1Brown): 'Dot Product'",
+     "url": "https://www.3blue1brown.com/lessons/gpt",
+     "minutes": 5,
+     "how": "In the text version, read only the 'Embedding', 'Direction' and 'Dot Product' parts."
+    }
+   ],
+   "math": {
+    "idea": "Dot product and cosine similarity",
+    "plain": "dot(a, b) multiplies matching numbers and adds them up. cosine(a, b) = dot(a, b) ÷ (length(a) × length(b)). It is 1 when two arrows point the same way, 0 when unrelated, −1 when opposite."
+   },
+   "build": [
+    "Write dot(a, b) and cosine(a, b) with loops. Check them against numpy.",
+    "Print the 6 × 6 cosine table for the given vectors as a heatmap.",
+    "For each email, find its most similar other email. Does it make sense?",
+    "Multiply one vector by 10. What happens to dot? To cosine? Why?"
+   ],
+   "artifact": "notebook",
+   "expect": [
+    "notebook.ipynb"
+   ],
+   "done_when": [
+    "dot() and cosine() match numpy.",
+    "A 6 × 6 cosine heatmap.",
+    "Your answer to the × 10 test."
+   ],
+   "minimum": "cosine() works and matches numpy.",
+   "record": [
+    "Explain cosine with two pens on the table (show it on camera).",
+    "Show the heatmap.",
+    "Say why search uses cosine, not the raw dot product.",
+    "Two takes at most, then upload to YouTube as Unlisted and paste the link."
+   ],
+   "parking": "Read the rest of the word2vec article.",
+   "starter": [
+    "notebook.ipynb"
+   ]
+  },
+  {
+   "id": "p2-03",
+   "day": 14,
+   "project": 2,
+   "step": 3,
+   "folder": "2-meaning-as-numbers/03-real-embeddings",
+   "slug": "real-embeddings",
+   "title": "Real embeddings: let a model choose the numbers",
+   "question": "When a model picks the numbers, what do they capture, and what do they miss?",
+   "why": "Customers assume embeddings 'understand'. You will see where they work and where they fail, on your own data.",
+   "setup": [
+    "`ollama pull embeddinggemma` (about 620 MB)."
+   ],
+   "learn": [
+    {
+     "title": "Embedding space and static embeddings (Google ML Crash Course)",
+     "url": "https://developers.google.com/machine-learning/crash-course/embeddings/embedding-space",
+     "minutes": 10,
+     "how": "Read the page. Look at the pictures of words as points."
+    },
+    {
+     "title": "Ollama: embeddings",
+     "url": "https://docs.ollama.com/capabilities/embeddings",
+     "minutes": 5,
+     "how": "The /api/embed endpoint. Note: the vectors come back with length 1."
+    }
+   ],
+   "math": {
+    "idea": "Unit vectors",
+    "plain": "If every vector has length 1, cosine and dot product are the same number. Check it yourself."
+   },
+   "build": [
+    "Embed 10 help-article sentences and 10 customer paraphrases with lab.llm.embed.",
+    "Check the length of a few vectors.",
+    "Compute the 20 × 20 similarity matrix and draw it.",
+    "For each paraphrase, find the closest article sentence. Count how many are right.",
+    "Write 3 Hinglish paraphrases. Do they still match?"
+   ],
+   "artifact": "notebook",
+   "expect": [
+    "notebook.ipynb"
+   ],
+   "done_when": [
+    "Similarity heatmap.",
+    "Top-1 accuracy for the paraphrases.",
+    "Your Hinglish result."
+   ],
+   "minimum": "Similarity matrix and top-1 accuracy.",
+   "record": [
+    "Show the heatmap and one surprising pair.",
+    "Show the Hinglish result.",
+    "Explain 'embedding' to a customer in one sentence.",
+    "Two takes at most, then upload to YouTube as Unlisted and paste the link."
+   ],
+   "parking": "Compare a second embedding model (all-minilm).",
+   "starter": [
+    "notebook.ipynb"
+   ]
+  },
+  {
+   "id": "p2-04",
+   "day": 15,
+   "project": 2,
+   "step": 4,
+   "folder": "2-meaning-as-numbers/04-search-in-numpy",
+   "slug": "search-in-numpy",
+   "title": "A search engine in 30 lines of NumPy",
+   "question": "What does a vector database actually do when you query it?",
+   "why": "Once you have built search yourself, vendor claims become easy to check.",
+   "setup": [],
+   "learn": [
+    {
+     "title": "Introducing Contextual Retrieval (Anthropic): 'A primer on RAG'",
+     "url": "https://www.anthropic.com/news/contextual-retrieval",
+     "minutes": 5,
+     "how": "Read only this section: chunk, embed, store, retrieve."
+    }
+   ],
+   "math": {
+    "idea": "Matrix × vector",
+    "plain": "Stack all document vectors as the rows of a matrix M. Then M @ q is the dot product of q with every row, in one step. Same answer as a loop, just much faster."
+   },
+   "build": [
+    "Turn each help article into one chunk and embed them all once. Stack them into a matrix M.",
+    "Write search(query, k): embed the query, scores = M @ q, return the top k with scores.",
+    "Write the same thing with a plain loop. Check both give the same ranking.",
+    "Try 5 queries, one in Hinglish."
+   ],
+   "artifact": "notebook",
+   "expect": [
+    "notebook.ipynb"
+   ],
+   "done_when": [
+    "search() returns the top k with scores.",
+    "Loop version and matrix version agree.",
+    "5 example queries are shown."
+   ],
+   "minimum": "search() works for 3 queries.",
+   "record": [
+    "Explain M @ q with your hands or a drawing.",
+    "Show one good result and one bad one.",
+    "Say what 'top k' means for the quality of a customer's answers.",
+    "Two takes at most, then upload to YouTube as Unlisted and paste the link."
+   ],
+   "parking": "Time both versions on 100,000 random vectors.",
+   "starter": [
+    "notebook.ipynb"
+   ]
+  },
+  {
+   "id": "p2-05",
+   "day": 16,
+   "project": 2,
+   "step": 5,
+   "folder": "2-meaning-as-numbers/05-recall-at-k",
+   "slug": "recall-at-k",
+   "title": "Is retrieval any good? recall@k",
+   "question": "How often does the right document even reach the model?",
+   "why": "If retrieval misses, the best model in the world cannot answer. Measure this before blaming the model.",
+   "setup": [
+    "lab/search.py is given: your search from yesterday, packaged for reuse."
+   ],
+   "learn": [
+    {
+     "title": "Evaluation measures in information retrieval (Pinecone)",
+     "url": "https://www.pinecone.io/learn/offline-evaluation/",
+     "minutes": 15,
+     "how": "Read Recall@K and MRR. Skip NDCG."
+    }
+   ],
+   "math": {
+    "idea": "recall@k and MRR",
+    "plain": "recall@k = the share of queries where the right article is in the top k. MRR = the average of 1 ÷ (position of the right article): 1 if first, 0.5 if second, and so on."
+   },
+   "build": [
+    "data/acme/queries.jsonl has 10 query → article pairs. Add 15 of your own; make some hard.",
+    "Write recall_at_k() and mrr(). Compute recall@1, @3, @5 and MRR.",
+    "Add error bars (day 7).",
+    "List the misses and write why each one missed."
+   ],
+   "artifact": "notebook",
+   "expect": [
+    "notebook.ipynb",
+    "/data/acme/queries.jsonl"
+   ],
+   "done_when": [
+    "At least 25 query pairs.",
+    "recall@1, @3, @5 and MRR, with error bars.",
+    "Every miss has a one-line reason."
+   ],
+   "minimum": "recall@3 on the 10 given queries.",
+   "record": [
+    "Show the recall table.",
+    "Explain one miss.",
+    "Say what recall@3 means for the customer's support team.",
+    "Two takes at most, then upload to YouTube as Unlisted and paste the link."
+   ],
+   "parking": "Add a keyword search (BM25) and combine the two.",
+   "starter": [
+    "_track/data/acme/queries.jsonl",
+    "_track/lab/search.py",
+    "notebook.ipynb"
+   ]
+  },
+  {
+   "id": "p2-06",
+   "day": 17,
+   "project": 2,
+   "step": 6,
+   "folder": "2-meaning-as-numbers/06-chunking",
+   "slug": "chunking",
+   "title": "Chunking: same data, different answers",
+   "question": "How does the way you cut documents change what can be found?",
+   "why": "Chunking is an architecture decision hidden inside 'RAG'. Your choice decides what the model sees.",
+   "setup": [],
+   "learn": [
+    {
+     "title": "Introducing Contextual Retrieval (Anthropic)",
+     "url": "https://www.anthropic.com/news/contextual-retrieval",
+     "minutes": 10,
+     "how": "Read 'The context conundrum in traditional RAG' and 'Introducing Contextual Retrieval'."
+    }
+   ],
+   "math": null,
+   "build": [
+    "Write three chunkers: one sentence per chunk, fixed 120-character pieces, whole article.",
+    "For each, build an index and compute recall@3 on your queries (a hit = any chunk from the right article in the top 3).",
+    "Try the 'contextual' trick: put the article title in front of every small chunk. Measure again.",
+    "Plot recall@3 and the number of chunks for each strategy."
+   ],
+   "artifact": "notebook",
+   "expect": [
+    "notebook.ipynb"
+   ],
+   "done_when": [
+    "recall@3 for 3 strategies plus the title trick.",
+    "One chart.",
+    "Your chosen strategy, with a reason."
+   ],
+   "minimum": "Two strategies compared.",
+   "record": [
+    "Show the chart.",
+    "Explain why small chunks can lose meaning.",
+    "Recommend a strategy for Acme in one sentence.",
+    "Two takes at most, then upload to YouTube as Unlisted and paste the link."
+   ],
+   "parking": "Try overlapping chunks.",
+   "starter": [
+    "notebook.ipynb"
+   ]
+  },
+  {
+   "id": "p2-07",
+   "day": 18,
+   "project": 2,
+   "step": 7,
+   "folder": "2-meaning-as-numbers/07-vector-database",
+   "slug": "vector-database",
+   "title": "A vector database vs. your NumPy: what does it add?",
+   "question": "What problem does a vector database solve, and which problem doesn't it solve?",
+   "why": "Many customers start an AI project by buying a vector database. Now you can explain what it is for.",
+   "setup": [
+    "`uv add chromadb`"
+   ],
+   "learn": [
+    {
+     "title": "Chroma: getting started",
+     "url": "https://docs.trychroma.com/docs/overview/getting-started",
+     "minutes": 10,
+     "how": "Follow the Python steps: client, collection, add, query."
+    }
+   ],
+   "math": {
+    "idea": "Exact vs. approximate search",
+    "plain": "Your NumPy search compares the query with every vector (exact). Big databases use an index that skips most vectors (approximate): much faster, but it can miss a few."
+   },
+   "build": [
+    "Put the same chunks and your own embeddings into a Chroma collection (cosine distance).",
+    "For your queries, compare Chroma's top 5 with your NumPy top 5. Compute the overlap.",
+    "Time both on your data and on 20,000 random vectors.",
+    "Write 3 bullets on what the database adds, and 1 on what it does not fix."
+   ],
+   "artifact": "notebook",
+   "expect": [
+    "notebook.ipynb"
+   ],
+   "done_when": [
+    "Top-5 overlap of at least 90% (explain any difference).",
+    "A timing table.",
+    "The 4 bullets."
+   ],
+   "minimum": "Chroma returns results for your queries.",
+   "record": [
+    "Show the overlap number.",
+    "Show the timing table.",
+    "Say when you would tell a customer they don't need a vector database yet.",
+    "Two takes at most, then upload to YouTube as Unlisted and paste the link."
+   ],
+   "parking": "Try a metadata filter (only billing articles).",
+   "starter": [
+    "notebook.ipynb"
+   ]
+  },
+  {
+   "id": "p2-08",
+   "day": 19,
+   "project": 2,
+   "step": 8,
+   "folder": "2-meaning-as-numbers/08-retrieval-into-version-b",
+   "slug": "retrieval-into-version-b",
+   "title": "Plug retrieval into version B and measure again",
+   "question": "How much quality do you lose when the context is searched instead of hand-picked?",
+   "why": "The gap between 'oracle' context and real retrieval is where many production RAG systems quietly fail.",
+   "setup": [],
+   "learn": [
+    {
+     "title": "Your AI Product Needs Evals: 'Evaluating RAG'",
+     "url": "https://hamel.dev/blog/posts/evals/",
+     "minutes": 5,
+     "how": "Short: test retrieval and generation separately."
+    }
+   ],
+   "math": null,
+   "build": [
+    "In lab/version_b.py, support context='retrieved': use the top 3 chunks from lab.search instead of the hand-picked articles.",
+    "Run on every case (cached) and score.",
+    "Table: B (oracle) vs. B (retrieved), with error bars.",
+    "For each new failure, check: was the right article retrieved? Split failures into 'retrieval miss' and 'model mistake'."
+   ],
+   "artifact": "notebook",
+   "expect": [
+    "notebook.ipynb",
+    "/lab/version_b.py"
+   ],
+   "done_when": [
+    "Version B (retrieved) is scored on every case.",
+    "Oracle vs. retrieved table with error bars.",
+    "Failures split into retrieval misses and model mistakes."
+   ],
+   "minimum": "Version B (retrieved) scored on every case.",
+   "record": [
+    "Show the oracle vs. retrieved table.",
+    "Show one retrieval miss that broke a reply.",
+    "Say where you would spend the next week: retrieval or prompt?",
+    "Two takes at most, then upload to YouTube as Unlisted and paste the link."
+   ],
+   "parking": "Retrieve with the email plus the customer's area and plan.",
+   "starter": [
+    "notebook.ipynb"
+   ]
+  },
+  {
+   "id": "p2-09",
+   "day": 20,
+   "project": 2,
+   "step": 9,
+   "folder": "2-meaning-as-numbers/09-rag-explained",
+   "slug": "rag-explained",
+   "title": "Explain it to a customer: what RAG can and cannot promise",
+   "question": "Where can a RAG system go wrong, and which number catches each problem?",
+   "why": "Customers buy RAG expecting 'no hallucinations'. You can now show exactly where errors enter and how you would catch them.",
+   "setup": [],
+   "learn": [
+    {
+     "title": "Introducing Contextual Retrieval: 'Further boosting performance with Reranking' and 'Cost and latency considerations'",
+     "url": "https://www.anthropic.com/news/contextual-retrieval",
+     "minutes": 10,
+     "how": "What people add when plain retrieval is not enough."
+    }
+   ],
+   "math": null,
+   "build": [
+    "In Excalidraw, draw the pipeline: documents → chunks → embeddings → index → query → top k → prompt → model → reply.",
+    "Mark at least 5 places where it can go wrong.",
+    "Next to each, write the number that catches it (recall@k, facts_ok, policy_ok, latency…).",
+    "Add your measured numbers from this project."
+   ],
+   "artifact": "diagram",
+   "expect": [
+    "diagram.excalidraw.svg|diagram.excalidraw.png|*.excalidraw.svg|*.excalidraw.png|*.excalidraw|*.svg|*.png"
+   ],
+   "done_when": [
+    "The pipeline diagram.",
+    "At least 5 failure points, each with its metric.",
+    "Your real numbers on the diagram."
+   ],
+   "minimum": "Pipeline with 3 failure points.",
+   "record": [
+    "Give a 5-minute explainer to a customer who believes RAG removes all hallucinations.",
+    "End with the one metric you would watch every week.",
+    "Two takes at most, then upload to YouTube as Unlisted and paste the link."
+   ],
+   "parking": "Add reranking to your search.",
+   "starter": []
+  },
+  {
+   "id": "p3-01",
+   "day": 21,
+   "project": 3,
+   "step": 1,
+   "folder": "3-learn-a-formula/01-functions-and-slopes",
+   "slug": "functions-and-slopes",
+   "title": "Functions and slopes: your hosting bill as a line",
+   "question": "What does it mean to 'have a formula' for something?",
+   "why": "Before a machine learns a formula, feel what the two numbers in a line mean in business terms.",
+   "setup": [],
+   "learn": [
+    {
+     "title": "Linear regression (Google ML Crash Course): first page",
+     "url": "https://developers.google.com/machine-learning/crash-course/linear-regression",
+     "minutes": 10,
+     "how": "Notice the words feature, label, weight and bias."
+    },
+    {
+     "title": "Interactive exercise: parameters",
+     "url": "https://developers.google.com/machine-learning/crash-course/linear-regression/parameters-exercise",
+     "minutes": 5,
+     "how": "Move the line by hand."
+    }
+   ],
+   "math": {
+    "idea": "A line: y = w·x + b",
+    "plain": "b is where the line starts (the fixed monthly cost). w is how much y grows when x grows by 1 (the cost of each extra lakh of requests)."
+   },
+   "build": [
+    "The notebook makes 40 months of fake hosting data: requests (lakhs) and cost (₹ thousands).",
+    "Plot it. Guess w and b by eye and draw your line.",
+    "Try 3 guesses and draw all three.",
+    "Write what your w and b mean, in business words."
+   ],
+   "artifact": "notebook",
+   "expect": [
+    "notebook.ipynb"
+   ],
+   "done_when": [
+    "Scatter plot with 3 guessed lines.",
+    "predict(x, w, b) works.",
+    "w and b explained in business words."
+   ],
+   "minimum": "One guessed line on the plot.",
+   "record": [
+    "Show the plot and your best guess.",
+    "Explain w and b to a finance person.",
+    "Say how you decided which guess was best (tomorrow makes this exact).",
+    "Two takes at most, then upload to YouTube as Unlisted and paste the link."
+   ],
+   "parking": "Use your real cloud bill (privately).",
+   "starter": [
+    "notebook.ipynb"
+   ]
+  },
+  {
+   "id": "p3-02",
+   "day": 22,
+   "project": 3,
+   "step": 2,
+   "folder": "3-learn-a-formula/02-loss",
+   "slug": "loss",
+   "title": "Loss: one number for 'how wrong'",
+   "question": "How do you compare two guesses without arguing?",
+   "why": "Every model you will ever train minimises a loss. The choice of loss is a business choice.",
+   "setup": [],
+   "learn": [
+    {
+     "title": "Loss (Google ML Crash Course)",
+     "url": "https://developers.google.com/machine-learning/crash-course/linear-regression/loss",
+     "minutes": 10,
+     "how": "Read about L1, L2 and MSE. Focus on why we square."
+    }
+   ],
+   "math": {
+    "idea": "Mean squared error (MSE)",
+    "plain": "For each point: error = guess − truth. Square it (negatives can't cancel, big misses count more), then take the average."
+   },
+   "build": [
+    "Write mse(w, b) with a loop. Check it against a numpy one-liner.",
+    "Compute the loss of your 3 guesses from yesterday.",
+    "Try every (w, b) on a 101 × 101 grid. Find the lowest loss.",
+    "Draw the loss as a heatmap over (w, b) and mark the best point."
+   ],
+   "artifact": "notebook",
+   "expect": [
+    "notebook.ipynb"
+   ],
+   "done_when": [
+    "mse() matches numpy.",
+    "Grid search finds the best (w, b).",
+    "Loss heatmap with the best point."
+   ],
+   "minimum": "mse() and the grid search.",
+   "record": [
+    "Show the heatmap: it is a valley.",
+    "Say why squaring makes big misses expensive.",
+    "Say why a grid does not scale to millions of parameters.",
+    "Two takes at most, then upload to YouTube as Unlisted and paste the link."
+   ],
+   "parking": "Try the absolute error (L1) and compare the best line.",
+   "starter": [
+    "notebook.ipynb"
+   ]
+  },
+  {
+   "id": "p3-03",
+   "day": 23,
+   "project": 3,
+   "step": 3,
+   "folder": "3-learn-a-formula/03-derivative-as-a-nudge",
+   "slug": "derivative-as-a-nudge",
+   "title": "Derivative: how much the loss moves when you nudge",
+   "question": "Which way should I move w to make the loss smaller?",
+   "why": "Training is just 'nudge every number the right way'. The derivative tells you the right way.",
+   "setup": [],
+   "learn": [
+    {
+     "title": "The paradox of the derivative (3Blue1Brown, Calculus chapter 2)",
+     "url": "https://www.3blue1brown.com/lessons/derivatives",
+     "minutes": 17,
+     "how": "Watch or read. Hold on to one idea: a derivative is the ratio of a tiny nudge."
+    }
+   ],
+   "math": {
+    "idea": "A derivative, by nudging",
+    "plain": "Nudge w by a tiny h. slope ≈ (loss(w + h) − loss(w)) ÷ h. A positive slope means moving w up makes things worse, so move it down."
+   },
+   "build": [
+    "Write slope_w(w, b) and slope_b(w, b) by nudging.",
+    "At your best guess, print both slopes.",
+    "Take one small step against each slope. Check the loss went down.",
+    "Plot the loss as w changes (b fixed) and draw the tangent line at your point."
+   ],
+   "artifact": "notebook",
+   "expect": [
+    "notebook.ipynb"
+   ],
+   "done_when": [
+    "Both slopes computed by nudging.",
+    "One step against the slopes lowers the loss (checked).",
+    "Loss curve with a tangent line."
+   ],
+   "minimum": "slope_w() and one step that lowers the loss.",
+   "record": [
+    "Explain a derivative with the tangent plot.",
+    "Show the step that lowered the loss.",
+    "Say why this beats the grid from yesterday.",
+    "Two takes at most, then upload to YouTube as Unlisted and paste the link."
+   ],
+   "parking": "Try a bigger h. When does the nudge estimate break?",
+   "starter": [
+    "notebook.ipynb"
+   ]
+  },
+  {
+   "id": "p3-04",
+   "day": 24,
+   "project": 3,
+   "step": 4,
+   "folder": "3-learn-a-formula/04-gradient-descent",
+   "slug": "gradient-descent",
+   "title": "Gradient descent: walk downhill in small steps",
+   "question": "How does a machine find the best numbers without trying them all?",
+   "why": "This loop is how every neural network, including LLMs, is trained.",
+   "setup": [],
+   "learn": [
+    {
+     "title": "Gradient descent (Google ML Crash Course)",
+     "url": "https://developers.google.com/machine-learning/crash-course/linear-regression/gradient-descent",
+     "minutes": 10,
+     "how": "The loop: compute the slopes, take a step, repeat."
+    },
+    {
+     "title": "Gradient descent, how neural networks learn (3Blue1Brown, Neural Networks chapter 2)",
+     "url": "https://www.3blue1brown.com/lessons/gradient-descent",
+     "minutes": 10,
+     "how": "Watch the first half: the ball rolling downhill."
+    }
+   ],
+   "math": {
+    "idea": "The gradient",
+    "plain": "The gradient is just the list of slopes, one per number: [slope_w, slope_b]. One step = numbers − learning_rate × gradient."
+   },
+   "build": [
+    "Write the loop: compute both slopes by nudging, step, repeat 500 times. Keep the loss each time.",
+    "Plot the loss curve.",
+    "Compare your final (w, b) with the grid result.",
+    "Draw the path of (w, b) on yesterday's heatmap."
+   ],
+   "artifact": "notebook",
+   "expect": [
+    "notebook.ipynb"
+   ],
+   "done_when": [
+    "The loss goes down step by step.",
+    "Final (w, b) is close to the grid best.",
+    "The path drawn on the heatmap."
+   ],
+   "minimum": "The loop runs and the loss goes down.",
+   "record": [
+    "Show the path on the heatmap.",
+    "Explain one step of gradient descent in one sentence.",
+    "Say what a 'parameter' is in a 4-billion-parameter model.",
+    "Two takes at most, then upload to YouTube as Unlisted and paste the link."
+   ],
+   "parking": "Make an animation of the path.",
+   "starter": [
+    "notebook.ipynb"
+   ]
+  },
+  {
+   "id": "p3-05",
+   "day": 25,
+   "project": 3,
+   "step": 5,
+   "folder": "3-learn-a-formula/05-learning-rate",
+   "slug": "learning-rate",
+   "title": "Learning rate: too small, too big, just right",
+   "question": "Why does training sometimes explode or crawl?",
+   "why": "Customers fine-tuning models hit this first. You will recognise it from one chart.",
+   "setup": [],
+   "learn": [
+    {
+     "title": "Hyperparameters (Google ML Crash Course)",
+     "url": "https://developers.google.com/machine-learning/crash-course/linear-regression/hyperparameters",
+     "minutes": 10,
+     "how": "Learning rate, batch size, epochs."
+    },
+    {
+     "title": "Interactive exercise: gradient descent",
+     "url": "https://developers.google.com/machine-learning/crash-course/linear-regression/gradient-descent-exercise",
+     "minutes": 5,
+     "how": "Break it on purpose with a big learning rate."
+    }
+   ],
+   "math": {
+    "idea": "Scaling the inputs",
+    "plain": "If x is in the lakhs (0 to 2), one learning rate works. Measure x in plain requests (0 to 200,000) and the same step becomes enormous. Rescale inputs so the numbers have similar sizes."
+   },
+   "build": [
+    "Run gradient descent with 4 learning rates. Plot the 4 loss curves on one chart.",
+    "Find one that diverges (the loss grows) and one that crawls.",
+    "Repeat with x measured in plain requests instead of lakhs. What happens?",
+    "Make a table: learning rate → steps needed to get close to the best loss."
+   ],
+   "artifact": "notebook",
+   "expect": [
+    "notebook.ipynb"
+   ],
+   "done_when": [
+    "4 loss curves on one chart, one of them diverging.",
+    "The unscaled-input experiment.",
+    "Learning-rate table."
+   ],
+   "minimum": "Two learning rates compared.",
+   "record": [
+    "Show the diverging curve and explain it.",
+    "Explain feature scaling with the lakhs example.",
+    "Say what you would check first if a customer's training 'blows up'.",
+    "Two takes at most, then upload to YouTube as Unlisted and paste the link."
+   ],
+   "parking": "Try a learning rate that shrinks over time.",
+   "starter": [
+    "notebook.ipynb"
+   ]
+  },
+  {
+   "id": "p3-06",
+   "day": 26,
+   "project": 3,
+   "step": 6,
+   "folder": "3-learn-a-formula/06-chain-rule-first-taste",
+   "slug": "chain-rule-first-taste",
+   "title": "From nudges to a formula: the chain rule, first taste",
+   "question": "Can we get the exact slope without nudging?",
+   "why": "Nudging every one of 4 billion parameters is impossible. The chain rule gives every slope at once; it is the heart of backpropagation (project 4).",
+   "setup": [],
+   "learn": [
+    {
+     "title": "Visualizing the chain rule and product rule (3Blue1Brown, Calculus)",
+     "url": "https://www.3blue1brown.com/lessons/chain-rule-and-product-rule",
+     "minutes": 15,
+     "how": "Read or watch only the chain-rule part."
+    }
+   ],
+   "math": {
+    "idea": "The chain rule",
+    "plain": "loss = error² and error = w·x + b − y. If w changes, error changes x times as much, and loss changes 2·error times as much as error. Multiply: d loss / d w = 2·error·x (then average over the points)."
+   },
+   "build": [
+    "Write the exact gradient with the formula.",
+    "Gradient check: compare it with your nudge slopes. They must agree.",
+    "Time both on 100,000 points.",
+    "Train with the exact gradient."
+   ],
+   "artifact": "notebook",
+   "expect": [
+    "notebook.ipynb"
+   ],
+   "done_when": [
+    "Exact gradient written.",
+    "Gradient check passes.",
+    "Timing comparison."
+   ],
+   "minimum": "The gradient check passes.",
+   "record": [
+    "Explain the chain rule as a chain of exchange rates.",
+    "Show the gradient check.",
+    "Say why this matters for a model with billions of parameters.",
+    "Two takes at most, then upload to YouTube as Unlisted and paste the link."
+   ],
+   "parking": "Derive the gradient for the absolute error (L1).",
+   "starter": [
+    "notebook.ipynb"
+   ]
+  },
+  {
+   "id": "p3-07",
+   "day": 27,
+   "project": 3,
+   "step": 7,
+   "folder": "3-learn-a-formula/07-overfitting",
+   "slug": "overfitting",
+   "title": "Overfitting: when the model memorises",
+   "question": "Why can a model be great in the demo and bad in production?",
+   "why": "'98% in our demo' is the most common customer story. You will know the first question to ask.",
+   "setup": [],
+   "learn": [
+    {
+     "title": "Dividing the original dataset (Google ML Crash Course)",
+     "url": "https://developers.google.com/machine-learning/crash-course/overfitting/dividing-datasets",
+     "minutes": 10,
+     "how": "Training, validation and test sets."
+    },
+    {
+     "title": "Overfitting (Google ML Crash Course)",
+     "url": "https://developers.google.com/machine-learning/crash-course/overfitting/overfitting",
+     "minutes": 10,
+     "how": "Read the page."
+    }
+   ],
+   "math": {
+    "idea": "Polynomials",
+    "plain": "A degree-3 polynomial is w₁x + w₂x² + w₃x³ + b. More terms mean more bends, so it can follow the noise instead of the pattern."
+   },
+   "build": [
+    "Split the data: 10 months for training, 30 for testing.",
+    "Fit polynomials of degree 1, 3 and 8 on the training months (np.polyfit is fine today).",
+    "Compute training and test MSE for each. Plot the three curves over the data.",
+    "Pick a degree and say why."
+   ],
+   "artifact": "notebook",
+   "expect": [
+    "notebook.ipynb"
+   ],
+   "done_when": [
+    "Train and test MSE for 3 degrees.",
+    "Plot of the 3 curves.",
+    "Your choice, with a reason."
+   ],
+   "minimum": "Train vs. test MSE for 2 degrees.",
+   "record": [
+    "Show the wiggly degree-8 curve and explain it.",
+    "Show the train vs. test table.",
+    "Say what you would ask a customer who reports 98% accuracy.",
+    "Two takes at most, then upload to YouTube as Unlisted and paste the link."
+   ],
+   "parking": "Add L2 regularisation and see the wiggles calm down.",
+   "starter": [
+    "notebook.ipynb"
+   ]
+  },
+  {
+   "id": "p3-08",
+   "day": 28,
+   "project": 3,
+   "step": 8,
+   "folder": "3-learn-a-formula/08-yes-or-no",
+   "slug": "yes-or-no",
+   "title": "From numbers to yes/no: will this customer escalate?",
+   "question": "How does a model give a probability instead of a number?",
+   "why": "Routing, escalation and spam filters are yes/no models. The same idea is inside every LLM output.",
+   "setup": [],
+   "learn": [
+    {
+     "title": "Logistic regression: calculating a probability (Google ML Crash Course)",
+     "url": "https://developers.google.com/machine-learning/crash-course/logistic-regression/sigmoid-function",
+     "minutes": 10,
+     "how": "The sigmoid function."
+    },
+    {
+     "title": "Logistic regression: loss and regularization (Google ML Crash Course)",
+     "url": "https://developers.google.com/machine-learning/crash-course/logistic-regression/loss-regularization",
+     "minutes": 10,
+     "how": "Read the log loss part only."
+    }
+   ],
+   "math": {
+    "idea": "Sigmoid and log loss",
+    "plain": "sigmoid(z) = 1 ÷ (1 + e^−z) squeezes any number into 0 to 1: a probability. Log loss punishes confident wrong answers very hard."
+   },
+   "build": [
+    "The notebook makes 300 fake customers: days waiting, complaints, escalated (yes/no).",
+    "Write sigmoid() and predict_proba().",
+    "Train with gradient descent (the gradient formula is given).",
+    "Compare test accuracy with the baseline 'always no'. Draw the decision line."
+   ],
+   "artifact": "notebook",
+   "expect": [
+    "notebook.ipynb"
+   ],
+   "done_when": [
+    "The loss goes down.",
+    "Test accuracy beats 'always no'.",
+    "Decision line plot."
+   ],
+   "minimum": "sigmoid() and a trained model.",
+   "record": [
+    "Show the decision line and explain it.",
+    "Say why 'always no' can look accurate.",
+    "Say how this would help Acme's support team.",
+    "Two takes at most, then upload to YouTube as Unlisted and paste the link."
+   ],
+   "parking": "Add a third feature (plan) and see if it helps.",
+   "starter": [
+    "notebook.ipynb"
+   ]
+  },
+  {
+   "id": "p3-09",
+   "day": 29,
+   "project": 3,
+   "step": 9,
+   "folder": "3-learn-a-formula/09-programming-vs-learning",
+   "slug": "programming-vs-learning",
+   "title": "Wrap-up: programming vs. learning, explained",
+   "question": "What is the real difference between writing rules and learning parameters?",
+   "why": "Explaining this clearly to a non-technical customer is a core FDE skill.",
+   "setup": [],
+   "learn": [
+    {
+     "title": "But what is a Neural Network? (3Blue1Brown, Neural Networks chapter 1): first part",
+     "url": "https://www.3blue1brown.com/lessons/neural-networks",
+     "minutes": 10,
+     "how": "A preview of project 4. Stop when the layers appear."
+    }
+   ],
+   "math": null,
+   "build": [
+    "In Excalidraw, draw two pipelines side by side. Left: rules → program → answer (your version A). Right: examples → loss → gradient steps → parameters → predictions (your cost model).",
+    "Use your real numbers from this project on the diagram.",
+    "Add 'where it breaks' notes: bad data, overfitting, wrong learning rate."
+   ],
+   "artifact": "diagram",
+   "expect": [
+    "diagram.excalidraw.svg|diagram.excalidraw.png|*.excalidraw.svg|*.excalidraw.png|*.excalidraw|*.svg|*.png"
+   ],
+   "done_when": [
+    "Both pipelines with your numbers.",
+    "At least 3 'where it breaks' notes."
+   ],
+   "minimum": "Both pipelines drawn.",
+   "record": [
+    "Explain programming vs. learning to a business audience in 5 minutes.",
+    "End with one sentence on when NOT to use machine learning.",
+    "Two takes at most, then upload to YouTube as Unlisted and paste the link."
+   ],
+   "parking": "Write it as a short blog post.",
+   "starter": []
+  },
+  {
+   "id": "p4-01",
+   "day": 30,
+   "project": 4,
+   "step": 1,
+   "folder": "4-backprop-by-hand/01-one-neuron",
+   "slug": "one-neuron",
+   "title": "One neuron, explained with your escalation data",
+   "question": "What is a 'neuron', without the biology?",
+   "why": "Your yes/no model from project 3 already was one neuron. Seeing this removes the mystery.",
+   "setup": [],
+   "learn": [
+    {
+     "title": "But what is a Neural Network? (3Blue1Brown, Neural Networks chapter 1)",
+     "url": "https://www.3blue1brown.com/lessons/neural-networks",
+     "minutes": 20,
+     "how": "Watch or read the whole lesson."
+    }
+   ],
+   "math": {
+    "idea": "Weighted sum + activation",
+    "plain": "A neuron multiplies each input by a weight, adds them up with a bias, then squashes the result (tanh gives −1 to 1, sigmoid gives 0 to 1)."
+   },
+   "build": [
+    "Write neuron(x, w, b) with tanh.",
+    "Plot tanh and sigmoid on one chart.",
+    "Score 3 customers by hand with weights you choose.",
+    "Write how this neuron is the same as yesterday's logistic regression, and how it differs."
+   ],
+   "artifact": "notebook",
+   "expect": [
+    "notebook.ipynb"
+   ],
+   "done_when": [
+    "neuron() works.",
+    "tanh and sigmoid plot.",
+    "3 customers scored.",
+    "The comparison written."
+   ],
+   "minimum": "neuron() works.",
+   "record": [
+    "Explain one neuron with your 3 customers.",
+    "Show the tanh plot.",
+    "Say what 'a model with 4 billion parameters' means now.",
+    "Two takes at most, then upload to YouTube as Unlisted and paste the link."
+   ],
+   "parking": "Try ReLU instead of tanh.",
+   "starter": [
+    "notebook.ipynb"
+   ]
+  },
+  {
+   "id": "p4-02",
+   "day": 31,
+   "project": 4,
+   "step": 2,
+   "folder": "4-backprop-by-hand/02-value-object",
+   "slug": "value-object",
+   "title": "A number that remembers where it came from",
+   "question": "How can a program know how every number affects the final answer?",
+   "why": "This tiny Value class is the core idea inside PyTorch and every training run.",
+   "setup": [
+    "lab/micrograd.py is your engine for this project. Today you write __add__ and __mul__."
+   ],
+   "learn": [
+    {
+     "title": "Building micrograd (Andrej Karpathy): 'starting the core Value object' (19:09) to 'manual backpropagation example #1' (32:10)",
+     "url": "https://www.youtube.com/watch?v=VMj-3S1tku0&t=1149s",
+     "minutes": 13,
+     "how": "Skip 08:08 to 19:09: you already did derivatives in project 3. Code along."
+    }
+   ],
+   "math": {
+    "idea": "An expression graph",
+    "plain": "d = a·b + c is a small tree: a and b feed '×', that result and c feed '+'. Every value knows its parents and the operation that made it."
+   },
+   "build": [
+    "In lab/micrograd.py, write __add__ and __mul__ (step 2 TODOs).",
+    "Build d = a·b + c and L = d·f in the notebook.",
+    "Print the graph with draw().",
+    "Check every value by hand."
+   ],
+   "artifact": "code",
+   "expect": [
+    "notebook.ipynb",
+    "/lab/micrograd.py"
+   ],
+   "done_when": [
+    "__add__ and __mul__ work.",
+    "The graph prints with correct values.",
+    "The self-check passes."
+   ],
+   "minimum": "__add__ works and the graph prints.",
+   "record": [
+    "Show the graph and read it from the bottom up.",
+    "Explain _prev and _op.",
+    "Say why a number needs to remember its history.",
+    "Two takes at most, then upload to YouTube as Unlisted and paste the link."
+   ],
+   "parking": "Install Graphviz and draw it like Karpathy does.",
+   "starter": [
+    "_track/lab/micrograd.py",
+    "notebook.ipynb"
+   ]
+  },
+  {
+   "id": "p4-03",
+   "day": 32,
+   "project": 4,
+   "step": 3,
+   "folder": "4-backprop-by-hand/03-manual-backprop",
+   "slug": "manual-backprop",
+   "title": "Backprop by hand: the chain rule in action",
+   "question": "How much does each input change the final answer?",
+   "why": "Backpropagation sounds hard. Done once by hand, it is just multiplication along a path.",
+   "setup": [],
+   "learn": [
+    {
+     "title": "Building micrograd: 'manual backpropagation example #1' (32:10 to 51:10)",
+     "url": "https://www.youtube.com/watch?v=VMj-3S1tku0&t=1930s",
+     "minutes": 19,
+     "how": "Pause and do each gradient yourself before he does."
+    }
+   ],
+   "math": {
+    "idea": "Chain rule: local × upstream",
+    "plain": "To get how L changes with a: multiply how L changes with the next node (upstream) by how that node changes with a (local). For +, local = 1. For ×, local = the other input."
+   },
+   "build": [
+    "Set .grad by hand for every node of L = (a·b + c)·f.",
+    "Check every gradient with a nudge (project 3).",
+    "Write a table: node, value, gradient, nudge check."
+   ],
+   "artifact": "notebook",
+   "expect": [
+    "notebook.ipynb"
+   ],
+   "done_when": [
+    "Every gradient set by hand.",
+    "Every gradient matches its nudge check."
+   ],
+   "minimum": "Gradients of L, d and f, checked.",
+   "record": [
+    "Walk the graph backwards, multiplying as you go.",
+    "Show one nudge check.",
+    "Say what 'gradient' means in one sentence.",
+    "Two takes at most, then upload to YouTube as Unlisted and paste the link."
+   ],
+   "parking": "Do example #2 (the neuron) by hand as well.",
+   "starter": [
+    "notebook.ipynb"
+   ]
+  },
+  {
+   "id": "p4-04",
+   "day": 33,
+   "project": 4,
+   "step": 4,
+   "folder": "4-backprop-by-hand/04-automatic-backward",
+   "slug": "automatic-backward",
+   "title": "Automate it: a _backward for every operation",
+   "question": "How does a library compute every gradient automatically?",
+   "why": "This is what PyTorch does on every training step for a customer's fine-tune.",
+   "setup": [],
+   "learn": [
+    {
+     "title": "Building micrograd: 'implementing the backward function for each operation' (1:09:02 to 1:22:28)",
+     "url": "https://www.youtube.com/watch?v=VMj-3S1tku0&t=4142s",
+     "minutes": 14,
+     "how": "First skim 52:52 to 1:09:02 (the neuron example) at 1.5× speed."
+    }
+   ],
+   "math": {
+    "idea": "Topological order",
+    "plain": "List the nodes so that every node comes after the nodes it was made from. Backprop walks that list backwards."
+   },
+   "build": [
+    "In lab/micrograd.py, write the _backward for +, × and tanh (step 4 TODOs).",
+    "Write backward(): topological order, set the last grad to 1, call _backward in reverse.",
+    "Check the automatic gradients equal yesterday's hand-made ones.",
+    "Run the neuron example and check its gradients."
+   ],
+   "artifact": "code",
+   "expect": [
+    "notebook.ipynb",
+    "/lab/micrograd.py"
+   ],
+   "done_when": [
+    "backward() fills every grad.",
+    "Automatic = manual for L.",
+    "Neuron gradients correct."
+   ],
+   "minimum": "backward() works for L.",
+   "record": [
+    "Show backward() and explain the topological order.",
+    "Show automatic = manual.",
+    "Say what 'autograd' means.",
+    "Two takes at most, then upload to YouTube as Unlisted and paste the link."
+   ],
+   "parking": "Print the topological order and draw it.",
+   "starter": [
+    "notebook.ipynb"
+   ]
+  },
+  {
+   "id": "p4-05",
+   "day": 34,
+   "project": 4,
+   "step": 5,
+   "folder": "4-backprop-by-hand/05-used-twice-bug",
+   "slug": "used-twice-bug",
+   "title": "The bug when a value is used twice",
+   "question": "What happens when one number feeds two places?",
+   "why": "Real networks reuse values everywhere. This one-character bug teaches how gradients really flow.",
+   "setup": [],
+   "learn": [
+    {
+     "title": "Building micrograd: 'fixing a backprop bug when one node is used multiple times' (1:22:28 to 1:39:31)",
+     "url": "https://www.youtube.com/watch?v=VMj-3S1tku0&t=4948s",
+     "minutes": 17,
+     "how": "Code along."
+    }
+   ],
+   "math": {
+    "idea": "Gradients add up",
+    "plain": "If a value feeds two places, it gets a push from each. So gradients must be added (+=), never overwritten (=)."
+   },
+   "build": [
+    "Show the bug: b = a + a gives the wrong a.grad. Fix it with += in every _backward.",
+    "Write __pow__, exp and __truediv__ (step 5 TODOs).",
+    "Build tanh from exp and check its gradients equal your tanh()."
+   ],
+   "artifact": "code",
+   "expect": [
+    "notebook.ipynb",
+    "/lab/micrograd.py"
+   ],
+   "done_when": [
+    "b = a + a gives a.grad = 2.",
+    "pow, exp and division work.",
+    "tanh built from exp matches tanh()."
+   ],
+   "minimum": "The += fix, with the a + a test.",
+   "record": [
+    "Show the bug and the fix.",
+    "Explain why gradients add.",
+    "Say how you would catch this kind of bug in a customer's code (hint: a nudge check).",
+    "Two takes at most, then upload to YouTube as Unlisted and paste the link."
+   ],
+   "parking": "Add relu().",
+   "starter": [
+    "notebook.ipynb"
+   ]
+  },
+  {
+   "id": "p4-06",
+   "day": 35,
+   "project": 4,
+   "step": 6,
+   "folder": "4-backprop-by-hand/06-same-in-pytorch",
+   "slug": "same-in-pytorch",
+   "title": "Same thing in PyTorch: what the library does for you",
+   "question": "What does PyTorch add on top of your micrograd?",
+   "why": "Customers use PyTorch, not micrograd. Now you can read their training code.",
+   "setup": [
+    "`uv add torch`"
+   ],
+   "learn": [
+    {
+     "title": "Building micrograd: 'doing the same thing but in PyTorch' (1:39:31 to 1:43:55)",
+     "url": "https://www.youtube.com/watch?v=VMj-3S1tku0&t=5971s",
+     "minutes": 5,
+     "how": "Short."
+    },
+    {
+     "title": "A gentle introduction to torch.autograd (PyTorch)",
+     "url": "https://docs.pytorch.org/tutorials/beginner/blitz/autograd_tutorial.html",
+     "minutes": 15,
+     "how": "Read 'Background' and 'Differentiation in Autograd'."
+    }
+   ],
+   "math": {
+    "idea": "Tensors",
+    "plain": "A tensor is a box of numbers: one number, a list, a table, or more dimensions. PyTorch does micrograd's work on whole tensors at once."
+   },
+   "build": [
+    "Build the same neuron in PyTorch (double precision).",
+    "Check PyTorch's gradients equal your micrograd gradients.",
+    "Do one bigger example with tensors of 1,000 numbers and time it."
+   ],
+   "artifact": "notebook",
+   "expect": [
+    "notebook.ipynb"
+   ],
+   "done_when": [
+    "PyTorch and micrograd gradients agree.",
+    "The tensor timing example."
+   ],
+   "minimum": "PyTorch neuron gradients printed.",
+   "record": [
+    "Show both gradient lists side by side.",
+    "Say what PyTorch adds: tensors, speed, GPUs.",
+    "Say what it does NOT add: the idea is the same.",
+    "Two takes at most, then upload to YouTube as Unlisted and paste the link."
+   ],
+   "parking": "Run the same on your Mac's GPU (device='mps').",
+   "starter": [
+    "notebook.ipynb"
+   ]
+  },
+  {
+   "id": "p4-07",
+   "day": 36,
+   "project": 4,
+   "step": 7,
+   "folder": "4-backprop-by-hand/07-tiny-neural-net-library",
+   "slug": "tiny-neural-net-library",
+   "title": "A tiny neural-net library: Neuron, Layer, MLP",
+   "question": "How do neurons become a 'network'?",
+   "why": "Every model card a customer shows you lists layers and parameters. Now you know what they are.",
+   "setup": [
+    "lab/nn.py is new: today you fill it in."
+   ],
+   "learn": [
+    {
+     "title": "Building micrograd: 'building out a neural net library' (1:43:55 to 1:57:56)",
+     "url": "https://www.youtube.com/watch?v=VMj-3S1tku0&t=6235s",
+     "minutes": 14,
+     "how": "Code along."
+    }
+   ],
+   "math": {
+    "idea": "Layers",
+    "plain": "A layer is many neurons looking at the same inputs. A multi-layer perceptron (MLP) is layers in a row: each layer's outputs are the next layer's inputs."
+   },
+   "build": [
+    "Fill in Neuron, Layer and MLP in lab/nn.py.",
+    "Create MLP(3, [4, 4, 1]) and count its parameters.",
+    "Run it on 4 examples and compute the loss."
+   ],
+   "artifact": "code",
+   "expect": [
+    "notebook.ipynb",
+    "/lab/nn.py"
+   ],
+   "done_when": [
+    "MLP(3, [4, 4, 1]) has 41 parameters.",
+    "Forward pass on 4 examples.",
+    "Loss computed."
+   ],
+   "minimum": "Neuron works.",
+   "record": [
+    "Count the 41 parameters out loud.",
+    "Explain a layer with your hands.",
+    "Say how many parameters a 4B model has compared to this one.",
+    "Two takes at most, then upload to YouTube as Unlisted and paste the link."
+   ],
+   "parking": "Draw the network in Excalidraw.",
+   "starter": [
+    "_track/lab/nn.py",
+    "notebook.ipynb"
+   ]
+  },
+  {
+   "id": "p4-08",
+   "day": 37,
+   "project": 4,
+   "step": 8,
+   "folder": "4-backprop-by-hand/08-training-loop",
+   "slug": "training-loop",
+   "title": "The training loop: forward, backward, update, repeat",
+   "question": "What actually happens when a model 'trains'?",
+   "why": "Fine-tuning, training, 'learning from feedback': all are this loop. You will write it yourself.",
+   "setup": [],
+   "learn": [
+    {
+     "title": "Building micrograd: 'collecting all of the parameters' to 'summary' (1:57:56 to 2:14:03)",
+     "url": "https://www.youtube.com/watch?v=VMj-3S1tku0&t=7076s",
+     "minutes": 16,
+     "how": "Watch for the zero-grad bug."
+    }
+   ],
+   "math": null,
+   "build": [
+    "Write the loop: forward, loss, zero the grads, backward, update. 100 steps.",
+    "Show the zero-grad bug once, then fix it.",
+    "Plot the loss curve.",
+    "Train a small MLP on the escalation data from project 3. Compare its accuracy."
+   ],
+   "artifact": "notebook",
+   "expect": [
+    "notebook.ipynb"
+   ],
+   "done_when": [
+    "Loss below 0.05 on the 4 examples.",
+    "Loss curve.",
+    "Escalation accuracy compared."
+   ],
+   "minimum": "The loop runs and the loss goes down.",
+   "record": [
+    "Narrate one training step.",
+    "Show the zero-grad bug.",
+    "Say what 'epoch', 'step' and 'learning rate' mean.",
+    "Two takes at most, then upload to YouTube as Unlisted and paste the link."
+   ],
+   "parking": "Add a test set to the escalation model.",
+   "starter": [
+    "notebook.ipynb"
+   ]
+  },
+  {
+   "id": "p4-09",
+   "day": 38,
+   "project": 4,
+   "step": 9,
+   "folder": "4-backprop-by-hand/09-what-training-really-is",
+   "slug": "what-training-really-is",
+   "title": "Wrap-up: what training really is",
+   "question": "Can you explain training to an engineer in five minutes, without notes?",
+   "why": "Engineers on customer teams will trust you more when you explain the inside, not the buzzwords.",
+   "setup": [],
+   "learn": [
+    {
+     "title": "What is backpropagation really doing? (3Blue1Brown)",
+     "url": "https://www.3blue1brown.com/lessons/backpropagation",
+     "minutes": 15,
+     "how": "Watch or read. Compare with what you built."
+    }
+   ],
+   "math": null,
+   "build": [
+    "In Excalidraw, draw the graph of one neuron with 2 inputs: values in black (forward), gradients in red (backward).",
+    "Add the update rule: w ← w − learning_rate × grad.",
+    "Add a box: 'what PyTorch adds'."
+   ],
+   "artifact": "diagram",
+   "expect": [
+    "diagram.excalidraw.svg|diagram.excalidraw.png|*.excalidraw.svg|*.excalidraw.png|*.excalidraw|*.svg|*.png"
+   ],
+   "done_when": [
+    "Forward values and gradients on the diagram.",
+    "The update rule.",
+    "The PyTorch box."
+   ],
+   "minimum": "The neuron graph with gradients.",
+   "record": [
+    "Explain training to an engineer in 5 minutes using the diagram.",
+    "Two takes at most, then upload to YouTube as Unlisted and paste the link."
+   ],
+   "parking": "Read the full micrograd repo on GitHub.",
+   "starter": []
+  },
+  {
+   "id": "p5-01",
+   "day": 39,
+   "project": 5,
+   "step": 1,
+   "folder": "5-tiny-gpt/01-counting-next-letters",
+   "slug": "counting-next-letters",
+   "title": "Probability: counting what comes next",
+   "question": "How can counting alone produce something that looks like language?",
+   "why": "An LLM predicts the next token. The simplest version is counting. Start there.",
+   "setup": [],
+   "learn": [
+    {
+     "title": "Building makemore (Andrej Karpathy): 'reading and exploring the dataset' (03:03) to 'deleting spurious tokens' (24:02)",
+     "url": "https://www.youtube.com/watch?v=PaCmpygFfXo&t=183s",
+     "minutes": 21,
+     "how": "Code along. NumPy is fine instead of PyTorch today."
+    }
+   ],
+   "math": {
+    "idea": "Conditional probability",
+    "plain": "P(next = 'a' | current = 'm') = how often 'ma' appears ÷ how often 'm' is followed by anything."
+   },
+   "build": [
+    "Download names.txt (the notebook does it).",
+    "Count every pair of letters (bigrams) in a dictionary.",
+    "Put the counts in a 27 × 27 table ('.' marks start and end) and draw it.",
+    "Compute P('a' | '.'): how often names start with 'a'."
+   ],
+   "artifact": "notebook",
+   "expect": [
+    "notebook.ipynb"
+   ],
+   "done_when": [
+    "Bigram counts in a dictionary and a 27 × 27 table.",
+    "The heatmap.",
+    "P('a' | '.') printed."
+   ],
+   "minimum": "The 27 × 27 table.",
+   "record": [
+    "Show the heatmap and read one row.",
+    "Explain conditional probability with names.",
+    "Say how this is (and is not) an LLM.",
+    "Two takes at most, then upload to YouTube as Unlisted and paste the link."
+   ],
+   "parking": "Count Indian first names instead.",
+   "starter": [
+    "notebook.ipynb"
+   ]
+  },
+  {
+   "id": "p5-02",
+   "day": 40,
+   "project": 5,
+   "step": 2,
+   "folder": "5-tiny-gpt/02-sampling",
+   "slug": "sampling",
+   "title": "Sampling: let the counts write new names",
+   "question": "How does a model turn probabilities into text?",
+   "why": "Every LLM reply is produced by sampling, one token at a time. Same loop, bigger table.",
+   "setup": [],
+   "learn": [
+    {
+     "title": "Building makemore: 'sampling from the model' (24:02 to 36:17)",
+     "url": "https://www.youtube.com/watch?v=PaCmpygFfXo&t=1442s",
+     "minutes": 12,
+     "how": "Code along."
+    },
+    {
+     "title": "Building makemore: 'vectorized normalization… broadcasting' (36:17 to 50:14)",
+     "url": "https://www.youtube.com/watch?v=PaCmpygFfXo&t=2177s",
+     "minutes": 14,
+     "how": "Watch at 1.5×. The point: divide each row by its sum."
+    }
+   ],
+   "math": {
+    "idea": "A probability distribution",
+    "plain": "Each row of counts ÷ its sum gives probabilities that add up to 1. Sampling = rolling a weighted die with those probabilities."
+   },
+   "build": [
+    "Turn the count table into probabilities. Check every row sums to 1.",
+    "Sample 10 names with a seeded random generator.",
+    "Sample 10 'names' from equal probabilities for comparison."
+   ],
+   "artifact": "notebook",
+   "expect": [
+    "notebook.ipynb"
+   ],
+   "done_when": [
+    "Every row sums to 1.",
+    "10 sampled names.",
+    "The equal-probability comparison."
+   ],
+   "minimum": "10 sampled names.",
+   "record": [
+    "Read your best and worst names aloud.",
+    "Explain sampling with a weighted die.",
+    "Say why the same prompt gives different LLM answers (day 1!).",
+    "Two takes at most, then upload to YouTube as Unlisted and paste the link."
+   ],
+   "parking": "Sample names that start with 'r'.",
+   "starter": [
+    "notebook.ipynb"
+   ]
+  },
+  {
+   "id": "p5-03",
+   "day": 41,
+   "project": 5,
+   "step": 3,
+   "folder": "5-tiny-gpt/03-negative-log-likelihood",
+   "slug": "negative-log-likelihood",
+   "title": "A loss for language: negative log likelihood",
+   "question": "How do you score a language model with one number?",
+   "why": "This is the loss every LLM is trained on. Model cards and papers report it all the time.",
+   "setup": [],
+   "learn": [
+    {
+     "title": "Building makemore: 'loss function (the negative log likelihood…)' (50:14 to 1:02:57)",
+     "url": "https://www.youtube.com/watch?v=PaCmpygFfXo&t=3014s",
+     "minutes": 13,
+     "how": "Code along."
+    }
+   ],
+   "math": {
+    "idea": "Logarithms",
+    "plain": "log turns multiplying into adding: log(a·b) = log a + log b. The probability of a whole name is a product of small numbers; their logs add up nicely. Lower NLL = the model is less surprised by real data."
+   },
+   "build": [
+    "Compute the average NLL of the bigram model over all names.",
+    "Compute the NLL of your own name and of 'xqzq'.",
+    "See the infinity, then fix it with +1 smoothing."
+   ],
+   "artifact": "notebook",
+   "expect": [
+    "notebook.ipynb"
+   ],
+   "done_when": [
+    "Average NLL printed (about 2.45).",
+    "NLL of your name and of 'xqzq'.",
+    "Smoothing removes the infinity."
+   ],
+   "minimum": "Average NLL printed.",
+   "record": [
+    "Explain why we use log.",
+    "Compare your name with 'xqzq'.",
+    "Say what 'loss 2.45' means in words.",
+    "Two takes at most, then upload to YouTube as Unlisted and paste the link."
+   ],
+   "parking": "Try +10 smoothing. What happens to the samples?",
+   "starter": [
+    "notebook.ipynb"
+   ]
+  },
+  {
+   "id": "p5-04",
+   "day": 42,
+   "project": 5,
+   "step": 4,
+   "folder": "5-tiny-gpt/04-softmax-and-temperature",
+   "slug": "softmax-and-temperature",
+   "title": "Softmax and temperature: from scores to probabilities",
+   "question": "What does the 'temperature' setting really do?",
+   "why": "Temperature is in every LLM API. After today you can explain it exactly, with a chart.",
+   "setup": [],
+   "learn": [
+    {
+     "title": "Building makemore: 'one-hot encodings' to 'softmax' (1:10:01 to 1:26:17)",
+     "url": "https://www.youtube.com/watch?v=PaCmpygFfXo&t=4201s",
+     "minutes": 16,
+     "how": "Code along."
+    },
+    {
+     "title": "Transformers, the tech behind LLMs (3Blue1Brown): 'Softmax'",
+     "url": "https://www.3blue1brown.com/lessons/gpt",
+     "minutes": 5,
+     "how": "In the text version, read the softmax part. It shows temperature."
+    }
+   ],
+   "math": {
+    "idea": "Softmax",
+    "plain": "softmax turns any scores into probabilities: take e^score for each, then divide by the total. Divide the scores by a temperature T first: T below 1 makes it sharper, above 1 flatter."
+   },
+   "build": [
+    "Write softmax() from scratch. Make it safe for big numbers (subtract the max first).",
+    "Draw one row of bigram scores at T = 0.2, 1 and 2.",
+    "Sample names at each temperature.",
+    "Write how this explains your day 1 experiment."
+   ],
+   "artifact": "notebook",
+   "expect": [
+    "notebook.ipynb"
+   ],
+   "done_when": [
+    "softmax() sums to 1 and survives big numbers.",
+    "The temperature chart.",
+    "Names at 3 temperatures.",
+    "The link to day 1, written."
+   ],
+   "minimum": "softmax() and the temperature chart.",
+   "record": [
+    "Show the temperature chart.",
+    "Read names at T = 0.2 and T = 2.",
+    "Explain temperature to a customer in one sentence.",
+    "Two takes at most, then upload to YouTube as Unlisted and paste the link."
+   ],
+   "parking": "Implement top-k sampling.",
+   "starter": [
+    "notebook.ipynb"
+   ]
+  },
+  {
+   "id": "p5-05",
+   "day": 43,
+   "project": 5,
+   "step": 5,
+   "folder": "5-tiny-gpt/05-neural-bigram",
+   "slug": "neural-bigram",
+   "title": "The neural bigram: the same answer, learned",
+   "question": "Can gradient descent learn what counting gave us?",
+   "why": "This bridges counting and neural networks. Bigger networks just learn better tables.",
+   "setup": [],
+   "learn": [
+    {
+     "title": "Building makemore: 'vectorized loss' to 'sampling from the neural net' (1:35:49 to 1:56:16)",
+     "url": "https://www.youtube.com/watch?v=PaCmpygFfXo&t=5749s",
+     "minutes": 20,
+     "how": "Code along."
+    }
+   ],
+   "math": {
+    "idea": "One-hot × matrix = picking a row",
+    "plain": "A one-hot vector has a single 1. Multiplying it by a matrix just picks one row. So the network's weight matrix is a learned version of the count table."
+   },
+   "build": [
+    "Build the training pairs (current letter → next letter).",
+    "Train W (27 × 27) with PyTorch: one-hot → scores → softmax → NLL. 100+ steps.",
+    "Compare the final loss with the counting loss.",
+    "Sample 10 names."
+   ],
+   "artifact": "notebook",
+   "expect": [
+    "notebook.ipynb"
+   ],
+   "done_when": [
+    "The loss gets close to the counting loss.",
+    "10 sampled names.",
+    "A sentence on why both give the same answer."
+   ],
+   "minimum": "The training loop runs and the loss goes down.",
+   "record": [
+    "Show both losses.",
+    "Explain one-hot × matrix.",
+    "Say why a neural net beats counting for longer context.",
+    "Two takes at most, then upload to YouTube as Unlisted and paste the link."
+   ],
+   "parking": "Use two previous letters (a trigram).",
+   "starter": [
+    "notebook.ipynb"
+   ]
+  },
+  {
+   "id": "p5-06",
+   "day": 44,
+   "project": 5,
+   "step": 6,
+   "folder": "5-tiny-gpt/06-tokens-and-cost",
+   "slug": "tokens-and-cost",
+   "title": "Tokens: what the model reads, and why Hinglish costs more",
+   "question": "Why does the same message cost more in some languages?",
+   "why": "Token counts drive cost and context limits. Indian customers write in many scripts: this changes your estimates.",
+   "setup": [
+    "`uv add tiktoken`"
+   ],
+   "learn": [
+    {
+     "title": "Deep Dive into LLMs (Andrej Karpathy): 'tokenization' (07:47 to 14:27)",
+     "url": "https://www.youtube.com/watch?v=7xTGNNLPyMI&t=467s",
+     "minutes": 7,
+     "how": "How text becomes tokens."
+    },
+    {
+     "title": "Tiktokenizer (playground)",
+     "url": "https://tiktokenizer.vercel.app/",
+     "minutes": 5,
+     "how": "Paste an English, a Hindi and a Gujarati sentence. Watch the colours."
+    }
+   ],
+   "math": {
+    "idea": "Ratios",
+    "plain": "Characters per token = how much text one token carries. Fewer characters per token = more tokens = higher cost and a fuller context window."
+   },
+   "build": [
+    "Write the same support message in English, Hinglish, Hindi (Devanagari) and Gujarati.",
+    "Count tokens with tiktoken (two encodings) and with your Ollama model (prompt_eval_count).",
+    "Table: characters, tokens, characters per token, cost compared to English.",
+    "Write one recommendation for an Indian customer's budget."
+   ],
+   "artifact": "notebook",
+   "expect": [
+    "notebook.ipynb"
+   ],
+   "done_when": [
+    "At least 8 rows in the table.",
+    "Tokens from 3 tokenizers.",
+    "One recommendation."
+   ],
+   "minimum": "Token counts for 4 languages with one tokenizer.",
+   "record": [
+    "Show the table.",
+    "Explain why scripts tokenise differently.",
+    "Give your budget recommendation.",
+    "Two takes at most, then upload to YouTube as Unlisted and paste the link."
+   ],
+   "parking": "Watch Karpathy's 'Let's build the GPT Tokenizer'.",
+   "starter": [
+    "notebook.ipynb"
+   ]
+  },
+  {
+   "id": "p5-07",
+   "day": 45,
+   "project": 5,
+   "step": 7,
+   "folder": "5-tiny-gpt/07-training-batches",
+   "slug": "training-batches",
+   "title": "From text to training batches: the shift-by-one trick",
+   "question": "How does raw text become training examples?",
+   "why": "Every pretraining and fine-tuning dataset is built this way. Customers' data has to fit this shape.",
+   "setup": [],
+   "learn": [
+    {
+     "title": "Let's build GPT (Andrej Karpathy): 'reading and exploring the data' to 'data loader' (07:52 to 22:11)",
+     "url": "https://www.youtube.com/watch?v=kCc8FmEb1nY&t=472s",
+     "minutes": 14,
+     "how": "Code along."
+    }
+   ],
+   "math": {
+    "idea": "Shapes",
+    "plain": "A batch is a table of numbers with shape (B, T): B pieces of text, each T characters long. The target y is the same piece shifted one step to the left."
+   },
+   "build": [
+    "Download tiny Shakespeare (the notebook does it). Build the character vocabulary.",
+    "Write encode() and decode(). Check decode(encode(text)) == text.",
+    "Split 90% train, 10% validation.",
+    "Write get_batch() and print the 8 'context → target' examples hidden in one row."
+   ],
+   "artifact": "notebook",
+   "expect": [
+    "notebook.ipynb"
+   ],
+   "done_when": [
+    "encode/decode round trip.",
+    "get_batch() returns x and y of shape (4, 8).",
+    "8 context → target examples printed."
+   ],
+   "minimum": "encode/decode round trip.",
+   "record": [
+    "Show one row and its 8 hidden examples.",
+    "Explain why validation data is held out.",
+    "Say what a 'context window' is.",
+    "Two takes at most, then upload to YouTube as Unlisted and paste the link."
+   ],
+   "parking": "Use your own journal text instead of Shakespeare.",
+   "starter": [
+    "notebook.ipynb"
+   ]
+  },
+  {
+   "id": "p5-08",
+   "day": 46,
+   "project": 5,
+   "step": 8,
+   "folder": "5-tiny-gpt/08-averaging-the-past",
+   "slug": "averaging-the-past",
+   "title": "Averaging the past with one matrix multiply",
+   "question": "How can every token look at the tokens before it, all at once?",
+   "why": "This trick is the first half of attention, the idea behind every modern LLM.",
+   "setup": [],
+   "learn": [
+    {
+     "title": "Let's build GPT: 'version 1' to 'minor code cleanup' (42:13 to 58:26)",
+     "url": "https://www.youtube.com/watch?v=kCc8FmEb1nY&t=2533s",
+     "minutes": 16,
+     "how": "Code along."
+    }
+   ],
+   "math": {
+    "idea": "Matrix multiply as weighted averages",
+    "plain": "Multiply a lower-triangular table of weights by your data: row t becomes a weighted average of rows 0 to t. Softmax over a masked row makes the weights add up to 1."
+   },
+   "build": [
+    "Version 1: average the past with loops.",
+    "Version 2: the same with a triangular matrix (@).",
+    "Version 3: the same with masking and softmax.",
+    "Check all three give the same numbers."
+   ],
+   "artifact": "notebook",
+   "expect": [
+    "notebook.ipynb"
+   ],
+   "done_when": [
+    "Three versions.",
+    "All three are equal (checked)."
+   ],
+   "minimum": "Versions 1 and 2, equal.",
+   "record": [
+    "Show the triangular matrix and explain it.",
+    "Explain why the future is masked.",
+    "Say why matrix multiply makes this fast.",
+    "Two takes at most, then upload to YouTube as Unlisted and paste the link."
+   ],
+   "parking": "Print the weight matrix for T = 8.",
+   "starter": [
+    "notebook.ipynb"
+   ]
+  },
+  {
+   "id": "p5-09",
+   "day": 47,
+   "project": 5,
+   "step": 9,
+   "folder": "5-tiny-gpt/09-attention-by-hand",
+   "slug": "attention-by-hand",
+   "title": "Attention by hand: queries, keys and values",
+   "question": "How does a token decide which earlier tokens matter?",
+   "why": "'Attention' is in every customer conversation about LLMs. You will explain it with your own numbers.",
+   "setup": [],
+   "learn": [
+    {
+     "title": "Attention in transformers, step-by-step (3Blue1Brown)",
+     "url": "https://www.3blue1brown.com/lessons/attention",
+     "minutes": 20,
+     "how": "Watch until 'multi-headed attention'. The text version helps if the English is fast."
+    }
+   ],
+   "math": {
+    "idea": "Query · key = relevance",
+    "plain": "Each token asks a question (query) and offers a label (key). The dot product of a query with each key says how relevant that token is. Softmax turns this into weights; the output is the weighted mix of the values."
+   },
+   "build": [
+    "Pick the 4 tokens 'my internet is down'. Give each a small hand-made query, key and value (2 numbers each).",
+    "In the notebook, compute the scores, mask the future, softmax, and the outputs.",
+    "Draw it in Excalidraw for the token 'down': scores → weights → output."
+   ],
+   "artifact": "diagram",
+   "expect": [
+    "notebook.ipynb",
+    "diagram.excalidraw.svg|diagram.excalidraw.png|*.excalidraw.svg|*.excalidraw.png|*.excalidraw|*.svg|*.png"
+   ],
+   "done_when": [
+    "Hand-made q, k, v for 4 tokens.",
+    "Weights sum to 1 and the future is masked.",
+    "The diagram for 'down'."
+   ],
+   "minimum": "The notebook part.",
+   "record": [
+    "Explain attention with your diagram.",
+    "Say which token 'down' paid most attention to, and why.",
+    "Two takes at most, then upload to YouTube as Unlisted and paste the link."
+   ],
+   "parking": "Read the rest of the 3Blue1Brown lesson (multi-head).",
+   "starter": [
+    "notebook.ipynb"
+   ]
+  },
+  {
+   "id": "p5-10",
+   "day": 48,
+   "project": 5,
+   "step": 10,
+   "folder": "5-tiny-gpt/10-one-attention-head",
+   "slug": "one-attention-head",
+   "title": "One self-attention head in code",
+   "question": "What are queries, keys and values in real code?",
+   "why": "This is the exact code inside GPT models, in about 20 lines.",
+   "setup": [],
+   "learn": [
+    {
+     "title": "Let's build GPT: 'THE CRUX OF THE VIDEO: version 4: self-attention' to note 6 (1:02:00 to 1:19:11)",
+     "url": "https://www.youtube.com/watch?v=kCc8FmEb1nY&t=3720s",
+     "minutes": 17,
+     "how": "Code along."
+    }
+   ],
+   "math": {
+    "idea": "Scaling by √head_size",
+    "plain": "Dot products of long vectors get big, and softmax of big numbers becomes almost all-or-nothing. Dividing by √(head size) keeps the weights soft."
+   },
+   "build": [
+    "Write a Head module: key, query and value layers, triangular mask, softmax, weighted sum.",
+    "Check the output shape, that weights sum to 1, and that the future is zero.",
+    "Show the effect of scaling: variance of the scores with and without √head_size."
+   ],
+   "artifact": "notebook",
+   "expect": [
+    "notebook.ipynb"
+   ],
+   "done_when": [
+    "Head output shape (B, T, head_size).",
+    "Weights sum to 1; future weights are 0.",
+    "The scaling experiment."
+   ],
+   "minimum": "Head runs with the right shape.",
+   "record": [
+    "Read your Head code line by line.",
+    "Explain the mask.",
+    "Explain the √head_size scaling.",
+    "Two takes at most, then upload to YouTube as Unlisted and paste the link."
+   ],
+   "parking": "Write it again without looking.",
+   "starter": [
+    "notebook.ipynb"
+   ]
+  },
+  {
+   "id": "p5-11",
+   "day": 49,
+   "project": 5,
+   "step": 11,
+   "folder": "5-tiny-gpt/11-transformer-block",
+   "slug": "transformer-block",
+   "title": "Multi-head, feed-forward, residual: a Transformer block",
+   "question": "What is inside one block of a Transformer?",
+   "why": "Model cards say '32 layers'. Now you know what one layer is.",
+   "setup": [],
+   "learn": [
+    {
+     "title": "Let's build GPT: 'inserting a single self-attention block' to 'layernorm' (1:19:11 to 1:37:49)",
+     "url": "https://www.youtube.com/watch?v=kCc8FmEb1nY&t=4751s",
+     "minutes": 19,
+     "how": "Code along."
+    }
+   ],
+   "math": {
+    "idea": "Residual connections",
+    "plain": "x = x + block(x): each block adds a correction instead of replacing the input. Learning stays stable even with many blocks."
+   },
+   "build": [
+    "Fill in MultiHead, FeedForward and Block (with residuals and layer norm).",
+    "Train a small model for 1,000 steps on your Mac.",
+    "Compare the validation loss with the bigram baseline.",
+    "Generate 300 characters."
+   ],
+   "artifact": "notebook",
+   "expect": [
+    "notebook.ipynb"
+   ],
+   "done_when": [
+    "The model trains.",
+    "Validation loss below the bigram baseline.",
+    "300 generated characters."
+   ],
+   "minimum": "The model trains for 200 steps.",
+   "record": [
+    "Show the generated text before and after training.",
+    "Explain one block with a drawing.",
+    "Say what 'residual' means.",
+    "Two takes at most, then upload to YouTube as Unlisted and paste the link."
+   ],
+   "parking": "Add dropout.",
+   "starter": [
+    "notebook.ipynb"
+   ]
+  },
+  {
+   "id": "p5-12",
+   "day": 50,
+   "project": 5,
+   "step": 12,
+   "folder": "5-tiny-gpt/12-scale-and-cost",
+   "slug": "scale-and-cost",
+   "title": "Scale it up a little and count the cost",
+   "question": "What does it cost to make a model bigger?",
+   "why": "Customers ask 'should we train our own model?'. You will answer with parameters, time and money.",
+   "setup": [
+    "Use your Mac's GPU (device 'mps'), or upload the notebook to Google Colab for a free GPU: https://colab.research.google.com"
+   ],
+   "learn": [
+    {
+     "title": "Let's build GPT: 'scaling up the model' to 'nanoGPT walkthrough' (1:37:49 to 1:48:53)",
+     "url": "https://www.youtube.com/watch?v=kCc8FmEb1nY&t=5869s",
+     "minutes": 11,
+     "how": "Listen for the numbers: parameters, time, loss."
+    }
+   ],
+   "math": {
+    "idea": "Counting parameters",
+    "plain": "A linear layer from a inputs to b outputs has a × b weights + b biases. Add up all layers. Compute grows with parameters × tokens seen."
+   },
+   "build": [
+    "Count the parameters by formula and with PyTorch. They must match.",
+    "Train a bigger model for 10 minutes. Log train and validation loss.",
+    "Generate text before and after.",
+    "Write the time, the hardware and what 10 minutes would cost on a rented GPU (look up one price)."
+   ],
+   "artifact": "notebook",
+   "expect": [
+    "notebook.ipynb"
+   ],
+   "done_when": [
+    "Parameter count by formula = PyTorch.",
+    "Loss curves.",
+    "Before/after text.",
+    "Cost written."
+   ],
+   "minimum": "Parameter count matches.",
+   "record": [
+    "Show the before/after text.",
+    "Say what 10× more parameters would cost.",
+    "Say when a customer should NOT train their own model.",
+    "Two takes at most, then upload to YouTube as Unlisted and paste the link."
+   ],
+   "parking": "Read nanoGPT's README.",
+   "starter": [
+    "notebook.ipynb"
+   ]
+  },
+  {
+   "id": "p5-13",
+   "day": 51,
+   "project": 5,
+   "step": 13,
+   "folder": "5-tiny-gpt/13-from-tiny-gpt-to-chatgpt",
+   "slug": "from-tiny-gpt-to-chatgpt",
+   "title": "From tiny GPT to ChatGPT: where hallucinations come from",
+   "question": "Why do LLMs confidently say wrong things?",
+   "why": "'Why does it hallucinate?' is the question you will hear most. Answer it from the inside.",
+   "setup": [],
+   "learn": [
+    {
+     "title": "Let's build GPT: 'back to ChatGPT… pretraining vs. finetuning, RLHF' (1:48:53 to 1:54:32)",
+     "url": "https://www.youtube.com/watch?v=kCc8FmEb1nY&t=6533s",
+     "minutes": 6,
+     "how": "Short."
+    },
+    {
+     "title": "Deep Dive into LLMs: 'hallucinations, tool use, knowledge/working memory' (1:20:32 to 1:41:46)",
+     "url": "https://www.youtube.com/watch?v=7xTGNNLPyMI&t=4832s",
+     "minutes": 21,
+     "how": "The best explanation of hallucinations available."
+    }
+   ],
+   "math": null,
+   "build": [
+    "In Excalidraw, draw the life of an LLM: internet text → tokens → pretraining → base model → conversations (fine-tuning) → reinforcement learning → assistant.",
+    "Mark where facts live: weights (vague memory) vs. context window (working memory).",
+    "Mark why hallucinations happen, and what tools and RAG fix, and what they don't."
+   ],
+   "artifact": "diagram",
+   "expect": [
+    "diagram.excalidraw.svg|diagram.excalidraw.png|*.excalidraw.svg|*.excalidraw.png|*.excalidraw|*.svg|*.png"
+   ],
+   "done_when": [
+    "The full pipeline.",
+    "Weights vs. context marked.",
+    "Hallucination causes and fixes."
+   ],
+   "minimum": "The pipeline with the hallucination note.",
+   "record": [
+    "Explain hallucinations to a customer in 5 minutes with the diagram.",
+    "End with what you would build to reduce them for Acme.",
+    "Two takes at most, then upload to YouTube as Unlisted and paste the link."
+   ],
+   "parking": "Watch the rest of the Deep Dive.",
+   "starter": []
+  },
+  {
+   "id": "p6-01",
+   "day": 52,
+   "project": 6,
+   "step": 1,
+   "folder": "6-back-to-the-customer/01-temperature-with-evidence",
+   "slug": "temperature-with-evidence",
+   "title": "Temperature, revisited with evidence",
+   "question": "Should a support bot be creative? Measure it.",
+   "why": "Now you know what temperature does inside. Turn that into a production setting with data.",
+   "setup": [],
+   "learn": [
+    {
+     "title": "A statistical approach to model evaluations: Recommendation #3 'Reduce variance within questions'",
+     "url": "https://www.anthropic.com/research/statistical-approach-to-model-evals",
+     "minutes": 5,
+     "how": "Why we ask the same question several times."
+    }
+   ],
+   "math": {
+    "idea": "Consistency rate",
+    "plain": "Ask the same case 5 times. Consistency = the share of cases where all 5 answers have the same intent."
+   },
+   "build": [
+    "Run version B on every case 5 times at temperature 0 and 5 times at temperature 1 (use run=0..4).",
+    "Compute the consistency rate and the pass rate (mean and spread) for each temperature.",
+    "Write the production setting you recommend, with the numbers."
+   ],
+   "artifact": "notebook",
+   "expect": [
+    "notebook.ipynb"
+   ],
+   "done_when": [
+    "Consistency and pass rate for both temperatures.",
+    "A recommended setting with evidence."
+   ],
+   "minimum": "Consistency at both temperatures.",
+   "record": [
+    "Show the consistency table.",
+    "Explain it with your softmax chart from project 5.",
+    "Give your production setting.",
+    "Two takes at most, then upload to YouTube as Unlisted and paste the link."
+   ],
+   "parking": "Try temperature 0.3.",
+   "starter": [
+    "notebook.ipynb"
+   ]
+  },
+  {
+   "id": "p6-02",
+   "day": 53,
+   "project": 6,
+   "step": 2,
+   "folder": "6-back-to-the-customer/02-root-causes",
+   "slug": "root-causes",
+   "title": "Why did it fail? Root causes from first principles",
+   "question": "Which failures come from the model, and which come from your design?",
+   "why": "Customers blame 'the AI'. You can now point to the real mechanism and the cheapest fix.",
+   "setup": [],
+   "learn": [
+    {
+     "title": "A Field Guide to Rapidly Improving AI Products: 'Bottom-Up vs. Top-Down Analysis'",
+     "url": "https://hamel.dev/blog/posts/field-guide/",
+     "minutes": 5,
+     "how": "Short."
+    }
+   ],
+   "math": null,
+   "build": [
+    "Take your failure categories from day 10.",
+    "For each, write the mechanism: retrieval miss (project 2), missing context, sampling (project 5), tokenisation (project 5), small model, unclear tool description…",
+    "In Excalidraw draw a tree: symptom → mechanism → fix → the number that proves the fix worked.",
+    "Add case ids as evidence."
+   ],
+   "artifact": "diagram",
+   "expect": [
+    "diagram.excalidraw.svg|diagram.excalidraw.png|*.excalidraw.svg|*.excalidraw.png|*.excalidraw|*.svg|*.png"
+   ],
+   "done_when": [
+    "Every top category has a mechanism, a fix and a metric.",
+    "Case ids as evidence."
+   ],
+   "minimum": "Top 3 categories mapped.",
+   "record": [
+    "Walk through the tree.",
+    "Say which fix is cheapest and which has the biggest effect.",
+    "Two takes at most, then upload to YouTube as Unlisted and paste the link."
+   ],
+   "parking": "Turn the tree into a checklist for future projects.",
+   "starter": []
+  },
+  {
+   "id": "p6-03",
+   "day": 54,
+   "project": 6,
+   "step": 3,
+   "folder": "6-back-to-the-customer/03-what-a-tool-call-is",
+   "slug": "what-a-tool-call-is",
+   "title": "What a tool call really is",
+   "question": "Who actually runs the tool: the model or your code?",
+   "why": "This is the most misunderstood idea in agents, and the key to their security.",
+   "setup": [],
+   "learn": [
+    {
+     "title": "Writing effective tools for agents (Anthropic)",
+     "url": "https://www.anthropic.com/engineering/writing-tools-for-agents",
+     "minutes": 15,
+     "how": "Read 'What is a tool?' and 'Principles for writing effective tools'."
+    }
+   ],
+   "math": null,
+   "build": [
+    "Print the raw request and response JSON for one tool-using step. Annotate: the model only writes a JSON wish; your code decides.",
+    "Improve the tool names, descriptions or return values in lab/acme_tools.py using the article.",
+    "Re-run version C on the cases that failed because of tools. Before/after table."
+   ],
+   "artifact": "notebook",
+   "expect": [
+    "notebook.ipynb"
+   ],
+   "done_when": [
+    "Annotated raw JSON.",
+    "At least one tool improved.",
+    "Before/after on tool failures."
+   ],
+   "minimum": "The annotated raw JSON.",
+   "record": [
+    "Show the raw JSON and say who runs the tool.",
+    "Show your tool change and its effect.",
+    "Two takes at most, then upload to YouTube as Unlisted and paste the link."
+   ],
+   "parking": "Add a tool that returns too much data and measure the cost.",
+   "starter": [
+    "notebook.ipynb"
+   ]
+  },
+  {
+   "id": "p6-04",
+   "day": 55,
+   "project": 6,
+   "step": 4,
+   "folder": "6-back-to-the-customer/04-context-engineering",
+   "slug": "context-engineering",
+   "title": "Context engineering: what the model sees is all it knows",
+   "question": "What should go into the context, and what should stay out?",
+   "why": "Context is the biggest lever on quality and cost in agents. Customers rarely measure it.",
+   "setup": [],
+   "learn": [
+    {
+     "title": "Effective context engineering for AI agents (Anthropic)",
+     "url": "https://www.anthropic.com/engineering/effective-context-engineering-for-ai-agents",
+     "minutes": 15,
+     "how": "Read 'Context engineering vs. prompt engineering' and 'The anatomy of effective context'."
+    }
+   ],
+   "math": {
+    "idea": "Budgets",
+    "plain": "Tokens per step × steps per email × emails per month = tokens per month. Context you don't need costs money and attention."
+   },
+   "build": [
+    "Measure the input tokens of every step of version C. Which part is biggest?",
+    "Trim or restructure: shorter system prompt, tools that return only the needed fields.",
+    "Re-run. Table before/after: pass rate, tokens per email, seconds."
+   ],
+   "artifact": "notebook",
+   "expect": [
+    "notebook.ipynb"
+   ],
+   "done_when": [
+    "Token breakdown per step.",
+    "One context change.",
+    "Before/after table."
+   ],
+   "minimum": "Token breakdown per step.",
+   "record": [
+    "Show the token breakdown.",
+    "Show the before/after.",
+    "Say what you would cut first for a customer.",
+    "Two takes at most, then upload to YouTube as Unlisted and paste the link."
+   ],
+   "parking": "Try summarising old steps (compaction).",
+   "starter": [
+    "notebook.ipynb"
+   ]
+  },
+  {
+   "id": "p6-05",
+   "day": 56,
+   "project": 6,
+   "step": 5,
+   "folder": "6-back-to-the-customer/05-prompt-injection",
+   "slug": "prompt-injection",
+   "title": "Prompt injection: attack your own agent",
+   "question": "What stops a customer email from giving orders to your agent?",
+   "why": "Every agent that reads untrusted text can be attacked. FDEs design the boundary before go-live.",
+   "setup": [],
+   "learn": [
+    {
+     "title": "The lethal trifecta for AI agents (Simon Willison)",
+     "url": "https://simonwillison.net/2025/Jun/16/the-lethal-trifecta/",
+     "minutes": 10,
+     "how": "Read the whole post."
+    }
+   ],
+   "math": null,
+   "build": [
+    "Give the agent a fake issue_refund tool (it only records the call).",
+    "Write 6 attack emails (2 are given). Measure how often the agent tries a refund it should not.",
+    "Add a guard in plain code: refunds above ₹500 never run without human approval, whatever the model says.",
+    "Measure again. Draw the trust boundary (a small diagram or a markdown table)."
+   ],
+   "artifact": "notebook",
+   "expect": [
+    "notebook.ipynb"
+   ],
+   "done_when": [
+    "6 attacks.",
+    "Attack success before and after the guard.",
+    "The trust boundary drawn."
+   ],
+   "minimum": "Attack success measured once.",
+   "record": [
+    "Show one attack that worked.",
+    "Show your guard.",
+    "Explain the lethal trifecta for Acme.",
+    "Two takes at most, then upload to YouTube as Unlisted and paste the link."
+   ],
+   "parking": "Try attacks hidden inside help-article text.",
+   "starter": [
+    "notebook.ipynb"
+   ]
+  },
+  {
+   "id": "p6-06",
+   "day": 57,
+   "project": 6,
+   "step": 6,
+   "folder": "6-back-to-the-customer/06-human-in-the-loop",
+   "slug": "human-in-the-loop",
+   "title": "Human in the loop: where the approval step belongs",
+   "question": "Which decisions should a person make, and what does that cost?",
+   "why": "'Fully autonomous' is rarely the right answer. You will place humans with numbers, not opinions.",
+   "setup": [],
+   "learn": [
+    {
+     "title": "Building effective agents: 'Appendix 1: Agents in practice, A. Customer support'",
+     "url": "https://www.anthropic.com/engineering/building-effective-agents",
+     "minutes": 5,
+     "how": "Re-read it with your numbers."
+    }
+   ],
+   "math": {
+    "idea": "Expected cost",
+    "plain": "Expected cost = chance of an error × cost of that error. Send a case to a human when its expected cost is higher than the cost of the human's time."
+   },
+   "build": [
+    "Give a ₹ cost to each kind of error (wrong refund, wrong promise, missed fraud, rude reply).",
+    "From your results, estimate the error rate per intent.",
+    "Compare 3 policies: all automatic, risky intents to humans, all humans. Cost per 1,000 emails.",
+    "Pick a policy."
+   ],
+   "artifact": "notebook",
+   "expect": [
+    "notebook.ipynb"
+   ],
+   "done_when": [
+    "Error costs written.",
+    "3 policies compared.",
+    "Your policy, with numbers."
+   ],
+   "minimum": "Two policies compared.",
+   "record": [
+    "Show the policy table.",
+    "Say where the human goes, and why.",
+    "Two takes at most, then upload to YouTube as Unlisted and paste the link."
+   ],
+   "parking": "Add the time customers wait for a human.",
+   "starter": [
+    "notebook.ipynb"
+   ]
+  },
+  {
+   "id": "p6-07",
+   "day": 58,
+   "project": 6,
+   "step": 7,
+   "folder": "6-back-to-the-customer/07-final-recommendation",
+   "slug": "final-recommendation",
+   "title": "The architecture recommendation (final)",
+   "question": "What should Acme build, how should it roll out, and how will you know it works?",
+   "why": "This document is what an FDE leaves behind. It is your best portfolio piece.",
+   "setup": [],
+   "learn": [
+    {
+     "title": "Building effective agents: 'Summary'",
+     "url": "https://www.anthropic.com/engineering/building-effective-agents",
+     "minutes": 5,
+     "how": "Three principles. Check your design against them."
+    }
+   ],
+   "math": null,
+   "build": [
+    "Fill in decision-final.md (two pages at most): options, evidence with error bars, failure analysis, security boundary, human-in-the-loop policy, cost per 1,000 emails.",
+    "Add a rollout plan: shadow mode → 10% of emails → all emails, with the numbers that allow each step.",
+    "Add what to watch in production and what would change your mind."
+   ],
+   "artifact": "doc",
+   "expect": [
+    "decision-final.md"
+   ],
+   "done_when": [
+    "Every section filled.",
+    "Rollout plan with go/no-go numbers.",
+    "Production metrics."
+   ],
+   "minimum": "Decision, evidence and rollout plan.",
+   "record": [
+    "Read the decision and the rollout plan aloud, in under 5 minutes.",
+    "Two takes at most, then upload to YouTube as Unlisted and paste the link."
+   ],
+   "parking": "Ask a friend to review it as the 'CTO'.",
+   "starter": [
+    "decision-final.md"
+   ]
+  },
+  {
+   "id": "p6-08",
+   "day": 59,
+   "project": 6,
+   "step": 8,
+   "folder": "6-back-to-the-customer/08-customer-readout",
+   "slug": "customer-readout",
+   "title": "Customer readout: present it like an FDE",
+   "question": "Can you defend your recommendation in front of a sceptical CTO?",
+   "why": "The FDE job ends with a decision someone else trusts. This video is your public proof.",
+   "setup": [],
+   "learn": [
+    {
+     "title": "A Field Guide to Rapidly Improving AI Products: 'Your AI Roadmap Should Count Experiments, Not Features'",
+     "url": "https://hamel.dev/blog/posts/field-guide/",
+     "minutes": 10,
+     "how": "How to talk about AI progress to stakeholders."
+    }
+   ],
+   "math": null,
+   "build": [
+    "Make one summary picture in Excalidraw: the recommended system plus your 3 most important numbers.",
+    "Record an 8-minute readout for an imaginary sceptical CTO.",
+    "In the track README (outside the progress table), write 10 things you can now explain from first principles."
+   ],
+   "artifact": "diagram",
+   "expect": [
+    "diagram.excalidraw.svg|diagram.excalidraw.png|*.excalidraw.svg|*.excalidraw.png|*.excalidraw|*.svg|*.png"
+   ],
+   "done_when": [
+    "The summary picture.",
+    "The 8-minute video.",
+    "Your list of 10."
+   ],
+   "minimum": "The summary picture and the video.",
+   "record": [
+    "8 minutes: problem, options, evidence, recommendation, risks, next steps.",
+    "Two takes at most, then upload to YouTube as Unlisted and paste the link."
+   ],
+   "parking": "Start your next track.",
+   "starter": []
+  }
+ ]
+}

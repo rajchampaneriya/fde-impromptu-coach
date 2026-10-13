@@ -34,6 +34,19 @@ Then, if you want, keep going:
 
 Miss a day? Reminders escalate on your Mac, iPhone, and calendar until you record.
 
+## New: FDE Learn, a daily first-principles learning track
+
+A second skill in this repo, [`fde-learn`](fde-learn/README.md). Every morning at **05:50** one topic drops into
+your public learning repo, and at **06:00** Google Calendar shows the whole task. You learn it (~20 min), build
+it (~40 min: a notebook, code or an Excalidraw diagram) and explain it on a ≤5-minute YouTube video, then ship
+with `fde-coach learn done --video <link>` before the next morning. 59 topics in 6 projects take you from
+"measure your agent" through embeddings, gradient descent, micrograd and a tiny GPT back to a customer-ready
+architecture recommendation. Maths arrives only when a project needs it, and everything runs locally for free.
+
+```bash
+fde-coach learn init --repo ~/Code/continuous-learning
+```
+
 ## Supported Tools
 
 - Claude Code
@@ -43,4 +56,5 @@ Miss a day? Reminders escalate on your Mac, iPhone, and calendar until you recor
 - ffmpeg for the audio practices' videos (`brew install ffmpeg`)
 - Standard Ebooks and Project Gutenberg for the reading passages (public domain)
 - Apple Reminders + Google Calendar for streak protection
+- For FDE Learn: git (a clone of your public learning repo), Ollama, uv, VS Code + Jupyter, Excalidraw
 - **macOS only**

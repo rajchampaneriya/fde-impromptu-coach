@@ -522,6 +522,11 @@ def calendar_sync_all(ctx: Ctx, clear: bool = False) -> List[str]:
     out = calendar_sync(ctx, clear=clear)
     for spec in practice.all_specs():
         out += practice.calendar_sync(ctx, spec, clear=clear)
+    try:
+        from . import learn
+        out += learn.calendar_sync(ctx, clear=clear)
+    except Exception as exc:  # noqa: BLE001
+        out.append(f"learning calendar: {exc}")
     return out
 
 
@@ -551,6 +556,11 @@ def remind(ctx: Ctx) -> str:
         macos.notify(APP_NAME, "Permissions checked. Daily practice is scheduled.")
         rt = ctx.runtime()
     calendar_sync_safe(ctx)
+    try:
+        from . import learn
+        learn.tick(ctx)  # learning track: catch up a missed drop, retry a failed push, keep its calendar right
+    except Exception:  # noqa: BLE001 - never break the FDE reminder
+        log.exception("learning track tick failed")
 
     date, t = today(), now()
     daily_at = _time_today(ctx.cfg.get("daily_time", "05:30"), date)
