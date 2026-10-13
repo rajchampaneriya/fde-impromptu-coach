@@ -184,6 +184,15 @@ def cmd_status(args) -> int:
             "recorded today" if (leg.get("today") or {}).get("recorded") else "not recorded today")
         print(f"Legato: {ls['current']} day(s)  |  best {ls['best']}  |  total {ls['total']}  |  "
               f"flow level {leg.get('next_flow_level', 1)}/3  |  {state}")
+    try:
+        from fdecoach import learn
+        ls = learn.status(_ctx(args))
+        if ls.get("initialized"):
+            cur = ls.get("current") or {}
+            print(f"Learning: {ls['shipped']}/{ls['total']} shipped  |  streak {ls['streak']}  |  "
+                  + (f"Day {cur['day']} {cur['status']}" if cur else "nothing dropped yet"))
+    except Exception:  # noqa: BLE001 - the learning track must never break status
+        pass
     t = st["today"]
     if not t:
         print(f"Today ({st['date']}): no deck yet")
@@ -414,7 +423,7 @@ def cmd_config(args) -> int:
                 print(f"bad --set {item!r}; use key=value (dotted keys for nested values, JSON for lists/bools)")
                 return 2
             value = _coerce(raw)
-            if key == "daily_time" or key.endswith(".daily_time"):
+            if key == "daily_time" or key.endswith(".daily_time") or key == "learn.drop_time":
                 parse_hhmm(str(value))
                 reinstall = True
             node = user
@@ -674,6 +683,76 @@ def cmd_library(args) -> int:
     return 2
 
 
+def cmd_learn(args) -> int:
+    import datetime as dt
+    from fdecoach import learn
+    ctx = _ctx(args)
+    c = args.learn_command
+    try:
+        if c == "init":
+            for line in learn.init(ctx, Path(args.repo), start=args.start, track=args.track or ""):
+                print(line)
+            return 0
+        if c == "drop":
+            res = learn.drop(ctx, scheduled=args.scheduled)
+            _print(res)
+            return 0 if res.get("ok") else 1
+        if c == "today":
+            info = learn.today_info(ctx)
+            if args.json:
+                _print(info)
+                return 0
+            today_md = Path(info["today_md"])
+            print(today_md.read_text(encoding="utf-8") if today_md.exists() else info.get("state"))
+            if info.get("state") in ("open", "overdue"):
+                print(f"\n⏱  {info['hours_left']} hours left · folder: {info['folder']}")
+                for item in info.get("missing_to_ship", []):
+                    print(f"   still to do: {item}")
+            return 0
+        if c == "done":
+            res = learn.ship(ctx, video=args.video or "", partial=args.partial or args.no_video, note=args.note or "")
+            print(f"{learn.ICON[res['status']]} Day {res['day']} · {res['title']}: {res['status']} · "
+                  f"{res['streak']}-day learning streak · {res['push']}")
+            if res.get("link"):
+                print(f"   {res['link']}")
+            for item in res.get("missing", []):
+                print(f"   shipped without: {item}")
+            return 0
+        if c == "status":
+            st = learn.status(ctx)
+            if args.json or not st.get("initialized"):
+                _print(st)
+                return 0
+            print(f"Learning: {st['shipped']}/{st['total']} topics shipped · streak {st['streak']} · "
+                  f"missed {st['missed']} · drop at {st['drop_time']}")
+            cur = st.get("current")
+            if cur:
+                print(f"  Day {cur['day']} · {cur['title']} · {cur['status']} · ship by {cur['deadline']}"
+                      + (f" · attempt {cur['attempt']}" if int(cur['attempt']) > 1 else ""))
+            if st.get("paused_until"):
+                print(f"  paused until {st['paused_until']}")
+            if st["push_pending"]:
+                print(f"  git push pending: {st['push_error'][:160]}")
+            print(f"  repo: {st['track']} · Google Calendar: {'connected' if st['calendar'] else 'not connected'}")
+            return 0
+        if c == "pause":
+            until = dt.date.fromisoformat(args.until) if args.until else dt.date.today() + dt.timedelta(days=args.days)
+            print(learn.pause(ctx, until))
+            return 0
+        if c == "resume":
+            print(learn.resume(ctx))
+            return 0
+        if c == "sync":
+            print(learn.push(ctx))
+            for line in learn.calendar_sync(ctx):
+                print(line)
+            return 0
+    except learn.LearnError as exc:
+        print(str(exc), file=sys.stderr)
+        return 1
+    return 2
+
+
 # --------------------------------------------------------------------------- parser
 
 def build_parser() -> argparse.ArgumentParser:
@@ -803,6 +882,36 @@ def build_parser() -> argparse.ArgumentParser:
     lh.add_argument("--reveal", action="store_true", help="also show today's passage before recording")
     lh.set_defaults(func=cmd_legato)
     lsub.add_parser("upload", help="assemble + upload pending legato videos").set_defaults(func=cmd_legato)
+
+    s = sub.add_parser("learn", help="daily first-principles learning track (topic drop, ship, streak)")
+    lsub2 = s.add_subparsers(dest="learn_command", required=True)
+    li = lsub2.add_parser("init", help="connect your public learning repo (a local git clone)")
+    li.add_argument("--repo", required=True, help="path of your clone, e.g. ~/Code/continuous-learning")
+    li.add_argument("--start", choices=["today", "tomorrow"], default="tomorrow")
+    li.add_argument("--track", help="folder inside the repo (default fde-first-principles)")
+    li.set_defaults(func=cmd_learn)
+    ld = lsub2.add_parser("drop", help="drop today's topic now (the 05:50 agent runs this)")
+    ld.add_argument("--scheduled", action="store_true")
+    ld.set_defaults(func=cmd_learn)
+    lt = lsub2.add_parser("today", help="today's topic, deadline and what is left to ship")
+    lt.add_argument("--json", action="store_true")
+    lt.set_defaults(func=cmd_learn)
+    ldn = lsub2.add_parser("done", help="ship today's topic: commit, push, journal, calendar")
+    ldn.add_argument("--video", help="your YouTube link (Unlisted or Public)")
+    ldn.add_argument("--partial", action="store_true", help="ship what you have, labelled partial")
+    ldn.add_argument("--no-video", action="store_true", help="ship without a video (counts as partial)")
+    ldn.add_argument("--note")
+    ldn.set_defaults(func=cmd_learn)
+    ls2 = lsub2.add_parser("status", help="topics shipped, streak, current topic")
+    ls2.add_argument("--json", action="store_true")
+    ls2.set_defaults(func=cmd_learn)
+    lp = lsub2.add_parser("pause", help="pause drops (travel, illness); nothing counts as missed")
+    g2 = lp.add_mutually_exclusive_group(required=True)
+    g2.add_argument("--until", help="YYYY-MM-DD: the first day topics drop again")
+    g2.add_argument("--days", type=int)
+    lp.set_defaults(func=cmd_learn)
+    lsub2.add_parser("resume", help="end a pause early").set_defaults(func=cmd_learn)
+    lsub2.add_parser("sync", help="retry git push and the learning calendar events").set_defaults(func=cmd_learn)
 
     s = sub.add_parser("library", help="reading passages from free, public-domain books")
     lb = s.add_subparsers(dest="lib_command", required=True)

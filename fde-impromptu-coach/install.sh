@@ -72,6 +72,16 @@ FDE_COACH_HOME="$DATA_DIR" "$VENV/bin/python" "$SRC_DIR/scripts/fde_coach.py" se
 mkdir -p "$HOME/.local/bin"
 ln -sf "$DATA_DIR/bin/fde-coach" "$HOME/.local/bin/fde-coach"
 
+# The companion skill fde-learn (daily first-principles learning track) lives next to this folder.
+LEARN_SKILL="$(cd "$(cd "$SKILL_DIR" && pwd -P)/.." && pwd)/fde-learn"
+if [ -f "$LEARN_SKILL/SKILL.md" ]; then
+  mkdir -p "$HOME/.claude/skills"
+  if [ ! -e "$HOME/.claude/skills/fde-learn" ]; then
+    ln -s "$LEARN_SKILL" "$HOME/.claude/skills/fde-learn"
+    say "Linked the fde-learn skill into ~/.claude/skills"
+  fi
+fi
+
 cat <<MSG
 
 Installed.
@@ -87,6 +97,7 @@ Next steps
   4. Try a session now:       double-click "$DATA_DIR/Start Practice.command"
                               (it offers pronunciation and legato practice afterwards)
   5. Browse the reading passages (public-domain books): $DATA_DIR/bin/fde-coach library list
+  6. Daily learning track (06:00 topic drop): $DATA_DIR/bin/fde-coach learn init --repo ~/Code/continuous-learning
 
 Tip: add ~/.local/bin to your PATH to type just 'fde-coach'.
 MSG

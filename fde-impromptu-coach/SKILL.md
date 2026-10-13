@@ -79,6 +79,7 @@ installed yet: see **Install** below.
 | "Connect Google Calendar", "alert me if I miss" | README.md → *Google setup* (enable Google Calendar API), then `fde-coach calendar-auth` |
 | "Change / stop the calendar alerts" | `fde-coach config --set 'google_calendar.popup_times=[…]'` or `google_calendar.enabled=false`, then `fde-coach calendar-sync` |
 | "Something's broken" | `fde-coach doctor`, then `references/troubleshooting.md` |
+| "Today's learning topic", "ship today's topic", learning streak | Use the **fde-learn** skill (`fde-coach learn …`) |
 | "Tell the coach about me" | `fde-coach config --set 'learner_context=…'` (background, target companies, weak spots; used for every future set) |
 
 Settings live in `~/FDE-Impromptu/config.json`; `fde-coach config` prints them.

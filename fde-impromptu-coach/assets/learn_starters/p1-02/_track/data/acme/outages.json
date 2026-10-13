@@ -1,0 +1,4 @@
+[
+  {"ticket": "OUT-KOTH-1021", "area": "Kothrud", "since": "today 06:40", "cause": "Fibre cable cut during road work", "status": "Engineers are on site. Updates are sent by email and in the Acme app."},
+  {"ticket": "OUT-HADA-0417", "area": "Hadapsar", "since": "yesterday 22:10", "cause": "Power problem at the local hub", "status": "Backup power is being installed. Updates are sent by email and in the Acme app."}
+]

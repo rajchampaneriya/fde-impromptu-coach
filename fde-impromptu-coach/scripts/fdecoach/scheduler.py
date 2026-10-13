@@ -1,5 +1,5 @@
 """launchd LaunchAgents: the daily 05:30 FDE run, the 05:45 pronunciation and 06:00 legato
-runs, and a 15-minute reminder/self-heal tick."""
+runs, the 05:50 learning-topic drop, and a 15-minute reminder/self-heal tick."""
 from __future__ import annotations
 
 import os
@@ -16,7 +16,9 @@ DAILY_LABEL = "com.fdecoach.daily"
 REMIND_LABEL = "com.fdecoach.reminder"
 PRON_LABEL = "com.fdecoach.pronounce"
 LEGATO_LABEL = "com.fdecoach.legato"
-ALL_LABELS = ("com.fdecoach.daily", "com.fdecoach.reminder", "com.fdecoach.pronounce", "com.fdecoach.legato")
+LEARN_LABEL = "com.fdecoach.learn"
+ALL_LABELS = ("com.fdecoach.daily", "com.fdecoach.reminder", "com.fdecoach.pronounce", "com.fdecoach.legato",
+              "com.fdecoach.learn")
 REMIND_INTERVAL = 900
 
 
@@ -85,7 +87,17 @@ def build_plists(cfg: Dict[str, Any], paths: Paths, python: str = "") -> Dict[st
         "StandardOutPath": str(paths.logs / "legato.out.log"),
         "StandardErrorPath": str(paths.logs / "legato.err.log"),
     })
-    return {DAILY_LABEL: daily, REMIND_LABEL: remind, PRON_LABEL: pron, LEGATO_LABEL: leg}
+    learn_hour, learn_minute = parse_hhmm(cfg.get("learn", {}).get("drop_time", "05:50"))
+    learn = dict(common)
+    learn.update({
+        "Label": LEARN_LABEL,
+        "ProgramArguments": [python, str(ENTRY_SCRIPT), "learn", "drop", "--scheduled"],
+        "StartCalendarInterval": {"Hour": learn_hour, "Minute": learn_minute},
+        "RunAtLoad": False,
+        "StandardOutPath": str(paths.logs / "learn.out.log"),
+        "StandardErrorPath": str(paths.logs / "learn.err.log"),
+    })
+    return {DAILY_LABEL: daily, REMIND_LABEL: remind, PRON_LABEL: pron, LEGATO_LABEL: leg, LEARN_LABEL: learn}
 
 
 def _launchctl(*args: str) -> Tuple[int, str]:
