@@ -1,12 +1,29 @@
 {
- "version": 1,
+ "version": 2,
  "track": "fde-first-principles",
  "title": "FDE First Principles",
- "about": "A daily, project-based path from software architect to first-principles AI engineer for the Forward Deployed Engineer role. One topic drops every morning; you learn, build and explain it on video within 24 hours. Maths appears only on the day a project needs it.",
- "minutes": {
-  "learn": 20,
-  "build": 40,
-  "record": 10
+ "about": "A project-based path from software architect to first-principles AI engineer for the Forward Deployed Engineer role. A topic drops in the morning and gets one to three mornings, depending on its size: you learn it, build it and explain it on video. Each project ends with an article on rajc.work. Maths appears only when a project needs it. About 128 hours of work: at 8 hours a week, plan on 4 to 5 months.",
+ "pace": {
+  "hours_per_week": 8,
+  "mornings_per_week": 6,
+  "minutes_per_morning": 80,
+  "grace_minutes": 10,
+  "estimate": {
+   "learn_factor": 1.5,
+   "setup_minutes": 10,
+   "maths_minutes": 10,
+   "build_minutes_per_step": {
+    "notebook": 12,
+    "code": 12,
+    "diagram": 10,
+    "doc": 15,
+    "article": 35
+   },
+   "explain_minutes": {
+    "default": 25,
+    "article": 10
+   }
+  }
  },
  "projects": [
   {
@@ -48,8 +65,8 @@
    "n": 6,
    "slug": "back-to-the-customer",
    "title": "Back to the customer",
-   "goal": "Explain project 1's failures from first principles, harden the agent, and make the final recommendation like an FDE.",
-   "math": "nothing new: you reuse everything"
+   "goal": "Explain project 1's failures from first principles, check them against a stronger model, harden the agent, and make the final recommendation like an FDE.",
+   "math": "paired differences; everything else you reuse"
   }
  ],
  "topics": [
@@ -60,9 +77,9 @@
    "step": 1,
    "folder": "1-measure-before-you-believe/01-an-llm-call-is-http",
    "slug": "an-llm-call-is-http",
-   "title": "An LLM call is just an HTTP request",
-   "question": "What exactly travels over the wire when you 'call an LLM'?",
-   "why": "Every agent framework hides this one request. When a customer's agent misbehaves, this is the level you debug at.",
+   "title": "One model call: tokens, time and randomness",
+   "question": "What does one model call really cost in tokens and seconds, and why does the same prompt give different answers?",
+   "why": "Every agent framework hides this one request. Its token counts are your cost, its seconds are your latency and its randomness is your consistency problem: the three numbers every project here measures.",
    "setup": [
     "Ollama is already on your Mac. Pull a small model: `ollama pull qwen3:4b` (8 GB Mac: `ollama pull llama3.2:3b` and change MODEL in the notebook).",
     "In your fde-first-principles folder run `uv sync` once. In VS Code, open the notebook and pick the `.venv` kernel."
@@ -108,7 +125,14 @@
    "parking": "Make the same call to a paid API later and compare the JSON shape.",
    "starter": [
     "notebook.ipynb"
-   ]
+   ],
+   "time": {
+    "learn": 25,
+    "build": 60,
+    "explain": 25,
+    "total": 110,
+    "mornings": 2
+   }
   },
   {
    "id": "p1-02",
@@ -161,7 +185,14 @@
     "_track/data/acme/kb.md",
     "_track/data/acme/outages.json",
     "_track/data/acme/policy.md"
-   ]
+   ],
+   "time": {
+    "learn": 30,
+    "build": 50,
+    "explain": 25,
+    "total": 105,
+    "mornings": 2
+   }
   },
   {
    "id": "p1-03",
@@ -172,7 +203,7 @@
    "slug": "test-set-first",
    "title": "Write the test set before the system",
    "question": "How will you know the system works, before you build it?",
-   "why": "Evals are the contract between you and the customer. Writing them first turns 'it feels good' into numbers.",
+   "why": "Evals are the contract between you and the customer. Writing them first turns 'it feels good' into numbers. Size matters too: on 30 cases a measured 80% could really be anything from 65% to 95%; on 50 cases the range shrinks to about ± 11 points (day 7 shows why).",
    "setup": [],
    "learn": [
     {
@@ -194,9 +225,9 @@
    },
    "build": [
     "Open data/acme/cases.jsonl. Read the 10 example cases and their fields.",
-    "Add at least 20 cases of your own: angry customers, Hinglish, two problems in one email, missing details, a prompt-injection attempt, one that only a human should handle.",
-    "In the notebook, load and validate every case, then draw a bar chart of cases per intent.",
-    "Fix every case that fails validation."
+    "Write 10 cases yourself, the hard ones: angry customers, Hinglish, two problems in one email, missing details, a prompt-injection attempt, one that only a human should handle.",
+    "Let your local model draft 40 more with the notebook's draft cell. Review every draft by hand: fix the facts, delete the unrealistic ones, then set \"reviewed\" to true.",
+    "Load and validate every case, then draw a bar chart of cases per intent. Fix every case that fails validation."
    ],
    "artifact": "notebook",
    "expect": [
@@ -204,23 +235,35 @@
     "/data/acme/cases.jsonl"
    ],
    "done_when": [
-    "data/acme/cases.jsonl has at least 30 cases.",
-    "Every intent has at least 3 cases.",
+    "data/acme/cases.jsonl has at least 50 cases (100 is better).",
+    "Every drafted case was reviewed by hand: no \"reviewed\": false is left.",
+    "Every intent has at least 5 cases.",
     "Validation passes and the bar chart is shown.",
-    "At least 3 Hinglish cases and 1 prompt-injection case are tagged."
+    "At least 5 Hinglish cases and 2 prompt-injection cases are tagged."
    ],
-   "minimum": "20 cases that pass validation.",
+   "minimum": "30 reviewed cases that pass validation.",
+   "extra": {
+    "minutes": 30,
+    "why": "reviewing 40 drafted test cases by hand"
+   },
    "record": [
     "Show 3 tricky cases and say why each one is in the set.",
     "Show the bar chart. Which intent is tested least?",
     "Say why you wrote the tests before the system.",
     "Two takes at most, then upload to YouTube as Unlisted and paste the link."
    ],
-   "parking": "Ask a model to draft 50 more cases, then review every one by hand.",
+   "parking": "Grow the set to 100 cases, then check which intents are still thin.",
    "starter": [
     "_track/data/acme/cases.jsonl",
     "notebook.ipynb"
-   ]
+   ],
+   "time": {
+    "learn": 30,
+    "build": 90,
+    "explain": 25,
+    "total": 145,
+    "mornings": 2
+   }
   },
   {
    "id": "p1-04",
@@ -279,7 +322,14 @@
     "_track/lab/__init__.py",
     "_track/lab/acme.py",
     "notebook.ipynb"
-   ]
+   ],
+   "time": {
+    "learn": 30,
+    "build": 60,
+    "explain": 25,
+    "total": 115,
+    "mornings": 2
+   }
   },
   {
    "id": "p1-05",
@@ -328,7 +378,14 @@
    "starter": [
     "_track/lab/evals.py",
     "notebook.ipynb"
-   ]
+   ],
+   "time": {
+    "learn": 25,
+    "build": 50,
+    "explain": 25,
+    "total": 100,
+    "mornings": 2
+   }
   },
   {
    "id": "p1-06",
@@ -385,7 +442,14 @@
    "starter": [
     "_track/lab/llm.py",
     "notebook.ipynb"
-   ]
+   ],
+   "time": {
+    "learn": 25,
+    "build": 60,
+    "explain": 25,
+    "total": 110,
+    "mornings": 2
+   }
   },
   {
    "id": "p1-07",
@@ -421,6 +485,7 @@
     "From the simulation: how often does a 30-case test show 70% or less?",
     "Write se(p, n). Check that it matches the spread you simulated.",
     "Draw A and B with ± 2 × se error bars. Do they overlap?",
+    "Work out the ± range for 30, 50 and 100 cases and for your own test set. How much does each extra case buy?",
     "How many cases would you need for ± 5%?"
    ],
    "artifact": "notebook",
@@ -431,6 +496,7 @@
     "Histogram of 10,000 simulated test results.",
     "se() matches the simulation.",
     "Bar chart of A and B with error bars.",
+    "The ± range for 30, 50, 100 and your own test set.",
     "One sentence: is B really better than A?"
    ],
    "minimum": "The simulation histogram and one sentence about it.",
@@ -443,7 +509,14 @@
    "parking": "Read Recommendation #4 (paired differences) and try it on A and B.",
    "starter": [
     "notebook.ipynb"
-   ]
+   ],
+   "time": {
+    "learn": 30,
+    "build": 85,
+    "explain": 25,
+    "total": 140,
+    "mornings": 2
+   }
   },
   {
    "id": "p1-08",
@@ -499,7 +572,14 @@
    "starter": [
     "_track/lab/acme_tools.py",
     "notebook.ipynb"
-   ]
+   ],
+   "time": {
+    "learn": 30,
+    "build": 60,
+    "explain": 25,
+    "total": 115,
+    "mornings": 2
+   }
   },
   {
    "id": "p1-09",
@@ -561,7 +641,14 @@
     "_track/lab/agent.py",
     "_track/lab/version_b.py",
     "notebook.ipynb"
-   ]
+   ],
+   "time": {
+    "learn": 25,
+    "build": 70,
+    "explain": 25,
+    "total": 120,
+    "mornings": 2
+   }
   },
   {
    "id": "p1-10",
@@ -609,7 +696,14 @@
    "parking": "Build a tiny HTML page to browse traces.",
    "starter": [
     "notebook.ipynb"
-   ]
+   ],
+   "time": {
+    "learn": 30,
+    "build": 50,
+    "explain": 25,
+    "total": 105,
+    "mornings": 2
+   }
   },
   {
    "id": "p1-11",
@@ -656,11 +750,81 @@
    "parking": "Turn the readout into a one-slide summary.",
    "starter": [
     "decision.md"
-   ]
+   ],
+   "time": {
+    "learn": 15,
+    "build": 45,
+    "explain": 25,
+    "total": 85,
+    "mornings": 1
+   }
+  },
+  {
+   "id": "p1-12",
+   "day": 12,
+   "project": 1,
+   "step": 12,
+   "folder": "1-measure-before-you-believe/12-article",
+   "slug": "article",
+   "title": "Article: measure before you believe",
+   "question": "Can you tell the project 1 story so that a stranger trusts your numbers?",
+   "why": "An FDE's write-up travels further than any meeting. A public article with real error bars is proof that you measure before you believe, and writing it shows you what you really understood.",
+   "setup": [
+    "Open your rajc.work Hugo site locally (`hugo server`) so you can preview the post before it goes live."
+   ],
+   "learn": [
+    {
+     "title": "What to blog about (Simon Willison): 'Write about your projects'",
+     "url": "https://simonwillison.net/2022/Nov/6/what-to-blog-about/",
+     "minutes": 5,
+     "how": "Why a project write-up is worth more than the project. Note what he says to include."
+    },
+    {
+     "title": "Technical Writing One (Google): Short sentences",
+     "url": "https://developers.google.com/tech-writing/one/short-sentences",
+     "minutes": 20,
+     "how": "One idea per sentence. Try the exercises on a paragraph of your ADR."
+    }
+   ],
+   "math": null,
+   "build": [
+    "Close every notebook. In the README's 'Without notes' section, write about 300 words from memory: what you built, what you measured, what surprised you. No notes, no AI. Whatever you can't write is what to revisit.",
+    "Now open the notebooks and check every number. Turn the 300 words into article.md: the setup / question / inside block at the top, then the story.",
+    "Grow it to 800–1,200 words: what Acme asked for, the three versions, your table (pass rate ± 2 se, p95 seconds, ₹ per 1,000 emails), two failures that taught you something and your ADR's decision. Add your design diagram.",
+    "Edit for a reader: read it aloud, cut what does not help, one idea per sentence. AI may fix grammar only: note it under 'How I used AI'.",
+    "Publish it on rajc.work (draft: false, build, push). Open the live page, then ship with `fde-coach learn done --article <link>`."
+   ],
+   "artifact": "article",
+   "expect": [
+    "article.md"
+   ],
+   "done_when": [
+    "'Without notes' in README.md has about 300 words, written before you opened the notebooks.",
+    "article.md has 800–1,200 words, a table of your real numbers and one diagram.",
+    "Every number in the article matches a notebook.",
+    "The article is live on rajc.work."
+   ],
+   "minimum": "A 500-word version live on rajc.work: the setup, one table of real numbers and what you would recommend.",
+   "min_words": 500,
+   "record": [
+    "Optional: a 3-minute video reading the setup / question / inside block aloud, ending with the one thing you would tell a customer.",
+    "Share the link wherever you like: the article is the proof."
+   ],
+   "parking": "Run the same three-way test privately on your own communication agent (a private repo, never this one).",
+   "starter": [
+    "article.md"
+   ],
+   "time": {
+    "learn": 40,
+    "build": 185,
+    "explain": 10,
+    "total": 235,
+    "mornings": 3
+   }
   },
   {
    "id": "p2-01",
-   "day": 12,
+   "day": 13,
    "project": 2,
    "step": 1,
    "folder": "2-meaning-as-numbers/01-vectors",
@@ -706,11 +870,18 @@
    "parking": "Try 5 dimensions. Can you still draw it?",
    "starter": [
     "notebook.ipynb"
-   ]
+   ],
+   "time": {
+    "learn": 25,
+    "build": 60,
+    "explain": 25,
+    "total": 110,
+    "mornings": 2
+   }
   },
   {
    "id": "p2-02",
-   "day": 13,
+   "day": 14,
    "project": 2,
    "step": 2,
    "folder": "2-meaning-as-numbers/02-dot-product-and-cosine",
@@ -762,11 +933,18 @@
    "parking": "Read the rest of the word2vec article.",
    "starter": [
     "notebook.ipynb"
-   ]
+   ],
+   "time": {
+    "learn": 30,
+    "build": 60,
+    "explain": 25,
+    "total": 115,
+    "mornings": 2
+   }
   },
   {
    "id": "p2-03",
-   "day": 14,
+   "day": 15,
    "project": 2,
    "step": 3,
    "folder": "2-meaning-as-numbers/03-real-embeddings",
@@ -821,11 +999,18 @@
    "parking": "Compare a second embedding model (all-minilm).",
    "starter": [
     "notebook.ipynb"
-   ]
+   ],
+   "time": {
+    "learn": 25,
+    "build": 80,
+    "explain": 25,
+    "total": 130,
+    "mornings": 2
+   }
   },
   {
    "id": "p2-04",
-   "day": 15,
+   "day": 16,
    "project": 2,
    "step": 4,
    "folder": "2-meaning-as-numbers/04-search-in-numpy",
@@ -871,11 +1056,18 @@
    "parking": "Time both versions on 100,000 random vectors.",
    "starter": [
     "notebook.ipynb"
-   ]
+   ],
+   "time": {
+    "learn": 10,
+    "build": 60,
+    "explain": 25,
+    "total": 95,
+    "mornings": 2
+   }
   },
   {
    "id": "p2-05",
-   "day": 16,
+   "day": 17,
    "project": 2,
    "step": 5,
    "folder": "2-meaning-as-numbers/05-recall-at-k",
@@ -926,11 +1118,18 @@
     "_track/data/acme/queries.jsonl",
     "_track/lab/search.py",
     "notebook.ipynb"
-   ]
+   ],
+   "time": {
+    "learn": 25,
+    "build": 70,
+    "explain": 25,
+    "total": 120,
+    "mornings": 2
+   }
   },
   {
    "id": "p2-06",
-   "day": 17,
+   "day": 18,
    "project": 2,
    "step": 6,
    "folder": "2-meaning-as-numbers/06-chunking",
@@ -973,11 +1172,18 @@
    "parking": "Try overlapping chunks.",
    "starter": [
     "notebook.ipynb"
-   ]
+   ],
+   "time": {
+    "learn": 15,
+    "build": 50,
+    "explain": 25,
+    "total": 90,
+    "mornings": 1
+   }
   },
   {
    "id": "p2-07",
-   "day": 18,
+   "day": 19,
    "project": 2,
    "step": 7,
    "folder": "2-meaning-as-numbers/07-vector-database",
@@ -1025,11 +1231,18 @@
    "parking": "Try a metadata filter (only billing articles).",
    "starter": [
     "notebook.ipynb"
-   ]
+   ],
+   "time": {
+    "learn": 15,
+    "build": 70,
+    "explain": 25,
+    "total": 110,
+    "mornings": 2
+   }
   },
   {
    "id": "p2-08",
-   "day": 19,
+   "day": 20,
    "project": 2,
    "step": 8,
    "folder": "2-meaning-as-numbers/08-retrieval-into-version-b",
@@ -1073,11 +1286,18 @@
    "parking": "Retrieve with the email plus the customer's area and plan.",
    "starter": [
     "notebook.ipynb"
-   ]
+   ],
+   "time": {
+    "learn": 10,
+    "build": 50,
+    "explain": 25,
+    "total": 85,
+    "mornings": 1
+   }
   },
   {
    "id": "p2-09",
-   "day": 20,
+   "day": 21,
    "project": 2,
    "step": 9,
    "folder": "2-meaning-as-numbers/09-rag-explained",
@@ -1117,11 +1337,75 @@
     "Two takes at most, then upload to YouTube as Unlisted and paste the link."
    ],
    "parking": "Add reranking to your search.",
-   "starter": []
+   "starter": [],
+   "time": {
+    "learn": 15,
+    "build": 40,
+    "explain": 25,
+    "total": 80,
+    "mornings": 1
+   }
+  },
+  {
+   "id": "p2-10",
+   "day": 22,
+   "project": 2,
+   "step": 10,
+   "folder": "2-meaning-as-numbers/10-article",
+   "slug": "article",
+   "title": "Article: meaning as numbers",
+   "question": "Can you explain what semantic search can and cannot promise, with your own numbers?",
+   "why": "Every customer conversation about RAG starts with a myth. An article that shows recall@k, misses and costs you measured yourself is the answer you can send before the meeting.",
+   "setup": [
+    "Open your rajc.work Hugo site locally (`hugo server`) so you can preview the post before it goes live."
+   ],
+   "learn": [
+    {
+     "title": "Technical Writing One (Google): Active voice",
+     "url": "https://developers.google.com/tech-writing/one/active-voice",
+     "minutes": 15,
+     "how": "Find the passive sentences in your project 2 notes and make them active."
+    }
+   ],
+   "math": null,
+   "build": [
+    "Close every notebook. In the README's 'Without notes' section, write about 300 words from memory: what you built, what you measured, what surprised you. No notes, no AI. Whatever you can't write is what to revisit.",
+    "Now open the notebooks and check every number. Turn the 300 words into article.md: the setup / question / inside block at the top, then the story.",
+    "Grow it to 800–1,200 words: why keyword search missed, vectors and cosine similarity in plain words, recall@k with error bars, what the vector database added and did not fix, and the five failure points from your RAG diagram (add the diagram).",
+    "Edit for a reader: read it aloud, cut what does not help, one idea per sentence. AI may fix grammar only: note it under 'How I used AI'.",
+    "Publish it on rajc.work (draft: false, build, push). Open the live page, then ship with `fde-coach learn done --article <link>`."
+   ],
+   "artifact": "article",
+   "expect": [
+    "article.md"
+   ],
+   "done_when": [
+    "'Without notes' in README.md has about 300 words, written before you opened the notebooks.",
+    "article.md has 800–1,200 words, a table of your real numbers and one diagram.",
+    "Every number in the article matches a notebook.",
+    "The article is live on rajc.work."
+   ],
+   "minimum": "A 500-word version live on rajc.work: the setup, one table of real numbers and what you would recommend.",
+   "min_words": 500,
+   "record": [
+    "Optional: a 3-minute video reading the setup / question / inside block aloud, ending with the one thing you would tell a customer.",
+    "Share the link wherever you like: the article is the proof."
+   ],
+   "parking": "Point your NumPy search at a folder of your own notes, privately (not in this repo).",
+   "starter": [
+    "article.md"
+   ],
+   "time": {
+    "learn": 25,
+    "build": 185,
+    "explain": 10,
+    "total": 220,
+    "mornings": 3
+   }
   },
   {
    "id": "p3-01",
-   "day": 21,
+   "day": 23,
    "project": 3,
    "step": 1,
    "folder": "3-learn-a-formula/01-functions-and-slopes",
@@ -1173,11 +1457,18 @@
    "parking": "Use your real cloud bill (privately).",
    "starter": [
     "notebook.ipynb"
-   ]
+   ],
+   "time": {
+    "learn": 25,
+    "build": 60,
+    "explain": 25,
+    "total": 110,
+    "mornings": 2
+   }
   },
   {
    "id": "p3-02",
-   "day": 22,
+   "day": 24,
    "project": 3,
    "step": 2,
    "folder": "3-learn-a-formula/02-loss",
@@ -1223,11 +1514,18 @@
    "parking": "Try the absolute error (L1) and compare the best line.",
    "starter": [
     "notebook.ipynb"
-   ]
+   ],
+   "time": {
+    "learn": 15,
+    "build": 60,
+    "explain": 25,
+    "total": 100,
+    "mornings": 2
+   }
   },
   {
    "id": "p3-03",
-   "day": 23,
+   "day": 25,
    "project": 3,
    "step": 3,
    "folder": "3-learn-a-formula/03-derivative-as-a-nudge",
@@ -1273,11 +1571,18 @@
    "parking": "Try a bigger h. When does the nudge estimate break?",
    "starter": [
     "notebook.ipynb"
-   ]
+   ],
+   "time": {
+    "learn": 30,
+    "build": 60,
+    "explain": 25,
+    "total": 115,
+    "mornings": 2
+   }
   },
   {
    "id": "p3-04",
-   "day": 24,
+   "day": 26,
    "project": 3,
    "step": 4,
    "folder": "3-learn-a-formula/04-gradient-descent",
@@ -1329,11 +1634,18 @@
    "parking": "Make an animation of the path.",
    "starter": [
     "notebook.ipynb"
-   ]
+   ],
+   "time": {
+    "learn": 30,
+    "build": 60,
+    "explain": 25,
+    "total": 115,
+    "mornings": 2
+   }
   },
   {
    "id": "p3-05",
-   "day": 25,
+   "day": 27,
    "project": 3,
    "step": 5,
    "folder": "3-learn-a-formula/05-learning-rate",
@@ -1385,11 +1697,18 @@
    "parking": "Try a learning rate that shrinks over time.",
    "starter": [
     "notebook.ipynb"
-   ]
+   ],
+   "time": {
+    "learn": 25,
+    "build": 60,
+    "explain": 25,
+    "total": 110,
+    "mornings": 2
+   }
   },
   {
    "id": "p3-06",
-   "day": 26,
+   "day": 28,
    "project": 3,
    "step": 6,
    "folder": "3-learn-a-formula/06-chain-rule-first-taste",
@@ -1435,11 +1754,18 @@
    "parking": "Derive the gradient for the absolute error (L1).",
    "starter": [
     "notebook.ipynb"
-   ]
+   ],
+   "time": {
+    "learn": 25,
+    "build": 60,
+    "explain": 25,
+    "total": 110,
+    "mornings": 2
+   }
   },
   {
    "id": "p3-07",
-   "day": 27,
+   "day": 29,
    "project": 3,
    "step": 7,
    "folder": "3-learn-a-formula/07-overfitting",
@@ -1491,11 +1817,18 @@
    "parking": "Add L2 regularisation and see the wiggles calm down.",
    "starter": [
     "notebook.ipynb"
-   ]
+   ],
+   "time": {
+    "learn": 30,
+    "build": 60,
+    "explain": 25,
+    "total": 115,
+    "mornings": 2
+   }
   },
   {
    "id": "p3-08",
-   "day": 28,
+   "day": 30,
    "project": 3,
    "step": 8,
    "folder": "3-learn-a-formula/08-yes-or-no",
@@ -1547,11 +1880,18 @@
    "parking": "Add a third feature (plan) and see if it helps.",
    "starter": [
     "notebook.ipynb"
-   ]
+   ],
+   "time": {
+    "learn": 30,
+    "build": 60,
+    "explain": 25,
+    "total": 115,
+    "mornings": 2
+   }
   },
   {
    "id": "p3-09",
-   "day": 29,
+   "day": 31,
    "project": 3,
    "step": 9,
    "folder": "3-learn-a-formula/09-programming-vs-learning",
@@ -1589,11 +1929,75 @@
     "Two takes at most, then upload to YouTube as Unlisted and paste the link."
    ],
    "parking": "Write it as a short blog post.",
-   "starter": []
+   "starter": [],
+   "time": {
+    "learn": 15,
+    "build": 30,
+    "explain": 25,
+    "total": 70,
+    "mornings": 1
+   }
+  },
+  {
+   "id": "p3-10",
+   "day": 32,
+   "project": 3,
+   "step": 10,
+   "folder": "3-learn-a-formula/10-article",
+   "slug": "article",
+   "title": "Article: learn a formula from data",
+   "question": "Can you explain the difference between programming and learning to an architect who has never trained a model?",
+   "why": "Architects decide where a learned component belongs. Loss, gradients and overfitting explained with a hosting bill make that decision concrete for people who will never read the maths.",
+   "setup": [
+    "Open your rajc.work Hugo site locally (`hugo server`) so you can preview the post before it goes live."
+   ],
+   "learn": [
+    {
+     "title": "Technical Writing One (Google): Clear sentences",
+     "url": "https://developers.google.com/tech-writing/one/clear-sentences",
+     "minutes": 10,
+     "how": "Strong verbs, no 'there is'. Rewrite three sentences of your project 3 README."
+    }
+   ],
+   "math": null,
+   "build": [
+    "Close every notebook. In the README's 'Without notes' section, write about 300 words from memory: what you built, what you measured, what surprised you. No notes, no AI. Whatever you can't write is what to revisit.",
+    "Now open the notebooks and check every number. Turn the 300 words into article.md: the setup / question / inside block at the top, then the story.",
+    "Grow it to 800–1,200 words: your hosting bill as a line, loss as one number, the derivative by nudging, gradient descent walking downhill, what went wrong with the learning rate and with overfitting, and the escalation classifier. Use your programming-vs-learning diagram.",
+    "Edit for a reader: read it aloud, cut what does not help, one idea per sentence. AI may fix grammar only: note it under 'How I used AI'.",
+    "Publish it on rajc.work (draft: false, build, push). Open the live page, then ship with `fde-coach learn done --article <link>`."
+   ],
+   "artifact": "article",
+   "expect": [
+    "article.md"
+   ],
+   "done_when": [
+    "'Without notes' in README.md has about 300 words, written before you opened the notebooks.",
+    "article.md has 800–1,200 words, a table of your real numbers and one diagram.",
+    "Every number in the article matches a notebook.",
+    "The article is live on rajc.work."
+   ],
+   "minimum": "A 500-word version live on rajc.work: the setup, one table of real numbers and what you would recommend.",
+   "min_words": 500,
+   "record": [
+    "Optional: a 3-minute video reading the setup / question / inside block aloud, ending with the one thing you would tell a customer.",
+    "Share the link wherever you like: the article is the proof."
+   ],
+   "parking": "Add an interactive loss curve to the post later.",
+   "starter": [
+    "article.md"
+   ],
+   "time": {
+    "learn": 15,
+    "build": 185,
+    "explain": 10,
+    "total": 210,
+    "mornings": 3
+   }
   },
   {
    "id": "p4-01",
-   "day": 30,
+   "day": 33,
    "project": 4,
    "step": 1,
    "folder": "4-backprop-by-hand/01-one-neuron",
@@ -1640,11 +2044,18 @@
    "parking": "Try ReLU instead of tanh.",
    "starter": [
     "notebook.ipynb"
-   ]
+   ],
+   "time": {
+    "learn": 30,
+    "build": 60,
+    "explain": 25,
+    "total": 115,
+    "mornings": 2
+   }
   },
   {
    "id": "p4-02",
-   "day": 31,
+   "day": 34,
    "project": 4,
    "step": 2,
    "folder": "4-backprop-by-hand/02-value-object",
@@ -1694,11 +2105,18 @@
    "starter": [
     "_track/lab/micrograd.py",
     "notebook.ipynb"
-   ]
+   ],
+   "time": {
+    "learn": 20,
+    "build": 70,
+    "explain": 25,
+    "total": 115,
+    "mornings": 2
+   }
   },
   {
    "id": "p4-03",
-   "day": 32,
+   "day": 35,
    "project": 4,
    "step": 3,
    "folder": "4-backprop-by-hand/03-manual-backprop",
@@ -1742,11 +2160,18 @@
    "parking": "Do example #2 (the neuron) by hand as well.",
    "starter": [
     "notebook.ipynb"
-   ]
+   ],
+   "time": {
+    "learn": 30,
+    "build": 50,
+    "explain": 25,
+    "total": 105,
+    "mornings": 2
+   }
   },
   {
    "id": "p4-04",
-   "day": 33,
+   "day": 36,
    "project": 4,
    "step": 4,
    "folder": "4-backprop-by-hand/04-automatic-backward",
@@ -1793,11 +2218,18 @@
    "parking": "Print the topological order and draw it.",
    "starter": [
     "notebook.ipynb"
-   ]
+   ],
+   "time": {
+    "learn": 25,
+    "build": 60,
+    "explain": 25,
+    "total": 110,
+    "mornings": 2
+   }
   },
   {
    "id": "p4-05",
-   "day": 34,
+   "day": 37,
    "project": 4,
    "step": 5,
    "folder": "4-backprop-by-hand/05-used-twice-bug",
@@ -1843,11 +2275,18 @@
    "parking": "Add relu().",
    "starter": [
     "notebook.ipynb"
-   ]
+   ],
+   "time": {
+    "learn": 30,
+    "build": 50,
+    "explain": 25,
+    "total": 105,
+    "mornings": 2
+   }
   },
   {
    "id": "p4-06",
-   "day": 35,
+   "day": 38,
    "project": 4,
    "step": 6,
    "folder": "4-backprop-by-hand/06-same-in-pytorch",
@@ -1899,11 +2338,18 @@
    "parking": "Run the same on your Mac's GPU (device='mps').",
    "starter": [
     "notebook.ipynb"
-   ]
+   ],
+   "time": {
+    "learn": 30,
+    "build": 60,
+    "explain": 25,
+    "total": 115,
+    "mornings": 2
+   }
   },
   {
    "id": "p4-07",
-   "day": 36,
+   "day": 39,
    "project": 4,
    "step": 7,
    "folder": "4-backprop-by-hand/07-tiny-neural-net-library",
@@ -1952,11 +2398,18 @@
    "starter": [
     "_track/lab/nn.py",
     "notebook.ipynb"
-   ]
+   ],
+   "time": {
+    "learn": 25,
+    "build": 60,
+    "explain": 25,
+    "total": 110,
+    "mornings": 2
+   }
   },
   {
    "id": "p4-08",
-   "day": 37,
+   "day": 40,
    "project": 4,
    "step": 8,
    "folder": "4-backprop-by-hand/08-training-loop",
@@ -1999,11 +2452,18 @@
    "parking": "Add a test set to the escalation model.",
    "starter": [
     "notebook.ipynb"
-   ]
+   ],
+   "time": {
+    "learn": 25,
+    "build": 50,
+    "explain": 25,
+    "total": 100,
+    "mornings": 2
+   }
   },
   {
    "id": "p4-09",
-   "day": 38,
+   "day": 41,
    "project": 4,
    "step": 9,
    "folder": "4-backprop-by-hand/09-what-training-really-is",
@@ -2041,11 +2501,75 @@
     "Two takes at most, then upload to YouTube as Unlisted and paste the link."
    ],
    "parking": "Read the full micrograd repo on GitHub.",
-   "starter": []
+   "starter": [],
+   "time": {
+    "learn": 25,
+    "build": 30,
+    "explain": 25,
+    "total": 80,
+    "mornings": 1
+   }
+  },
+  {
+   "id": "p4-10",
+   "day": 42,
+   "project": 4,
+   "step": 10,
+   "folder": "4-backprop-by-hand/10-article",
+   "slug": "article",
+   "title": "Article: backprop by hand",
+   "question": "Can you explain what 'training' means to someone who has only used models through an API?",
+   "why": "Most people who use models have never seen a gradient. A clear article about backprop by hand makes you the person in the room who can say why a model learns, and why it sometimes doesn't.",
+   "setup": [
+    "Open your rajc.work Hugo site locally (`hugo server`) so you can preview the post before it goes live."
+   ],
+   "learn": [
+    {
+     "title": "Technical Writing One (Google): Paragraphs",
+     "url": "https://developers.google.com/tech-writing/one/paragraphs",
+     "minutes": 10,
+     "how": "One idea per paragraph, with an opening sentence that says it."
+    }
+   ],
+   "math": null,
+   "build": [
+    "Close every notebook. In the README's 'Without notes' section, write about 300 words from memory: what you built, what you measured, what surprised you. No notes, no AI. Whatever you can't write is what to revisit.",
+    "Now open the notebooks and check every number. Turn the 300 words into article.md: the setup / question / inside block at the top, then the story.",
+    "Grow it to 800–1,200 words: a number that remembers where it came from, the chain rule as local × upstream, the bug when a value is used twice, the training loop and what PyTorch does for you. Use your forward/backward diagram.",
+    "Edit for a reader: read it aloud, cut what does not help, one idea per sentence. AI may fix grammar only: note it under 'How I used AI'.",
+    "Publish it on rajc.work (draft: false, build, push). Open the live page, then ship with `fde-coach learn done --article <link>`."
+   ],
+   "artifact": "article",
+   "expect": [
+    "article.md"
+   ],
+   "done_when": [
+    "'Without notes' in README.md has about 300 words, written before you opened the notebooks.",
+    "article.md has 800–1,200 words, a table of your real numbers and one diagram.",
+    "Every number in the article matches a notebook.",
+    "The article is live on rajc.work."
+   ],
+   "minimum": "A 500-word version live on rajc.work: the setup, one table of real numbers and what you would recommend.",
+   "min_words": 500,
+   "record": [
+    "Optional: a 3-minute video reading the setup / question / inside block aloud, ending with the one thing you would tell a customer.",
+    "Share the link wherever you like: the article is the proof."
+   ],
+   "parking": "Write a short follow-up comparing your micrograd with PyTorch's autograd.",
+   "starter": [
+    "article.md"
+   ],
+   "time": {
+    "learn": 15,
+    "build": 185,
+    "explain": 10,
+    "total": 210,
+    "mornings": 3
+   }
   },
   {
    "id": "p5-01",
-   "day": 39,
+   "day": 43,
    "project": 5,
    "step": 1,
    "folder": "5-tiny-gpt/01-counting-next-letters",
@@ -2091,11 +2615,18 @@
    "parking": "Count Indian first names instead.",
    "starter": [
     "notebook.ipynb"
-   ]
+   ],
+   "time": {
+    "learn": 35,
+    "build": 60,
+    "explain": 25,
+    "total": 120,
+    "mornings": 2
+   }
   },
   {
    "id": "p5-02",
-   "day": 40,
+   "day": 44,
    "project": 5,
    "step": 2,
    "folder": "5-tiny-gpt/02-sampling",
@@ -2146,11 +2677,18 @@
    "parking": "Sample names that start with 'r'.",
    "starter": [
     "notebook.ipynb"
-   ]
+   ],
+   "time": {
+    "learn": 40,
+    "build": 50,
+    "explain": 25,
+    "total": 115,
+    "mornings": 2
+   }
   },
   {
    "id": "p5-03",
-   "day": 41,
+   "day": 45,
    "project": 5,
    "step": 3,
    "folder": "5-tiny-gpt/03-negative-log-likelihood",
@@ -2195,11 +2733,18 @@
    "parking": "Try +10 smoothing. What happens to the samples?",
    "starter": [
     "notebook.ipynb"
-   ]
+   ],
+   "time": {
+    "learn": 20,
+    "build": 50,
+    "explain": 25,
+    "total": 95,
+    "mornings": 2
+   }
   },
   {
    "id": "p5-04",
-   "day": 42,
+   "day": 46,
    "project": 5,
    "step": 4,
    "folder": "5-tiny-gpt/04-softmax-and-temperature",
@@ -2252,11 +2797,18 @@
    "parking": "Implement top-k sampling.",
    "starter": [
     "notebook.ipynb"
-   ]
+   ],
+   "time": {
+    "learn": 35,
+    "build": 60,
+    "explain": 25,
+    "total": 120,
+    "mornings": 2
+   }
   },
   {
    "id": "p5-05",
-   "day": 43,
+   "day": 47,
    "project": 5,
    "step": 5,
    "folder": "5-tiny-gpt/05-neural-bigram",
@@ -2302,11 +2854,18 @@
    "parking": "Use two previous letters (a trigram).",
    "starter": [
     "notebook.ipynb"
-   ]
+   ],
+   "time": {
+    "learn": 30,
+    "build": 60,
+    "explain": 25,
+    "total": 115,
+    "mornings": 2
+   }
   },
   {
    "id": "p5-06",
-   "day": 44,
+   "day": 48,
    "project": 5,
    "step": 6,
    "folder": "5-tiny-gpt/06-tokens-and-cost",
@@ -2360,11 +2919,18 @@
    "parking": "Watch Karpathy's 'Let's build the GPT Tokenizer'.",
    "starter": [
     "notebook.ipynb"
-   ]
+   ],
+   "time": {
+    "learn": 20,
+    "build": 70,
+    "explain": 25,
+    "total": 115,
+    "mornings": 2
+   }
   },
   {
    "id": "p5-07",
-   "day": 45,
+   "day": 49,
    "project": 5,
    "step": 7,
    "folder": "5-tiny-gpt/07-training-batches",
@@ -2410,11 +2976,18 @@
    "parking": "Use your own journal text instead of Shakespeare.",
    "starter": [
     "notebook.ipynb"
-   ]
+   ],
+   "time": {
+    "learn": 25,
+    "build": 60,
+    "explain": 25,
+    "total": 110,
+    "mornings": 2
+   }
   },
   {
    "id": "p5-08",
-   "day": 46,
+   "day": 50,
    "project": 5,
    "step": 8,
    "folder": "5-tiny-gpt/08-averaging-the-past",
@@ -2459,11 +3032,18 @@
    "parking": "Print the weight matrix for T = 8.",
    "starter": [
     "notebook.ipynb"
-   ]
+   ],
+   "time": {
+    "learn": 25,
+    "build": 60,
+    "explain": 25,
+    "total": 110,
+    "mornings": 2
+   }
   },
   {
    "id": "p5-09",
-   "day": 47,
+   "day": 51,
    "project": 5,
    "step": 9,
    "folder": "5-tiny-gpt/09-attention-by-hand",
@@ -2508,11 +3088,18 @@
    "parking": "Read the rest of the 3Blue1Brown lesson (multi-head).",
    "starter": [
     "notebook.ipynb"
-   ]
+   ],
+   "time": {
+    "learn": 30,
+    "build": 40,
+    "explain": 25,
+    "total": 95,
+    "mornings": 2
+   }
   },
   {
    "id": "p5-10",
-   "day": 48,
+   "day": 52,
    "project": 5,
    "step": 10,
    "folder": "5-tiny-gpt/10-one-attention-head",
@@ -2557,11 +3144,18 @@
    "parking": "Write it again without looking.",
    "starter": [
     "notebook.ipynb"
-   ]
+   ],
+   "time": {
+    "learn": 30,
+    "build": 50,
+    "explain": 25,
+    "total": 105,
+    "mornings": 2
+   }
   },
   {
    "id": "p5-11",
-   "day": 49,
+   "day": 53,
    "project": 5,
    "step": 11,
    "folder": "5-tiny-gpt/11-transformer-block",
@@ -2607,11 +3201,18 @@
    "parking": "Add dropout.",
    "starter": [
     "notebook.ipynb"
-   ]
+   ],
+   "time": {
+    "learn": 30,
+    "build": 60,
+    "explain": 25,
+    "total": 115,
+    "mornings": 2
+   }
   },
   {
    "id": "p5-12",
-   "day": 50,
+   "day": 54,
    "project": 5,
    "step": 12,
    "folder": "5-tiny-gpt/12-scale-and-cost",
@@ -2660,11 +3261,18 @@
    "parking": "Read nanoGPT's README.",
    "starter": [
     "notebook.ipynb"
-   ]
+   ],
+   "time": {
+    "learn": 20,
+    "build": 70,
+    "explain": 25,
+    "total": 115,
+    "mornings": 2
+   }
   },
   {
    "id": "p5-13",
-   "day": 51,
+   "day": 55,
    "project": 5,
    "step": 13,
    "folder": "5-tiny-gpt/13-from-tiny-gpt-to-chatgpt",
@@ -2709,11 +3317,75 @@
     "Two takes at most, then upload to YouTube as Unlisted and paste the link."
    ],
    "parking": "Watch the rest of the Deep Dive.",
-   "starter": []
+   "starter": [],
+   "time": {
+    "learn": 45,
+    "build": 30,
+    "explain": 25,
+    "total": 100,
+    "mornings": 2
+   }
+  },
+  {
+   "id": "p5-14",
+   "day": 56,
+   "project": 5,
+   "step": 14,
+   "folder": "5-tiny-gpt/14-article",
+   "slug": "article",
+   "title": "Article: tiny GPT",
+   "question": "Can you explain where hallucinations come from, using a model you built yourself?",
+   "why": "'Why does it make things up?' is the question you will hear most. An article that answers it from the inside, with a model you trained, is your most shareable proof.",
+   "setup": [
+    "Open your rajc.work Hugo site locally (`hugo server`) so you can preview the post before it goes live."
+   ],
+   "learn": [
+    {
+     "title": "Technical Writing One (Google): Audience",
+     "url": "https://developers.google.com/tech-writing/one/audience",
+     "minutes": 10,
+     "how": "Decide who the article is for and what they already know."
+    }
+   ],
+   "math": null,
+   "build": [
+    "Close every notebook. In the README's 'Without notes' section, write about 300 words from memory: what you built, what you measured, what surprised you. No notes, no AI. Whatever you can't write is what to revisit.",
+    "Now open the notebooks and check every number. Turn the 300 words into article.md: the setup / question / inside block at the top, then the story.",
+    "Grow it to 800–1,200 words: counting letters, loss as surprise, softmax and temperature, attention as weighted averages, your tiny GPT's text before and after training, and why confident wrong answers follow from next-token prediction. Use your 'life of an LLM' diagram.",
+    "Edit for a reader: read it aloud, cut what does not help, one idea per sentence. AI may fix grammar only: note it under 'How I used AI'.",
+    "Publish it on rajc.work (draft: false, build, push). Open the live page, then ship with `fde-coach learn done --article <link>`."
+   ],
+   "artifact": "article",
+   "expect": [
+    "article.md"
+   ],
+   "done_when": [
+    "'Without notes' in README.md has about 300 words, written before you opened the notebooks.",
+    "article.md has 800–1,200 words, a table of your real numbers and one diagram.",
+    "Every number in the article matches a notebook.",
+    "The article is live on rajc.work."
+   ],
+   "minimum": "A 500-word version live on rajc.work: the setup, one table of real numbers and what you would recommend.",
+   "min_words": 500,
+   "record": [
+    "Optional: a 3-minute video reading the setup / question / inside block aloud, ending with the one thing you would tell a customer.",
+    "Share the link wherever you like: the article is the proof."
+   ],
+   "parking": "Turn the article into a 10-minute talk.",
+   "starter": [
+    "article.md"
+   ],
+   "time": {
+    "learn": 15,
+    "build": 185,
+    "explain": 10,
+    "total": 210,
+    "mornings": 3
+   }
   },
   {
    "id": "p6-01",
-   "day": 52,
+   "day": 57,
    "project": 6,
    "step": 1,
    "folder": "6-back-to-the-customer/01-temperature-with-evidence",
@@ -2757,11 +3429,18 @@
    "parking": "Try temperature 0.3.",
    "starter": [
     "notebook.ipynb"
-   ]
+   ],
+   "time": {
+    "learn": 10,
+    "build": 50,
+    "explain": 25,
+    "total": 85,
+    "mornings": 1
+   }
   },
   {
    "id": "p6-02",
-   "day": 53,
+   "day": 58,
    "project": 6,
    "step": 2,
    "folder": "6-back-to-the-customer/02-root-causes",
@@ -2800,11 +3479,18 @@
     "Two takes at most, then upload to YouTube as Unlisted and paste the link."
    ],
    "parking": "Turn the tree into a checklist for future projects.",
-   "starter": []
+   "starter": [],
+   "time": {
+    "learn": 10,
+    "build": 40,
+    "explain": 25,
+    "total": 75,
+    "mornings": 1
+   }
   },
   {
    "id": "p6-03",
-   "day": 54,
+   "day": 59,
    "project": 6,
    "step": 3,
    "folder": "6-back-to-the-customer/03-what-a-tool-call-is",
@@ -2845,11 +3531,18 @@
    "parking": "Add a tool that returns too much data and measure the cost.",
    "starter": [
     "notebook.ipynb"
-   ]
+   ],
+   "time": {
+    "learn": 25,
+    "build": 40,
+    "explain": 25,
+    "total": 90,
+    "mornings": 1
+   }
   },
   {
    "id": "p6-04",
-   "day": 55,
+   "day": 60,
    "project": 6,
    "step": 4,
    "folder": "6-back-to-the-customer/04-context-engineering",
@@ -2894,11 +3587,18 @@
    "parking": "Try summarising old steps (compaction).",
    "starter": [
     "notebook.ipynb"
-   ]
+   ],
+   "time": {
+    "learn": 25,
+    "build": 50,
+    "explain": 25,
+    "total": 100,
+    "mornings": 2
+   }
   },
   {
    "id": "p6-05",
-   "day": 56,
+   "day": 61,
    "project": 6,
    "step": 5,
    "folder": "6-back-to-the-customer/05-prompt-injection",
@@ -2941,11 +3641,18 @@
    "parking": "Try attacks hidden inside help-article text.",
    "starter": [
     "notebook.ipynb"
-   ]
+   ],
+   "time": {
+    "learn": 15,
+    "build": 50,
+    "explain": 25,
+    "total": 90,
+    "mornings": 1
+   }
   },
   {
    "id": "p6-06",
-   "day": 57,
+   "day": 62,
    "project": 6,
    "step": 6,
    "folder": "6-back-to-the-customer/06-human-in-the-loop",
@@ -2990,14 +3697,88 @@
    "parking": "Add the time customers wait for a human.",
    "starter": [
     "notebook.ipynb"
-   ]
+   ],
+   "time": {
+    "learn": 10,
+    "build": 60,
+    "explain": 25,
+    "total": 95,
+    "mornings": 2
+   }
   },
   {
    "id": "p6-07",
-   "day": 58,
+   "day": 63,
    "project": 6,
    "step": 7,
-   "folder": "6-back-to-the-customer/07-final-recommendation",
+   "folder": "6-back-to-the-customer/07-final-run",
+   "slug": "final-run",
+   "title": "The final run: same test, a stronger model",
+   "question": "Does your recommendation survive a stronger model, and what does that cost?",
+   "why": "Everything so far ran on a small free model, which is the right way to build. A customer will run a stronger one in production. FDEs check that the conclusion still holds before they sign it, and they never let an evaluation surprise the budget.",
+   "setup": [
+    "Pick the stronger model. Free: a bigger open-weight model, if your Mac has 16 GB of memory or more (`ollama pull qwen3:14b`). Paid: any provider with an OpenAI-compatible chat API.",
+    "Paid only, before anything else: set a hard monthly spending cap in the provider's billing settings (₹500 is plenty). Then put LLM_BASE_URL and LLM_API_KEY in `.env` in your fde-first-principles folder. `.env` is git-ignored, and `done` refuses to publish anything that looks like a key."
+   ],
+   "learn": [
+    {
+     "title": "A statistical approach to model evaluations (Anthropic): Recommendation #4 'Analyze paired differences'",
+     "url": "https://www.anthropic.com/research/statistical-approach-to-model-evals",
+     "minutes": 10,
+     "how": "Why two models tested on the same questions should be compared case by case, not by two averages."
+    },
+    {
+     "title": "OpenAI compatibility (Ollama docs)",
+     "url": "https://docs.ollama.com/api/openai-compatibility",
+     "minutes": 5,
+     "how": "The request shape most providers accept. Your own Ollama speaks it too, so you can test the paid path for free."
+    }
+   ],
+   "math": {
+    "idea": "Paired differences",
+    "plain": "Score both models on the same cases. For each case write +1 if only the strong model passed, −1 if only the small one passed and 0 if they agree. The mean of these numbers, ± 2 standard errors, says whether the stronger model is really better on your test."
+   },
+   "build": [
+    "Estimate before you spend: tokens per email from your day 9 results × the number of cases × the price per million tokens. The estimate must be under a fifth of your cap. Set a call limit with llm.API_CALL_LIMIT.",
+    "Paid only: dry-run the API path for free first. Point it at your own Ollama (http://localhost:11434/v1) for 3 cases and check that the answers look like before.",
+    "Switch models with one line, llm.use(STRONG), and run versions B and C once on every case (cached: re-runs are free). Switch back afterwards.",
+    "One table, small vs. strong, for B and C: pass rate ± 2 se, p95 seconds, ₹ per 1,000 emails. Then the paired difference ± 2 se.",
+    "Which failures from your failure tree (project 6, step 2) disappear with the stronger model, and which stay? One paragraph: does your recommendation change?"
+   ],
+   "artifact": "notebook",
+   "expect": [
+    "notebook.ipynb"
+   ],
+   "done_when": [
+    "The cost estimate is written before the run, and the actual cost stayed under your cap.",
+    "Versions B and C ran on every case with the stronger model.",
+    "The small-vs-strong table and the paired difference with ± 2 se.",
+    "One paragraph: what changes in the recommendation, and what does not."
+   ],
+   "minimum": "Version B on every case with the stronger model, and its pass rate next to the small model's.",
+   "record": [
+    "Show the small-vs-strong table and the paired difference.",
+    "Say what the stronger model fixes, what it does not fix, and what it costs per 1,000 emails.",
+    "Two takes at most, then upload to YouTube as Unlisted and paste the link."
+   ],
+   "parking": "Repeat the run privately on your own communication agent's test set (a private repo, never this one).",
+   "starter": [
+    "notebook.ipynb"
+   ],
+   "time": {
+    "learn": 25,
+    "build": 80,
+    "explain": 25,
+    "total": 130,
+    "mornings": 2
+   }
+  },
+  {
+   "id": "p6-08",
+   "day": 64,
+   "project": 6,
+   "step": 8,
+   "folder": "6-back-to-the-customer/08-final-recommendation",
    "slug": "final-recommendation",
    "title": "The architecture recommendation (final)",
    "question": "What should Acme build, how should it roll out, and how will you know it works?",
@@ -3013,7 +3794,7 @@
    ],
    "math": null,
    "build": [
-    "Fill in decision-final.md (two pages at most): options, evidence with error bars, failure analysis, security boundary, human-in-the-loop policy, cost per 1,000 emails.",
+    "Fill in decision-final.md (two pages at most): options, evidence with error bars for the small and the strong model, failure analysis, security boundary, human-in-the-loop policy, cost per 1,000 emails.",
     "Add a rollout plan: shadow mode → 10% of emails → all emails, with the numbers that allow each step.",
     "Add what to watch in production and what would change your mind."
    ],
@@ -3034,14 +3815,21 @@
    "parking": "Ask a friend to review it as the 'CTO'.",
    "starter": [
     "decision-final.md"
-   ]
+   ],
+   "time": {
+    "learn": 10,
+    "build": 45,
+    "explain": 25,
+    "total": 80,
+    "mornings": 1
+   }
   },
   {
-   "id": "p6-08",
-   "day": 59,
+   "id": "p6-09",
+   "day": 65,
    "project": 6,
-   "step": 8,
-   "folder": "6-back-to-the-customer/08-customer-readout",
+   "step": 9,
+   "folder": "6-back-to-the-customer/09-customer-readout",
    "slug": "customer-readout",
    "title": "Customer readout: present it like an FDE",
    "question": "Can you defend your recommendation in front of a sceptical CTO?",
@@ -3076,7 +3864,77 @@
     "Two takes at most, then upload to YouTube as Unlisted and paste the link."
    ],
    "parking": "Start your next track.",
-   "starter": []
+   "starter": [],
+   "time": {
+    "learn": 15,
+    "build": 30,
+    "explain": 25,
+    "total": 70,
+    "mornings": 1
+   }
+  },
+  {
+   "id": "p6-10",
+   "day": 66,
+   "project": 6,
+   "step": 10,
+   "folder": "6-back-to-the-customer/10-article",
+   "slug": "article",
+   "title": "Article: back to the customer",
+   "question": "Can you tell the whole recommendation as a story that a sceptical CTO would forward to their team?",
+   "why": "This is the article you will send with job applications. It shows the FDE loop end to end: question the ask, measure, explain failures from first principles, recommend and roll out.",
+   "setup": [
+    "Open your rajc.work Hugo site locally (`hugo server`) so you can preview the post before it goes live."
+   ],
+   "learn": [
+    {
+     "title": "Technical Writing One (Google): Documents",
+     "url": "https://developers.google.com/tech-writing/one/documents",
+     "minutes": 10,
+     "how": "State the scope and the audience first, then organise for them."
+    },
+    {
+     "title": "Your own post: The Best AI Agent for a 5:30 AM Job Is No Agent at All",
+     "url": "https://rajc.work/blog/2026/09/agentic-build-deterministic-run/",
+     "minutes": 10,
+     "how": "Reuse its shape: the decision on one page, why each dimension scored as it did, when you will revisit."
+    }
+   ],
+   "math": null,
+   "build": [
+    "Close every notebook. In the README's 'Without notes' section, write about 300 words from memory: what you built, what you measured, what surprised you. No notes, no AI. Whatever you can't write is what to revisit.",
+    "Now open the notebooks and check every number. Turn the 300 words into article.md: the setup / question / inside block at the top, then the story.",
+    "Grow it to 1,000–1,500 words: what Acme asked for and what they needed, the evidence (small and strong model, with error bars), the failure tree, the security boundary and the human-in-the-loop rule, the rollout plan and what would change your mind. Use your summary picture.",
+    "Edit for a reader: read it aloud, cut what does not help, one idea per sentence. AI may fix grammar only: note it under 'How I used AI'.",
+    "Publish it on rajc.work (draft: false, build, push). Open the live page, then ship with `fde-coach learn done --article <link>`."
+   ],
+   "artifact": "article",
+   "expect": [
+    "article.md"
+   ],
+   "done_when": [
+    "'Without notes' in README.md has about 300 words, written before you opened the notebooks.",
+    "article.md has 1,000–1,500 words, a table of your real numbers and one diagram.",
+    "Every number in the article matches a notebook.",
+    "The article is live on rajc.work."
+   ],
+   "minimum": "A 500-word version live on rajc.work: the setup, one table of real numbers and what you would recommend.",
+   "min_words": 500,
+   "record": [
+    "Optional: a 3-minute video reading the setup / question / inside block aloud, ending with the one thing you would tell a customer.",
+    "Share the link wherever you like: the article is the proof."
+   ],
+   "parking": "Turn the article into a talk for a meetup or an internal session.",
+   "starter": [
+    "article.md"
+   ],
+   "time": {
+    "learn": 30,
+    "build": 185,
+    "explain": 10,
+    "total": 225,
+    "mornings": 3
+   }
   }
  ]
 }

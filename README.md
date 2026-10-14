@@ -36,12 +36,14 @@ Miss a day? Reminders escalate on your Mac, iPhone, and calendar until you recor
 
 ## New: FDE Learn, a daily first-principles learning track
 
-A second skill in this repo, [`fde-learn`](fde-learn/README.md). Every morning at **05:50** one topic drops into
-your public learning repo, and at **06:00** Google Calendar shows the whole task. You learn it (~20 min), build
-it (~40 min: a notebook, code or an Excalidraw diagram) and explain it on a ≤5-minute YouTube video, then ship
-with `fde-coach learn done --video <link>` before the next morning. 59 topics in 6 projects take you from
-"measure your agent" through embeddings, gradient descent, micrograd and a tiny GPT back to a customer-ready
-architecture recommendation. Maths arrives only when a project needs it, and everything runs locally for free.
+A second skill in this repo, [`fde-learn`](fde-learn/README.md). At **05:50** a topic drops into your public
+learning repo, and at **06:00** Google Calendar shows the whole task. You learn it, build it (a notebook, code or
+an Excalidraw diagram) and explain it on a ≤5-minute YouTube video, then ship with
+`fde-coach learn done --video <link>`. Each topic gets the mornings its estimate needs (one to three), and each
+project ends with an article published on rajc.work. 66 topics in 6 projects take you from "measure your agent"
+through embeddings, gradient descent, micrograd and a tiny GPT back to a customer-ready architecture
+recommendation: about 128 hours, or 4 to 5 months at 8 hours a week. Maths arrives only when a project needs it,
+and everything runs locally for free except one optional, capped final run on a stronger model.
 
 ```bash
 fde-coach learn init --repo ~/Code/continuous-learning

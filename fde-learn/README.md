@@ -1,16 +1,23 @@
 # FDE Learn
 
-A daily, project-based path from software architect to first-principles AI engineer, for the Forward Deployed
-Engineer role. **One topic every morning. Learn it, build it, explain it on video, ship it within 24 hours.**
+A project-based path from software architect to first-principles AI engineer, for the Forward Deployed
+Engineer role. **A topic every morning or two: learn it, build it, explain it on video, ship it. Each project
+ends with an article on [rajc.work](https://rajc.work).**
 
 ```
 05:50  topic drops into your public repo  ──►  06:00 Google Calendar event with the whole task
-       learn ~20 min → build ~40 min (notebook / code / Excalidraw) → record ≤ 5 min (2 takes)
+       learn → build (notebook / code / Excalidraw) → record ≤ 5 min (2 takes); each topic shows its own minutes
        fde-coach learn done --video <YouTube link>  ──►  journal + video + progress table pushed to GitHub
-next 05:50  deadline: shipped / late / partial; a missed topic comes back at minimum scope
+       finished early? fde-coach learn next
+deadline: the drop after the topic's last morning (1 to 3 mornings); a missed topic comes back at minimum scope
+end of each project: fde-coach learn done --article <live link on rajc.work>  ──►  the project's finish line
 ```
 
-## The track: 59 topics in 6 projects
+**Pace.** 8 hours a week (80 minutes a morning, Monday to Saturday). About 128 hours of work in total, estimated
+topic by topic from its content: 16 weeks if you pull topics forward when you finish early, 21 weeks if you use
+every morning the schedule allows. Plan on 4 to 5 months. The method is in the curriculum.
+
+## The track: 66 topics in 6 projects
 
 | # | Project | What you build | Maths you meet |
 |---|---|---|---|
@@ -19,12 +26,17 @@ next 05:50  deadline: shipped / late / partial; a missed topic comes back at min
 | 3 | Learn a formula from data | Your hosting-cost formula and a yes/no classifier by gradient descent | slopes, loss, derivatives, sigmoid |
 | 4 | Backprop by hand | micrograd: an autograd engine and a tiny neural-net library | the chain rule |
 | 5 | Tiny GPT | From counting letters to a Transformer, plus tokens and cost in Indian languages | probability, log, softmax, attention |
-| 6 | Back to the customer | Root causes, tool calls, context, prompt injection, human-in-the-loop, the final recommendation | none new |
+| 6 | Back to the customer | Root causes, a final run with a stronger model, tool calls, context, prompt injection, human-in-the-loop, the final recommendation | paired differences |
 
-The full map with every resource: [references/curriculum.md](references/curriculum.md). Resources are free and
-chosen for clear English and visuals: 3Blue1Brown (lessons have text versions), Andrej Karpathy's lectures
-(split into ~20-minute chapters), Google's ML Crash Course, Anthropic's engineering posts, Hamel Husain on evals.
-Models run locally with Ollama, so the whole track costs nothing.
+Every project ends with an **article**: about 300 words from memory first (no notes, no AI), then 800 to 1,500
+words with your real numbers, published on rajc.work from a Hugo-ready starter.
+
+The full map with every resource and time estimate: [references/curriculum.md](references/curriculum.md).
+Resources are free and chosen for clear English and visuals: 3Blue1Brown (lessons have text versions), Andrej
+Karpathy's lectures (split into ~20-minute chapters), Google's ML Crash Course and Technical Writing One,
+Anthropic's engineering posts, Hamel Husain on evals. Models run locally with Ollama. The only optional cost is
+project 6's final run on a stronger model: set a hard monthly spending cap first, estimate before you run, dry-run
+the API path for free against your own Ollama, and cached answers make re-runs free.
 
 ## Setup
 
@@ -45,6 +57,8 @@ Then ask Claude Code: **"what's today's topic?"** · **"I'm stuck"** · **"ship 
 |---|---|
 | `fde-coach learn today` | Today's task, hours left, what is still missing to ship |
 | `fde-coach learn done --video URL` | Ship: checks, journal, commit, push, calendar (`--partial`, `--no-video`) |
+| `fde-coach learn done --article URL` | Ship a project's article (the live link on rajc.work; no partial) |
+| `fde-coach learn next` | Finished early: drop the next topic now |
 | `fde-coach learn status` | Topics shipped, streak, current topic, push/calendar state |
 | `fde-coach learn pause --until DATE` · `resume` | Travel or illness: nothing counts as missed |
 | `fde-coach learn drop` | Drop today's topic now (the 05:50 agent runs this) |

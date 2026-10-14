@@ -1,15 +1,18 @@
 """Daily first-principles learning track ("fde-coach learn").
 
-One topic drops every morning (default 05:50) into your public learning repo
-(for example github.com/<you>/continuous-learning). You learn, build and record
-it, then ship it with `fde-coach learn done --video <YouTube link>` before the
-next drop. The repo itself is the memory: progress.json, TODAY.md, one folder per
-topic with your notebook / diagram and a journal README, all committed and pushed.
+A topic drops in the morning (default 05:50) into your public learning repo
+(for example github.com/<you>/continuous-learning) and gets as many mornings as
+its time estimate needs (one to three). You learn, build and record it, then ship
+it with `fde-coach learn done --video <YouTube link>` before its deadline. Each
+project ends with an article on your site, shipped with `--article <link>`.
+The repo itself is the memory: progress.json, TODAY.md, one folder per topic with
+your notebook / diagram / article and a journal README, all committed and pushed.
 
-Google Calendar gets a 06:00 event with the whole task, plus a "not shipped yet"
-event in the evening that is deleted as soon as you ship. Rules: one topic, no
-menus, the deadline is the next drop; a missed topic comes back the next day at
-minimum scope (you never skip ahead); partial work can ship, labelled partial.
+Google Calendar gets a 06:00 event with the whole task every morning, plus a
+"not shipped yet" event on the topic's last evening that is deleted as soon as you
+ship. Rules: one topic, no menus; a missed topic comes back at minimum scope (you
+never skip ahead); partial work can ship, labelled partial (an article cannot:
+it is the project's finish line). Finished early? `fde-coach learn next`.
 """
 from __future__ import annotations
 
@@ -17,12 +20,14 @@ import datetime as dt
 import hashlib
 import json
 import logging
+import math
 import os
 import re
 import shutil
 import subprocess
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Tuple
+from urllib.parse import urlparse
 
 from . import gcal, macos
 from .config import ASSETS_DIR, parse_hhmm
@@ -48,7 +53,10 @@ SECRETS = [
 ]
 MAX_FILE_MB = 25
 WORDS_HEADING = "## In my words"
+NO_NOTES_HEADING = "## Without notes"
+NO_NOTES_MIN_WORDS = 200
 PLACEHOLDER = "…"
+WORD = re.compile(r"[^\W_]+(?:['’-][^\W_]+)*")
 
 
 class LearnError(RuntimeError):
@@ -87,6 +95,21 @@ def next_topic(topic_id: Optional[str]) -> Optional[Dict[str, Any]]:
 
 def project(n: int) -> Dict[str, Any]:
     return next(p for p in curriculum()["projects"] if p["n"] == n)
+
+
+def is_article(t: Dict[str, Any]) -> bool:
+    """The last topic of each project: an article on your site, the project's finish line."""
+    return t.get("artifact") == "article"
+
+
+def topic_mornings(t: Dict[str, Any], attempt: int = 1) -> int:
+    """Mornings a topic gets: its estimate on the first attempt, half of it (rounded up) at minimum scope."""
+    m = max(1, int((t.get("time") or {}).get("mornings", 1)))
+    return m if attempt <= 1 else max(1, math.ceil(m / 2))
+
+
+def minutes(t: Dict[str, Any], part: str, default: int) -> int:
+    return int((t.get("time") or {}).get(part, default))
 
 
 # --------------------------------------------------------------------------- settings and time
@@ -142,8 +165,30 @@ def next_learning_day(date: dt.date, cfg: Dict[str, Any]) -> dt.date:
     return d
 
 
-def deadline_for(date: dt.date, cfg: Dict[str, Any]) -> dt.datetime:
-    return _at(date + dt.timedelta(days=1), drop_time(cfg))
+def learning_days(start: dt.date, mornings: int, cfg: Dict[str, Any]) -> List[dt.date]:
+    """The learning days a topic dropped on `start` covers (rest days are skipped)."""
+    days = [start]
+    for _ in range(max(1, mornings) - 1):
+        days.append(next_learning_day(days[-1], cfg))
+    return days
+
+
+def deadline_for(date: dt.date, cfg: Dict[str, Any], mornings: int = 1) -> dt.datetime:
+    """The drop after the topic's last morning."""
+    return _at(learning_days(date, mornings, cfg)[-1] + dt.timedelta(days=1), drop_time(cfg))
+
+
+def morning_of(cur: Dict[str, Any], date: dt.date, cfg: Dict[str, Any]) -> Tuple[int, int]:
+    """(k, n): `date` is morning k of the n mornings the open topic has (k is capped at n)."""
+    n = max(1, int(cur.get("mornings", 1)))
+    if not cur.get("dropped_on"):
+        return 1, n
+    days = learning_days(dt.date.fromisoformat(cur["dropped_on"]), n, cfg)
+    return min(n, sum(1 for d in days if d <= date) or 1), n
+
+
+def _morning_label(k: int, n: int) -> str:
+    return f"morning {k} of {n}" if n > 1 else ""
 
 
 def _fmt(t: dt.datetime) -> str:
@@ -166,16 +211,28 @@ def save_progress(cfg: Dict[str, Any], progress: Dict[str, Any]) -> Path:
 
 
 def streak(progress: Dict[str, Any], cfg: Dict[str, Any], on: dt.date) -> int:
-    """Consecutive learning days (rest days skipped) whose topic shipped."""
-    shipped_days = {e["dropped_on"] for e in progress.get("log", []) if e.get("status") in SHIPPED}
+    """Consecutive learning days (rest days skipped) covered by a shipped topic. A topic covers the mornings
+    it was given up to the day it shipped; the mornings of the topic still open do not break the streak."""
+    covered = set()
+    for e in progress.get("log", []):
+        if e.get("status") not in SHIPPED or not e.get("dropped_on"):
+            continue
+        last = learning_date(dt.datetime.fromisoformat(e["shipped_at"]), cfg) if e.get("shipped_at") else None
+        for d in learning_days(dt.date.fromisoformat(e["dropped_on"]), int(e.get("mornings", 1)), cfg):
+            if last is None or d <= last:
+                covered.add(d)
+        if last is not None:
+            covered.add(max(last, dt.date.fromisoformat(e["dropped_on"])))
     cur = progress.get("current") or {}
-    d = on if (cur.get("dropped_on") == on.isoformat() and cur.get("shipped_at")) else on - dt.timedelta(days=1)
-    count = 0
-    for _ in range(400):
-        if is_rest_day(d, cfg):
+    still_open = set()
+    if cur.get("dropped_on") and not cur.get("shipped_at"):
+        still_open = set(learning_days(dt.date.fromisoformat(cur["dropped_on"]), int(cur.get("mornings", 1)), cfg))
+    d, count = on, 0
+    for _ in range(800):
+        if is_rest_day(d, cfg) or (d not in covered and (d == on or d in still_open)):
             d -= dt.timedelta(days=1)
             continue
-        if d.isoformat() not in shipped_days:
+        if d not in covered:
             break
         count += 1
         d -= dt.timedelta(days=1)
@@ -255,29 +312,56 @@ def web_link(cfg: Dict[str, Any], rel: str) -> str:
 
 # --------------------------------------------------------------------------- texts
 
+def time_line(t: Dict[str, Any], attempt: int = 1) -> str:
+    n = topic_mornings(t, attempt)
+    total = minutes(t, "total", 70)
+    if attempt > 1:
+        return f"**Time:** minimum scope, {n} morning{'s' if n > 1 else ''} (about {total} minutes for the full topic)"
+    return f"**Time:** about {total} minutes, over {n} morning{'s' if n > 1 else ''}"
+
+
+def article_site(cfg: Optional[Dict[str, Any]] = None) -> str:
+    return str(section(cfg or {}).get("article_site") or "rajc.work").strip().lower()
+
+
+def ship_command(t: Dict[str, Any], cfg: Optional[Dict[str, Any]] = None) -> str:
+    if is_article(t):
+        return f"fde-coach learn done --article https://{article_site(cfg)}/blog/…"
+    return "fde-coach learn done --video https://youtu.be/…"
+
+
 def task_markdown(t: Dict[str, Any], attempt: int = 1) -> str:
     p = project(t["project"])
-    lines = [f"> **First-principles question:** {t['question']}", "", f"**Why it matters for an FDE:** {t['why']}", ""]
+    lines = [f"> **First-principles question:** {t['question']}", "", f"**Why it matters for an FDE:** {t['why']}", "",
+             time_line(t, attempt), ""]
     if attempt > 1:
         lines += [f"**Attempt {attempt}: minimum scope.** Ship at least this: {t['minimum']}", ""]
     if t.get("setup"):
         lines += ["### Set up", *[f"- {s}" for s in t["setup"]], ""]
-    lines += ["### 1 · Learn (about 20 minutes)"]
+    lines += [f"### 1 · Learn (about {minutes(t, 'learn', 20)} minutes)"]
     lines += [f"- [{x['title']}]({x['url']}) · {x['minutes']} min. {x['how']}" for x in t["learn"]]
     if t.get("math"):
         lines += ["", f"**Maths you need today: {t['math']['idea']}.** {t['math']['plain']}"]
-    lines += ["", "### 2 · Build (about 40 minutes)", *[f"{i}. {s}" for i, s in enumerate(t["build"], 1)]]
+    build = "Write and publish" if is_article(t) else "Build"
+    lines += ["", f"### 2 · {build} (about {minutes(t, 'build', 40)} minutes)",
+              *[f"{i}. {s}" for i, s in enumerate(t["build"], 1)]]
     if "notebook.ipynb" in t.get("starter", []):
         lines += ["", "Your starter notebook is `notebook.ipynb` in this folder: fill in the **TODO** cells and run the "
                       "✅ self-check at the end."]
+    if is_article(t):
+        lines += ["", "Your starter is `article.md` in this folder: Hugo front matter plus a skeleton. Copy it into "
+                      "your site when it is ready."]
+    record = "3 · Record (optional for an article)" if is_article(t) else "3 · Record (5 minutes or less)"
     lines += ["", "### Done when", *[f"- [ ] {s}" for s in t["done_when"]],
-              "", "### 3 · Record (5 minutes or less)", *[f"- {s}" for s in t["record"]],
+              "", f"### {record}", *[f"- {s}" for s in t["record"]],
               "", f"_Tempted to do more? Park it in `later.md`: {t['parking']}_",
               "", f"<sub>Project {p['n']} · {p['title']}: {p['goal']}</sub>"]
     return "\n".join(lines)
 
 
 def topic_readme(t: Dict[str, Any], dropped_on: dt.date, deadline: dt.datetime, attempt: int) -> str:
+    if is_article(t):
+        return article_readme(t, dropped_on, deadline, attempt)
     return f"""# Day {t['day']} · {t['title']}
 
 <!-- learn:status -->
@@ -308,9 +392,40 @@ _Added when you ship._
 """
 
 
+def article_readme(t: Dict[str, Any], dropped_on: dt.date, deadline: dt.datetime, attempt: int) -> str:
+    return f"""# Day {t['day']} · {t['title']}
+
+<!-- learn:status -->
+{status_block(t, 'open', attempt, dropped_on, deadline)}
+<!-- /learn:status -->
+
+{task_markdown(t, attempt)}
+
+{NO_NOTES_HEADING}
+<!-- Step 1, before you open any notebook: about 300 words from memory. What you built, what you measured,
+     what surprised you. No notes, no AI. Whatever you can't write is what to revisit. -->
+{PLACEHOLDER}
+
+## How I used AI
+{PLACEHOLDER}
+
+## The article
+<!-- learn:article -->
+_Added when you ship._
+<!-- /learn:article -->
+
+## Video
+<!-- learn:video -->
+_Optional for an article._
+<!-- /learn:video -->
+"""
+
+
 def status_block(t: Dict[str, Any], status: str, attempt: int, dropped_on: dt.date, deadline: dt.datetime,
-                 shipped_at: str = "") -> str:
+                 shipped_at: str = "", morning: Tuple[int, int] = (1, 1)) -> str:
     head = f"**Status:** {ICON.get(status, '')} {status}"
+    if status == "open" and morning[1] > 1:
+        head += f" · {_morning_label(*morning)}"
     if attempt > 1:
         head += f" · attempt {attempt}"
     head += f" · dropped {dropped_on.isoformat()} · ship by {_fmt(deadline)}"
@@ -336,20 +451,60 @@ def video_block(url: str) -> str:
     return f"[Watch the video]({url})" if url else "_No video for this one._"
 
 
+def article_block(url: str) -> str:
+    return f"📝 **Published:** [{url}]({url})" if url else "_Not published yet._"
+
+
+def article_url_problem(url: str, cfg: Dict[str, Any]) -> str:
+    """'' if the link is a page on your site, otherwise what is wrong with it."""
+    site = article_site(cfg)
+    parsed = urlparse(url or "")
+    host = (parsed.hostname or "").lower()
+    if parsed.scheme != "https" or not host:
+        return f"{url} is not an https link"
+    if host != site and not host.endswith("." + site):
+        return f"{url} is not on {site} (the article must be published on your site)"
+    if parsed.path.strip("/") == "":
+        return f"{url} is the home page: give the article's own link"
+    return ""
+
+
+def count_words(text: str) -> int:
+    return len(WORD.findall(text or ""))
+
+
+def article_body(text: str) -> str:
+    """The article without front matter, comments, placeholders and markdown links' targets."""
+    text = text or ""
+    m = re.match(r"^(---|\+\+\+)\s*\n.*?\n\1\s*\n", text, re.S)
+    if m:
+        text = text[m.end():]
+    text = re.sub(r"<!--.*?-->", " ", text, flags=re.S)
+    text = re.sub(r"\]\([^)]*\)", "]", text)          # keep link text, drop URLs
+    return text.replace(PLACEHOLDER, " ")
+
+
+def section_text(readme_text: str, heading: str) -> str:
+    part = readme_text.split(heading, 1)[1] if heading in readme_text else ""
+    part = part.split("\n## ", 1)[0]
+    return re.sub(r"<!--.*?-->", "", part, flags=re.S).replace(PLACEHOLDER, " ")
+
+
 # --------------------------------------------------------------------------- track files
 
 TRACK_README = """# FDE First Principles
 
-A public learning log. Every morning one topic drops at 06:00 (IST). Within 24 hours I learn it, build it
-(a notebook, code or an Excalidraw diagram) and explain it on video. The goal: understand AI systems from first
-principles, the way a Forward Deployed Engineer needs to: measure before believing, know what is inside the
-model, and recommend the simplest design the evidence supports.
+A public learning log. A topic drops in the morning at 06:00 (IST) and gets one to three mornings, depending on
+its size. I learn it, build it (a notebook, code or an Excalidraw diagram) and explain it on video. Each project
+ends with an article on my site. The goal: understand AI systems from first principles, the way a Forward
+Deployed Engineer needs to: measure before believing, know what is inside the model, and recommend the simplest
+design the evidence supports.
 
-Six projects, {n} daily topics: {projects}.
+Six projects, {n} topics: {projects}.
 
-Maths shows up only on the day a project needs it. Everything runs on my own Mac (Ollama), so it costs nothing.
-The daily drop, deadlines and this table are managed by
-[fde-coach learn](https://github.com/rajchampaneriya/fde-impromptu-coach).
+Maths shows up only on the day a project needs it. Almost everything runs on my own Mac (Ollama) for free; one
+final evaluation uses a stronger model under a hard spending cap. The drops, deadlines and this table are managed
+by [fde-coach learn](https://github.com/rajchampaneriya/fde-impromptu-coach).
 
 ## Progress
 <!-- learn:progress -->
@@ -416,7 +571,7 @@ def _hash(path: Path) -> str:
 
 
 def prepare_topic(cfg: Dict[str, Any], t: Dict[str, Any], dropped_on: dt.date, deadline: dt.datetime,
-                  attempt: int) -> Tuple[List[Path], Dict[str, str]]:
+                  attempt: int, mornings: int = 1) -> Tuple[List[Path], Dict[str, str]]:
     """Create the topic folder (README + starter files). Never overwrites your work."""
     track = track_dir(cfg)
     folder = track / t["folder"]
@@ -435,14 +590,20 @@ def prepare_topic(cfg: Dict[str, Any], t: Dict[str, Any], dropped_on: dt.date, d
             written.append(dst)
         hashes[key] = _hash(src)
     readme = folder / "README.md"
+    morning = (1, max(1, mornings))
     if not readme.exists():
         readme.write_text(topic_readme(t, dropped_on, deadline, attempt), encoding="utf-8")
-    else:
-        text = readme.read_text(encoding="utf-8")
-        readme.write_text(_replace_block(text, "status", status_block(t, "open", attempt, dropped_on, deadline)),
-                          encoding="utf-8")
+    text = readme.read_text(encoding="utf-8")
+    readme.write_text(_replace_block(text, "status", status_block(t, "open", attempt, dropped_on, deadline,
+                                                                   morning=morning)), encoding="utf-8")
     written.append(readme)
     return written, hashes
+
+
+def next_drop_day(cur: Dict[str, Any], cfg: Dict[str, Any]) -> dt.date:
+    """When the topic after a shipped one drops: the learning day after the day it shipped."""
+    shipped = learning_date(dt.datetime.fromisoformat(cur["shipped_at"]), cfg) if cur.get("shipped_at") else None
+    return next_learning_day(shipped or dt.date.fromisoformat(cur["dropped_on"]), cfg)
 
 
 def write_today(cfg: Dict[str, Any], progress: Dict[str, Any], note: str = "") -> Path:
@@ -458,17 +619,23 @@ def write_today(cfg: Dict[str, Any], progress: Dict[str, Any], note: str = "") -
         deadline = dt.datetime.fromisoformat(cur["deadline"])
         if cur.get("shipped_at"):
             nxt = next_topic(t["id"])
-            nxt_day = next_learning_day(dt.date.fromisoformat(cur["dropped_on"]), cfg)
+            nxt_day = next_drop_day(cur, cfg)
             body = (f"# Today: shipped {ICON[cur.get('status', 'shipped')]}\n\nDay {t['day']} · "
                     f"[{t['title']}]({t['folder']}/README.md) is {cur.get('status', 'shipped')}.\n\n"
                     + (f"Next: **Day {nxt['day']} · {nxt['title']}** drops {DAYS[nxt_day.weekday()]} "
-                       f"{nxt_day.isoformat()} at {drop_time(cfg)}." if nxt else "That was the last topic. 🎉"))
+                       f"{nxt_day.isoformat()} at {drop_time(cfg)}. Time left today? `fde-coach learn next` "
+                       f"starts it now." if nxt else "That was the last topic. 🎉"))
         else:
+            today = learning_date(now(), cfg)
+            k, n = morning_of(cur, max(today, dt.date.fromisoformat(cur["dropped_on"])), cfg)
+            label = f" · **{_morning_label(k, n)}**" if n > 1 else ""
+            partial = ("An article ships only when it is live (it is the project's finish line)." if is_article(t)
+                       else "Partial work can ship too (`--partial`).")
             body = (f"# Today · Day {t['day']} of {len(topics())}: {t['title']}\n\n"
-                    f"**Ship by {_fmt(deadline)}** · folder: [{t['folder']}]({t['folder']}/README.md)\n\n"
+                    f"**Ship by {_fmt(deadline)}**{label} · folder: [{t['folder']}]({t['folder']}/README.md)\n\n"
                     + task_markdown(t, int(cur.get("attempt", 1))) +
-                    "\n\n### Ship it\n```\nfde-coach learn done --video https://youtu.be/…\n```\n"
-                    "or tell Claude Code: *ship today's topic*. Partial work can ship too (`--partial`).")
+                    f"\n\n### Ship it\n```\n{ship_command(t, cfg)}\n```\n"
+                    f"or tell Claude Code: *ship today's topic*. {partial}")
     path.write_text(body + "\n", encoding="utf-8")
     return path
 
@@ -477,16 +644,17 @@ def write_track_readme(cfg: Dict[str, Any], progress: Dict[str, Any]) -> Path:
     path = track_dir(cfg) / "README.md"
     if not path.exists():
         ensure_track_files(cfg)
-    rows = ["| Day | Date | Topic | Video | Status |", "|---|---|---|---|---|"]
+    rows = ["| Day | Date | Topic | Proof | Status |", "|---|---|---|---|---|"]
     entries = list(progress.get("log", []))
     cur = progress.get("current")
     if cur and not cur.get("shipped_at"):
         entries.append(dict(cur, status="open"))
     for e in entries:
         t = topic(e["topic_id"])
-        video = f"[▶]({e['video']})" if e.get("video") else ""
+        proof = " ".join(([f"[📝]({e['article']})"] if e.get("article") else [])
+                         + ([f"[▶]({e['video']})"] if e.get("video") else []))
         attempt = f" (attempt {e['attempt']})" if int(e.get("attempt", 1)) > 1 else ""
-        rows.append(f"| {t['day']} | {e['dropped_on']} | [{t['title']}]({t['folder']}/README.md){attempt} | {video} | "
+        rows.append(f"| {t['day']} | {e['dropped_on']} | [{t['title']}]({t['folder']}/README.md){attempt} | {proof} | "
                     f"{ICON.get(e['status'], '')} {e['status']} |")
     shipped = sum(1 for e in progress.get("log", []) if e.get("status") in SHIPPED)
     rows.append("")
@@ -541,8 +709,24 @@ def init(ctx, repo: Path, start: str = "tomorrow", track: str = "") -> List[str]
     return out_lines
 
 
-def drop(ctx, scheduled: bool = False) -> Dict[str, Any]:
-    """The morning drop. Safe to run any number of times: it only acts once per learning day."""
+def _still_open(cur: Optional[Dict[str, Any]], t_now: dt.datetime) -> bool:
+    """An unshipped topic whose deadline has not passed yet (it has more mornings to go)."""
+    return bool(cur and cur.get("dropped_on") and not cur.get("shipped_at") and cur.get("deadline")
+                and t_now < dt.datetime.fromisoformat(cur["deadline"]))
+
+
+def _shipped_on(cur: Optional[Dict[str, Any]], cfg: Dict[str, Any]) -> Optional[dt.date]:
+    if cur and cur.get("shipped_at"):
+        return learning_date(dt.datetime.fromisoformat(cur["shipped_at"]), cfg)
+    return None
+
+
+def drop(ctx, scheduled: bool = False, early: bool = False) -> Dict[str, Any]:
+    """The morning drop. Safe to run any number of times: it only acts once per learning day.
+
+    A topic with more than one morning stays open until its deadline; on its later mornings the drop only
+    refreshes TODAY.md, the README status and the calendar. With `early=True` (`fde-coach learn next`) the
+    next topic drops straight away once the current one has shipped, instead of at the next morning drop."""
     cfg = ctx.cfg
     if not section(cfg).get("enabled", True):
         return {"ok": True, "skipped": "learn.enabled is false"}
@@ -553,7 +737,12 @@ def drop(ctx, scheduled: bool = False) -> Dict[str, Any]:
         today = learning_date(t_now, cfg)
         progress = load_progress(cfg)
         cur = progress.get("current")
-        if cur and cur["dropped_on"] == today.isoformat():
+        if early:
+            if cur and not cur.get("shipped_at"):
+                t = topic(cur["topic_id"])
+                raise LearnError(f"Day {t['day']} · {t['title']} is still open. Ship it first: {ship_command(t, cfg)}")
+        elif cur and (cur["dropped_on"] == today.isoformat() or _shipped_on(cur, cfg) == today
+                      or (_still_open(cur, t_now) and cur.get("seen_on") == today.isoformat())):
             return {"ok": True, "already": True, "topic": cur["topic_id"]}
         if progress.get("paused_until") and today.isoformat() < progress["paused_until"]:
             return {"ok": True, "skipped": f"paused until {progress['paused_until']}"}
@@ -564,51 +753,81 @@ def drop(ctx, scheduled: bool = False) -> Dict[str, Any]:
             progress.pop("paused_until")
             if progress.get("resume_topic") and not cur:
                 cur = {"topic_id": progress.pop("resume_topic"), "dropped_on": "", "attempt": 0, "resume": True}
-        if is_rest_day(today, cfg):
+        if is_rest_day(today, cfg) and not early:
             note = "# Today: rest day 🌿\n\nNo new topic today."
-            if cur and not cur.get("shipped_at"):
+            if cur and not cur.get("shipped_at") and not cur.get("resume"):
                 t = topic(cur["topic_id"])
-                note += (f" Your open topic, Day {t['day']} · {t['title']}, is past its deadline: ship it today if "
-                         f"you like (`fde-coach learn done`), otherwise it returns tomorrow at minimum scope.")
+                if _still_open(cur, t_now):
+                    note += (f" Your open topic, Day {t['day']} · {t['title']}, is due "
+                             f"{_fmt(dt.datetime.fromisoformat(cur['deadline']))}: no rush today.")
+                else:
+                    note += (f" Your open topic, Day {t['day']} · {t['title']}, is past its deadline: ship it today "
+                             f"if you like (`fde-coach learn done`), otherwise it returns tomorrow at minimum scope.")
             paths = [write_today(cfg, progress, note)]
             commit(cfg, paths, f"learn: rest day {today.isoformat()}")
             push(ctx)
             return {"ok": True, "rest_day": True}
-        written: List[Path] = []
-        if cur is None:
-            nxt, attempt = next_topic(None), 1
-        elif cur.get("resume"):
-            nxt, attempt = topic(cur["topic_id"]), 1
-        elif cur.get("shipped_at"):
-            nxt, attempt = next_topic(cur["topic_id"]), 1
-        else:
-            progress.setdefault("log", []).append({"topic_id": cur["topic_id"], "dropped_on": cur["dropped_on"],
-                                                   "attempt": cur.get("attempt", 1), "status": "missed"})
-            nxt, attempt = topic(cur["topic_id"]), int(cur.get("attempt", 1)) + 1
-        if nxt is None:
+        if _still_open(cur, t_now) and not cur.get("resume"):
+            # a later morning of a multi-morning topic: nothing is missed, nothing new drops
+            t = topic(cur["topic_id"])
+            cur["seen_on"] = today.isoformat()
             progress["current"] = cur
-            note = "# Track complete 🎉\n\nAll topics are shipped. Start your next track whenever you are ready."
-            paths = [save_progress(cfg, progress), write_today(cfg, progress, note), write_track_readme(cfg, progress)]
-            commit(cfg, paths, "learn: track complete")
-            push(ctx)
-            return {"ok": True, "complete": True}
-        deadline = deadline_for(today, cfg)
-        files, hashes = prepare_topic(cfg, nxt, today, deadline, attempt)
-        written += files
-        progress["current"] = {"topic_id": nxt["id"], "folder": nxt["folder"], "dropped_on": today.isoformat(),
-                               "deadline": deadline.isoformat(timespec="minutes"), "attempt": attempt,
-                               "starter_hashes": hashes}
-        written += [save_progress(cfg, progress), write_today(cfg, progress), write_track_readme(cfg, progress)]
-        label = f"Day {nxt['day']} · {nxt['title']}" + (f" (attempt {attempt})" if attempt > 1 else "")
-        commit(cfg, written, f"learn: drop {label}")
-        pushed = push(ctx)
+            k, n = morning_of(cur, today, cfg)
+            deadline = dt.datetime.fromisoformat(cur["deadline"])
+            attempt = int(cur.get("attempt", 1))
+            paths = [save_progress(cfg, progress), write_today(cfg, progress), write_track_readme(cfg, progress)]
+            readme = track_dir(cfg) / t["folder"] / "README.md"
+            if readme.exists():
+                readme.write_text(_replace_block(readme.read_text(encoding="utf-8"), "status", status_block(
+                    t, "open", attempt, dt.date.fromisoformat(cur["dropped_on"]), deadline, morning=(k, n))),
+                    encoding="utf-8")
+                paths.append(readme)
+            label = f"Day {t['day']} · {t['title']} ({_morning_label(k, n)})"
+            commit(cfg, paths, f"learn: {label}")
+            pushed = push(ctx)
+            result = {"ok": True, "continuing": True, "topic": t["id"], "title": t["title"], "day": t["day"],
+                      "attempt": attempt, "morning": k, "mornings": n,
+                      "deadline": cur["deadline"], "folder": str(track_dir(cfg) / t["folder"]), "push": pushed}
+            nxt = t
+        else:
+            if cur is None:
+                nxt, attempt = next_topic(None), 1
+            elif cur.get("resume"):
+                nxt, attempt = topic(cur["topic_id"]), 1
+            elif cur.get("shipped_at"):
+                nxt, attempt = next_topic(cur["topic_id"]), 1
+            else:
+                progress.setdefault("log", []).append({"topic_id": cur["topic_id"], "dropped_on": cur["dropped_on"],
+                                                       "attempt": cur.get("attempt", 1),
+                                                       "mornings": cur.get("mornings", 1), "status": "missed"})
+                nxt, attempt = topic(cur["topic_id"]), int(cur.get("attempt", 1)) + 1
+            if nxt is None:
+                progress["current"] = cur
+                note = "# Track complete 🎉\n\nAll topics are shipped. Start your next track whenever you are ready."
+                paths = [save_progress(cfg, progress), write_today(cfg, progress, note),
+                         write_track_readme(cfg, progress)]
+                commit(cfg, paths, "learn: track complete")
+                push(ctx)
+                return {"ok": True, "complete": True}
+            mornings = topic_mornings(nxt, attempt)
+            deadline = deadline_for(today, cfg, mornings)
+            files, hashes = prepare_topic(cfg, nxt, today, deadline, attempt, mornings)
+            progress["current"] = {"topic_id": nxt["id"], "folder": nxt["folder"], "dropped_on": today.isoformat(),
+                                   "seen_on": today.isoformat(), "deadline": deadline.isoformat(timespec="minutes"),
+                                   "attempt": attempt, "mornings": mornings, "starter_hashes": hashes}
+            written = files + [save_progress(cfg, progress), write_today(cfg, progress),
+                               write_track_readme(cfg, progress)]
+            label = f"Day {nxt['day']} · {nxt['title']}" + (f" (attempt {attempt})" if attempt > 1 else "")
+            commit(cfg, written, f"learn: drop {label}")
+            pushed = push(ctx)
+            result = {"ok": True, "topic": nxt["id"], "title": nxt["title"], "day": nxt["day"], "attempt": attempt,
+                      "mornings": mornings, "deadline": deadline.isoformat(timespec="minutes"),
+                      "folder": str(track_dir(cfg) / nxt["folder"]), "push": pushed}
     calendar_sync_safe(ctx)
-    macos.notify(f"📘 {label}", f"Ship by {_fmt(deadline)}. Ask Claude: what's today's topic?",
-                 subtitle=nxt["question"][:90])
-    log.info("learn: dropped %s (%s)", nxt["id"], pushed)
-    return {"ok": True, "topic": nxt["id"], "title": nxt["title"], "day": nxt["day"], "attempt": attempt,
-            "deadline": deadline.isoformat(timespec="minutes"), "folder": str(track_dir(cfg) / nxt["folder"]),
-            "push": pushed}
+    when = f"Ship by {_fmt(deadline)}" + (f" ({result['mornings']} mornings)" if result["mornings"] > 1 else "")
+    macos.notify(f"📘 {label}", f"{when}. Ask Claude: what's today's topic?", subtitle=nxt["question"][:90])
+    log.info("learn: %s %s (%s)", "continuing" if result.get("continuing") else "dropped", nxt["id"], pushed)
+    return result
 
 
 def words_filled(readme_text: str) -> bool:
@@ -618,7 +837,7 @@ def words_filled(readme_text: str) -> bool:
     return bool(lines) and all(ln.split(":**", 1)[-1].strip() not in ("", PLACEHOLDER) for ln in lines)
 
 
-def missing_items(cfg: Dict[str, Any], cur: Dict[str, Any], video: str) -> List[str]:
+def missing_items(cfg: Dict[str, Any], cur: Dict[str, Any], video: str, article: str = "") -> List[str]:
     t = topic(cur["topic_id"])
     track = track_dir(cfg)
     folder = track / t["folder"]
@@ -635,7 +854,27 @@ def missing_items(cfg: Dict[str, Any], cur: Dict[str, Any], video: str) -> List[
         if starter_hash and all(_hash(m) == starter_hash for m in found):
             missing.append(f"{pattern} is still the untouched starter: do the TODOs first")
     readme = folder / "README.md"
-    if not readme.exists() or not words_filled(readme.read_text(encoding="utf-8")):
+    readme_text = readme.read_text(encoding="utf-8") if readme.exists() else ""
+    if is_article(t):
+        notes = count_words(section_text(readme_text, NO_NOTES_HEADING))
+        if notes < NO_NOTES_MIN_WORDS:
+            missing.append(f"README.md → 'Without notes': about 300 words from memory ({notes} so far, "
+                           f"{NO_NOTES_MIN_WORDS} at least)")
+        draft = folder / "article.md"
+        if draft.exists():
+            words, floor = count_words(article_body(draft.read_text(encoding="utf-8"))), int(t.get("min_words", 500))
+            if words < floor:
+                missing.append(f"article.md has {words} words: the minimum is {floor}")
+        if not article:
+            missing.append(f"the live article link (--article https://{article_site(cfg)}/blog/…)")
+        else:
+            problem = article_url_problem(article, cfg)
+            if problem:
+                missing.append(problem)
+        if video and not video_id(video):
+            missing.append(f"{video} does not look like a YouTube link")
+        return missing
+    if not words_filled(readme_text):
         missing.append("README.md → 'In my words': fill in the three explanations")
     if not video:
         missing.append("a video link (--video https://youtu.be/…)")
@@ -675,7 +914,10 @@ def changed_files(cfg: Dict[str, Any]) -> List[Path]:
     return files
 
 
-def ship(ctx, video: str = "", partial: bool = False, note: str = "") -> Dict[str, Any]:
+def ship(ctx, video: str = "", partial: bool = False, note: str = "", article: str = "",
+         no_video: bool = False) -> Dict[str, Any]:
+    """Ship the open topic. An article topic needs its live link (`article`) and cannot ship partial: it is the
+    project's finish line. `no_video` ships any other topic without a video, labelled partial."""
     cfg = ctx.cfg
     with file_lock(ctx.paths, "learn", blocking=True):
         progress = load_progress(cfg)
@@ -683,13 +925,20 @@ def ship(ctx, video: str = "", partial: bool = False, note: str = "") -> Dict[st
         if not cur:
             raise LearnError("Nothing to ship: no topic has dropped yet (fde-coach learn drop).")
         if cur.get("shipped_at"):
-            raise LearnError("Today's topic is already shipped. The next one drops at the next morning drop.")
+            raise LearnError("This topic is already shipped. The next one drops at the next morning drop "
+                             "(or now: fde-coach learn next).")
         t = topic(cur["topic_id"])
-        video = (video or "").strip()
-        missing = missing_items(cfg, cur, video)
+        video, article = (video or "").strip(), (article or "").strip()
+        if is_article(t):
+            if partial:
+                raise LearnError("An article can't ship partial: it is the project's finish line. Publish the "
+                                 f"minimum instead ({t['minimum']}), then: {ship_command(t, cfg)}")
+        else:
+            partial = partial or no_video
+        missing = missing_items(cfg, cur, video, article)
         if missing and not partial:
-            raise LearnError("Not ready to ship yet:\n  - " + "\n  - ".join(missing) +
-                             "\nFinish these, or ship what you have with --partial.")
+            hint = ("Finish these, then ship." if is_article(t) else "Finish these, or ship what you have with --partial.")
+            raise LearnError("Not ready to ship yet:\n  - " + "\n  - ".join(missing) + "\n" + hint)
         if partial and not video and len(missing) >= 3:
             raise LearnError("Nothing to ship yet: add a video link, your explanation or your work first.")
         secrets = scan_secrets(changed_files(cfg))
@@ -705,11 +954,16 @@ def ship(ctx, video: str = "", partial: bool = False, note: str = "") -> Dict[st
         text = _replace_block(text, "status", status_block(t, status, int(cur.get("attempt", 1)),
                                                            dt.date.fromisoformat(cur["dropped_on"]), deadline,
                                                            shipped_at))
-        text = _replace_block(text, "video", video_block(video))
+        text = _replace_block(text, "video", video_block(video) if video or not is_article(t)
+                              else "_No video for this one._")
+        if is_article(t):
+            text = _replace_block(text, "article", article_block(article))
         readme.write_text(text, encoding="utf-8")
         cur.update(shipped_at=shipped_at, status=status, video=video)
         entry = {"topic_id": t["id"], "dropped_on": cur["dropped_on"], "attempt": cur.get("attempt", 1),
-                 "status": status, "shipped_at": shipped_at, "video": video}
+                 "mornings": cur.get("mornings", 1), "status": status, "shipped_at": shipped_at, "video": video}
+        if article:
+            cur["article"] = entry["article"] = article
         if note:
             entry["note"] = note
         if partial and missing:
@@ -722,10 +976,13 @@ def ship(ctx, video: str = "", partial: bool = False, note: str = "") -> Dict[st
         pushed = push(ctx)
     calendar_sync_safe(ctx)
     n = streak(progress, cfg, learning_date(t_now, cfg))
-    macos.notify(f"{ICON[status]} Day {t['day']} {status}", f"{n}-day learning streak. Next topic tomorrow.",
-                 sound="Hero")
+    nxt = next_topic(t["id"])
+    after = ("Project finished. 🎉 " if is_article(t) else "") + (
+        "Next topic at the next drop, or now: fde-coach learn next." if nxt else "Track complete.")
+    macos.notify(f"{ICON[status]} Day {t['day']} {status}", f"{n}-day learning streak. {after}", sound="Hero")
     return {"ok": True, "status": status, "day": t["day"], "title": t["title"], "streak": n, "push": pushed,
-            "missing": missing if partial else [], "link": web_link(cfg, t["folder"])}
+            "missing": missing if partial else [], "link": web_link(cfg, t["folder"]), "article": article,
+            "project_done": is_article(t)}
 
 
 def today_info(ctx) -> Dict[str, Any]:
@@ -741,10 +998,13 @@ def today_info(ctx) -> Dict[str, Any]:
     t = topic(cur["topic_id"])
     deadline = dt.datetime.fromisoformat(cur["deadline"])
     left = deadline - t_now
+    k, n = morning_of(cur, learning_date(t_now, cfg), cfg)
     info.update(state="shipped" if cur.get("shipped_at") else ("overdue" if left.total_seconds() < 0 else "open"),
                 topic=t, attempt=cur.get("attempt", 1), deadline=cur["deadline"],
                 hours_left=round(left.total_seconds() / 3600, 1), folder=str(track_dir(cfg) / t["folder"]),
-                status=cur.get("status", "open"), video=cur.get("video", ""))
+                status=cur.get("status", "open"), video=cur.get("video", ""), article=cur.get("article", ""),
+                morning=k, mornings=n, minutes=minutes(t, "total", 70), is_article=is_article(t),
+                ship_command=ship_command(t, cfg))
     if not cur.get("shipped_at"):
         info["missing_to_ship"] = missing_items(cfg, cur, "")
     return info
@@ -768,9 +1028,12 @@ def status(ctx) -> Dict[str, Any]:
     cur = progress.get("current")
     if cur:
         t = topic(cur["topic_id"])
+        k, n = morning_of(cur, learning_date(now(), cfg), cfg)
         out["current"] = {"day": t["day"], "title": t["title"], "dropped_on": cur["dropped_on"],
                           "deadline": cur["deadline"], "status": cur.get("status", "open"),
-                          "attempt": cur.get("attempt", 1)}
+                          "attempt": cur.get("attempt", 1), "morning": k, "mornings": n}
+    out["projects_done"] = sum(1 for e in progress.get("log", [])
+                               if e.get("status") in SHIPPED and is_article(topic(e["topic_id"])))
     return out
 
 
@@ -807,23 +1070,33 @@ def _event_id(date: dt.date, kind: str) -> str:
     return f"fdelearn{date.strftime('%Y%m%d')}{kind}"
 
 
-def _event_body(cfg: Dict[str, Any], t: Dict[str, Any], date: dt.date, kind: str, attempt: int = 1) -> Dict[str, Any]:
+def _event_body(cfg: Dict[str, Any], t: Dict[str, Any], date: dt.date, kind: str, attempt: int = 1,
+                deadline: Optional[dt.datetime] = None, morning: Tuple[int, int] = (1, 1)) -> Dict[str, Any]:
     sec = section(cfg)
-    deadline = deadline_for(date, cfg)
+    deadline = deadline or deadline_for(date, cfg, topic_mornings(t, attempt))
     link = web_link(cfg, t["folder"])
     if kind == "t":
         start = _at(date, sec.get("event_time", "06:00"))
-        summary = f"📘 Day {t['day']}/{len(topics())} · {t['title']}" + (f" (attempt {attempt})" if attempt > 1 else "")
-        lines = [f"❓ {t['question']}", "", f"WHY: {t['why']}", ""]
+        summary = (f"📘 Day {t['day']}/{len(topics())} · {t['title']}"
+                   + (f" ({_morning_label(*morning)})" if morning[1] > 1 else "")
+                   + (f" (attempt {attempt})" if attempt > 1 else ""))
+        lines = [f"❓ {t['question']}", "", f"WHY: {t['why']}", "",
+                 f"TIME: about {minutes(t, 'total', 70)} min over {topic_mornings(t)} morning(s). "
+                 + (f"Today is {_morning_label(*morning)}." if morning[1] > 1 else ""), ""]
         if attempt > 1:
             lines += [f"MINIMUM TODAY: {t['minimum']}", ""]
-        lines += ["LEARN (~20 min):", *[f"• {x['title']} — {x['url']} ({x['how']})" for x in t["learn"]]]
+        lines += [f"LEARN (~{minutes(t, 'learn', 20)} min):",
+                  *[f"• {x['title']} — {x['url']} ({x['how']})" for x in t["learn"]]]
         if t.get("math"):
             lines += ["", f"MATHS: {t['math']['idea']}. {t['math']['plain']}"]
-        lines += ["", "BUILD (~40 min):", *[f"{i}. {s}" for i, s in enumerate(t["build"], 1)],
+        build = "WRITE AND PUBLISH" if is_article(t) else "BUILD"
+        record = "RECORD (optional)" if is_article(t) else "RECORD (≤ 5 min, 2 takes max)"
+        proof = "<live article link>" if is_article(t) else "<YouTube link>"
+        flag = "--article" if is_article(t) else "--video"
+        lines += ["", f"{build} (~{minutes(t, 'build', 40)} min):", *[f"{i}. {s}" for i, s in enumerate(t["build"], 1)],
                   "", "DONE WHEN:", *[f"☐ {s}" for s in t["done_when"]],
-                  "", "RECORD (≤ 5 min, 2 takes max):", *[f"• {s}" for s in t["record"]],
-                  "", f"SHIP BY {_fmt(deadline)}: fde-coach learn done --video <YouTube link>"]
+                  "", f"{record}:", *[f"• {s}" for s in t["record"]],
+                  "", f"SHIP BY {_fmt(deadline)}: fde-coach learn done {flag} {proof}"]
         if link:
             lines.append(f"Folder: {link}")
         reminders = [{"method": "popup", "minutes": 0}]
@@ -831,13 +1104,14 @@ def _event_body(cfg: Dict[str, Any], t: Dict[str, Any], date: dt.date, kind: str
     else:
         start = _at(date, sec.get("nudge_time", "21:00"))
         summary = f"⏳ Not shipped yet: Day {t['day']} · {t['title']}"
-        lines = [f"Ship by {_fmt(deadline)}. Partial work counts: fde-coach learn done --partial",
-                 "This event disappears as soon as you ship."]
+        how = (f"Publish the minimum, then: {ship_command(t, cfg)}" if is_article(t)
+               else "Partial work counts: fde-coach learn done --partial")
+        lines = [f"Ship by {_fmt(deadline)}. {how}", "This event disappears as soon as you ship."]
         reminders = []
         for hhmm in sec.get("nudge_popups", ["18:00", "21:00"])[:4]:
-            minutes = int((start - _at(date, hhmm)).total_seconds() // 60)
-            if 0 <= minutes <= 40320:
-                reminders.append({"method": "popup", "minutes": minutes})
+            mins = int((start - _at(date, hhmm)).total_seconds() // 60)
+            if 0 <= mins <= 40320:
+                reminders.append({"method": "popup", "minutes": mins})
         color = "11"
     end = start + dt.timedelta(minutes=int(sec.get("event_minutes", 15)))
     return {"id": _event_id(date, kind), "summary": summary, "description": "\n".join(lines)[:7900],
@@ -848,23 +1122,30 @@ def _event_body(cfg: Dict[str, Any], t: Dict[str, Any], date: dt.date, kind: str
 
 
 def wanted_events(cfg: Dict[str, Any], progress: Dict[str, Any], t_now: dt.datetime) -> Dict[str, Optional[Dict]]:
-    """event id -> body (create/update) or None (delete if we created it)."""
+    """event id -> body (create/update) or None (delete if we created it).
+
+    Every morning of the open topic gets its 06:00 event (created the morning it arrives); the evening
+    "not shipped yet" nudge exists only on the topic's last morning."""
     want: Dict[str, Optional[Dict]] = {}
     cur = progress.get("current")
-    if not cur:
+    if not cur or not cur.get("dropped_on"):
         return want
     t = topic(cur["topic_id"])
-    day = dt.date.fromisoformat(cur["dropped_on"])
-    want[_event_id(day, "t")] = _event_body(cfg, t, day, "t", int(cur.get("attempt", 1)))
+    attempt = int(cur.get("attempt", 1))
+    deadline = dt.datetime.fromisoformat(cur["deadline"])
+    day = dt.date.fromisoformat(cur.get("seen_on") or cur["dropped_on"])
+    k, n = morning_of(cur, day, cfg)
+    want[_event_id(day, "t")] = _event_body(cfg, t, day, "t", attempt, deadline, (k, n))
     nudge_at = _at(day, section(cfg).get("nudge_time", "21:00"))
     if cur.get("shipped_at"):
         want[_event_id(day, "n")] = None
         nxt = next_topic(t["id"])
-        nday = next_learning_day(day, cfg)
+        nday = next_drop_day(cur, cfg)
         if nxt and not progress.get("paused_until"):
-            want[_event_id(nday, "t")] = _event_body(cfg, nxt, nday, "t")
-    elif nudge_at > t_now:
-        want[_event_id(day, "n")] = _event_body(cfg, t, day, "n")
+            m = topic_mornings(nxt)
+            want[_event_id(nday, "t")] = _event_body(cfg, nxt, nday, "t", 1, deadline_for(nday, cfg, m), (1, m))
+    elif k == n and nudge_at > t_now:
+        want[_event_id(day, "n")] = _event_body(cfg, t, day, "n", attempt, deadline, (k, n))
     return want
 
 
@@ -928,13 +1209,15 @@ def tick(ctx) -> str:
     today = learning_date(now(), cfg)
     paused = progress.get("paused_until") and today.isoformat() < progress["paused_until"]
     rest_done = is_rest_day(today, cfg) and ctx.runtime().data.get("learn_rest_noted") == today.isoformat()
-    if cur.get("dropped_on") != today.isoformat() and not paused and not rest_done:
+    seen = cur.get("seen_on") or cur.get("dropped_on")
+    shipped_today = _shipped_on(cur, cfg) == today
+    if seen != today.isoformat() and not shipped_today and not paused and not rest_done:
         result = drop(ctx)
         if result.get("rest_day"):
             from .app import update_runtime
             update_runtime(ctx, lambda r: r.data.update(learn_rest_noted=today.isoformat()))
-        if result.get("topic"):
-            return "dropped"
+        if result.get("topic") and not result.get("already"):
+            return "continuing" if result.get("continuing") else "dropped"
     if ctx.runtime().data.get("learn_push_pending"):
         push(ctx)
     calendar_sync_safe(ctx)

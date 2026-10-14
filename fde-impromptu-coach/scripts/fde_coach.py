@@ -697,6 +697,15 @@ def cmd_learn(args) -> int:
             res = learn.drop(ctx, scheduled=args.scheduled)
             _print(res)
             return 0 if res.get("ok") else 1
+        if c == "next":
+            res = learn.drop(ctx, early=True)
+            if res.get("topic") and not res.get("already"):
+                print(f"📘 Day {res['day']} · {res['title']} dropped now · ship by {res['deadline']}"
+                      + (f" ({res['mornings']} mornings)" if res.get("mornings", 1) > 1 else ""))
+                print(f"   {res['folder']}")
+            else:
+                _print(res)
+            return 0 if res.get("ok") else 1
         if c == "today":
             info = learn.today_info(ctx)
             if args.json:
@@ -705,14 +714,19 @@ def cmd_learn(args) -> int:
             today_md = Path(info["today_md"])
             print(today_md.read_text(encoding="utf-8") if today_md.exists() else info.get("state"))
             if info.get("state") in ("open", "overdue"):
-                print(f"\n⏱  {info['hours_left']} hours left · folder: {info['folder']}")
+                morning = (f" · morning {info['morning']} of {info['mornings']}" if info.get("mornings", 1) > 1
+                           else "")
+                print(f"\n⏱  {info['hours_left']} hours left{morning} · folder: {info['folder']}")
                 for item in info.get("missing_to_ship", []):
                     print(f"   still to do: {item}")
             return 0
         if c == "done":
-            res = learn.ship(ctx, video=args.video or "", partial=args.partial or args.no_video, note=args.note or "")
+            res = learn.ship(ctx, video=args.video or "", partial=args.partial, note=args.note or "",
+                             article=args.article or "", no_video=args.no_video)
             print(f"{learn.ICON[res['status']]} Day {res['day']} · {res['title']}: {res['status']} · "
                   f"{res['streak']}-day learning streak · {res['push']}")
+            if res.get("article"):
+                print(f"   📝 {res['article']}" + ("  · project finished 🎉" if res.get("project_done") else ""))
             if res.get("link"):
                 print(f"   {res['link']}")
             for item in res.get("missing", []):
@@ -728,7 +742,9 @@ def cmd_learn(args) -> int:
             cur = st.get("current")
             if cur:
                 print(f"  Day {cur['day']} · {cur['title']} · {cur['status']} · ship by {cur['deadline']}"
+                      + (f" · morning {cur['morning']} of {cur['mornings']}" if cur.get("mornings", 1) > 1 else "")
                       + (f" · attempt {cur['attempt']}" if int(cur['attempt']) > 1 else ""))
+            print(f"  projects finished (article live): {st.get('projects_done', 0)} of 6")
             if st.get("paused_until"):
                 print(f"  paused until {st['paused_until']}")
             if st["push_pending"]:
@@ -893,11 +909,14 @@ def build_parser() -> argparse.ArgumentParser:
     ld = lsub2.add_parser("drop", help="drop today's topic now (the 05:50 agent runs this)")
     ld.add_argument("--scheduled", action="store_true")
     ld.set_defaults(func=cmd_learn)
+    lsub2.add_parser("next", help="finished early? drop the next topic now instead of at the next drop") \
+        .set_defaults(func=cmd_learn)
     lt = lsub2.add_parser("today", help="today's topic, deadline and what is left to ship")
     lt.add_argument("--json", action="store_true")
     lt.set_defaults(func=cmd_learn)
     ldn = lsub2.add_parser("done", help="ship today's topic: commit, push, journal, calendar")
     ldn.add_argument("--video", help="your YouTube link (Unlisted or Public)")
+    ldn.add_argument("--article", help="an article topic: the live link of your article (e.g. on rajc.work)")
     ldn.add_argument("--partial", action="store_true", help="ship what you have, labelled partial")
     ldn.add_argument("--no-video", action="store_true", help="ship without a video (counts as partial)")
     ldn.add_argument("--note")
