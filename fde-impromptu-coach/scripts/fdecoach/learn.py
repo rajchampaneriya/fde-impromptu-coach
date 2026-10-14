@@ -29,7 +29,7 @@ from pathlib import Path
 from typing import Any, Dict, List, Optional, Tuple
 from urllib.parse import urlparse
 
-from . import gcal, macos
+from . import gcal, learn_video, macos
 from .config import ASSETS_DIR, parse_hhmm
 from .state import file_lock, now
 
@@ -444,8 +444,11 @@ def video_id(url: str) -> str:
     return m.group(4) if m else ""
 
 
-def video_block(url: str) -> str:
+def video_block(url: str, thumb: str = "") -> str:
+    """The README's video: your blue title card (video/thumbnail.png) when there is one, else YouTube's frame."""
     vid = video_id(url)
+    if vid and thumb:
+        return f"[![Watch the video]({thumb})]({url})"
     if vid:
         return f"[![Watch the video](https://img.youtube.com/vi/{vid}/hqdefault.jpg)]({url})"
     return f"[Watch the video]({url})" if url else "_No video for this one._"
@@ -630,7 +633,9 @@ def write_today(cfg: Dict[str, Any], progress: Dict[str, Any], note: str = "") -
             k, n = morning_of(cur, max(today, dt.date.fromisoformat(cur["dropped_on"])), cfg)
             label = f" · **{_morning_label(k, n)}**" if n > 1 else ""
             partial = ("An article ships only when it is live (it is the project's finish line)." if is_article(t)
-                       else "Partial work can ship too (`--partial`).")
+                       else "Partial work can ship too (`--partial`).\n\nUpload the video as Unlisted with any "
+                            "title: when you ship, the coach sets its title, description and blue title-card "
+                            "thumbnail on YouTube. Want them while you upload? `fde-coach learn video`.")
             body = (f"# Today · Day {t['day']} of {len(topics())}: {t['title']}\n\n"
                     f"**Ship by {_fmt(deadline)}**{label} · folder: [{t['folder']}]({t['folder']}/README.md)\n\n"
                     + task_markdown(t, int(cur.get("attempt", 1))) +
@@ -949,16 +954,7 @@ def ship(ctx, video: str = "", partial: bool = False, note: str = "", article: s
         status = "partial" if partial else ("shipped" if t_now <= deadline else "late")
         folder = track_dir(cfg) / t["folder"]
         readme = folder / "README.md"
-        text = readme.read_text(encoding="utf-8")
         shipped_at = t_now.isoformat(timespec="minutes")
-        text = _replace_block(text, "status", status_block(t, status, int(cur.get("attempt", 1)),
-                                                           dt.date.fromisoformat(cur["dropped_on"]), deadline,
-                                                           shipped_at))
-        text = _replace_block(text, "video", video_block(video) if video or not is_article(t)
-                              else "_No video for this one._")
-        if is_article(t):
-            text = _replace_block(text, "article", article_block(article))
-        readme.write_text(text, encoding="utf-8")
         cur.update(shipped_at=shipped_at, status=status, video=video)
         entry = {"topic_id": t["id"], "dropped_on": cur["dropped_on"], "attempt": cur.get("attempt", 1),
                  "mornings": cur.get("mornings", 1), "status": status, "shipped_at": shipped_at, "video": video}
@@ -969,20 +965,204 @@ def ship(ctx, video: str = "", partial: bool = False, note: str = "", article: s
         if partial and missing:
             entry["missing"] = missing
         progress.setdefault("log", []).append(entry)
+        n = streak(progress, cfg, learning_date(t_now, cfg))
+        details = _video_details_safe(cfg, progress, t, article=article, streak_now=n) if video_id(video) else None
+        text = readme.read_text(encoding="utf-8")
+        text = _replace_block(text, "status", status_block(t, status, int(cur.get("attempt", 1)),
+                                                           dt.date.fromisoformat(cur["dropped_on"]), deadline,
+                                                           shipped_at))
+        text = _replace_block(text, "video", video_block(video, _thumb_rel(details)) if video or not is_article(t)
+                              else "_No video for this one._")
+        if is_article(t):
+            text = _replace_block(text, "article", article_block(article))
+        readme.write_text(text, encoding="utf-8")
         save_progress(cfg, progress)
         write_today(cfg, progress)
         write_track_readme(cfg, progress)
         commit(cfg, [track_dir(cfg)], f"learn: {status} Day {t['day']} · {t['title']}")
         pushed = push(ctx)
+        if details:
+            _queue_video(ctx, t, video, details)
     calendar_sync_safe(ctx)
-    n = streak(progress, cfg, learning_date(t_now, cfg))
+    yt = video_sync_safe(ctx, only=[t["id"]]) if details else []
     nxt = next_topic(t["id"])
     after = ("Project finished. 🎉 " if is_article(t) else "") + (
         "Next topic at the next drop, or now: fde-coach learn next." if nxt else "Track complete.")
     macos.notify(f"{ICON[status]} Day {t['day']} {status}", f"{n}-day learning streak. {after}", sound="Hero")
     return {"ok": True, "status": status, "day": t["day"], "title": t["title"], "streak": n, "push": pushed,
             "missing": missing if partial else [], "link": web_link(cfg, t["folder"]), "article": article,
-            "project_done": is_article(t)}
+            "project_done": is_article(t), "youtube": yt}
+
+
+# --------------------------------------------------------------------------- YouTube details for your videos
+
+VIDEO_MAX_ATTEMPTS = 6
+
+
+def _thumb_rel(details: Optional[Dict[str, Any]]) -> str:
+    return f"{learn_video.VIDEO_DIR}/{learn_video.THUMBNAIL}" if details and details.get("thumbnail") else ""
+
+
+def _previous_video(progress: Dict[str, Any], t: Dict[str, Any]) -> Optional[Dict[str, Any]]:
+    """The latest shipped video of an earlier topic, for 'Previous:' in the description."""
+    order = {x["id"]: i for i, x in enumerate(topics())}
+    here = order.get(t["id"], 0)
+    best = None
+    for e in progress.get("log", []):
+        i = order.get(e.get("topic_id"), -1)
+        if e.get("video") and e.get("status") in SHIPPED and 0 <= i < here and (best is None or i >= best[0]):
+            best = (i, e)
+    if not best:
+        return None
+    pt = topic(best[1]["topic_id"])
+    return {"day": pt["day"], "title": pt["title"], "url": best[1]["video"]}
+
+
+def video_details(cfg: Dict[str, Any], progress: Dict[str, Any], t: Dict[str, Any], article: str = "",
+                  streak_now: int = 0) -> Dict[str, Any]:
+    """Build the title, description and thumbnail and write them to the topic's video/ folder."""
+    folder = track_dir(cfg) / t["folder"]
+    readme = folder / "README.md"
+    text = readme.read_text(encoding="utf-8") if readme.exists() else ""
+    projects = curriculum()["projects"]
+    p = project(t["project"])
+    meta = learn_video.metadata(
+        t, cfg, text, n_topics=len(topics()), project=p, n_projects=len(projects),
+        folder_link=web_link(cfg, t["folder"]), track_link=web_link(cfg, "").rstrip("/"),
+        article=article, previous=_previous_video(progress, t))
+    files = learn_video.write_files(
+        folder, t, meta, project=p, n_topics=len(topics()), n_projects=len(projects), streak=streak_now,
+        project_steps=sum(1 for x in topics() if x["project"] == t["project"]),
+        boundaries=[max(x["day"] for x in topics() if x["project"] == q["n"]) for q in projects][:-1],
+        site=article_site(cfg))
+    return dict(files, meta=meta)
+
+
+def _video_details_safe(cfg: Dict[str, Any], progress: Dict[str, Any], t: Dict[str, Any], **kw: Any):
+    try:
+        return video_details(cfg, progress, t, **kw)
+    except Exception:  # noqa: BLE001 - the video's details are a nicety: shipping must never fail on them
+        log.exception("learn: could not build the video details for %s", t["id"])
+        return None
+
+
+def _queue_video(ctx, t: Dict[str, Any], url: str, details: Dict[str, Any]) -> None:
+    """Remember a video whose details the coach should set on YouTube (kept locally, retried by the tick)."""
+    from .app import update_runtime
+    entry = {"video_id": video_id(url), "url": url, "status": "pending", "attempts": 0,
+             "meta": details["meta"], "thumbnail": str(details["thumbnail"] or ""),
+             "details_file": str(details["details"]), "queued_at": now().isoformat(timespec="minutes")}
+    update_runtime(ctx, lambda r: r.data.setdefault("learn_video", {}).update({t["id"]: entry}))
+
+
+def _manual_hint(e: Dict[str, Any]) -> str:
+    thumb = f" and upload {e['thumbnail']}" if e.get("thumbnail") else ""
+    return f"paste the title and description from {e.get('details_file', 'video/youtube.md')} in YouTube Studio{thumb}"
+
+
+def video_sync(ctx, only: Optional[List[str]] = None, force: bool = False) -> List[str]:
+    """Set the queued videos' title, description and thumbnail on YouTube. Never touches their privacy."""
+    from . import youtube
+    from .app import update_runtime
+    cfg = ctx.cfg
+    if not section(cfg).get("youtube_update", True) or not cfg.get("youtube", {}).get("enabled", True):
+        return []
+    state: Dict[str, Dict[str, Any]] = dict(ctx.runtime().data.get("learn_video") or {})
+    todo = [tid for tid, e in state.items() if (only is None or tid in only)
+            and e.get("status") in ("pending", "failed", "manual")
+            and (force or int(e.get("attempts", 0)) < VIDEO_MAX_ATTEMPTS)]
+    if not todo:
+        return []
+    connected = youtube.is_configured(ctx.paths) or macos.dry_run()
+    out: List[str] = []
+    done: Dict[str, Dict[str, Any]] = {}
+    for tid in todo:
+        e = dict(state[tid])
+        day = topic(tid)["day"] if any(x["id"] == tid for x in topics()) else "?"
+        if not connected:
+            e["status"] = "manual"
+            out.append(f"Day {day}: YouTube is not connected here, so {_manual_hint(e)}. Or run "
+                       f"`fde-coach youtube-auth` once: the coach then sets them for you.")
+            done[tid] = e
+            continue
+        try:
+            res = youtube.update_video(ctx.paths, e["video_id"], e["meta"],
+                                       Path(e["thumbnail"]) if e.get("thumbnail") else None)
+        except (youtube.YouTubeAuthExpired, youtube.YouTubeNotConfigured) as exc:
+            e.update(status="manual", error=str(exc)[:300])
+            out.append(f"Day {day}: {exc}. Meanwhile you can {_manual_hint(e)}.")
+            done[tid] = e
+            connected = False
+            continue
+        except Exception as exc:  # noqa: BLE001 - offline or a YouTube hiccup: retried by the 15-minute tick
+            log.warning("learn video %s: %s", tid, exc)
+            e.update(status="failed", attempts=int(e.get("attempts", 0)) + 1, error=str(exc)[:300])
+            out.append(f"Day {day}: YouTube details not set yet ({str(exc)[:160]}). The coach retries; "
+                       f"or {_manual_hint(e)}.")
+            done[tid] = e
+            continue
+        e.update(status="set", error="", thumbnail_status=res.get("thumbnail", ""),
+                 set_at=now().isoformat(timespec="minutes"))
+        playlist = cfg.get("youtube", {}).get("learn_playlist_id")
+        if playlist and not e.get("playlisted"):
+            e["playlisted"] = youtube.add_to_playlist(ctx.paths, e["video_id"], str(playlist))
+        if res.get("thumbnail") == "set":
+            out.append(f"Day {day}: YouTube title, description and thumbnail set · {e['url']}")
+        else:
+            out.append(f"Day {day}: YouTube title and description set · thumbnail {res.get('thumbnail')} · {e['url']}")
+        done[tid] = e
+
+    def save(r) -> None:
+        keep = r.data.setdefault("learn_video", {})
+        keep.update(done)
+        cutoff = (now() - dt.timedelta(days=45)).isoformat()
+        for tid in [k for k, v in keep.items() if str(v.get("queued_at", "")) < cutoff]:
+            keep.pop(tid)
+    update_runtime(ctx, save)
+    return out
+
+
+def video_sync_safe(ctx, only: Optional[List[str]] = None) -> List[str]:
+    try:
+        return video_sync(ctx, only=only)
+    except Exception:  # noqa: BLE001 - YouTube details are never allowed to break shipping
+        log.exception("learn video sync failed")
+        return []
+
+
+def video_prepare(ctx) -> Dict[str, Any]:
+    """`fde-coach learn video`: build the current topic's YouTube details now. Before you ship they are ready to
+    paste while you upload; after you ship they are refreshed, committed and set on your video again."""
+    cfg = ctx.cfg
+    with file_lock(ctx.paths, "learn", blocking=True):
+        progress = load_progress(cfg)
+        cur = progress.get("current")
+        if not cur or not cur.get("dropped_on"):
+            raise LearnError("Nothing has dropped yet (fde-coach learn drop).")
+        t = topic(cur["topic_id"])
+        folder = track_dir(cfg) / t["folder"]
+        shipped = bool(cur.get("shipped_at")) and bool(video_id(cur.get("video", "")))
+        n = streak(progress, cfg, learning_date(now(), cfg))
+        details = video_details(cfg, progress, t, article=cur.get("article", ""), streak_now=n)
+        warnings = []
+        parts = learn_video.readme_parts((folder / "README.md").read_text(encoding="utf-8"))
+        if not is_article(t) and not all(k in parts for k in ("beginner", "engineer", "customer")):
+            warnings.append("'In my words' is not filled in yet: the description is built from it, so run this "
+                            "again after the explain-back (shipping rebuilds it anyway).")
+        pushed = ""
+        if shipped:
+            readme = folder / "README.md"
+            text = readme.read_text(encoding="utf-8")
+            readme.write_text(_replace_block(text, "video", video_block(cur["video"], _thumb_rel(details))),
+                              encoding="utf-8")
+            if commit(cfg, [folder / learn_video.VIDEO_DIR, readme], f"learn: video details Day {t['day']}"):
+                pushed = push(ctx)
+            _queue_video(ctx, t, cur["video"], details)
+    yt = video_sync_safe(ctx, only=[t["id"]]) if shipped else []
+    return {"ok": True, "day": t["day"], "title": details["meta"]["title"],
+            "description": details["meta"]["description"], "thumbnail": str(details["thumbnail"] or ""),
+            "details": str(details["details"]), "shipped": shipped, "push": pushed, "youtube": yt,
+            "warnings": warnings}
 
 
 def today_info(ctx) -> Dict[str, Any]:
@@ -1221,4 +1401,5 @@ def tick(ctx) -> str:
     if ctx.runtime().data.get("learn_push_pending"):
         push(ctx)
     calendar_sync_safe(ctx)
+    video_sync_safe(ctx)
     return "ok"

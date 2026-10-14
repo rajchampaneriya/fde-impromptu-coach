@@ -51,3 +51,4 @@ tags: ["fde", "architecture", "adr", "evals", "ai-agents", "llm"]
 
 - Notebooks and code: … (the project folder in your public learning repo)
 - Videos: … (one per topic, from the progress table)
+- The coach that runs this learning track (open source): [FDE Impromptu Coach](https://github.com/rajchampaneriya/fde-impromptu-coach)

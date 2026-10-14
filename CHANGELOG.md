@@ -16,6 +16,16 @@
   only on its last morning, a missed topic returns with half the mornings, and streaks count every morning of a
   shipped topic.
 - **`fde-coach learn next`**: finished early? Drop the next topic now. The 15-minute tick never does this on its own.
+- **Professional YouTube details for every topic video.** When you ship with `--video`, the coach writes the topic's
+  `video/` folder and sets on your video: the title ("Day 7 · Why 30 test cases can lie: error bars | FDE First
+  Principles"), a description built from what the video says (your three "In my words" answers, what surprised
+  you, the maths, the free resources, your GitHub folder, the previous video, the open-source coach repo and
+  rajc.work) and a 1280×720 thumbnail in the impromptu title card's minimalist blue look (topic title, project,
+  streak card, track progress bar). Only the snippet and thumbnail change, never the privacy; offline or
+  disconnected updates are retried by the tick and `learn sync`. `fde-coach learn video` prepares them before you
+  upload, or refreshes a shipped video. The topic README shows the same card. Optional
+  `youtube.learn_playlist_id`; `learn.youtube_update=false` turns it off.
+- The article starters link the coach's repository under "Explore the project".
 - **Final run with a stronger model** (project 6, step 7): the same test set on a bigger local model (free) or a
   paid model behind any OpenAI-compatible API. Cap first, a cost estimate before the run, a free dry run against
   your own Ollama, cached answers, a call limit against runaway loops, and paired differences to decide whether the
@@ -34,8 +44,8 @@
   `p6-08`). Notebook titles follow the new day numbers.
 - Own-data reruns (your communication agent, your notes) are suggested as private parking items, never in the
   public repo.
-- 5 new learn tests (multi-morning drops, the article finish line, `learn next`, streaks, article checks) and a
-  stricter curriculum check.
+- 8 new learn tests (multi-morning drops, the article finish line, `learn next`, streaks, article checks, video
+  details before and after shipping, the YouTube switch, the description) and a stricter curriculum check.
 
 ## v4 — FDE Learn: a daily first-principles learning track
 

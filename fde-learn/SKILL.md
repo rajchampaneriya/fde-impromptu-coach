@@ -42,7 +42,10 @@ Everything runs through the FDE Impromptu Coach CLI: `~/FDE-Impromptu/bin/fde-co
    of understanding. Article coaching: `references/coaching.md`.
 6. **Two finish lines.** The video finishes a topic: maximum two takes, uploaded by them to YouTube as
    **Unlisted or Public** (the coach's own uploads are locked to private by YouTube, so they can't be shared),
-   then the link is pasted. The live article on rajc.work finishes a project.
+   then the link is pasted. They don't need to type a title or description: when they ship, the coach sets the
+   video's title, its description (built from their "In my words" answers, which are the video's outline, plus
+   the resources, their GitHub folder and the coach's repo) and the blue title-card thumbnail. The live article
+   on rajc.work finishes a project.
 7. **Public repo safety.** No API keys, no employer code or data, no real customer data. Acme Fibre is
    fictional on purpose. `done` refuses to publish things that look like secrets; never work around that.
 8. **Keep it cheap.** Local Ollama models only. The one exception is project 6's final run with a stronger
@@ -62,6 +65,8 @@ Everything runs through the FDE Impromptu Coach CLI: `~/FDE-Impromptu/bin/fde-co
 | "I couldn't finish" | `fde-coach learn done --partial --video <link>` (or `--no-video`). Say: partial still counts; the next topic drops at the next drop. For an article: no partial; help them cut it to the minimum scope (500 words) and publish that. |
 | "Help me write the article", "article day" | Article coaching in `references/coaching.md`: the "Without notes" draft first (no notes, no AI), then numbers checked against their notebooks, then grammar and clarity only. Never write paragraphs for them. |
 | "The article is live", "ship the article" | Check `learn today --json` → `missing_to_ship` (the "Without notes" draft, article.md word count), open the link to confirm it is live, then `fde-coach learn done --article <link>`. Report that the project is finished, and the streak. |
+| "Title / description / thumbnail for my video", "what do I write on YouTube?" | `fde-coach learn video`: it writes `video/thumbnail.png` and `video/youtube.md` in the topic folder and prints the title. Before shipping it's ready to paste while uploading; shipping sets it all on YouTube anyway. After an edit to "In my words", running it again refreshes the shipped video. Never write their answers for them to fill the description. |
+| "The thumbnail didn't show up" | Custom thumbnails need a phone-verified channel (youtube.com/verify); until then they upload `video/thumbnail.png` in YouTube Studio. Then `fde-coach learn sync`. |
 | "I finished early", "I still have time" | If today's topic is shipped: `fde-coach learn next` drops the next one now. If not: ship it first. |
 | "I missed yesterday" | Check `learn today --json`: a topic on its second or third morning is not missed. A missed one came back at minimum scope with half the mornings (attempt 2). |
 | "I'm travelling / ill until …" | `fde-coach learn pause --until YYYY-MM-DD` (nothing counts as missed). `learn resume` to end early. |
@@ -102,6 +107,10 @@ Everything runs through the FDE Impromptu Coach CLI: `~/FDE-Impromptu/bin/fde-co
   link. An article topic needs instead: about 300 words in "Without notes", article.md over its minimum word
   count, and `--article <live link on rajc.work>` (no partial). It labels the topic shipped / late / partial,
   embeds the video or article link in the README, updates the progress table, commits the track folder and pushes.
+  With a YouTube link it also writes the topic's `video/` folder (the blue title-card thumbnail and the title and
+  description) and sets them on the video when YouTube is connected (`fde-coach youtube-auth`). It only changes
+  the title, description, tags and thumbnail, never the privacy. Offline or not connected: the 15-minute tick
+  and `learn sync` retry.
 
 ## Files
 

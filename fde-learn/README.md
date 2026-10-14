@@ -7,7 +7,8 @@ ends with an article on [rajc.work](https://rajc.work).**
 ```
 05:50  topic drops into your public repo  ──►  06:00 Google Calendar event with the whole task
        learn → build (notebook / code / Excalidraw) → record ≤ 5 min (2 takes); each topic shows its own minutes
-       fde-coach learn done --video <YouTube link>  ──►  journal + video + progress table pushed to GitHub
+       fde-coach learn done --video <YouTube link>  ──►  journal + video + progress table pushed to GitHub,
+                                                        title, description and thumbnail set on the video
        finished early? fde-coach learn next
 deadline: the drop after the topic's last morning (1 to 3 mornings); a missed topic comes back at minimum scope
 end of each project: fde-coach learn done --article <live link on rajc.work>  ──►  the project's finish line
@@ -59,6 +60,7 @@ Then ask Claude Code: **"what's today's topic?"** · **"I'm stuck"** · **"ship 
 | `fde-coach learn done --video URL` | Ship: checks, journal, commit, push, calendar (`--partial`, `--no-video`) |
 | `fde-coach learn done --article URL` | Ship a project's article (the live link on rajc.work; no partial) |
 | `fde-coach learn next` | Finished early: drop the next topic now |
+| `fde-coach learn video` | Your video's title, description and blue title-card thumbnail (set on YouTube when you ship) |
 | `fde-coach learn status` | Topics shipped, streak, current topic, push/calendar state |
 | `fde-coach learn pause --until DATE` · `resume` | Travel or illness: nothing counts as missed |
 | `fde-coach learn drop` | Drop today's topic now (the 05:50 agent runs this) |

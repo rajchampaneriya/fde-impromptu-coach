@@ -133,7 +133,9 @@ branding review that can take a few days.
    account with your channel. Google warns "Google hasn't verified this app"
    because it is your own project: click **Continue** (sometimes under
    **Advanced**). Tick **both** YouTube permissions if checkboxes appear: one
-   uploads the videos, the other is used only to set the thumbnail.
+   uploads the videos, the other sets thumbnails and, for the FDE Learn track,
+   the title and description of the videos you upload yourself (never their
+   privacy).
 9. Run `~/FDE-Impromptu/bin/fde-coach calendar-auth` and approve the same way,
    choosing the Google account whose calendar you use. This permission lets the
    tool add and delete its own events only.

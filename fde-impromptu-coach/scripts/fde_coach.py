@@ -727,6 +727,8 @@ def cmd_learn(args) -> int:
                   f"{res['streak']}-day learning streak · {res['push']}")
             if res.get("article"):
                 print(f"   📝 {res['article']}" + ("  · project finished 🎉" if res.get("project_done") else ""))
+            for line in res.get("youtube", []):
+                print(f"   🎬 {line}")
             if res.get("link"):
                 print(f"   {res['link']}")
             for item in res.get("missing", []):
@@ -762,6 +764,23 @@ def cmd_learn(args) -> int:
             print(learn.push(ctx))
             for line in learn.calendar_sync(ctx):
                 print(line)
+            for line in learn.video_sync(ctx, force=True):
+                print(line)
+            return 0
+        if c == "video":
+            res = learn.video_prepare(ctx)
+            if args.json:
+                _print(res)
+                return 0
+            print(f"🎬 Day {res['day']} · YouTube details\n   Title:       {res['title']}")
+            print(f"   Thumbnail:   {res['thumbnail'] or 'not made (Pillow missing)'}")
+            print(f"   Description: {res['details']}")
+            for w in res["warnings"]:
+                print(f"   ⚠️  {w}")
+            for line in res["youtube"]:
+                print(f"   {line}")
+            if not res["shipped"]:
+                print("   Upload as Unlisted; when you ship with --video, the coach sets all of this on YouTube.")
             return 0
     except learn.LearnError as exc:
         print(str(exc), file=sys.stderr)
@@ -911,6 +930,10 @@ def build_parser() -> argparse.ArgumentParser:
     ld.set_defaults(func=cmd_learn)
     lsub2.add_parser("next", help="finished early? drop the next topic now instead of at the next drop") \
         .set_defaults(func=cmd_learn)
+    lv = lsub2.add_parser("video", help="your video's YouTube title, description and thumbnail (set on YouTube "
+                                        "when you ship; after shipping this refreshes them)")
+    lv.add_argument("--json", action="store_true")
+    lv.set_defaults(func=cmd_learn)
     lt = lsub2.add_parser("today", help="today's topic, deadline and what is left to ship")
     lt.add_argument("--json", action="store_true")
     lt.set_defaults(func=cmd_learn)
@@ -930,7 +953,8 @@ def build_parser() -> argparse.ArgumentParser:
     g2.add_argument("--days", type=int)
     lp.set_defaults(func=cmd_learn)
     lsub2.add_parser("resume", help="end a pause early").set_defaults(func=cmd_learn)
-    lsub2.add_parser("sync", help="retry git push and the learning calendar events").set_defaults(func=cmd_learn)
+    lsub2.add_parser("sync", help="retry git push, the learning calendar events and your videos' YouTube details") \
+        .set_defaults(func=cmd_learn)
 
     s = sub.add_parser("library", help="reading passages from free, public-domain books")
     lb = s.add_subparsers(dest="lib_command", required=True)

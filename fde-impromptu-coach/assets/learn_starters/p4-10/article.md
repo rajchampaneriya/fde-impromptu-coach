@@ -45,3 +45,4 @@ tags: ["fde", "neural-networks", "backpropagation", "first-principles"]
 
 - Notebooks and code: … (the project folder in your public learning repo)
 - Videos: … (one per topic, from the progress table)
+- The coach that runs this learning track (open source): [FDE Impromptu Coach](https://github.com/rajchampaneriya/fde-impromptu-coach)

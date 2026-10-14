@@ -36,8 +36,11 @@ are also the outline of their video.
 
 - Screen recording with voice (QuickTime → File → New Screen Recording, or Loom). Camera optional.
 - Show the artifact, follow the topic's three record prompts, end with one thing that surprised them.
-- Take 2 is final, whatever its quality. Upload in YouTube Studio as **Unlisted** (or Public), paste the link.
-- A good title: "Day 7 · Why 30 test cases can lie: error bars | FDE First Principles".
+- Take 2 is final, whatever its quality. Upload in YouTube Studio as **Unlisted** (or Public) with any title, and
+  paste the link: shipping sets the title ("Day 7 · Why 30 test cases can lie: error bars | FDE First
+  Principles"), the description and the blue title-card thumbnail.
+- The description is built from the three "In my words" answers, so fill them in before shipping: they are the
+  video's outline and its description.
 
 ## Article mornings (the end of each project)
 

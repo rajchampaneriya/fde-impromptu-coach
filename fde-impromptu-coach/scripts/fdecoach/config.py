@@ -96,6 +96,8 @@ DEFAULTS: Dict[str, Any] = {
         "repo_url": "",                     # default: the clone's origin remote
         "drop_time": "05:50",               # the topic drops; it is due at the drop after its last morning
         "article_site": "rajc.work",        # each project's article must be published here (done --article URL)
+        "youtube_update": True,             # done --video sets your video's title, description and thumbnail
+        "video_title_template": "Day {day} · {title} | FDE First Principles",
         "event_time": "06:00",              # Google Calendar event with the whole task
         "event_minutes": 15,
         "nudge_time": "21:00",              # "not shipped yet" event, deleted when you ship
@@ -133,6 +135,7 @@ DEFAULTS: Dict[str, Any] = {
         "max_attempts": 12,
         "pronunciation_playlist_id": "",
         "legato_playlist_id": "",
+        "learn_playlist_id": "",            # optional: learning-track videos are added here when you ship
     },
 }
 

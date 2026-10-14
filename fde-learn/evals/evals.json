@@ -95,6 +95,19 @@
         "Ran fde-coach learn next",
         "Did not offer a menu of other topics"
       ]
+    },
+    {
+      "id": 9,
+      "eval_name": "youtube-details",
+      "prompt": "what title and description should I put on YouTube for today's video?",
+      "expected_output": "Runs fde-coach learn video, shares the generated title and where the description and thumbnail files are, and explains that shipping with --video sets them on YouTube; does not write the In my words answers for the user",
+      "files": [],
+      "assertions": [
+        "Ran fde-coach learn video",
+        "Gave the generated title and the video/ file locations",
+        "Said that shipping with --video sets the title, description and thumbnail on YouTube",
+        "Did not invent the user's explanations to fill the description"
+      ]
     }
   ]
 }

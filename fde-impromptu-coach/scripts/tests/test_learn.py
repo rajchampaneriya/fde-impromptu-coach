@@ -91,6 +91,10 @@ class TestLearnFlow(unittest.TestCase):
     def progress(self):
         return json.loads((self.track / "progress.json").read_text())
 
+    def youtube(self):
+        path = self.h.dir / "home" / "state" / "dryrun_youtube.json"
+        return json.loads(path.read_text()) if path.exists() else {}
+
     def calendar(self):
         path = self.h.dir / "home" / "state" / "dryrun_calendar.json"
         return json.loads(path.read_text()) if path.exists() else {}
@@ -143,7 +147,23 @@ class TestLearnFlow(unittest.TestCase):
         self.assertIn("shipped", out)
         p = self.progress()
         self.assertEqual(p["log"][-1]["status"], "shipped")
-        self.assertIn("img.youtube.com/vi/abcdEFGH123", (folder / "README.md").read_text())
+        readme = (folder / "README.md").read_text()
+        self.assertIn("[![Watch the video](video/thumbnail.png)](https://youtu.be/abcdEFGH123)", readme)
+        self.assertIn("YouTube title, description and thumbnail set", out)
+        from PIL import Image
+        with Image.open(folder / "video" / "thumbnail.png") as img:
+            self.assertEqual(img.size, (1280, 720))
+        self.assertIn("video/thumbnail.png", git(self.remote, "show", "--stat", "--format=", "main"))
+        yt = self.youtube()["abcdEFGH123"]
+        self.assertEqual(yt["snippet"]["title"], "Day 1 · One model call: tokens, time and randomness | FDE First Principles")
+        desc = yt["snippet"]["description"]
+        self.assertTrue(desc.startswith("What does one model call really cost"), desc[:80])
+        self.assertIn("▸ For a beginner: In my own words, simply.", desc)
+        self.assertIn("https://github.com/rajchampaneriya/fde-impromptu-coach", desc)
+        self.assertIn("01-an-llm-call-is-http", desc)                 # the notebook on GitHub
+        self.assertIn("https://docs.ollama.com/api/chat", desc)        # the free resources
+        self.assertEqual((yt["thumbnail"], yt["snippet"]["categoryId"]), ("thumbnail.png", "27"))
+        self.assertIn(yt["snippet"]["title"], (folder / "video" / "youtube.md").read_text())
         self.assertIn("shipped Day 1", git(self.remote, "log", "--oneline", "main"))
         cal = self.calendar()
         self.assertEqual(cal["fdelearn20261015t"]["status"], "confirmed")      # finished early: day 2 drops Thursday
@@ -173,6 +193,7 @@ class TestLearnFlow(unittest.TestCase):
         out = self.learn("done", "--partial", "--video", "https://www.youtube.com/watch?v=abcdEFGH123",
                          now="2026-10-17T23:00:00").stdout
         self.assertIn("partial", out)
+        self.assertIn("Previous: Day 1 · One model call", self.youtube()["abcdEFGH123"]["snippet"]["description"])
 
         # Sunday is a rest day: nothing new drops
         self.assertTrue(json.loads(self.learn("drop", now="2026-10-18T06:00:00").stdout).get("rest_day"))
@@ -231,6 +252,36 @@ class TestLearnFlow(unittest.TestCase):
         self.assertIn("📝 **Published:**", (folder / "README.md").read_text())
         self.assertIn("[📝](https://rajc.work/blog/2026/10/measure/)", (self.track / "README.md").read_text())
         self.assertEqual(json.loads(self.learn("status", "--json", now="2026-10-15T21:00:00").stdout)["projects_done"], 1)
+
+    def test_video_details_before_and_after_shipping(self):
+        self.learn("init", "--repo", str(self.repo), now="2026-10-13T10:00:00")
+        self.learn("drop", now="2026-10-14T05:55:00")
+        folder = self.track / "1-measure-before-you-believe" / "01-an-llm-call-is-http"
+        out = self.learn("video", now="2026-10-14T07:00:00").stdout
+        self.assertIn("Day 1 · One model call: tokens, time and randomness | FDE First Principles", out)
+        self.assertIn("'In my words' is not filled in yet", out)
+        self.assertTrue((folder / "video" / "thumbnail.png").exists() and (folder / "video" / "youtube.md").exists())
+        self.assertEqual(self.youtube(), {})                            # nothing is sent before you ship
+        self.finish_topic(folder)
+        self.learn("done", "--video", "https://youtu.be/abcdEFGH123", now="2026-10-14T20:00:00")
+        readme = folder / "README.md"
+        readme.write_text(readme.read_text().replace("**For a customer:** In my own words, simply.",
+                                                     "**For a customer:** Same prompt, different answers: plan for it."))
+        res = json.loads(self.learn("video", "--json", now="2026-10-14T21:00:00").stdout)
+        self.assertTrue(res["shipped"])
+        self.assertIn("Same prompt, different answers", self.youtube()["abcdEFGH123"]["snippet"]["description"])
+        self.assertIn("video details Day 1", git(self.remote, "log", "--oneline", "main"))
+
+    def test_youtube_update_can_be_switched_off(self):
+        self.h.run("config", "--set", "learn.youtube_update=false", now="2026-10-13T09:00:00")
+        self.learn("init", "--repo", str(self.repo), now="2026-10-13T10:00:00")
+        self.learn("drop", now="2026-10-14T05:55:00")
+        folder = self.track / "1-measure-before-you-believe" / "01-an-llm-call-is-http"
+        self.finish_topic(folder)
+        out = self.learn("done", "--video", "https://youtu.be/abcdEFGH123", now="2026-10-14T20:00:00").stdout
+        self.assertNotIn("YouTube title", out)
+        self.assertEqual(self.youtube(), {})
+        self.assertTrue((folder / "video" / "youtube.md").exists())    # still ready to paste by hand
 
     def test_learn_next_pulls_the_next_topic_forward(self):
         self.learn("init", "--repo", str(self.repo), now="2026-10-13T10:00:00")
@@ -310,6 +361,33 @@ class TestLearningDate(unittest.TestCase):
         self.assertEqual(learn.streak(progress, cfg, dt.date(2026, 10, 20)), 4)
         progress["log"][1]["status"] = "missed"
         self.assertEqual(learn.streak(progress, cfg, dt.date(2026, 10, 20)), 0)
+
+    def test_video_description_is_built_from_the_video(self):
+        import sys
+        sys.path.insert(0, str(SKILL / "scripts"))
+        from fdecoach import learn_video as lv
+        data = json.loads((ASSETS / "learning_path.json").read_text())
+        t = next(x for x in data["topics"] if x["id"] == "p1-07")
+        readme = ("## In my words\n<!-- note -->\n**For a beginner:** A small test can fool you.\nLike one coin toss.\n\n"
+                  "**For an engineer:** n = 30 gives about ± 15 points.\n\n**For a customer:** …\n\n"
+                  "## What surprised me\nHow wide the range is.\n\n## How I used AI\n…\n")
+        parts = lv.readme_parts(readme)
+        self.assertEqual(parts["beginner"], "A small test can fool you.\nLike one coin toss.")
+        self.assertNotIn("customer", parts)                           # a placeholder is not an answer
+        self.assertEqual(parts["surprised"], "How wide the range is.")
+        meta = lv.metadata(t, {"youtube": {"category_id": "27"}}, readme, n_topics=66, project=data["projects"][0],
+                           n_projects=6, folder_link="https://github.com/me/cl/tree/main/x", track_link="",
+                           previous={"day": 6, "title": "Version B", "url": "https://youtu.be/prev"})
+        self.assertEqual(meta["title"], "Day 7 · Why 30 test cases can lie: error bars | FDE First Principles")
+        d = meta["description"]
+        self.assertEqual(d.splitlines()[0], t["question"])
+        for piece in ("Day 7 of 66 in FDE First Principles · Project 1 of 6", "▸ For an engineer: n = 30",
+                      "What surprised me\nHow wide the range is.", "Maths in this topic: Standard error",
+                      "Previous: Day 6 · Version B: https://youtu.be/prev", lv.COACH_REPO, "#FirstPrinciples"):
+            self.assertIn(piece, d)
+        self.assertNotIn("For a customer", d)
+        self.assertNotIn("<", d)
+        self.assertLessEqual(len(d), 4900)
 
     def test_article_checks(self):
         import sys
