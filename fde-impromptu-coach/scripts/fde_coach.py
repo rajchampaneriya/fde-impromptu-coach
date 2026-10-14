@@ -697,6 +697,15 @@ def cmd_learn(args) -> int:
             res = learn.drop(ctx, scheduled=args.scheduled)
             _print(res)
             return 0 if res.get("ok") else 1
+        if c == "next":
+            res = learn.drop(ctx, early=True)
+            if res.get("topic") and not res.get("already"):
+                print(f"📘 Day {res['day']} · {res['title']} dropped now · ship by {res['deadline']}"
+                      + (f" ({res['mornings']} mornings)" if res.get("mornings", 1) > 1 else ""))
+                print(f"   {res['folder']}")
+            else:
+                _print(res)
+            return 0 if res.get("ok") else 1
         if c == "today":
             info = learn.today_info(ctx)
             if args.json:
@@ -705,14 +714,21 @@ def cmd_learn(args) -> int:
             today_md = Path(info["today_md"])
             print(today_md.read_text(encoding="utf-8") if today_md.exists() else info.get("state"))
             if info.get("state") in ("open", "overdue"):
-                print(f"\n⏱  {info['hours_left']} hours left · folder: {info['folder']}")
+                morning = (f" · morning {info['morning']} of {info['mornings']}" if info.get("mornings", 1) > 1
+                           else "")
+                print(f"\n⏱  {info['hours_left']} hours left{morning} · folder: {info['folder']}")
                 for item in info.get("missing_to_ship", []):
                     print(f"   still to do: {item}")
             return 0
         if c == "done":
-            res = learn.ship(ctx, video=args.video or "", partial=args.partial or args.no_video, note=args.note or "")
+            res = learn.ship(ctx, video=args.video or "", partial=args.partial, note=args.note or "",
+                             article=args.article or "", no_video=args.no_video)
             print(f"{learn.ICON[res['status']]} Day {res['day']} · {res['title']}: {res['status']} · "
                   f"{res['streak']}-day learning streak · {res['push']}")
+            if res.get("article"):
+                print(f"   📝 {res['article']}" + ("  · project finished 🎉" if res.get("project_done") else ""))
+            for line in res.get("youtube", []):
+                print(f"   🎬 {line}")
             if res.get("link"):
                 print(f"   {res['link']}")
             for item in res.get("missing", []):
@@ -728,7 +744,9 @@ def cmd_learn(args) -> int:
             cur = st.get("current")
             if cur:
                 print(f"  Day {cur['day']} · {cur['title']} · {cur['status']} · ship by {cur['deadline']}"
+                      + (f" · morning {cur['morning']} of {cur['mornings']}" if cur.get("mornings", 1) > 1 else "")
                       + (f" · attempt {cur['attempt']}" if int(cur['attempt']) > 1 else ""))
+            print(f"  projects finished (article live): {st.get('projects_done', 0)} of 6")
             if st.get("paused_until"):
                 print(f"  paused until {st['paused_until']}")
             if st["push_pending"]:
@@ -746,6 +764,23 @@ def cmd_learn(args) -> int:
             print(learn.push(ctx))
             for line in learn.calendar_sync(ctx):
                 print(line)
+            for line in learn.video_sync(ctx, force=True):
+                print(line)
+            return 0
+        if c == "video":
+            res = learn.video_prepare(ctx)
+            if args.json:
+                _print(res)
+                return 0
+            print(f"🎬 Day {res['day']} · YouTube details\n   Title:       {res['title']}")
+            print(f"   Thumbnail:   {res['thumbnail'] or 'not made (Pillow missing)'}")
+            print(f"   Description: {res['details']}")
+            for w in res["warnings"]:
+                print(f"   ⚠️  {w}")
+            for line in res["youtube"]:
+                print(f"   {line}")
+            if not res["shipped"]:
+                print("   Upload as Unlisted; when you ship with --video, the coach sets all of this on YouTube.")
             return 0
     except learn.LearnError as exc:
         print(str(exc), file=sys.stderr)
@@ -893,11 +928,18 @@ def build_parser() -> argparse.ArgumentParser:
     ld = lsub2.add_parser("drop", help="drop today's topic now (the 05:50 agent runs this)")
     ld.add_argument("--scheduled", action="store_true")
     ld.set_defaults(func=cmd_learn)
+    lsub2.add_parser("next", help="finished early? drop the next topic now instead of at the next drop") \
+        .set_defaults(func=cmd_learn)
+    lv = lsub2.add_parser("video", help="your video's YouTube title, description and thumbnail (set on YouTube "
+                                        "when you ship; after shipping this refreshes them)")
+    lv.add_argument("--json", action="store_true")
+    lv.set_defaults(func=cmd_learn)
     lt = lsub2.add_parser("today", help="today's topic, deadline and what is left to ship")
     lt.add_argument("--json", action="store_true")
     lt.set_defaults(func=cmd_learn)
     ldn = lsub2.add_parser("done", help="ship today's topic: commit, push, journal, calendar")
     ldn.add_argument("--video", help="your YouTube link (Unlisted or Public)")
+    ldn.add_argument("--article", help="an article topic: the live link of your article (e.g. on rajc.work)")
     ldn.add_argument("--partial", action="store_true", help="ship what you have, labelled partial")
     ldn.add_argument("--no-video", action="store_true", help="ship without a video (counts as partial)")
     ldn.add_argument("--note")
@@ -911,7 +953,8 @@ def build_parser() -> argparse.ArgumentParser:
     g2.add_argument("--days", type=int)
     lp.set_defaults(func=cmd_learn)
     lsub2.add_parser("resume", help="end a pause early").set_defaults(func=cmd_learn)
-    lsub2.add_parser("sync", help="retry git push and the learning calendar events").set_defaults(func=cmd_learn)
+    lsub2.add_parser("sync", help="retry git push, the learning calendar events and your videos' YouTube details") \
+        .set_defaults(func=cmd_learn)
 
     s = sub.add_parser("library", help="reading passages from free, public-domain books")
     lb = s.add_subparsers(dest="lib_command", required=True)

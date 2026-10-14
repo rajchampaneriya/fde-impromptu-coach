@@ -1,4 +1,5 @@
-"""Private YouTube upload via the YouTube Data API v3 (scope: youtube.upload only)."""
+"""YouTube Data API v3: private uploads for the audio practices (youtube.upload), plus thumbnails and the
+learning track's video details on videos you uploaded yourself (youtube.force-ssl)."""
 from __future__ import annotations
 
 import json
@@ -169,6 +170,60 @@ def upload(paths: Paths, video: Path, metadata: Dict[str, Any], thumbnail: Optio
         except Exception as exc:  # noqa: BLE001 - thumbnail is cosmetic, never fail the upload
             log.warning("YouTube thumbnail not set (%s); channel may need phone verification", exc)
     return response["id"]
+
+
+def _dry_record(paths: Paths, video_id: str, entry: Dict[str, Any]) -> None:
+    store = paths.state_dir / "dryrun_youtube.json"
+    data = json.loads(store.read_text(encoding="utf-8")) if store.exists() else {}
+    data[video_id] = dict(data.get(video_id, {}), **entry)
+    store.write_text(json.dumps(data, indent=2, ensure_ascii=False), encoding="utf-8")
+
+
+def update_video(paths: Paths, video_id: str, details: Dict[str, Any], thumbnail: Optional[Path] = None) -> Dict[str, str]:
+    """Set the title, description, tags and category of a video you uploaded yourself, and its thumbnail.
+
+    Only the snippet is written: the privacy setting (Unlisted / Public) is never touched. Fields YouTube would
+    otherwise erase on update (the video's languages) are carried over. The thumbnail is best effort (custom
+    thumbnails need a phone-verified channel). Returns {"details": "set", "thumbnail": "set" | "skipped: …"}."""
+    snippet = {k: details[k] for k in ("title", "description", "tags", "categoryId") if k in details}
+    snippet["title"] = _clean(snippet["title"], 100)
+    snippet["description"] = _clean(snippet.get("description", ""), 4900)
+    if os.environ.get("FDE_COACH_DRYRUN") == "1":
+        log.info("[dry-run] YouTube update %s: %s", video_id, snippet["title"])
+        has_thumb = bool(thumbnail and Path(thumbnail).exists())
+        _dry_record(paths, video_id, {"snippet": snippet, "thumbnail": Path(thumbnail).name if has_thumb else ""})
+        return {"details": "set", "thumbnail": "set" if has_thumb else "skipped: no thumbnail file"}
+    creds = _credentials(paths)
+    from googleapiclient.discovery import build
+    from googleapiclient.errors import HttpError
+    from googleapiclient.http import MediaFileUpload
+
+    service = build("youtube", "v3", credentials=creds, cache_discovery=False)
+    try:
+        items = service.videos().list(part="snippet", id=video_id).execute().get("items") or []
+        if not items:
+            raise RuntimeError(f"video {video_id} not found: is the link from the YouTube account you connected?")
+        current = items[0].get("snippet") or {}
+        for key in ("defaultLanguage", "defaultAudioLanguage"):
+            if current.get(key):
+                snippet[key] = current[key]
+        service.videos().update(part="snippet", body={"id": video_id, "snippet": snippet}).execute()
+    except HttpError as exc:
+        if exc.resp.status == 403:
+            raise RuntimeError("YouTube refused the edit (403): the video must be on the account you connected, "
+                               "with both YouTube permissions (run `fde-coach youtube-auth` again)") from exc
+        detail = exc.content.decode("utf-8", "ignore")[:300] if getattr(exc, "content", None) else str(exc)
+        raise RuntimeError(f"YouTube API error {exc.resp.status}: {detail}") from exc
+    result = {"details": "set", "thumbnail": "skipped: no thumbnail file"}
+    if thumbnail and Path(thumbnail).exists():
+        try:
+            service.thumbnails().set(videoId=video_id,
+                                     media_body=MediaFileUpload(str(thumbnail), mimetype="image/png")).execute()
+            result["thumbnail"] = "set"
+        except Exception as exc:  # noqa: BLE001 - cosmetic: the details are already set
+            log.warning("YouTube thumbnail not set for %s (%s)", video_id, exc)
+            result["thumbnail"] = "skipped: verify your channel at youtube.com/verify, or upload it in YouTube Studio"
+    return result
 
 
 def add_to_playlist(paths: Paths, video_id: str, playlist_id: str) -> bool:

@@ -59,6 +59,55 @@
         "Ran learn pause with the right return date",
         "Explains that the open topic drops again after the pause and nothing counts as missed"
       ]
+    },
+    {
+      "id": 6,
+      "eval_name": "article-without-notes-first",
+      "prompt": "it's article day for project 1, can you help me write it?",
+      "expected_output": "Starts with the 'Without notes' step: asks for about 300 words from memory with no notes and no AI, and does not draft any content; explains that numbers, clarity and grammar help come after",
+      "files": [],
+      "assertions": [
+        "Asked the user to write the 'Without notes' draft first, from memory",
+        "Did not write any article paragraph or outline content for the user",
+        "Mentioned the later help: checking numbers against the notebooks, then grammar and clarity only"
+      ]
+    },
+    {
+      "id": 7,
+      "eval_name": "ship-the-article",
+      "prompt": "the article is live: https://rajc.work/blog/2026/11/measure-before-you-believe/ ship it",
+      "expected_output": "Checks missing_to_ship, confirms the page is live, runs fde-coach learn done --article <link> without --partial, and reports that project 1 is finished",
+      "files": [],
+      "assertions": [
+        "Ran fde-coach learn done with --article and the rajc.work link",
+        "Did not use --partial or --video as a substitute for the article link",
+        "Reported the project as finished"
+      ]
+    },
+    {
+      "id": 8,
+      "eval_name": "finished-early",
+      "prompt": "shipped today's topic and I still have 40 minutes, what now?",
+      "expected_output": "Confirms today's topic is shipped and runs fde-coach learn next to drop the next topic now, then summarises it",
+      "files": [],
+      "assertions": [
+        "Checked that the current topic is shipped",
+        "Ran fde-coach learn next",
+        "Did not offer a menu of other topics"
+      ]
+    },
+    {
+      "id": 9,
+      "eval_name": "youtube-details",
+      "prompt": "what title and description should I put on YouTube for today's video?",
+      "expected_output": "Runs fde-coach learn video, shares the generated title and where the description and thumbnail files are, and explains that shipping with --video sets them on YouTube; does not write the In my words answers for the user",
+      "files": [],
+      "assertions": [
+        "Ran fde-coach learn video",
+        "Gave the generated title and the video/ file locations",
+        "Said that shipping with --video sets the title, description and thumbnail on YouTube",
+        "Did not invent the user's explanations to fill the description"
+      ]
     }
   ]
 }

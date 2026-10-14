@@ -477,11 +477,42 @@ def chapters(session: Dict[str, Any], cfg: Dict[str, Any], offset: float = 0.0) 
     return marks
 
 
+_FONT_CANDIDATES = {
+    True: ["/System/Library/Fonts/Supplemental/Arial Bold.ttf", "/Library/Fonts/Arial Bold.ttf",
+           "/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf",
+           "/usr/share/fonts/truetype/liberation/LiberationSans-Bold.ttf"],
+    False: ["/System/Library/Fonts/Supplemental/Arial.ttf", "/Library/Fonts/Arial.ttf",
+            "/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf",
+            "/usr/share/fonts/truetype/liberation/LiberationSans-Regular.ttf"],
+}
+_FONTS: Dict[Tuple[int, bool], Any] = {}
+
+
+def pil_font(size: int, bold: bool = False):
+    """The thumbnail font: Arial on a Mac (the title cards' look), a close sans elsewhere."""
+    from PIL import ImageFont
+
+    key = (int(size), bool(bold))
+    if key not in _FONTS:
+        for path in _FONT_CANDIDATES[bool(bold)]:
+            try:
+                _FONTS[key] = ImageFont.truetype(path, int(size))
+                break
+            except OSError:
+                continue
+        else:
+            try:
+                _FONTS[key] = ImageFont.load_default(size=int(size))   # Pillow 10.1+
+            except TypeError:
+                _FONTS[key] = ImageFont.load_default()
+    return _FONTS[key]
+
+
 def render_thumbnail(session: Dict[str, Any], stats: Dict[str, Any], cfg: Dict[str, Any], out_png: Path) -> Optional[Path]:
     """Render the intro slide's look (title card: Day N, date, streak) as a
     1280x720 PNG used as the YouTube thumbnail."""
     try:
-        from PIL import Image, ImageDraw, ImageFont
+        from PIL import Image, ImageDraw
     except ImportError:
         log.warning("Pillow not installed; skipping YouTube thumbnail")
         return None
@@ -489,16 +520,7 @@ def render_thumbnail(session: Dict[str, Any], stats: Dict[str, Any], cfg: Dict[s
     navy, blue, gray, gray_l = "#0B2545", "#1F5FBF", "#5B6B7F", "#8A98A9"
     img = Image.new("RGB", (W, H), "white")
     d = ImageDraw.Draw(img)
-
-    def font(size: int, bold: bool = False):
-        names = ["Arial Bold.ttf", "Arial.ttf"] if bold else ["Arial.ttf", "Helvetica.ttf"]
-        for sub in ("Supplemental", ""):
-            for name in names:
-                try:
-                    return ImageFont.truetype(f"/System/Library/Fonts/{sub}/{name}".replace("//", "/"), size)
-                except OSError:
-                    continue
-        return ImageFont.load_default()
+    font = pil_font
 
     def fit(text: str, size: int, bold: bool, max_w: int) -> int:
         while size > 14 and d.textlength(text, font=font(size, bold)) > max_w:
