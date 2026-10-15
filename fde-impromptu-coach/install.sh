@@ -56,7 +56,14 @@ if [ "$(cd "$SKILL_DIR" && pwd)" != "$(cd "$SRC_DIR" 2>/dev/null && pwd)" ]; the
   say "Deploying scripts to $SRC_DIR"
   mkdir -p "$SRC_DIR"
   rsync -a --delete --exclude '__pycache__' \
-    "$SKILL_DIR/scripts" "$SKILL_DIR/references" "$SKILL_DIR/assets" "$SRC_DIR/"
+    "$SKILL_DIR/scripts" "$SKILL_DIR/references" "$SKILL_DIR/assets" "$SKILL_DIR/uninstall.sh" "$SRC_DIR/"
+fi
+
+# The fde-learn skill's curriculum.md: build_curriculum.py (run by the self-tests) checks the copy
+# next to the deployed scripts, so it must be deployed too.
+LEARN_SKILL_SRC="$(cd "$SKILL_DIR" && pwd -P)/../fde-learn"
+if [ -d "$LEARN_SKILL_SRC" ]; then
+  rsync -a --delete --exclude '__pycache__' "$LEARN_SKILL_SRC" "$DATA_DIR/"
 fi
 
 say "Running self-tests (simulated, nothing is recorded or uploaded)"
