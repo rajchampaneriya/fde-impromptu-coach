@@ -1,5 +1,15 @@
 # Changelog
 
+## v6 — Learning repo: tracking files move into .learn/
+
+**Changed**
+
+- The coach's tracking files (`TODAY.md`, `progress.json`, `later.md`) now live in `.learn/` inside the track
+  folder instead of at its root, so the public repo shows only content: the README with its progress table, the
+  topic folders, `data/` and the notebook scaffolding. The coach migrates the old root-level files into `.learn/`
+  automatically on first touch after the upgrade; links inside `TODAY.md` now point one level up (`../`) to the
+  topic folders. Nothing else changes: the files stay committed and pushed as the track's public memory.
+
 ## v5 — FDE Learn: articles as finish lines, a realistic pace, a stronger-model check
 
 **New**

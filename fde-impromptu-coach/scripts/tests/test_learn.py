@@ -89,7 +89,7 @@ class TestLearnFlow(unittest.TestCase):
         return self.h.run("learn", *args, now=now, check=check)
 
     def progress(self):
-        return json.loads((self.track / "progress.json").read_text())
+        return json.loads((self.track / ".learn" / "progress.json").read_text())
 
     def youtube(self):
         path = self.h.dir / "home" / "state" / "dryrun_youtube.json"
@@ -115,7 +115,7 @@ class TestLearnFlow(unittest.TestCase):
                          "curriculum timing changed: update the dates in this test")
         out = self.learn("init", "--repo", str(self.repo), now="2026-10-13T10:00:00").stdout
         self.assertIn("first topic drops tomorrow", out)
-        self.assertTrue((self.track / "progress.json").exists())
+        self.assertTrue((self.track / ".learn" / "progress.json").exists())
         self.assertIn("learn: start", git(self.remote, "log", "--oneline", "main"))
 
         # Wednesday 05:55: day 1 drops with two mornings (Wed, Thu): due Friday 05:50
@@ -123,7 +123,7 @@ class TestLearnFlow(unittest.TestCase):
         self.assertEqual((res["topic"], res["mornings"], res["deadline"]), ("p1-01", 2, "2026-10-16T05:50"))
         folder = self.track / "1-measure-before-you-believe" / "01-an-llm-call-is-http"
         self.assertTrue((folder / "notebook.ipynb").exists() and (folder / "README.md").exists())
-        today = (self.track / "TODAY.md").read_text()
+        today = (self.track / ".learn" / "TODAY.md").read_text()
         self.assertIn("Day 1 of", today)
         self.assertIn("morning 1 of 2", today)
         self.assertIn("**Time:** about", today)
@@ -175,7 +175,7 @@ class TestLearnFlow(unittest.TestCase):
         self.assertTrue(res["continuing"])
         self.assertEqual((res["topic"], res["morning"], res["mornings"]), ("p1-02", 2, 2))
         self.assertNotIn("missed", json.dumps(self.progress()["log"]))
-        self.assertIn("morning 2 of 2", (self.track / "TODAY.md").read_text())
+        self.assertIn("morning 2 of 2", (self.track / ".learn" / "TODAY.md").read_text())
         self.assertIn("(morning 2 of 2)", git(self.remote, "log", "--oneline", "main"))
         cal = self.calendar()
         self.assertIn("morning 2 of 2", cal["fdelearn20261016t"]["body"]["summary"])
@@ -186,7 +186,7 @@ class TestLearnFlow(unittest.TestCase):
         res = json.loads(self.learn("drop", now="2026-10-17T06:00:00").stdout)
         self.assertEqual((res["topic"], res["attempt"], res["mornings"]), ("p1-02", 2, 1))
         self.assertEqual(self.progress()["log"][-1]["status"], "missed")
-        self.assertIn("minimum scope", (self.track / "TODAY.md").read_text())
+        self.assertIn("minimum scope", (self.track / ".learn" / "TODAY.md").read_text())
 
         # shipping partial work still counts, labelled partial
         (self.track / "1-measure-before-you-believe" / "02-workflow-or-agent" / "diagram.excalidraw.svg").write_text("<svg/>")
@@ -212,9 +212,20 @@ class TestLearnFlow(unittest.TestCase):
         p["current"] = {"topic_id": prev, "folder": "x", "dropped_on": "2026-10-13", "seen_on": "2026-10-13",
                         "deadline": "2026-10-14T05:50", "attempt": 1, "mornings": 1,
                         "shipped_at": "2026-10-13T20:00", "status": "shipped"}
-        (self.track / "progress.json").write_text(json.dumps(p))
+        (self.track / ".learn" / "progress.json").write_text(json.dumps(p))
         git(self.repo, "commit", "-qam", "test: jump")
         return json.loads(self.learn("drop", now=now).stdout)
+
+    def test_legacy_track_root_files_migrate_into_learn_dir(self):
+        self.learn("init", "--repo", str(self.repo), now="2026-10-13T10:00:00")
+        state = self.track / ".learn"
+        for name in ("progress.json", "TODAY.md", "later.md"):
+            (state / name).replace(self.track / name)          # back to the old track-root layout
+        self.learn("drop", now="2026-10-14T05:55:00")           # touches progress.json + TODAY.md
+        self.learn("init", "--repo", str(self.repo), now="2026-10-14T12:00:00")  # touches later.md
+        for name in ("progress.json", "TODAY.md", "later.md"):
+            self.assertTrue((state / name).exists(), name)
+            self.assertFalse((self.track / name).exists(), name)
 
     def test_article_is_the_project_finish_line(self):
         self.learn("init", "--repo", str(self.repo), now="2026-10-13T10:00:00")
@@ -225,7 +236,7 @@ class TestLearnFlow(unittest.TestCase):
         self.assertIn("## Without notes", readme)
         self.assertIn("<!-- learn:article -->", readme)
         self.assertIn("draft: true", (folder / "article.md").read_text())
-        self.assertIn("--article https://rajc.work/blog/", (self.track / "TODAY.md").read_text())
+        self.assertIn("--article https://rajc.work/blog/", (self.track / ".learn" / "TODAY.md").read_text())
         self.assertIn("--article", self.calendar()["fdelearn20261014t"]["body"]["description"])
 
         refused = self.learn("done", now="2026-10-14T20:00:00", check=False)

@@ -5,8 +5,8 @@ A topic drops in the morning (default 05:50) into your public learning repo
 its time estimate needs (one to three). You learn, build and record it, then ship
 it with `fde-coach learn done --video <YouTube link>` before its deadline. Each
 project ends with an article on your site, shipped with `--article <link>`.
-The repo itself is the memory: progress.json, TODAY.md, one folder per topic with
-your notebook / diagram / article and a journal README, all committed and pushed.
+The repo itself is the memory: .learn/ (progress.json, TODAY.md, later.md), one folder per topic
+with your notebook / diagram / article and a journal README, all committed and pushed.
 
 Google Calendar gets a 06:00 event with the whole task every morning, plus a
 "not shipped yet" event on the topic's last evening that is deleted as soon as you
@@ -130,9 +130,22 @@ def track_dir(cfg: Dict[str, Any]) -> Path:
     return repo / section(cfg).get("track_dir", "fde-first-principles")
 
 
+STATE_DIR = ".learn"
+
+
+def state_path(cfg: Dict[str, Any], name: str) -> Path:
+    """A tracking file inside .learn/. Migrates the old track-root location once, on first touch."""
+    legacy = track_dir(cfg) / name
+    path = track_dir(cfg) / STATE_DIR / name
+    path.parent.mkdir(parents=True, exist_ok=True)
+    if legacy.exists() and not path.exists():
+        legacy.replace(path)
+    return path
+
+
 def initialized(cfg: Dict[str, Any]) -> bool:
     try:
-        return (track_dir(cfg) / "progress.json").exists()
+        return state_path(cfg, "progress.json").exists()
     except LearnError:
         return False
 
@@ -198,14 +211,14 @@ def _fmt(t: dt.datetime) -> str:
 # --------------------------------------------------------------------------- progress (lives in the repo)
 
 def load_progress(cfg: Dict[str, Any]) -> Dict[str, Any]:
-    path = track_dir(cfg) / "progress.json"
+    path = state_path(cfg, "progress.json")
     if not path.exists():
         raise LearnError("Track not initialised. Run: fde-coach learn init --repo PATH")
     return json.loads(path.read_text(encoding="utf-8"))
 
 
 def save_progress(cfg: Dict[str, Any], progress: Dict[str, Any]) -> Path:
-    path = track_dir(cfg) / "progress.json"
+    path = state_path(cfg, "progress.json")
     path.write_text(json.dumps(progress, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
     return path
 
@@ -558,7 +571,6 @@ def ensure_track_files(cfg: Dict[str, Any]) -> List[Path]:
         "README.md": TRACK_README.format(n=len(topics()), projects=projects),
         ".gitignore": GITIGNORE,
         "pyproject.toml": PYPROJECT,
-        "later.md": LATER,
     }
     written = []
     for name, text in files.items():
@@ -566,6 +578,10 @@ def ensure_track_files(cfg: Dict[str, Any]) -> List[Path]:
         if not path.exists():
             path.write_text(text, encoding="utf-8")
             written.append(path)
+    later = state_path(cfg, "later.md")
+    if not later.exists():
+        later.write_text(LATER, encoding="utf-8")
+        written.append(later)
     return written
 
 
@@ -612,7 +628,7 @@ def next_drop_day(cur: Dict[str, Any], cfg: Dict[str, Any]) -> dt.date:
 def write_today(cfg: Dict[str, Any], progress: Dict[str, Any], note: str = "") -> Path:
     track = track_dir(cfg)
     cur = progress.get("current")
-    path = track / "TODAY.md"
+    path = state_path(cfg, "TODAY.md")
     if note:
         body = note
     elif not cur:
@@ -624,7 +640,7 @@ def write_today(cfg: Dict[str, Any], progress: Dict[str, Any], note: str = "") -
             nxt = next_topic(t["id"])
             nxt_day = next_drop_day(cur, cfg)
             body = (f"# Today: shipped {ICON[cur.get('status', 'shipped')]}\n\nDay {t['day']} · "
-                    f"[{t['title']}]({t['folder']}/README.md) is {cur.get('status', 'shipped')}.\n\n"
+                    f"[{t['title']}](../{t['folder']}/README.md) is {cur.get('status', 'shipped')}.\n\n"
                     + (f"Next: **Day {nxt['day']} · {nxt['title']}** drops {DAYS[nxt_day.weekday()]} "
                        f"{nxt_day.isoformat()} at {drop_time(cfg)}. Time left today? `fde-coach learn next` "
                        f"starts it now." if nxt else "That was the last topic. 🎉"))
@@ -637,7 +653,7 @@ def write_today(cfg: Dict[str, Any], progress: Dict[str, Any], note: str = "") -
                             "title: when you ship, the coach sets its title, description and blue title-card "
                             "thumbnail on YouTube. Want them while you upload? `fde-coach learn video`.")
             body = (f"# Today · Day {t['day']} of {len(topics())}: {t['title']}\n\n"
-                    f"**Ship by {_fmt(deadline)}**{label} · folder: [{t['folder']}]({t['folder']}/README.md)\n\n"
+                    f"**Ship by {_fmt(deadline)}**{label} · folder: [{t['folder']}](../{t['folder']}/README.md)\n\n"
                     + task_markdown(t, int(cur.get("attempt", 1))) +
                     f"\n\n### Ship it\n```\n{ship_command(t, cfg)}\n```\n"
                     f"or tell Claude Code: *ship today's topic*. {partial}")
@@ -694,7 +710,7 @@ def init(ctx, repo: Path, start: str = "tomorrow", track: str = "") -> List[str]
     ctx.cfg = load_config(ctx.paths)
     out_lines = [f"Learning repo: {repo}", f"Track folder: {track_dir(ctx.cfg)}"]
     written = ensure_track_files(ctx.cfg)
-    if not (track_dir(ctx.cfg) / "progress.json").exists():
+    if not state_path(ctx.cfg, "progress.json").exists():
         progress = {"version": 1, "track": curriculum()["track"], "started": now().date().isoformat(),
                     "current": None, "log": []}
         written.append(save_progress(ctx.cfg, progress))
@@ -1171,7 +1187,7 @@ def today_info(ctx) -> Dict[str, Any]:
     cur = progress.get("current")
     t_now = now()
     info: Dict[str, Any] = {"learning_date": learning_date(t_now, cfg).isoformat(),
-                            "track_dir": str(track_dir(cfg)), "today_md": str(track_dir(cfg) / "TODAY.md")}
+                            "track_dir": str(track_dir(cfg)), "today_md": str(state_path(cfg, "TODAY.md"))}
     if not cur:
         info["state"] = "nothing dropped yet"
         return info

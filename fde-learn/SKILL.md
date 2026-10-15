@@ -16,7 +16,7 @@ At 05:50 a topic drops into their public repo (`fde-first-principles/` inside th
 clone) and a 06:00 Google Calendar event carries the whole task. Each topic gets the mornings its time estimate
 needs (most notebooks two, most diagrams one, an article three); it is due at the drop after its last morning.
 Each project ends with an **article on rajc.work**: that is the project's finish line. The repo is the memory:
-`progress.json`, `TODAY.md`, one folder per topic with a journal `README.md`. 66 topics, 6 projects, about 128
+`.learn/` (`progress.json`, `TODAY.md`, `later.md`), one folder per topic with a journal `README.md`. 66 topics, 6 projects, about 128
 hours at 8 hours a week (4 to 5 months): `references/curriculum.md`.
 
 Everything runs through the FDE Impromptu Coach CLI: `~/FDE-Impromptu/bin/fde-coach learn …`
@@ -33,7 +33,7 @@ Everything runs through the FDE Impromptu Coach CLI: `~/FDE-Impromptu/bin/fde-co
 3. **Maths on demand, briefly.** When a maths idea blocks them, explain it in plain English with the numbers
    from *their* notebook, in under 150 words, then send them back to the code. No detours into theory.
 4. **Scope lock.** Any "this could be better", extra feature or improvement to the coach itself goes into
-   `later.md` in the track folder (one line, append it for them) and the answer is "parked". For the first two
+   `.learn/later.md` (one line, append it for them) and the answer is "parked". For the first two
    weeks, do not change the curriculum or the coach.
 5. **Their words, lightly corrected.** The "In my words" explanations and the project articles are English
    practice and public proof. Ask them to say or type their explanation first; fix grammar and clarity only; keep
@@ -82,7 +82,7 @@ Everything runs through the FDE Impromptu Coach CLI: `~/FDE-Impromptu/bin/fde-co
    jobs there), for example `git clone https://github.com/<you>/continuous-learning ~/Code/continuous-learning`.
    `git push` must work without a password prompt (GitHub Desktop, `gh auth setup-git`, or an SSH key).
 3. `fde-coach learn init --repo ~/Code/continuous-learning` (add `--start today` to begin now). This creates
-   `fde-first-principles/` with its README, `progress.json`, `TODAY.md`, `later.md`, `.gitignore` and
+   `fde-first-principles/` with its README, `.learn/` (`progress.json`, `TODAY.md`, `later.md`), `.gitignore` and
    `pyproject.toml`, commits and pushes, and installs the 05:50 agent.
 4. In `fde-first-principles/`: `uv sync` once (later topics say `uv add chromadb`, `uv add torch`, …). In VS Code,
    pick the `.venv` kernel. Ollama: `ollama pull qwen3:4b` (8 GB Mac: `llama3.2:3b`).
@@ -93,10 +93,10 @@ Everything runs through the FDE Impromptu Coach CLI: `~/FDE-Impromptu/bin/fde-co
 
 ## How a day works (for explaining it)
 
-- **05:50** the drop. A topic still inside its mornings stays open (`TODAY.md` says "morning 2 of 2"). A topic
+- **05:50** the drop. A topic still inside its mornings stays open (`.learn/TODAY.md` says "morning 2 of 2"). A topic
   past its deadline returns at minimum scope with half the mornings (attempt 2; never skipped). Otherwise the next
   topic drops: its starter files and shared files (`lab/`, `data/acme/`) are copied without overwriting anything,
-  `TODAY.md` and the topic `README.md` are written, **only those files** are committed and pushed. If the Mac was
+  `.learn/TODAY.md` and the topic `README.md` are written, **only those files** are committed and pushed. If the Mac was
   asleep, the 15-minute reminder agent catches up as soon as it wakes.
 - **06:00** Google Calendar event with the whole task, every morning of the topic; **21:00** "not shipped yet"
   event on its last morning only, with alerts at 18:00 and 21:00, deleted the moment they ship. Shipping also
