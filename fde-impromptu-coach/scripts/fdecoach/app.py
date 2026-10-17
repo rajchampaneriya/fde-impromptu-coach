@@ -193,11 +193,15 @@ def _prompt_message(cfg: Dict[str, Any], stats: Dict[str, Any], session: Dict[st
                     fired_count: int, last_call: bool) -> Tuple[str, str]:
     streak = stats["current"]
     n = len(session.get("questions", []))
-    mins = max(1, round(session_seconds(cfg, n) / 60))
+    mins = max(1, round(session_seconds(cfg, session) / 60))
+    k = sum(1 for q in session.get("questions", []) if q.get("exec"))
+    what = (f"{n} surprise questions, {k} of them exec slide{'s' if k != 1 else ''} with a "
+            f"{(cfg.get('exec_mode') or {}).get('headline_seconds', 25)}-second headline window."
+            if k else f"{n} surprise questions, 60 seconds each.")
     if reason == "daily":
-        head = f"Good morning. Day {session['day_number']} is ready: {n} surprise questions, 60 seconds each."
+        head = f"Good morning. Day {session['day_number']} is ready: {what}"
     elif reason == "catch-up":
-        head = f"Day {session['day_number']} is ready: {n} surprise questions, 60 seconds each."
+        head = f"Day {session['day_number']} is ready: {what}"
     elif last_call:
         head = "Last call for today's practice."
     elif fired_count >= 3:
@@ -259,6 +263,12 @@ def run_session(ctx: Ctx, force: bool = False, max_tries: int = 2) -> Dict[str, 
     # saw the lock as held, so the pronunciation prompt never appeared.
     if result.get("ok") and not result.get("already_recorded"):
         offer_pronunciation(ctx)
+        # The answer key opens once the practice chain is over, so it never steals focus from a slide show.
+        try:
+            from . import answers
+            answers.present(ctx, dt.date.fromisoformat(result["date"]))
+        except Exception:  # noqa: BLE001 - never disturb the practice flow
+            log.exception("could not open the answer key")
     return result
 
 
@@ -296,9 +306,21 @@ def _run_session_locked(ctx: Ctx, force: bool, max_tries: int) -> Dict[str, Any]
     mark_recorded(ctx, date, video=result.get("video"), offset=result.get("offset"),
                   duration=result.get("duration"), method=result.get("method", ""),
                   ended_early=bool(result.get("ended_early")))
+    start_answer_key(ctx, date)
     ask_feedback(ctx, date)
     upload_async(ctx)
+    result["date"] = date.isoformat()
     return result
+
+
+def start_answer_key(ctx: Ctx, date: dt.date, open_when_ready: bool = False) -> None:
+    """Model answers are written in the background while the learner answers the feedback tap
+    and the follow-up practices."""
+    try:
+        from . import answers
+        answers.start(ctx, date, open_when_ready=open_when_ready)
+    except Exception:  # noqa: BLE001 - the streak and the upload matter more
+        log.exception("could not start the answer key")
 
 
 def offer_pronunciation(ctx: Ctx) -> None:
@@ -371,6 +393,7 @@ def complete_manually(ctx: Ctx, video: Optional[Path], no_video: bool = False, n
             raise FileNotFoundError("No video from today in the recordings folder; pass --video PATH or --no-video")
     mark_recorded(ctx, date, str(video) if video else None, method="manual",
                   note=note or ("practised without video" if no_video else ""))
+    start_answer_key(ctx, date, open_when_ready=True)
     upload_async(ctx)
     return ctx.history().get(date) or {}
 
@@ -572,6 +595,11 @@ def remind(ctx: Ctx) -> str:
     except Exception:  # noqa: BLE001 - never break the FDE reminder
         log.exception("audio practice tick failed")
     session = ctx.history().get(date)
+    try:
+        from . import answers
+        answers.tick(ctx)  # fill in answer keys Claude could not write at the time
+    except Exception:  # noqa: BLE001 - never break the FDE reminder
+        log.exception("answer key tick failed")
     if session and session.get("recorded"):
         upload_pending(ctx)
         cleanup_recordings(ctx)
@@ -668,6 +696,9 @@ def status(ctx: Ctx) -> Dict[str, Any]:
             "day_number": s.get("day_number"), "recorded": bool(s.get("recorded")), "source": s.get("source"),
             "deck": s.get("deck_path"), "video": s.get("video_path"), "youtube": s.get("youtube"),
             "categories": [q.get("category_label") for q in s.get("questions", [])],
+            "exec_questions": sum(1 for q in s.get("questions", []) if q.get("exec")),
+            "answer_key": {k: v for k, v in (s.get("answer_key") or {}).items()
+                           if k in ("status", "path", "missing", "last_error")} or None,
         },
         "next_reminder": None if (s and s.get("recorded")) else (upcoming[0] if upcoming else None),
         "snooze_until": rt.data.get("snooze_until"),
@@ -692,6 +723,7 @@ def history_rows(ctx: Ctx, limit: int = 14, reveal_today: bool = False) -> List[
         rows.append({
             "date": key, "day": s.get("day_number"), "level": s.get("level"), "recorded": bool(s.get("recorded")),
             "youtube": yt.get("url") or yt.get("status"), "feedback": s.get("feedback"),
+            "answer_key": (s.get("answer_key") or {}).get("path"),
             "questions": ["(hidden until you record today)"] if hide else
             [f"[{q.get('category')} D{q.get('difficulty')}] {q.get('text')}" for q in s.get("questions", [])],
         })

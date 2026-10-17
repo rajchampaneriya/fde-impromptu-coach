@@ -92,13 +92,15 @@ def _ts(seconds: int) -> str:
 
 def build_metadata(session: Dict[str, Any], cfg: Dict[str, Any], marks: Optional[List[Tuple[int, str]]],
                    streak: int) -> Dict[str, Any]:
+    from .deck import format_line  # local: keeps youtube importable without python-pptx
+
     yt = cfg.get("youtube", {})
     title = yt.get("title_template", "FDE Impromptu \u00b7 Day {day} \u00b7 {date}").format(
         day=session.get("day_number", "?"), date=session["date"])
     lines = [
         f"Daily impromptu practice \u2014 {cfg.get('role', 'Forward Deployed Engineer')} communication and leadership.",
         f"Level {session.get('level')}/5 \u00b7 Streak {streak} day{'s' if streak != 1 else ''} \u00b7 "
-        f"{len(session['questions'])} questions \u00d7 {cfg.get('seconds_per_question', 60)} s",
+        f"{format_line(session, cfg)}",
         "",
     ]
     if marks:
@@ -107,6 +109,10 @@ def build_metadata(session: Dict[str, Any], cfg: Dict[str, Any], marks: Optional
     lines.append("Questions")
     for i, q in enumerate(session["questions"], 1):
         lines.append(f"{i}. [{q.get('category_label', '')} \u00b7 D{q.get('difficulty')}] {q['text']}")
+        if q.get("exec") and q.get("listener"):
+            reply = (q.get("exec_reply") or {}).get("line")
+            lines.append(f"   To the {q['listener']}: {cfg.get('exec_mode', {}).get('headline_seconds', 25)}-second "
+                         f"headline window" + (f", then they reply \u201c{reply}\u201d" if reply else ""))
         if q.get("constraint"):
             lines.append(f"   Constraint: {q['constraint']}")
     lines += ["", "Self-review: clear point in 10 s \u00b7 one concrete example \u00b7 calm pace \u00b7 clean ending."]

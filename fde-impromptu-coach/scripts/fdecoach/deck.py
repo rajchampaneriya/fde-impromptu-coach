@@ -6,6 +6,11 @@ starts automatically) and auto-advances after 60 seconds. PowerPoint waits for
 automatic animations to finish before auto-advancing, so bar and slide change
 stay in sync. Only plain shapes, text boxes and notes are used so the file
 imports cleanly into Google Slides.
+
+Exec mode: a question whose listener is an executive or an account leader gets
+a 25-second "headline window" with the exec answer shape on the slide, then a
+reply slide where the listener answers ("Thanks, that's all I needed." trains
+stopping; "What's the biggest risk?" trains one level of detail on request).
 """
 from __future__ import annotations
 
@@ -245,24 +250,65 @@ def _notes(slide, text: str) -> None:
     slide.notes_slide.notes_text_frame.text = text
 
 
+def headline_seconds(cfg: Dict[str, Any]) -> int:
+    return int((cfg.get("exec_mode") or {}).get("headline_seconds", 25))
+
+
+def timeline(session: Dict[str, Any], cfg: Dict[str, Any]) -> List[Dict[str, Any]]:
+    """Every slide after the intro with its length: question slides, and a reply slide after
+    each exec question. The recorder, the chapters and the prompts all read it."""
+    read = int(cfg.get("read_seconds", 0))
+    secs = int(cfg.get("seconds_per_question", 60))
+    out: List[Dict[str, Any]] = []
+    for i, q in enumerate(session.get("questions", []), 1):
+        if q.get("exec"):
+            out.append({"kind": "question", "index": i, "seconds": read + headline_seconds(cfg)})
+            if q.get("exec_reply"):
+                out.append({"kind": "reply", "index": i, "seconds": int(q["exec_reply"]["seconds"])})
+        else:
+            out.append({"kind": "question", "index": i, "seconds": read + secs})
+    return out
+
+
+def format_line(session: Dict[str, Any], cfg: Dict[str, Any]) -> str:
+    """'5 questions · 2 for executives: 25-second headline, then they reply'."""
+    n = len(session.get("questions", []))
+    secs = int(cfg.get("seconds_per_question", 60))
+    read = int(cfg.get("read_seconds", 0))
+    k = sum(1 for q in session.get("questions", []) if q.get("exec"))
+    if k:
+        return (f"{n} questions  \u00b7  {k} exec slide{'s' if k != 1 else ''}: "
+                f"{headline_seconds(cfg)}-second headline, then they reply")
+    if read > 0:
+        return f"{n} questions  \u00b7  {read}s read + {secs}s answer"
+    return f"{n} questions  \u00b7  {secs} seconds each  \u00b7  no preparation"
+
+
+def _listener_line(slide, q: Dict[str, Any], y: float) -> None:
+    if not q.get("listener"):
+        return
+    runs: List[Tuple[str, Dict[str, Any]]] = [
+        ("TO  ", {"size": 13, "bold": True, "color": BLUE, "spacing": 150}),
+        (q["listener"], {"size": 17, "bold": True, "color": NAVY}),
+    ]
+    if q.get("cares"):
+        runs.append(("   \u00b7   cares about " + q["cares"], {"size": 17, "color": GRAY}))
+    _text(slide, MARGIN, y, CONTENT_W, 0.36, runs, anchor=MSO_ANCHOR.MIDDLE, name="Listener")
+
+
 # --------------------------------------------------------------------------- slides
 
 def _intro_slide(prs, session: Dict[str, Any], stats: Dict[str, Any], cfg: Dict[str, Any]) -> None:
     s = prs.slides.add_slide(prs.slide_layouts[6])
     _background(s)
     date = dt.date.fromisoformat(session["date"])
-    n = len(session["questions"])
-    secs = int(cfg.get("seconds_per_question", 60))
-    read = int(cfg.get("read_seconds", 0))
-    format_line = (f"{n} questions  \u00b7  {read}s read + {secs}s answer" if read > 0
-                   else f"{n} questions  \u00b7  {secs} seconds each  \u00b7  no preparation")
     _text(s, MARGIN, 0.7, 9.0, 0.35, [(f"{cfg.get('role', 'Forward Deployed Engineer').upper()}  \u00b7  IMPROMPTU PRACTICE",
                                         {"size": 14, "bold": True, "color": BLUE, "spacing": 150})])
     _text(s, MARGIN, 1.45, 8.0, 1.2, [(f"Day {session['day_number']}", {"size": 66, "color": NAVY})],
           anchor=MSO_ANCHOR.BOTTOM)
     _text(s, MARGIN, 2.75, 8.0, 0.5, [(date.strftime("%A, %d %B %Y"), {"size": 24, "color": GRAY})])
-    _text(s, MARGIN, 3.7, 8.0, 0.45, [(format_line,
-                                        {"size": 22, "color": NAVY})])
+    _text(s, MARGIN, 3.7, 8.2, 0.45, [(format_line(session, cfg),
+                                        {"size": 22 if len(format_line(session, cfg)) < 62 else 19, "color": NAVY})])
     _text(s, MARGIN, 4.3, 7.8, 0.8, [("Pause. Lead with your point. Land it before the bar runs out.",
                                        {"size": 18, "color": GRAY})])
     # streak panel
@@ -287,14 +333,18 @@ def _intro_slide(prs, session: Dict[str, Any], stats: Dict[str, Any], cfg: Dict[
 def _question_slide(prs, q: Dict[str, Any], idx: int, total: int, level: int, cfg: Dict[str, Any]) -> None:
     s = prs.slides.add_slide(prs.slide_layouts[6])
     _background(s)
-    secs = int(cfg.get("seconds_per_question", 60))
+    ec = cfg.get("exec_mode") or {}
+    is_exec = bool(q.get("exec"))
+    secs = headline_seconds(cfg) if is_exec else int(cfg.get("seconds_per_question", 60))
     _text(s, MARGIN, 0.7, 8.6, 0.35, [
         (f"QUESTION {idx} OF {total}", {"size": 14, "bold": True, "color": BLUE, "spacing": 150}),
         (f"   \u00b7   {q.get('category_label', '').upper()}", {"size": 14, "color": GRAY, "spacing": 100}),
     ])
     _difficulty_dots(s, int(q.get("difficulty", 1)))
+    _listener_line(s, q, 1.18)
     has_constraint = bool(q.get("constraint"))
-    q_top, q_h = 1.45, (3.45 if has_constraint else 4.0)
+    q_top = 1.7 if q.get("listener") else 1.45
+    q_h = (5.0 if has_constraint else 5.55) - q_top
     size = fit_font_size(q["text"], CONTENT_W, q_h)
     _text(s, MARGIN, q_top, CONTENT_W, q_h, [(q["text"], {"size": size, "color": NAVY})],
           anchor=MSO_ANCHOR.MIDDLE, line_spacing=1.05, name="Question")
@@ -303,34 +353,81 @@ def _question_slide(prs, q: Dict[str, Any], idx: int, total: int, level: int, cf
             ("CONSTRAINT  ", {"size": 13, "bold": True, "color": BLUE, "spacing": 150}),
             (q["constraint"], {"size": 20, "color": BLUE}),
         ], anchor=MSO_ANCHOR.MIDDLE, name="Constraint")
-    if level <= int(cfg.get("show_framework_hint_until_level", 2)):
+    if is_exec and ec.get("show_shape_hint", True):
+        _text(s, MARGIN, 5.62, 9.0, 0.32, [("Shape:  " + q.get("framework", ""), {"size": 14, "color": GRAY})],
+              name="Exec shape hint")
+    elif level <= int(cfg.get("show_framework_hint_until_level", 2)):
         _text(s, MARGIN, 5.62, 7.6, 0.32, [("Try:  " + q.get("framework", ""), {"size": 13, "color": GRAY_LIGHT})],
               name="Framework hint")
-    cue_at = int(cfg.get("wrap_up_cue_seconds", 45))
     read = int(cfg.get("read_seconds", 0))
-    label = f"Read for {read}s — then answer" if read > 0 else ""
+    if is_exec:
+        cue_at, cue_text = int(ec.get("wrap_up_cue_seconds", 20)), "Offer, then stop"
+        label = (f"Read for {read}s \u2014 then a {secs}-second headline window" if read > 0
+                 else f"Headline window \u00b7 {secs} seconds")
+    else:
+        cue_at, cue_text = int(cfg.get("wrap_up_cue_seconds", 45)), "Wrap up"
+        label = f"Read for {read}s — then answer" if read > 0 else ""
     effects = _timer(s, secs, ticks=True, label=label,
-                     cue=(cue_at, "Wrap up") if 0 < cue_at < secs else None, start_delay=read)
+                     cue=(cue_at, cue_text) if 0 < cue_at < secs else None, start_delay=read)
     set_transition(s, (read + secs) * 1000)
     set_auto_animations(s, effects)
     notes = [
         f"Competency: {q.get('category_label', '')}   |   Difficulty {q.get('difficulty')}/5   |   Format: {q.get('format')}",
     ]
+    if q.get("listener"):
+        notes.append(f"Listener: {q['listener']} ({q.get('audience_label', '')}), cares about {q.get('cares', '')}")
     if q.get("constraint"):
         notes.append(f"Constraint: {q['constraint']}")
     notes += [
         "",
         f"What a strong answer does: {q.get('coach_note', '')}",
-        f"Framework: {q.get('framework', '')}",
+        f"{'Exec shape' if is_exec else 'Framework'}: {q.get('framework', '')}",
         "",
         "Self-review when you watch the video:",
-        "[ ] Clear point in the first 10 seconds",
-        "[ ] One concrete example, number or story",
-        "[ ] Calm pace, deliberate pauses, few fillers",
-        "[ ] Ended cleanly (no trailing \"so yeah\") before the bar ran out",
-        "[ ] Would this listener trust me more after hearing it?",
     ]
+    if is_exec:
+        notes += [
+            "[ ] The outcome (what has to happen, or has happened) in the first sentence",
+            "[ ] Why it matters in their terms, not how it works",
+            "[ ] A specific ask: who, what, by when",
+            "[ ] Offered the detail instead of giving it",
+            "[ ] Stopped before the bar ran out, and stayed stopped",
+        ]
+    else:
+        notes += [
+            "[ ] Clear point in the first 10 seconds",
+            "[ ] One concrete example, number or story",
+            "[ ] Calm pace, deliberate pauses, few fillers",
+            "[ ] Ended cleanly (no trailing \"so yeah\") before the bar ran out",
+            "[ ] Would this listener trust me more after hearing it?",
+        ]
     _notes(s, "\n".join(notes))
+
+
+def _reply_slide(prs, q: Dict[str, Any], idx: int) -> None:
+    """The exec listener answers back. No new question: either stop, or go exactly one level deeper."""
+    r = q["exec_reply"]
+    s = prs.slides.add_slide(prs.slide_layouts[6])
+    _background(s)
+    who = q.get("listener") or q.get("audience_label") or "Your listener"
+    _text(s, MARGIN, 0.7, 10.0, 0.35, [
+        (f"QUESTION {idx}", {"size": 14, "bold": True, "color": BLUE, "spacing": 150}),
+        (f"   \u00b7   {who.upper()} REPLIES", {"size": 14, "color": GRAY, "spacing": 100}),
+    ])
+    line = f"\u201c{r['line']}\u201d"
+    _text(s, MARGIN, 1.7, CONTENT_W, 2.6, [(line, {"size": fit_font_size(line, CONTENT_W, 2.6, (54, 48, 44, 40, 36)),
+                                                   "color": NAVY})],
+          anchor=MSO_ANCHOR.MIDDLE, name="Reply")
+    _text(s, MARGIN, 4.55, CONTENT_W, 0.5, [(r["instruction"], {"size": 22, "color": BLUE})], name="Reply instruction")
+    effects = _timer(s, int(r["seconds"]), ticks=False, label=f"{int(r['seconds'])} seconds")
+    set_transition(s, int(r["seconds"]) * 1000)
+    set_auto_animations(s, effects)
+    _notes(s, "\n".join([
+        f"{who} replies: {r['line']}",
+        f"What to do: {r['instruction']}",
+        "",
+        f"Self-review: {r['check']}",
+    ]))
 
 
 def _closing_slide(prs, session: Dict[str, Any]) -> None:
@@ -341,6 +438,8 @@ def _closing_slide(prs, session: Dict[str, Any]) -> None:
     count = words.get(len(session["questions"]), str(len(session["questions"])))
     _text(s, MARGIN, 1.2, CONTENT_W, 0.9, [(f"That\u2019s today\u2019s {count}.", {"size": 44, "color": NAVY})])
     _text(s, MARGIN, 2.15, CONTENT_W, 0.5, [(
+        "Recording stops on its own. Your exec answer key comes next: read each model answer, then say it back."
+        if session.get("answer_key_enabled", True) else
         "Recording stops on its own. Tonight, watch once: note one thing to keep and one thing to fix.",
         {"size": 18, "color": GRAY})])
     runs: List[Tuple[str, Dict[str, Any]]] = []
@@ -429,7 +528,9 @@ def build_deck(session: Dict[str, Any], stats: Dict[str, Any], cfg: Dict[str, An
     _intro_slide(prs, session, stats, cfg)
     for i, q in enumerate(session["questions"], 1):
         _question_slide(prs, q, i, total, int(session["level"]), cfg)
-    _closing_slide(prs, session)
+        if q.get("exec") and q.get("exec_reply"):
+            _reply_slide(prs, q, i)
+    _closing_slide(prs, dict(session, answer_key_enabled=bool((cfg.get("answer_key") or {}).get("enabled", True))))
     _register_notes_master(prs)
     _ensure_use_timings(prs)
     _spoiler_guard(prs)
@@ -460,20 +561,28 @@ def make_show_copy(pptx_path: Path, ppsx_path: Path) -> None:
     shutil.move(str(tmp), str(ppsx_path))
 
 
-def session_seconds(cfg: Dict[str, Any], n_questions: int) -> int:
-    return (int(cfg.get("intro_seconds", 10))
-            + n_questions * (int(cfg.get("read_seconds", 0)) + int(cfg.get("seconds_per_question", 60))))
+def session_seconds(cfg: Dict[str, Any], session: "Dict[str, Any] | int") -> int:
+    """Slide-show length: intro + every slide in the timeline. An int means n plain questions."""
+    intro = int(cfg.get("intro_seconds", 10))
+    if isinstance(session, int):
+        return intro + session * (int(cfg.get("read_seconds", 0)) + int(cfg.get("seconds_per_question", 60)))
+    return intro + sum(item["seconds"] for item in timeline(session, cfg))
 
 
 def chapters(session: Dict[str, Any], cfg: Dict[str, Any], offset: float = 0.0) -> List[Tuple[int, str]]:
-    """YouTube chapter marks (seconds, title) for an auto-synced recording."""
-    intro = int(cfg.get("intro_seconds", 10))
-    per = int(cfg.get("read_seconds", 0)) + int(cfg.get("seconds_per_question", 60))
+    """YouTube chapter marks (seconds, title) for an auto-synced recording. An exec question's
+    chapter covers its reply slide too."""
+    t = float(offset + int(cfg.get("intro_seconds", 10)))
     marks = [(0, "Intro")]
-    for i, q in enumerate(session["questions"], 1):
-        start = int(math.floor(offset + intro + (i - 1) * per))
-        marks.append((start, f"Q{i} \u00b7 {q.get('category_label', '')}"))
-    marks.append((int(math.floor(offset + intro + len(session['questions']) * per)), "Wrap-up"))
+    for item in timeline(session, cfg):
+        if item["kind"] == "question":
+            q = session["questions"][item["index"] - 1]
+            title = f"Q{item['index']} \u00b7 {q.get('category_label', '')}"
+            if q.get("exec") and q.get("listener"):
+                title += f" \u00b7 to the {q['listener']}" if len(q["listener"]) <= 24 else ""
+            marks.append((int(math.floor(t)), title))
+        t += item["seconds"]
+    marks.append((int(math.floor(t)), "Wrap-up"))
     return marks
 
 
@@ -534,9 +643,7 @@ def render_thumbnail(session: Dict[str, Any], stats: Dict[str, Any], cfg: Dict[s
     d.text((80, 140), f"Day {session['day_number']}", font=font(120, True), fill=navy)
     date = dt.date.fromisoformat(session["date"])
     d.text((80, 310), date.strftime("%A, %d %B %Y"), font=font(fit(date.strftime("%A, %d %B %Y"), 46, False, left_w)), fill=gray)
-    n = len(session["questions"])
-    secs = int(cfg.get("seconds_per_question", 60))
-    qline = f"{n} questions  ·  {secs} seconds each  ·  no preparation"
+    qline = format_line(session, cfg).replace("\u00b7", "·")
     d.text((80, 400), qline, font=font(fit(qline, 40, True, left_w), True), fill=navy)
     pline = "Pause. Lead with your point. Land it before the bar runs out."
     d.text((80, 480), pline, font=font(fit(pline, 32, False, left_w)), fill=gray)

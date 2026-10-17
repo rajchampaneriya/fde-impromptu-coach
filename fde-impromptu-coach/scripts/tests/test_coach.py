@@ -155,7 +155,7 @@ class TestStreakAndLevel(unittest.TestCase):
         rt = Runtime(self.paths)
         seen = set()
         start = dt.date(2026, 1, 1)
-        for i in range(24):  # 24 days x 5 = 120 questions from a 132-question bank
+        for i in range(24):  # 24 days x 5 = 120 questions from a 144-question bank
             d = start + dt.timedelta(days=i)
             qs, label, lvl, _ = Q.generate_questions(self.history, rt, cfg, self.paths, d, source="bank")
             self.assertEqual(len(qs), 5)
@@ -241,6 +241,8 @@ class TestEndToEnd(unittest.TestCase):
         self.assertEqual(st["streak"]["current"], 1)
 
     def test_deck_structure_and_timings(self):
+        # A plain deck; exec slides (headline window + reply slide) are covered in test_exec_mode.py
+        self.h.run("config", "--set", "exec_mode.enabled=false", now="2026-10-01T05:00:00")
         self.h.run("generate", now="2026-10-01T05:30:00")
         s = self.h.history()["sessions"]["2026-10-01"]
         from pptx import Presentation

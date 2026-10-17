@@ -198,13 +198,17 @@ def cmd_status(args) -> int:
         print(f"Today ({st['date']}): no deck yet")
     else:
         state = "RECORDED" if t["recorded"] else "NOT RECORDED YET"
-        print(f"Today ({st['date']}): Day {t['day_number']}  |  {state}  |  questions from {t['source']}")
+        print(f"Today ({st['date']}): Day {t['day_number']}  |  {state}  |  questions from {t['source']}"
+              + (f"  |  {t['exec_questions']} exec slides" if t.get("exec_questions") else ""))
         print(f"  deck : {t['deck']}")
         if t.get("video"):
             print(f"  video: {t['video']}")
         if t["recorded"]:
             yt = t.get("youtube") or {}
             print(f"  youtube: {yt.get('url') or yt.get('status')}")
+            ak = t.get("answer_key") or {}
+            if ak:
+                print(f"  answer key: {ak.get('status')}  {ak.get('path') or ''}")
     if st["next_reminder"]:
         extra = f" (snoozed until {st['snooze_until']})" if st["snooze_until"] else ""
         print(f"Next reminder: {st['next_reminder']}{extra}")
@@ -235,6 +239,38 @@ def cmd_history(args) -> int:
         for q in r["questions"]:
             print(f"     - {q}")
     return 0
+
+
+def cmd_answers(args) -> int:
+    """The exec answer key: model answers for a recorded day (today by default)."""
+    import datetime as dt
+    from fdecoach import answers, macos
+    from fdecoach.state import today
+    ctx = _ctx(args)
+    if args.index:
+        page = answers.write_index(ctx)
+        if args.open:
+            macos.open_path(page)
+        print(page)
+        return 0
+    date = dt.date.fromisoformat(args.date) if args.date else today()
+    session = ctx.history().get(date)
+    if not session:
+        print(f"No practice session for {date.isoformat()}.", file=sys.stderr)
+        return 1
+    if not session.get("recorded") and not args.reveal:
+        print("The model answers stay hidden until you record this day's questions "
+              "(add --reveal to see them now and spoil the surprise).", file=sys.stderr)
+        return 1
+    ak = session.get("answer_key") or {}
+    if args.prepare or args.regenerate or ak.get("status") not in answers.DONE or not Path(ak.get("path", "")).exists():
+        res = answers.prepare(ctx, date, force=args.regenerate)
+    else:
+        res = {"status": ak["status"], "path": ak["path"], "missing": ak.get("missing", [])}
+    if args.open and res.get("path"):
+        macos.open_path(Path(res["path"]))
+    _print(res)
+    return 0 if res.get("status") in answers.DONE + ("busy",) else 1
 
 
 def cmd_complete(args) -> int:
@@ -836,6 +872,15 @@ def build_parser() -> argparse.ArgumentParser:
     s.add_argument("--reveal", action="store_true", help="also show today's questions before recording")
     s.add_argument("--json", action="store_true")
     s.set_defaults(func=cmd_history)
+
+    s = sub.add_parser("answers", help="exec answer key: model answers for a recorded day")
+    s.add_argument("--date", help="YYYY-MM-DD (default: today)")
+    s.add_argument("--open", action="store_true", help="open the page in the browser")
+    s.add_argument("--regenerate", action="store_true", help="ask Claude for a fresh set of model answers")
+    s.add_argument("--reveal", action="store_true", help="allow it before recording (spoils the surprise)")
+    s.add_argument("--index", action="store_true", help="rebuild (and with --open, open) the page of every one-breath line")
+    s.add_argument("--prepare", action="store_true", help=argparse.SUPPRESS)  # the background writer
+    s.set_defaults(func=cmd_answers)
 
     s = sub.add_parser("complete", help="mark today as recorded when you recorded outside the automation")
     s.add_argument("--video", help="video path (default: newest video from today in the recordings folder)")
