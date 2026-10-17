@@ -34,6 +34,26 @@ Then, if you want, keep going:
 
 Miss a day? Reminders escalate on your Mac, iPhone, and calendar until you record.
 
+## New: exec slots and the exec answer key
+
+Deep, careful answers win technical peers. Executives and account leaders want something else: **what has to
+happen (or has happened), and an offer to go into detail.** Two of each morning's five questions now train that:
+
+- **The listener is on the slide**: *TO CFO · cares about return on the money spent*.
+- **A 25-second headline window** with the shape on screen: *Headline → So what → What I need → Offer detail*.
+- **Then they reply**, on a slide of its own: *"Thanks, that's all I needed."* (stop, and hold the silence),
+  *"What's the biggest risk?"* or *"What do you need from me?"* (one level deeper, then stop).
+
+After you record, **the exec answer key** opens in your browser: for every question, the one-breath headline, the
+25-second answer with each sentence tagged by its move, the detail to hold back and offer if asked, and the trap (what
+the technical-peer answer gets wrong for this listener). **Say it back** blurs the answer and runs the timer while you
+say it in your own words. Every day's one-breath lines collect on one revision page.
+
+```bash
+fde-coach answers --open                          # today's answer key (after you record)
+fde-coach config --set exec_mode.focus_slots=3    # more exec practice
+```
+
 ## New: FDE Learn, a daily first-principles learning track
 
 A second skill in this repo, [`fde-learn`](fde-learn/README.md). At **05:50** a topic drops into your public

@@ -47,6 +47,49 @@ def frameworks() -> Dict[str, str]:
     return bank()["frameworks"]
 
 
+def audiences() -> Dict[str, Dict[str, Any]]:
+    """Listener types: exec, account_leader, technical_peer, business, interviewer."""
+    return bank().get("audiences", {})
+
+
+def exec_shape() -> str:
+    return bank().get("exec_shape", "Headline \u2192 So what \u2192 What I need \u2192 Offer detail")
+
+
+def exec_cfg(cfg: Dict[str, Any]) -> Dict[str, Any]:
+    return cfg.get("exec_mode") or {}
+
+
+def exec_audiences(cfg: Dict[str, Any]) -> List[str]:
+    """Listeners that get the exec treatment (headline window + reply), [] when exec mode is off."""
+    ec = exec_cfg(cfg)
+    if not ec.get("enabled", True):
+        return []
+    return [a for a in ec.get("audiences", ["exec", "account_leader"]) if a in audiences()]
+
+
+_EXEC_RE = re.compile(r"\b(CEO|CFO|COO|CIO|CTO|CISO|CRO|CMO|VP|SVP|EVP|board|executive|sponsor|chief|president|"
+                      r"steering committee|leadership)\b", re.I)
+_ACCOUNT_RE = re.compile(r"\b(account (executive|director|leader|lead|manager|team|owner)|sales (lead|VP|director|"
+                         r"leader|team)|your AE)\b", re.I)
+_PEER_RE = re.compile(r"\b(engineers?|research (team|lead)|product (team|manager)|security team|architect)\b", re.I)
+_INTERVIEW_RE = re.compile(r"^(tell me about|describe a time|what |how do you|how would you|when is it|is it better|"
+                           r"take a position|if you were|in five years)", re.I)
+
+
+def infer_audience(text: str) -> str:
+    """Best guess at the listener for questions saved before listeners existed."""
+    if _ACCOUNT_RE.search(text):
+        return "account_leader"
+    if _EXEC_RE.search(text):
+        return "exec"
+    if _INTERVIEW_RE.search(text.strip()):
+        return "interviewer"
+    if _PEER_RE.search(text):
+        return "technical_peer"
+    return "business"
+
+
 # --------------------------------------------------------------------------- novelty
 
 def _tokens(text: str) -> List[str]:
@@ -99,7 +142,35 @@ def plan_slots(history: History, runtime: Runtime, cfg: Dict[str, Any], date: dt
     rng.shuffle(chosen)
     curve = difficulty_curve(level, n)
     slots = [{"slot": i + 1, "category": c, "difficulty": d} for i, (c, d) in enumerate(zip(chosen, curve))]
+    _assign_audiences(slots, history, cfg, date)
     return {"level": level, "slots": slots}
+
+
+def _assign_audiences(slots: List[Dict[str, Any]], history: History, cfg: Dict[str, Any], date: dt.date) -> None:
+    """Exec focus: the first `focus_slots` listeners from `focus_audiences` (cycled) go to random slots,
+    preferring slots whose competency still has an unused bank question for that listener, so the
+    offline fallback keeps the promise too. Other slots leave the listener to the question writer."""
+    ec = exec_cfg(cfg)
+    focus = [a for a in (ec.get("focus_audiences") or []) if a in audiences()]
+    n = min(int(ec.get("focus_slots", 0) or 0), len(slots))
+    if not ec.get("enabled", True) or not focus or n <= 0:
+        return
+    rng = _rng(date, "audiences")
+    past_ids = {q.get("id") for q in history.all_questions(exclude_date=date)}
+    order = list(range(len(slots)))
+    rng.shuffle(order)
+
+    def stocked(i: int, aud: str) -> bool:
+        return any(q["category"] == slots[i]["category"] and q.get("audience") == aud and q["id"] not in past_ids
+                   for q in bank()["questions"])
+
+    taken: List[int] = []
+    for k in range(n):
+        aud = focus[k % len(focus)]
+        free = [i for i in order if i not in taken]
+        best = [i for i in free if stocked(i, aud)] or free
+        slots[best[0]]["audience"] = aud
+        taken.append(best[0])
 
 
 def _constraint_for(fmt: str, difficulty: int, level: int, rng: random.Random, force: bool = False,
@@ -121,7 +192,51 @@ def _finish(q: Dict[str, Any], source: str) -> Dict[str, Any]:
     q["framework"] = frameworks().get(q.get("format", "roleplay"), frameworks()["roleplay"])
     q["category_label"] = cat.get("label", q["category"])
     q["source"] = source
+    aud = q.get("audience") if q.get("audience") in audiences() else infer_audience(q.get("text", ""))
+    info = audiences().get(aud, {})
+    q["audience"] = aud
+    q["audience_label"] = info.get("label", aud)
+    q["listener"] = (q.get("listener") or info.get("label", "")).strip()
+    q["cares"] = (q.get("cares") or info.get("cares", "")).strip()
     return q
+
+
+# Constraints that fight a 25-second headline window (a time limit, a list of points, a long setup).
+_EXEC_CLASH = re.compile(r"\b\d+ seconds\b|\bone minute\b|three points|setup", re.I)
+
+
+def apply_exec_mode(questions: List[Dict[str, Any]], cfg: Dict[str, Any], date: dt.date) -> List[Dict[str, Any]]:
+    """Mark exec-listener questions and give each one the listener's reply (deterministic per day):
+    "that's all I needed" trains stopping; "biggest risk?" and "what do you need?" train one level deeper."""
+    ec = exec_cfg(cfg)
+    auds = set(exec_audiences(cfg))
+    replies = bank().get("exec_replies", {})
+    weights = {k: float(v) for k, v in (ec.get("reply_weights") or {}).items() if k in replies and float(v) > 0}
+    rng = _rng(date, "replies")
+    last = ""
+    for q in questions:
+        q["exec"] = bool(auds) and q.get("audience") in auds
+        if not q["exec"]:
+            q.pop("exec_reply", None)
+            continue
+        q["framework"] = exec_shape()
+        if _EXEC_CLASH.search(q.get("constraint") or ""):
+            q["constraint"] = ""
+        if not (ec.get("replies", True) and weights):
+            q.pop("exec_reply", None)
+            continue
+        kinds = [k for k in weights if k != last] or list(weights)
+        kind = rng.choices(kinds, weights=[weights[k] for k in kinds])[0]
+        last = kind
+        r = replies[kind]
+        q["exec_reply"] = {
+            "kind": kind,
+            "line": r["lines"].get(q["audience"]) or next(iter(r["lines"].values())),
+            "seconds": int(r["seconds"]),
+            "instruction": r["instruction"],
+            "check": r["check"],
+        }
+    return questions
 
 
 def pick_from_bank(slots: List[Dict[str, Any]], history: History, level: int, date: dt.date,
@@ -160,8 +275,9 @@ def pick_from_bank(slots: List[Dict[str, Any]], history: History, level: int, da
         formats_today = [o["format"] for o in out]
 
         def score(q: Dict[str, Any]) -> int:
-            # difficulty match first; repeating a format already used today is a soft penalty
-            return abs(q["difficulty"] - target) * 2 + formats_today.count(q["format"])
+            # the slot's listener first (exec focus), then difficulty; repeating a format is a soft penalty
+            wrong_listener = bool(slot.get("audience")) and q.get("audience") != slot["audience"]
+            return wrong_listener * 5 + abs(q["difficulty"] - target) * 2 + formats_today.count(q["format"])
 
         best = min(score(q) for q in pool)
         choice = dict(rng.choice([q for q in pool if score(q) == best]))
@@ -218,10 +334,20 @@ def validate_candidates(cands: List[Dict[str, Any]], slots: List[Dict[str, Any]]
         difficulty = max(1, min(5, difficulty))
         constraint = re.sub(r"\s+", " ", str(raw.get("constraint") or "")).strip()[:120]
         coach = re.sub(r"\s+", " ", str(raw.get("coach_note") or "")).strip()[:320]
+        need = slot.get("audience")
+        audience = raw.get("audience") if raw.get("audience") in audiences() else None
+        if need and audience and audience != need:
+            errors.append(f"slot {slot_no}: the listener must be audience `{need}` "
+                          f"({audiences()[need]['label']}), got `{audience}`")
+            continue
+        audience = audience or need or infer_audience(text)
+        listener = re.sub(r"\s+", " ", str(raw.get("listener") or "")).strip().replace("<", "").replace(">", "")[:48]
+        cares = re.sub(r"\s+", " ", str(raw.get("cares") or "")).strip().replace("<", "").replace(">", "")[:80]
         q = {
             "id": f"GEN-{date.strftime('%Y%m%d')}-{slot_no}",
             "slot": slot_no, "category": category, "difficulty": difficulty, "format": fmt,
             "text": text, "constraint": constraint.replace("<", "").replace(">", ""), "coach_note": coach,
+            "audience": audience, "listener": listener, "cares": cares,
         }
         accepted[slot_no] = q
     return accepted, errors
@@ -273,8 +399,21 @@ def build_claude_prompt(plan: Dict[str, Any], history: History, cfg: Dict[str, A
     rubric = (REFERENCES_DIR / "question_design.md").read_text(encoding="utf-8")
     recent = history.all_questions(exclude_date=date)[-150:]
     recent_lines = "\n".join(f"- {q.get('text', '')[:160]}" for q in recent) or "- (none yet)"
+    ec = exec_cfg(cfg)
+    focus_on = bool(ec.get("enabled", True) and ec.get("focus_audiences") and int(ec.get("focus_slots", 0) or 0) > 0)
+
+    def listener(s: Dict[str, Any]) -> str:
+        aud = s.get("audience")
+        if not aud and focus_on:
+            # today's exec slots are fixed; keep the rest varied
+            return "listener: your choice, but not an executive or account leader"
+        if not aud:
+            return "listener: your choice"
+        return f"listener `{aud}` ({audiences()[aud]['label']}, cares about {audiences()[aud]['cares']})"
+
     slot_lines = "\n".join(
-        f"- slot {s['slot']}: category `{s['category']}` ({categories()[s['category']]['label']}), difficulty {s['difficulty']}"
+        f"- slot {s['slot']}: category `{s['category']}` ({categories()[s['category']]['label']}), "
+        f"difficulty {s['difficulty']}, {listener(s)}"
         for s in plan["slots"])
     context = ""
     if str(cfg.get("learner_context") or "").strip():
@@ -298,7 +437,8 @@ def build_claude_prompt(plan: Dict[str, Any], history: History, cfg: Dict[str, A
     )
 
 
-def parse_claude_output(stdout: str) -> List[Dict[str, Any]]:
+def extract_json_object(stdout: str) -> Dict[str, Any]:
+    """The JSON object in Claude's answer: unwraps the `--output-format json` envelope and code fences."""
     text = stdout.strip()
     try:
         env = json.loads(text)
@@ -306,8 +446,8 @@ def parse_claude_output(stdout: str) -> List[Dict[str, Any]]:
             if env.get("is_error"):
                 raise ValueError(f"claude reported an error: {str(env.get('result'))[:200]}")
             text = str(env["result"])
-        elif isinstance(env, dict) and "questions" in env:
-            return list(env["questions"])
+        elif isinstance(env, dict):
+            return env
     except ValueError as exc:
         if "claude reported" in str(exc):
             raise
@@ -316,7 +456,13 @@ def parse_claude_output(stdout: str) -> List[Dict[str, Any]]:
     if start < 0 or end <= start:
         raise ValueError("no JSON object in Claude output")
     data = json.loads(text[start:end + 1])
-    items = data.get("questions") if isinstance(data, dict) else None
+    if not isinstance(data, dict):
+        raise ValueError("Claude output is not a JSON object")
+    return data
+
+
+def parse_claude_output(stdout: str) -> List[Dict[str, Any]]:
+    items = extract_json_object(stdout).get("questions")
     if not isinstance(items, list):
         raise ValueError("JSON has no 'questions' list")
     return items
@@ -391,7 +537,7 @@ def generate_questions(history: History, runtime: Runtime, cfg: Dict[str, Any], 
             notes.append("Claude unavailable; using the built-in question bank")
     questions, label = merge_with_bank(accepted, plan["slots"], history, plan["level"], date,
                                        "claude" if accepted else "bank")
-    return questions, label, plan["level"], notes
+    return apply_exec_mode(questions, cfg, date), label, plan["level"], notes
 
 
 def questions_from_file(path: Path, history: History, runtime: Runtime, cfg: Dict[str, Any],
@@ -401,4 +547,4 @@ def questions_from_file(path: Path, history: History, runtime: Runtime, cfg: Dic
     raw = parse_claude_output(path.read_text(encoding="utf-8"))
     accepted, errors = validate_candidates(raw, plan["slots"], history, date)
     questions, label = merge_with_bank(accepted, plan["slots"], history, plan["level"], date, "claude")
-    return questions, label, plan["level"], errors
+    return apply_exec_mode(questions, cfg, date), label, plan["level"], errors

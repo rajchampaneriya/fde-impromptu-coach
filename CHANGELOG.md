@@ -1,5 +1,35 @@
 # Changelog
 
+## v7 — Exec slots and the exec answer key
+
+Feedback from a senior architect: technical answers land with technical peers, but executives and account leaders
+need what has to happen (or has happened) and an offer to go into detail. This release trains exactly that, and shows
+the correct response after every session.
+
+**New**
+
+- **Every question names its listener.** `audience` (`exec`, `account_leader`, `technical_peer`, `business`,
+  `interviewer`), `listener` and `cares`, shown on the slide: *TO CFO · cares about return on the money spent*. The
+  question bank is annotated (144 questions, 12 new ones where your own account leader is the listener).
+- **Exec slots** (`exec_mode`). Two of the five slots each day (`focus_slots`) get an executive or account-leader
+  listener (`focus_audiences`), in the Claude-written set and the offline bank alike; Claude's question for the wrong
+  listener is rejected. Exec slides get a 25-second **headline window**, the exec shape on screen at every level, an
+  "Offer, then stop" cue, and a **reply slide**: "Thanks, that's all I needed." (10 s), "What's the biggest risk?"
+  (20 s) or "What do you need from me?" (15 s). Session length, chapters and prompts follow the real timeline.
+- **Exec answer key** (`answer_key`, `fde-coach answers`). After recording, Claude writes a model answer for every
+  question (`references/answer_design.md`): one-breath headline, the 25-second exec answer tagged by move, the detail
+  to offer, the trap, and the answer to the listener's reply. Validated, retried once, rendered as one page per day
+  that opens when the practice chain ends, with a **Say it back** drill. Offline it opens with a fill-in exec shape
+  and the tick fills in the model answers later. `answers --index` collects every one-breath line.
+- **BDD scenarios**: `scripts/tests/features/exec_mode.feature` and `answer_key.feature`, one Given/When/Then test
+  per scenario in `test_exec_mode.py`, and a check that the two never drift apart.
+
+**Changed**
+
+- `deck.session_seconds` takes the session (an int still means plain 60-second questions); `deck.timeline` lists
+  every slide's length. The YouTube description names exec slides and their reply.
+- The closing slide points to the answer key. `status` shows exec slides and the answer key.
+
 ## v6 — Learning repo: tracking files move into .learn/
 
 **Changed**

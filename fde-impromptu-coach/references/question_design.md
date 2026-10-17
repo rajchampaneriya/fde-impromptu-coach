@@ -53,6 +53,41 @@ before yours." · "Finish in 45 seconds, then hold the silence." · "Use one
 analogy." · "Name one risk and how you will manage it." Keep it under 15 words
 and make sure it fits the format (no "tell it as a story" on a roleplay).
 
+## Listeners (audience ids)
+
+Every question puts the learner in front of one listener. The learner's growth
+area is pitching the message for the receiver: technical peers appreciate a deep,
+well-reasoned answer; executives and account leaders want what has to happen
+(or has happened) and an offer to go into detail.
+
+- `exec` — Executive (CEO, CFO, COO, CIO, CTO, CISO, VP, board, executive
+  sponsor, steering committee): cares about outcomes, risk and the decision
+  they own.
+- `account_leader` — Account leader (your account executive, account director,
+  sales lead): cares about the deal, the relationship and what to tell the
+  customer.
+- `technical_peer` — engineers, product, research and security teams.
+- `business` — managers, project leads, procurement, legal, frontline users,
+  your own team.
+- `interviewer` — behavioral and opinion questions ("Tell me about a time…").
+
+When a slot names a listener, the question must address that listener (the
+last sentence speaks to them: "Tell her.", "Answer him."). When it says "not an
+executive or account leader", choose one of the other three.
+
+**Exec slots** (`exec`, `account_leader`) are answered in a 25-second headline
+window, then the listener replies on a slide of its own ("Thanks, that's all I
+needed." / "What's the biggest risk?" / "What do you need from me?"). Write a
+situation where the strong answer is a headline, why it matters to them, an ask
+and an offer of detail: not a technical walkthrough. Never ask for "one minute"
+or any time longer than the window on an exec slot, and keep its constraint
+compatible (no time limits, no "three points"; "End with a clear ask" works).
+
+For every question, also return `listener` (who, in 1–5 words: "CFO", "Your
+account executive", "Customer's head of support") and `cares` (what this
+listener cares about in this moment, 3–10 words, lower case: "the renewal date
+and what could slip").
+
 ## Competencies (category ids)
 
 - `exec_comm` — Executive communication
@@ -86,14 +121,18 @@ learner reads it in the speaker notes after recording, when reviewing.
       "format": "roleplay",
       "text": "An outage has blocked the customer's support team for three hours during their busiest week. Their director calls you, angry. Respond.",
       "constraint": "Do not apologize more than once.",
-      "coach_note": "Own it in the first sentence, give the current status and the next update time, and resist over-explaining the root cause before you know it."
+      "coach_note": "Own it in the first sentence, give the current status and the next update time, and resist over-explaining the root cause before you know it.",
+      "audience": "business",
+      "listener": "Support director",
+      "cares": "her team working again today"
     }
   ]
 }
 ```
 
 `constraint` may be an empty string. `slot`, `category` and `difficulty` must
-match the plan you were given.
+match the plan you were given, and `audience` must match the slot's listener
+when the slot names one (a question for the wrong listener is rejected).
 
 ## Examples by difficulty (style reference only — never reuse)
 

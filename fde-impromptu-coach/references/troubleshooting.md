@@ -21,6 +21,10 @@ If today is at risk, protect the streak first: record any way you can
 | Slides don't advance | "Use Timings" off, or you clicked during the show | The deck enables Use Timings; in PowerPoint check Slide Show → Use Timings. Don't click during the show |
 | Timer bar doesn't move | Opened in an app without animation support | Use Microsoft PowerPoint; Keynote and Google Slides ignore these timings |
 | Questions came from the "bank" | Claude Code unavailable (not logged in, offline, usage limit, slow) | Run `claude` once in Terminal and log in; `fde-coach doctor` shows the path. Set `claude_path` if Claude Code lives elsewhere. The bank keeps the streak safe meanwhile |
+| Answer key says "Model answer pending" | Claude Code unavailable when the session finished (offline, usage limit, not logged in) | Nothing to do: the 15-minute tick fills it in and notifies you (up to `answer_key.max_attempts`). Now: `fde-coach answers --open`. `answer_key.last_error` in `fde-coach status --json` says why |
+| Answer key didn't open after the session | it opens when the practice chain (FDE → pronunciation → legato) ends, or `answer_key.open_after_session=false` | `fde-coach answers --open` |
+| `fde-coach answers` refuses | today isn't recorded yet (model answers would spoil the surprise) | Record first, or `--reveal` if you really want them now |
+| Too many / too few exec slides | `exec_mode.focus_slots` (default 2); bank questions with an executive listener also become exec slides | `fde-coach config --set exec_mode.focus_slots=N`; `exec_mode.enabled=false` turns exec slides off |
 | Questions feel too easy / hard | calibration | Tap the after-session feedback, or `fde-coach level --up` / `--down`, then `fde-coach generate --replace` (before recording) |
 | YouTube: "authorization expired" every week | Google OAuth app still in **Testing** | Google Auth Platform → Audience → Publish app (In production), then `fde-coach youtube-auth` |
 | YouTube: "Connect YouTube once" | not authorized yet | README → YouTube setup, then `fde-coach youtube-auth` |

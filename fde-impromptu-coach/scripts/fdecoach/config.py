@@ -34,6 +34,30 @@ DEFAULTS: Dict[str, Any] = {
     "sessions_per_level": 6,
     "show_framework_hint_until_level": 2,
     "focus_categories": [],
+    # Exec mode: slots whose listener is an executive or an account leader train
+    # "say what has to happen, offer the detail, stop": a short headline window,
+    # the exec answer shape on the slide, then the listener replies on a slide of its own.
+    "exec_mode": {
+        "enabled": True,
+        "audiences": ["exec", "account_leader"],          # listeners that get the exec treatment
+        "focus_audiences": ["exec", "account_leader"],    # listeners guaranteed in every daily set
+        "focus_slots": 2,                                 # how many of the five slots get one
+        "headline_seconds": 25,
+        "wrap_up_cue_seconds": 20,                        # "Offer, then stop" cue
+        "show_shape_hint": True,                          # exec shape on exec slides at every level
+        "replies": True,
+        "reply_weights": {"thanks": 0.4, "risk": 0.3, "need": 0.3},
+    },
+    # Exec answer key: after recording, a model answer for every question
+    # (one-breath headline, 25-second exec answer, the detail to offer).
+    "answer_key": {
+        "enabled": True,
+        "open_after_session": True,
+        "min_words": 20,
+        "max_words": 70,
+        "words_per_minute": 150,
+        "max_attempts": 6,
+    },
     "daily_time": "05:30",
     "question_source": "auto",
     "claude_path": "",
@@ -166,6 +190,7 @@ class Paths:
         self.incoming = self.state_dir / "incoming"
         self.locks = self.state_dir / "locks"
         self.decks = root / "decks"
+        self.answers = root / "answers"
         self.logs = root / "logs"
         self.secrets = root / "secrets"
         self.client_secret = self.secrets / "client_secret.json"

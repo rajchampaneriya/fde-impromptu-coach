@@ -1,6 +1,6 @@
 ---
 name: fde-impromptu-coach
-description: Daily speaking coach for the Forward Deployed Engineer (FDE) role on macOS. At 05:30 a timed PowerPoint deck of 5 never-repeated, progressively harder impromptu questions is recorded on camera and uploaded privately to YouTube; at 05:45 a pen-method pronunciation drill and at 06:00 a legato (smooth, connected speech) drill read verbatim passages from free public-domain books, never AI-written text. Each practice keeps a streak protected by Mac reminders and Google Calendar alerts. Use whenever the user mentions impromptu, FDE, communication or leadership practice, pronunciation, the pen method, legato, linking words, breath or fluency practice, reading passages or adding a book, today's deck, starting or recording a session, streaks, missed practice, reminders, calendar alerts, uploads, making practice harder or easier, or installing, configuring or troubleshooting this routine, even if they do not name the skill.
+description: Daily speaking coach for the Forward Deployed Engineer (FDE) role on macOS. At 05:30 a timed PowerPoint deck of 5 never-repeated, progressively harder impromptu questions is recorded on camera and uploaded privately to YouTube; at 05:45 a pen-method pronunciation drill and at 06:00 a legato (smooth, connected speech) drill read verbatim passages from free public-domain books, never AI-written text. Exec slots and a post-session answer key train headline-first exec answers. Each practice keeps a streak protected by Mac reminders and Google Calendar alerts. Use whenever the user mentions impromptu, FDE, communication or leadership practice, exec answers, model answers, pronunciation, the pen method, legato, linking words, breath or fluency practice, adding a book, today's deck, starting or recording a session, streaks, missed practice, reminders, calendar alerts, uploads, making practice harder or easier, or installing, configuring or troubleshooting this routine, even if they do not name the skill.
 compatibility: macOS 12+ with Microsoft PowerPoint, QuickTime Player, Python 3.9+ and Claude Code. YouTube upload needs a Google Cloud OAuth desktop client.
 ---
 
@@ -8,7 +8,10 @@ compatibility: macOS 12+ with Microsoft PowerPoint, QuickTime Player, Python 3.9
 
 A daily, 5-minute, on-camera impromptu speaking routine that trains the
 communication and leadership moments of a Forward Deployed Engineer: executive
-updates, bad news, pushback, discovery, trade-offs, ethics, influence. Two
+updates, bad news, pushback, discovery, trade-offs, ethics, influence. Every
+question names its **listener**; exec slots (an executive or an account leader)
+train the headline-first answer, and after recording an **exec answer key**
+shows a model answer for every question (see *Exec mode and the answer key*). Two
 5-minute audio practices follow it, both reading **verbatim paragraphs from
 free public-domain books** (Thoreau, Twain, Tagore, Franklin, Gibran, Marcus
 Aurelius, *The Art of Public Speaking* and more; `assets/passages.json`):
@@ -48,6 +51,10 @@ installed yet: see **Install** below.
    asks for the legacy mode (`pronunciation.paragraph_source=claude`).
 7. **Cold read.** Today's passage stays hidden until recorded (`generate` and
    `history` hide it); show it only when asked (`--reveal`).
+8. **Model answers come after the attempt.** `fde-coach answers` refuses before
+   today is recorded; never pass `--reveal` unless the user explicitly asks to
+   see model answers first. Never write model answers into the chat for an
+   unrecorded day.
 
 ## What the user says → what to run
 
@@ -59,6 +66,13 @@ installed yet: see **Install** below.
 | "New questions for today", "make today about healthcare / a CISO audience" | `fde-coach generate --replace --brief "…"` (questions stay hidden; report categories and difficulty only) |
 | "Open today's deck" | `fde-coach open` |
 | "Too easy" / "too hard" | `fde-coach level --up` / `--down` (then `generate --replace` if today is not recorded yet) |
+| "How should I have answered?", "model answers", "exec answer key" | `fde-coach answers --open` (today; `--date YYYY-MM-DD` for another day). Report the status; `pending`/`partial` fill in by themselves when Claude is reachable |
+| "All my one-breath lines", "revise my headlines" | `fde-coach answers --index --open` |
+| "Better model answers", "redo the answer key" | `fde-coach answers --regenerate --open` |
+| "More exec practice" / "fewer exec slides" | `fde-coach config --set exec_mode.focus_slots=3` (0–5; then `generate --replace` if today is not recorded yet) |
+| "Only executives, no account leaders" | `fde-coach config --set 'exec_mode.focus_audiences=["exec"]'` |
+| "Longer / shorter headline window" | `fde-coach config --set exec_mode.headline_seconds=30` |
+| "Turn exec mode off" / "no answer key" | `fde-coach config --set exec_mode.enabled=false` / `--set answer_key.enabled=false` |
 | "Remind me at another time", "run at 6:15" | `fde-coach config --set daily_time=06:15` (reinstalls the schedule) or `--set 'reminders.times=["07:00","12:00","20:00"]'` |
 | "I recorded it myself / on my phone" | `fde-coach complete --video /path/to/file` (or `--no-video` if no usable file) |
 | "Pronunciation practice", "pen method", "start pronunciation" | `fde-coach pronounce session --detach` (audio only, ~5 min: warm-up words, 3 rounds with the pen in Round 2, words again; auto-stops and saves) |
@@ -88,11 +102,12 @@ Settings live in `~/FDE-Impromptu/config.json`; `fde-coach config` prints them.
 
 - **Automatic (default, surprise preserved):** at 05:30 the scheduler runs
   `claude -p` headless with the rubric in `references/question_design.md`, the
-  day's plan (5 competencies, least-practised first; difficulty ramp) and the
-  full question history. Every candidate is novelty-checked against all past
-  questions and the built-in bank; rejects are retried once, then backfilled from
-  the 132-question curated bank (`assets/question_bank.json`). A deck is always
-  produced, even offline.
+  day's plan (5 competencies, least-practised first; difficulty ramp; a listener
+  for each exec-focus slot) and the full question history. Every candidate is
+  novelty-checked against all past questions and the built-in bank, and checked
+  for the slot's listener; rejects are retried once, then backfilled from the
+  144-question curated bank (`assets/question_bank.json`, every question
+  annotated with its listener). A deck is always produced, even offline.
 - **Difficulty:** level 1–5, starting at 2 and rising one level every 6 recorded
   sessions; each day ramps L, L, L+1, L+1, L+2; constraint twists from level 3;
   framework hints disappear after level 2; the after-session "too easy / too
@@ -107,6 +122,36 @@ Settings live in `~/FDE-Impromptu/config.json`; `fde-coach config` prints them.
      It prints any rejected items (too similar to the past, wrong length); those
      slots are filled from the bank. Rewrite and rebuild if the user wants their
      own text in every slot.
+
+## Exec mode and the answer key
+
+The learner's growth area (feedback from a senior architect): pitching the
+message for the receiver. Technical peers value deep, well-reasoned answers;
+executives and account leaders want **what has to happen (or has happened), and
+an offer to go into detail**.
+
+- **Listener on every slide:** "TO CFO · cares about return on the money spent".
+- **Exec slots** (`exec_mode`): `focus_slots` (default 2) of the five slots get a
+  listener from `focus_audiences` (`exec`, `account_leader`). Any question whose
+  listener is in `exec_mode.audiences` becomes an exec slide: a 25-second
+  **headline window** (`headline_seconds`), the shape *Headline → So what → What
+  I need → Offer detail* on the slide at every level, an "Offer, then stop" cue
+  at 20 s, then a **reply slide**: "Thanks, that's all I needed." (10 s, trains
+  stopping), "What's the biggest risk?" (20 s) or "What do you need from me?"
+  (15 s), weighted by `reply_weights`. The recorder, chapters and prompts use the
+  real timeline (`deck.timeline`).
+- **Exec answer key** (`answer_key`, `fdecoach/answers.py`): when a session is
+  marked recorded, a background `claude -p` call writes a model answer for every
+  question from `references/answer_design.md`: one-breath headline, the
+  20–70-word exec answer tagged by move, the detail to hold back and offer, the
+  trap (what the technical-peer answer does wrong here) and, for exec replies,
+  the next 20 seconds. Answers are validated (word limits, move order) and
+  rejects retried once. The page (`~/FDE-Impromptu/answers/DATE_Exec-Answer-Key.html`)
+  opens when the practice chain (FDE → pronunciation → legato) ends, so it never
+  interrupts a slide show. Each card has a **Say it back** drill (answer blurs,
+  25-second bar, then compare). Offline, the page still opens with the coach
+  note and a fill-in exec shape; the 15-minute tick fills in the model answers
+  later. `answers/index.html` collects every day's one-breath lines.
 
 ## How the reading passages are chosen
 
@@ -137,18 +182,22 @@ Settings live in `~/FDE-Impromptu/config.json`; `fde-coach config` prints them.
    and asks **Start now / Snooze / Later**.
 2. **Start** (dialog button, double-click `~/FDE-Impromptu/Start Practice.command`,
    or ask Claude): QuickTime starts a camera recording, the slide show starts,
-   each slide's 60-second bar runs and auto-advances, the recording stops and is
+   each slide's bar runs and auto-advances (60 s; exec slides 25 s, then the
+   reply slide), the recording stops and is
    saved to `~/Movies/FDE-Impromptu/`, the streak updates, the Reminders item is
    completed, today's Google Calendar event is deleted (so its alerts never
-   fire) and the video uploads privately to YouTube with the questions and
-   chapter marks in the description.
+   fire), the exec answer key starts writing in the background and the video
+   uploads privately to YouTube with the questions and chapter marks in the
+   description.
 3. **05:45 / 06:00** the pronunciation and legato agents build their decks and
    ask to start. Finishing one practice offers the next (FDE → pronunciation →
-   legato), so one "Start now" can run all three back to back.
+   legato), so one "Start now" can run all three back to back. When the chain
+   ends, the exec answer key opens in the browser.
 4. **Every 15 minutes** a second agent catches up a missed 05:30 run (Mac was
    asleep), shows escalating reminders at the configured times until the day is
    recorded (last call at 22:00, quiet after 22:45), keeps every practice's
-   calendar events rolling forward and retries failed uploads. Google Calendar alerts
+   calendar events rolling forward, retries failed uploads and fills in answer
+   keys Claude could not write at the time. Google Calendar alerts
    (07:30, 12:30, 18:00, 21:30 + an email) reach the phone, browser or inbox
    only on unrecorded days, even when the Mac is closed.
 
@@ -171,7 +220,8 @@ YouTube setup and an optional `pmset` wake schedule.
 ## Files
 
 - `scripts/fde_coach.py` — CLI (`--help` lists all commands)
-- `scripts/fdecoach/` — modules: `app` (flows), `questions`, `deck`, `recorder`,
+- `scripts/fdecoach/` — modules: `app` (flows), `questions` (plan, listeners, exec mode), `deck`
+  (incl. exec and reply slides, `timeline`), `answers` (exec answer key), `recorder`,
   `macos` (AppleScript), `youtube`, `gcal` (Google Calendar missed-practice alerts),
   `scheduler` (launchd), `state`, `config`; the audio practices share
   `practice` (build/record/video/upload/calendar engine) and `audio` (ffmpeg);
@@ -181,7 +231,10 @@ YouTube setup and an optional `pmset` wake schedule.
 - `scripts/tools/build_passage_library.py` — builds and `verify`s `assets/passages.json`
   from `assets/passage_sources.json` + `assets/passage_annotations.json`
 - `scripts/tests/` — `~/FDE-Impromptu/venv/bin/python -m unittest discover -s scripts/tests` (dry-run, safe anywhere; needs the venv because the CLI imports `pptx`)
-- `references/question_design.md` — question rubric and JSON schema
+- `scripts/tests/features/*.feature` — Gherkin scenarios for exec mode and the answer key; `test_exec_mode.py`
+  has one Given/When/Then test per scenario and fails if the two drift apart
+- `references/question_design.md` — question rubric and JSON schema (incl. listeners and exec slots)
+- `references/answer_design.md` — exec answer key rubric and JSON schema
 - `references/pronunciation_design.md` — legacy (AI-written) paragraph rubric and JSON schema
 - `references/pronunciation_annotation.md` — coach-note rubric for library mode (Claude marks up words only)
 - `references/legato_design.md` — legato practice design: drills, marks, levels, research basis

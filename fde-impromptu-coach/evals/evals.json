@@ -35,7 +35,7 @@
       "expected_output": "Diagnoses with fde-coach doctor or status, explains the 15-min catch-up agent, rebuilds today's deck (generate/daily) without spoiling questions",
       "files": [],
       "assertions": [
-        "Explains the missed-run catch-up correctly (the coach's 15-min reminder agent rebuilds the deck after wake; the reply must not rely on launchd's own wake catch-up for missed StartCalendarInterval jobs \u2014 launchd.plist documents a single coalesced run on wake, but it is unreliable in practice and did not fire on the validation Mac), or diagnoses via doctor/status",
+        "Explains the missed-run catch-up correctly (the coach's 15-min reminder agent rebuilds the deck after wake; the reply must not rely on launchd's own wake catch-up for missed StartCalendarInterval jobs — launchd.plist documents a single coalesced run on wake, but it is unreliable in practice and did not fire on the validation Mac), or diagnoses via doctor/status",
         "Rebuilds today's deck (generate or daily) in the sandbox so questions exist",
         "Reply tells the user how to open/start practice",
         "Reply does NOT contain any of today's question texts",
@@ -76,6 +76,30 @@
       "assertions": [
         "Ran library import-gutenberg 2680",
         "Reply reports the added count or explains a network failure and the import-file alternative"
+      ]
+    },
+    {
+      "id": 7,
+      "eval_name": "answer-key-after-recording",
+      "prompt": "I just finished today's impromptu. Show me how I should have answered the exec questions.",
+      "expected_output": "Runs fde-coach answers --open (today), reports the page path and status; if the status is pending or partial, explains the model answers fill in automatically when Claude is reachable. Does not read out answers for an unrecorded day.",
+      "files": [],
+      "assertions": [
+        "Ran fde-coach answers (with --open)",
+        "Did not use --reveal or print today's questions before recording",
+        "Reply mentions the Say it back drill or how to use the page"
+      ]
+    },
+    {
+      "id": 8,
+      "eval_name": "more-exec-practice",
+      "prompt": "My architect says I answer executives like technical peers. Give me more exec questions every day.",
+      "expected_output": "Raises exec_mode.focus_slots (e.g. fde-coach config --set exec_mode.focus_slots=3), optionally regenerates today's set with generate --replace if today is not recorded, and explains the 25-second headline window, the reply slide and the answer key.",
+      "files": [],
+      "assertions": [
+        "Ran fde-coach config --set exec_mode.focus_slots=3 (or another value above 2)",
+        "Only used generate --replace if today was not recorded yet",
+        "Explains the headline window and the listener's reply"
       ]
     }
   ]

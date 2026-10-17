@@ -82,7 +82,7 @@ def record(session: Dict[str, Any], cfg: Dict[str, Any], paths: Paths) -> Dict[s
     dest = folder / f"{session['date']}_FDE-Impromptu_Day{session.get('day_number', 0)}.mov"
     deck = Path(session["deck_path"])
     show = Path(session.get("show_path") or deck)
-    total = session_seconds(cfg, len(session["questions"]))
+    total = session_seconds(cfg, session)
     grace = int(rec_cfg.get("stop_grace_seconds", 4))
     mode = rec_cfg.get("mode", "auto")
     result: Dict[str, Any] = {"ok": False, "video": None, "offset": None, "method": mode, "ended_early": False}

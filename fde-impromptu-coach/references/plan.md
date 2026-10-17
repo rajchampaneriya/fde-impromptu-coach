@@ -101,9 +101,33 @@ Bugs found while reviewing v2 and fixed:
 | 7 | `pronounce status` printed "Today ():" (the status dict had no date) | Date included |
 | 8 | Warm-up slide footer overlapped the timer label | Footer moved above it |
 
-## 7. Validation results
+## 7. v7: exec slots and the exec answer key
+
+Request: feedback from a senior architect. The learner answers executives and account leaders like technical peers
+(deep, well-reasoned answers). They need what has to happen (or has happened) and an offer to go into detail. After
+each session the learner also wants model answers to learn the correct response, not only to avoid freezing.
+
+| Risk found while designing | Fix |
+|---|---|
+| The listener was implicit in the question text, so the learner never chose a register before speaking | Every question carries `audience`, `listener`, `cares`; the slide shows "TO CFO · cares about …" |
+| "At least two exec slots" could silently fail offline (bank fallback ignores listeners) | Exec focus slots prefer competencies with an unused bank question for that listener; the bank picker scores listener match above difficulty; 12 account-leader questions added |
+| Claude writes for any listener it likes | The slot names the listener; a mismatch is rejected and retried, then filled from the bank. Non-focus slots ask for a non-exec listener so the exec count stays what the learner set |
+| A 60-second window invites the technical walkthrough | Exec slides: 25-second headline window, the exec shape on screen at every level, "Offer, then stop" cue |
+| Real exec conversations are two turns; the old practice rehearsed only the first | Reply slide: "That's all I needed" (trains stopping), "Biggest risk?" / "What do you need?" (one level deeper) |
+| Variable slide lengths would break the recorder's stop time and the YouTube chapters | `deck.timeline` drives `session_seconds`, `chapters`, prompts and the recorder |
+| Model answers before recording spoil the surprise; generating them after recording delays the page | Generated in a detached process right after the session is marked recorded, while the feedback tap and the audio practices run; the page opens when the chain ends (or when ready) |
+| Opening a browser mid-chain would steal focus from the next slide show | `answers.present` runs after the chain; a flag opens the page when generation finishes later |
+| Long, technical model answers would teach the wrong habit | Rubric + validation: headline 4–18 words, exec answer 20–70 words, moves start with headline and end with offer; rejects retried with the reasons |
+| Offline mornings would get no answer key | The page still opens (coach note + a fill-in exec shape); the 15-minute tick fills it in (capped attempts) and notifies |
+| Reading a model answer is passive | "Say it back": the answer blurs, a 25-second bar runs, then reveal and compare; the index page is a growing revision sheet of one-breath lines |
+
+## 8. Validation results
 
 - `quick_validate.py`: skill valid (name, description ≤ 1024 chars, allowed keys).
+- v7: 116 tests on Python 3.13 and 3.9 (15 new: the Gherkin scenarios in `scripts/tests/features/` one-to-one with
+  `test_exec_mode.py`, the scenario/test sync check, bank listener annotations, old sessions without listeners).
+  Mutation-checked: breaking the headline window, the reply slide or the word limit fails its scenario. Exec and
+  reply slides rendered with LibreOffice and inspected; the answer key page rendered in Chromium (light and dark).
 - Python: `py_compile`, `pyflakes` clean; `vermin` minimum version 3.7 (target 3.9 OK).
 - v3: 84 tests (58 original + 26 new: library integrity and provenance, verbatim reconstruction of every
   passage from its reading marks, breath/link rules, legato end-to-end, flow calibration, no-repeat rotation,

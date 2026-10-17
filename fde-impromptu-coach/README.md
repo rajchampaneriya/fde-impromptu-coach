@@ -195,6 +195,9 @@ at or before `event_time`. Turn the feature off with
 | See your streak | `fde-coach status` |
 | Review past questions | `fde-coach history` (today's stay hidden until you have recorded) |
 | Make questions harder or easier | tap **Too easy / Too hard** after a session, or `fde-coach level --up` / `--down` |
+| See how you should have answered | `fde-coach answers --open` (after recording; opens by itself when the practice chain ends) |
+| Revise every one-breath line | `fde-coach answers --index --open` |
+| More (or fewer) exec slides | `fde-coach config --set exec_mode.focus_slots=3` (default 2; `exec_mode.enabled=false` turns exec slides off) |
 | Steer today's topic | ask Claude Code: "make today's FDE questions about a hospital rollout", or `fde-coach generate --replace --brief "hospital rollout"` |
 | Tell the coach about yourself | `fde-coach config --set 'learner_context=Backend engineer moving into FDE roles at AI companies; I ramble when challenged'` |
 | Change the time | `fde-coach config --set daily_time=06:15` |
@@ -209,13 +212,27 @@ at or before `event_time`. Turn the feature off with
 | Something went wrong | `fde-coach doctor`, then `references/troubleshooting.md` |
 
 During a session: look at the camera, not the slide. Each slide shows the
-competency, difficulty dots, the question, sometimes a **constraint** (a twist such
-as "No jargon: your listener is non-technical"), and a bar that fills over 60
-seconds with a **Wrap up** cue at 0:45. Pressing **Esc** ends the slide show
-early; the recording stops too, and if it is short you can keep it or try again.
+competency, difficulty dots, **who you are talking to and what they care about**,
+the question, sometimes a **constraint** (a twist such as "No jargon: your
+listener is non-technical"), and a bar that fills over 60 seconds with a **Wrap
+up** cue at 0:45. Pressing **Esc** ends the slide show early; the recording stops
+too, and if it is short you can keep it or try again.
 
-After recording, the speaker notes of each slide (and the YouTube description)
-list what a strong answer does and a five-point self-review checklist.
+**Exec slides** (two a day by default; the listener is an executive or an account
+leader) give you a 25-second **headline window** with the shape on screen
+(*Headline → So what → What I need → Offer detail*) and an **Offer, then stop**
+cue at 0:20. Then the listener replies on its own slide: *"Thanks, that's all I
+needed."* (say "great" and stop: 10 seconds of silence is the skill), *"What's
+the biggest risk?"* (20 seconds) or *"What do you need from me?"* (15 seconds).
+
+After recording, the **exec answer key** opens in your browser once your
+practices are done: for every question, the one-breath headline, the 25-second
+answer with each sentence tagged by its move, the detail to hold back and offer
+if asked, and the trap. Press **Say it back** on a card: the answer blurs and a
+25-second bar runs while you say it in your own words; then compare. Offline, the
+page opens with a fill-in shape and the model answers arrive later by
+themselves. The speaker notes of each slide (and the YouTube description) list
+what a strong answer does and a five-point self-review checklist.
 
 ### Pronunciation practice (pen method)
 
@@ -346,13 +363,14 @@ minute** there. PowerPoint on the Mac is the primary, fully timed experience.
 | Pronunciation / legato history | `~/FDE-Impromptu/state/pronunciation.json`, `legato.json` |
 | Passages you imported | `~/FDE-Impromptu/library/passages.json` |
 | Decks and thumbnails | `~/FDE-Impromptu/decks/` |
+| Exec answer keys | `~/FDE-Impromptu/answers/` (`index.html` lists every one-breath line) |
 | Scripts the schedule runs | `~/FDE-Impromptu/src/` (refreshed by `install.sh`) |
 | Videos | `~/Movies/FDE-Impromptu/` (audio practices in `pronunciation/` and `legato/`) |
 | Logs | `~/FDE-Impromptu/logs/` |
 | YouTube and Calendar sign-in | `~/FDE-Impromptu/secrets/` (only readable by you) |
 
-Only these things leave your Mac: the question-writing prompt (and, for
-pronunciation, the word mark-up prompt) sent through your Claude Code login, the
+Only these things leave your Mac: the question-writing and answer-key prompts
+(and, for pronunciation, the word mark-up prompt) sent through your Claude Code login, the
 private videos sent to your own YouTube channel, and the missed-practice events
 in your own Google Calendar. `library import-gutenberg` downloads a book from
 gutenberg.org; nothing is sent there.
