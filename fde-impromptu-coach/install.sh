@@ -79,14 +79,12 @@ FDE_COACH_HOME="$DATA_DIR" "$VENV/bin/python" "$SRC_DIR/scripts/fde_coach.py" se
 mkdir -p "$HOME/.local/bin"
 ln -sf "$DATA_DIR/bin/fde-coach" "$HOME/.local/bin/fde-coach"
 
-# The companion skill fde-learn (daily first-principles learning track) lives next to this folder.
-LEARN_SKILL="$(cd "$(cd "$SKILL_DIR" && pwd -P)/.." && pwd)/fde-learn"
-if [ -f "$LEARN_SKILL/SKILL.md" ]; then
-  mkdir -p "$HOME/.claude/skills"
-  if [ ! -e "$HOME/.claude/skills/fde-learn" ]; then
-    ln -s "$LEARN_SKILL" "$HOME/.claude/skills/fde-learn"
-    say "Linked the fde-learn skill into ~/.claude/skills"
-  fi
+# Claude Code finds a skill only at ~/.claude/skills/<name>/SKILL.md. Link all five skills of this repo
+# (this one, fde-learn and the one-practice skills impromptu, pronunciation, legato) so /impromptu,
+# /pronunciation, /legato and /fde-learn work in every session. Never overwrites a real folder.
+say "Linking the Claude Code skills into ~/.claude/skills"
+if ! bash "$SKILL_DIR/link_skills.sh"; then
+  echo "Warning: some skills could not be linked (see above). Fix it, then run: bash \"$SKILL_DIR/link_skills.sh\""
 fi
 
 cat <<MSG
@@ -105,6 +103,8 @@ Next steps
                               (it offers pronunciation and legato practice afterwards)
   5. Browse the reading passages (public-domain books): $DATA_DIR/bin/fde-coach library list
   6. Daily learning track (06:00 topic drop): $DATA_DIR/bin/fde-coach learn init --repo ~/Code/continuous-learning
+  7. In Claude Code: /impromptu, /pronunciation, /legato, /fde-learn (add status, history, ...), or just say
+     "start legato". Start a new Claude Code session if one was already open.
 
 Tip: add ~/.local/bin to your PATH to type just 'fde-coach'.
 MSG

@@ -11,6 +11,7 @@ If today is at risk, protect the streak first: record any way you can
 
 | Symptom | Likely cause | Fix |
 |---|---|---|
+| `/legato`, `/impromptu`, `/pronunciation` or `/fde-learn` is "unknown", or Claude doesn't recognise a practice | the skills are not in `~/.claude/skills/<name>/SKILL.md` (installed from a clone without linking, a copied folder, or the repo cloned *inside* `~/.claude/skills`, one level too deep) | `fde-coach doctor` shows the *Claude Code skills* line. From your clone: `bash fde-impromptu-coach/link_skills.sh` (`--check` to verify), then start a new Claude Code session. A clone inside `~/.claude/skills`: move it (e.g. to `~/Code/fde-impromptu-coach`) and run `install.sh` again |
 | Nothing happened at 05:30 | Mac asleep or off | The 15-minute agent prepares everything when the Mac wakes. For on-time readiness: `sudo pmset repeat wakeorpoweron MTWRFSU 05:25:00` |
 | `doctor` shows an agent "not loaded" | agents removed or failed to load | `fde-coach install-agents` |
 | No dialogs or banners | Focus / Do Not Disturb, or notifications off for Script Editor | System Settings → Notifications → Script Editor → Allow; allow it in your Focus mode |

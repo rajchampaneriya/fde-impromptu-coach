@@ -45,20 +45,24 @@ Requirements:
   Brio 100) and select it once in QuickTime (**File → New Movie Recording → ⌄**).
   No camera at all? Use `recording.mode=none` (see section 3).
 
-```bash
-mkdir -p ~/.claude/skills
-unzip ~/Downloads/fde-impromptu-coach.zip -d ~/.claude/skills/
-bash ~/.claude/skills/fde-impromptu-coach/install.sh
-```
-
-From a git clone instead, link the skill folder so Claude Code finds it, then
-run the installer:
+Clone the whole repo outside `~/.claude/skills` (and outside Documents, Desktop
+and Downloads), then run the installer from the clone:
 
 ```bash
-mkdir -p ~/.claude/skills
-ln -s "$PWD/fde-impromptu-coach" ~/.claude/skills/fde-impromptu-coach
-bash fde-impromptu-coach/install.sh
+git clone https://github.com/rajchampaneriya/fde-impromptu-coach ~/Code/fde-impromptu-coach
+bash ~/Code/fde-impromptu-coach/fde-impromptu-coach/install.sh
 ```
+
+The installer links all five skills into `~/.claude/skills` (`link_skills.sh`):
+this one, `fde-learn` and the one-practice skills `impromptu`, `pronunciation`
+and `legato`, so `/impromptu`, `/pronunciation`, `/legato` and `/fde-learn`
+work in every Claude Code session. Claude Code only finds a skill at
+`~/.claude/skills/<name>/SKILL.md`: a repo cloned *into* `~/.claude/skills` is
+one level too deep and stays invisible. Check any time with
+`bash ~/Code/fde-impromptu-coach/fde-impromptu-coach/link_skills.sh --check`.
+
+A zip of only this folder, unzipped into `~/.claude/skills/`, still installs
+the coach and this skill, but not the one-practice skills or `fde-learn`.
 
 Optional: `install.sh --time 06:00` to use a different daily time.
 

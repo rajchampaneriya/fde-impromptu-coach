@@ -1,6 +1,7 @@
 ---
 name: fde-learn
-description: Daily first-principles AI learning track for the Forward Deployed Engineer path. A topic drops at 05:50 (Google Calendar at 06:00) and gets one to three mornings depending on its size; the learner builds a notebook, code or Excalidraw diagram, records a ≤5-minute YouTube explanation, and ships it to their public continuous-learning repo before its deadline. Each project ends with an article published on rajc.work. Use whenever the user asks for today's topic, lesson, practice or task, says they are stuck or want a hint, wants to ship, submit or finish today's topic, wants help writing or publishing the project article, has time left and wants the next topic, asks about their learning streak or progress, mentions the continuous-learning repo, Karpathy, 3Blue1Brown or project steps in this track, wants to pause for travel, or wants to set up, fix or understand the learning routine, even if they do not name the skill.
+description: FDE Learn, the daily first-principles AI learning track for the Forward Deployed Engineer path. A topic drops at 05:50 (Google Calendar at 06:00) and gets one to three mornings depending on its size; the learner builds a notebook, code or Excalidraw diagram, records a ≤5-minute YouTube explanation, and ships it to their public continuous-learning repo before its deadline. Each project ends with an article published on rajc.work. Use whenever the user types /fde-learn or asks for today's topic, lesson, practice or task, says they are stuck or want a hint, wants to ship, submit or finish today's topic, wants help writing or publishing the project article, has time left and wants the next topic, asks about their learning streak or progress, mentions the continuous-learning repo, Karpathy, 3Blue1Brown or project steps in this track, wants to pause for travel, or wants to set up, fix or understand the learning routine, even if they do not name the skill.
+argument-hint: "[today | hint | check | ship <YouTube link> | article <link> | next | status | pause <YYYY-MM-DD>]"
 compatibility: macOS with FDE Impromptu Coach installed (fde-coach CLI), git, Ollama, uv, Python 3.10+ for the notebooks. Google Calendar via fde-coach calendar-auth.
 ---
 
@@ -74,6 +75,12 @@ Everything runs through the FDE Impromptu Coach CLI: `~/FDE-Impromptu/bin/fde-co
 | "Push failed", "calendar didn't show" | `fde-coach learn sync`, then `fde-coach doctor`; calendar needs `fde-coach calendar-auth` once. |
 | "Set it up" | See **Setup** below. |
 | "Change the drop time / rest day" | `fde-coach config --set learn.drop_time=06:10` (reinstalls the schedule) · `--set 'learn.rest_days=["Sun"]'` · `--set learn.event_time=06:15` |
+
+## /fde-learn arguments
+
+Slash arguments: `$ARGUMENTS`. Empty or `today` → the "What's today's topic?" row above; `hint` → "I'm stuck";
+`check` → "Check my work"; `ship <link>` → "Ship it" with that YouTube link; `article <link>` → "The article is
+live"; `next`, `status`, `pause <YYYY-MM-DD>` → their rows. Anything else: read it as the user's words.
 
 ## Setup (once)
 

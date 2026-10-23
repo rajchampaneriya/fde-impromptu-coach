@@ -15,10 +15,10 @@ done
 if [ -x "$DATA_DIR/bin/fde-coach" ]; then
   "$DATA_DIR/bin/fde-coach" calendar-sync --clear >/dev/null 2>&1 && echo "Removed upcoming Google Calendar alerts" || true
 fi
-# The fde-learn skill link that install.sh created (only if it points into this repo)
-if [ -L "$HOME/.claude/skills/fde-learn" ] && [ "$(readlink "$HOME/.claude/skills/fde-learn")" = "$(cd "$(cd "$SKILL_DIR" && pwd -P)/.." && pwd)/fde-learn" ]; then
-  rm -f "$HOME/.claude/skills/fde-learn"
-  echo "Removed the fde-learn skill link"
+# The skill links install.sh created in ~/.claude/skills (only links that point into this clone; the
+# deployed copy in ~/FDE-Impromptu/src has no link_skills.sh, so run uninstall.sh from your clone to remove them)
+if [ -f "$SKILL_DIR/link_skills.sh" ]; then
+  bash "$SKILL_DIR/link_skills.sh" --remove || true
 fi
 if [ -L "$HOME/.local/bin/fde-coach" ]; then
   rm -f "$HOME/.local/bin/fde-coach"

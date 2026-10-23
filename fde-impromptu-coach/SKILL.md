@@ -1,6 +1,6 @@
 ---
 name: fde-impromptu-coach
-description: Daily speaking coach for the Forward Deployed Engineer (FDE) role on macOS. At 05:30 a timed PowerPoint deck of 5 never-repeated, progressively harder impromptu questions is recorded on camera and uploaded privately to YouTube; at 05:45 a pen-method pronunciation drill and at 06:00 a legato (smooth, connected speech) drill read verbatim passages from free public-domain books, never AI-written text. Exec slots and a post-session answer key train headline-first exec answers. Each practice keeps a streak protected by Mac reminders and Google Calendar alerts. Use whenever the user mentions impromptu, FDE, communication or leadership practice, exec answers, model answers, pronunciation, the pen method, legato, linking words, breath or fluency practice, adding a book, today's deck, starting or recording a session, streaks, missed practice, reminders, calendar alerts, uploads, making practice harder or easier, or installing, configuring or troubleshooting this routine, even if they do not name the skill.
+description: FDE Impromptu Coach for macOS, the umbrella skill for three daily speaking practices - impromptu (05:30, five surprise on-camera questions with exec slots and an exec answer key), pronunciation (05:45, pen method) and legato (06:00, connected speech), both reading verbatim passages from free public-domain books, never AI-written text. Each keeps a streak protected by Mac reminders and Google Calendar alerts. Use for installing, configuring, scheduling or troubleshooting the routine; streaks, missed practice, reminders, calendar alerts and YouTube uploads; the passage library and adding a book; exec mode and answer key settings; making practice harder or easier; or any FDE communication, leadership or speaking-practice request, even if the user does not name the skill. The impromptu, pronunciation and legato skills are shorter entry points to one practice each; fde-learn is the learning track.
 compatibility: macOS 12+ with Microsoft PowerPoint, QuickTime Player, Python 3.9+ and Claude Code. YouTube upload needs a Google Cloud OAuth desktop client.
 ---
 
@@ -27,6 +27,15 @@ Everything is driven by one CLI. After installation it is at
 `~/FDE-Impromptu/bin/fde-coach` (also linked as `~/.local/bin/fde-coach`).
 Below, `fde-coach` means that path. If it does not exist, the skill is not
 installed yet: see **Install** below.
+
+**One skill per practice.** The repo ships five skills, all linked into
+`~/.claude/skills/` by the installer: this umbrella skill, `impromptu`,
+`pronunciation`, `legato` (short entry points for one practice each; the user
+can type `/impromptu`, `/pronunciation`, `/legato`, optionally with `status`,
+`history` and so on) and `fde-learn` (`/fde-learn`). Starting or checking one
+practice belongs to its own skill; everything else (install, settings, Google,
+the library, troubleshooting) stays here. `AGENTS.md` at the repo root has the
+full intent map.
 
 ## Ground rules (follow every time)
 
@@ -93,6 +102,7 @@ installed yet: see **Install** below.
 | "Connect Google Calendar", "alert me if I miss" | README.md → *Google setup* (enable Google Calendar API), then `fde-coach calendar-auth` |
 | "Change / stop the calendar alerts" | `fde-coach config --set 'google_calendar.popup_times=[…]'` or `google_calendar.enabled=false`, then `fde-coach calendar-sync` |
 | "Something's broken" | `fde-coach doctor`, then `references/troubleshooting.md` |
+| "/legato (or /impromptu, /pronunciation, /fde-learn) does nothing", "Claude doesn't know my practices" | `fde-coach doctor` (line *Claude Code skills*), then `bash <clone>/fde-impromptu-coach/link_skills.sh` and a new Claude Code session |
 | "Today's learning topic", "ship today's topic", learning streak | Use the **fde-learn** skill (`fde-coach learn …`) |
 | "Tell the coach about me" | `fde-coach config --set 'learner_context=…'` (background, target companies, weak spots; used for every future set) |
 
@@ -203,22 +213,29 @@ an offer to go into detail**.
 
 ## Install
 
-From the unzipped skill folder (normally `~/.claude/skills/fde-impromptu-coach`):
+From a clone of the whole repo, outside `~/.claude/skills` and outside
+Documents/Desktop/Downloads (macOS blocks background jobs there):
 
 ```bash
-bash ~/.claude/skills/fde-impromptu-coach/install.sh
+git clone https://github.com/rajchampaneriya/fde-impromptu-coach ~/Code/fde-impromptu-coach
+bash ~/Code/fde-impromptu-coach/fde-impromptu-coach/install.sh
 ```
 
 It creates a Python virtual environment in `~/FDE-Impromptu/venv`, installs
-`requirements.txt`, writes the launcher, installs the four launchd agents and
-triggers every macOS permission prompt (Automation for QuickTime, PowerPoint and
-Reminders; camera and microphone for QuickTime; notifications). Tell the user to
-click **OK / Allow** on each. Then `fde-coach doctor` should be all `[ok]`
+`requirements.txt`, writes the launcher, installs the launchd agents, links all
+five skills into `~/.claude/skills/` (`link_skills.sh`: Claude Code finds a skill
+only at `~/.claude/skills/<name>/SKILL.md`, so a clone *inside* that folder is
+invisible to it) and triggers every macOS permission prompt (Automation for
+QuickTime, PowerPoint and Reminders; camera and microphone for QuickTime;
+notifications). Tell the user to click **OK / Allow** on each. Then `fde-coach doctor` should be all `[ok]`
 except YouTube until it is connected. README.md has the full guide, including
 YouTube setup and an optional `pmset` wake schedule.
 
 ## Files
 
+- `../AGENTS.md` — intent map for every skill and the repo's working rules (`../CLAUDE.md` imports it)
+- `../skills/{impromptu,pronunciation,legato}/SKILL.md` — one-practice entry points; `link_skills.sh` links
+  them, this skill and `fde-learn` into `~/.claude/skills` (`--check`, `--remove`)
 - `scripts/fde_coach.py` — CLI (`--help` lists all commands)
 - `scripts/fdecoach/` — modules: `app` (flows), `questions` (plan, listeners, exec mode), `deck`
   (incl. exec and reply slides, `timeline`), `answers` (exec answer key), `recorder`,

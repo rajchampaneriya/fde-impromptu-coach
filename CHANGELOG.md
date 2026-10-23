@@ -1,5 +1,33 @@
 # Changelog
 
+## v8 — One slash command per practice, and AGENTS.md
+
+The practices could only be reached through the umbrella skill, and only when it happened to be linked into
+`~/.claude/skills`: install.sh linked `fde-learn` but never `fde-impromptu-coach` itself, so a clone-based install left
+Claude Code unable to find any practice, and there was no `/legato`, `/pronunciation` or `/impromptu` at all.
+
+**New**
+
+- **One skill per practice**: `skills/impromptu`, `skills/pronunciation`, `skills/legato`. Type `/legato` (or
+  `/legato status`, `/pronunciation add <word>`, `/impromptu answers` …) or just say it, misspellings included
+  ("lagato", "pronounciation", "impromptue"). Each is a short router to the `fde-coach` CLI with its practice's
+  rules (surprise, cold read, never write passages, run detached). `/fde-learn` takes arguments too.
+- **`link_skills.sh`** links all five skills into `~/.claude/skills` (`--check` reports, `--remove` unlinks only this
+  clone's links). It never overwrites a real folder and explains a clone made *inside* `~/.claude/skills`, where Claude
+  Code cannot see nested skills. install.sh and uninstall.sh use it.
+- **`fde-coach doctor`** reports skills Claude Code cannot find and the exact command that links them.
+- **`AGENTS.md`** at the repo root: the skills and slash commands, what the learner says → skill → command, the
+  ground rules every skill shares, the repo layout and how to work on it. `CLAUDE.md` imports it.
+- **BDD scenarios**: `scripts/tests/features/skill_routing.feature` (14 scenarios, one test each in
+  `test_skill_routing.py`): frontmatter parses, descriptions fit the listing and lead with the practice, every
+  `fde-coach` command a skill names is a real command, starts are detached, nothing reveals, the installer links and
+  never overwrites, the doctor reports, and the installer, doctor and AGENTS.md agree on the skill list.
+
+**Changed**
+
+- The umbrella skill's description now names the three practices first and points to the one-practice skills.
+- `PyYAML` joins `requirements.txt` (the frontmatter checks).
+
 ## v7 — Exec slots and the exec answer key
 
 Feedback from a senior architect: technical answers land with technical peers, but executives and account leaders
