@@ -341,6 +341,14 @@ def cmd_doctor(args) -> int:
         line(True, "Claude Code CLI", f"{claude} {ver}")
     else:
         line(False, "Claude Code CLI", "not found; set claude_path (the built-in bank still works)")
+    from fdecoach.config import claude_skills_dir, missing_claude_skills
+    skills_dir = claude_skills_dir()
+    missing = missing_claude_skills(skills_dir)
+    linker = (skills_dir / "fde-impromptu-coach").resolve() / "link_skills.sh"
+    fix = f"bash {linker}" if linker.is_file() else "run install.sh (or link_skills.sh) from your clone of the repo"
+    line(not missing, "Claude Code skills (/impromptu /pronunciation /legato /fde-learn)",
+         f"all linked in {skills_dir}" if not missing
+         else f"not found in {skills_dir}: {', '.join(missing)} - {fix}, then start a new Claude Code session")
     line(macos.is_macos() or macos.dry_run(), "macOS", os.uname().sysname)
     line(macos.app_exists(cfg.get("presentation_app", "Microsoft PowerPoint")), "Microsoft PowerPoint installed")
     line(macos.app_exists("QuickTime Player"), "QuickTime Player installed")

@@ -22,6 +22,21 @@ ENTRY_SCRIPT = SCRIPTS_DIR / "fde_coach.py"
 APP_NAME = "FDE Impromptu Coach"
 TAG = "[fde-impromptu-coach]"
 
+# The repo's Claude Code skills. Claude Code finds a skill only at ~/.claude/skills/<name>/SKILL.md;
+# link_skills.sh links each of these there. Keep this, link_skills.sh and AGENTS.md in sync (the tests check).
+CLAUDE_SKILLS = ("fde-impromptu-coach", "fde-learn", "impromptu", "pronunciation", "legato")
+
+
+def claude_skills_dir() -> Path:
+    """Where Claude Code looks for personal skills (CLAUDE_SKILLS_DIR overrides it, for tests)."""
+    return Path(os.environ.get("CLAUDE_SKILLS_DIR") or Path.home() / ".claude" / "skills").expanduser()
+
+
+def missing_claude_skills(skills_dir: "Path | None" = None) -> list:
+    """Names from CLAUDE_SKILLS that Claude Code cannot find (no <dir>/<name>/SKILL.md)."""
+    d = skills_dir or claude_skills_dir()
+    return [n for n in CLAUDE_SKILLS if not (d / n / "SKILL.md").is_file()]
+
 DEFAULTS: Dict[str, Any] = {
     "role": "Forward Deployed Engineer",
     "learner_context": "",

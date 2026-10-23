@@ -20,11 +20,24 @@ This skill removes the discipline tax. It builds the deck, runs the timer, recor
 
 ## How to Use It
 
-1. **Install** — clone this repo, then run `bash fde-impromptu-coach/install.sh`
+1. **Install** — clone this repo outside `~/.claude/skills` (e.g. `~/Code/fde-impromptu-coach`), then run
+   `bash fde-impromptu-coach/install.sh`. It links every skill into `~/.claude/skills`, so the slash commands below work
+   in any Claude Code session
 2. **Every morning at 05:30** — a deck with 5 surprise questions opens itself
 3. **Click Start** — QuickTime records you; each question gets 60 seconds; everything stops and saves automatically
 4. **Your video uploads privately** to YouTube, with chapter marks
-5. **Talk to Claude any time** — "start my practice", "what's my streak?", "make today harder"
+5. **Talk to Claude any time** — "start my practice", "what's my streak?", "make today harder", or type a slash command:
+
+| Command | Practice |
+|---|---|
+| `/impromptu` (`status`, `answers`, `harder`, `brief <topic>` …) | 5 surprise on-camera questions, then the exec answer key |
+| `/pronunciation` (`status`, `words`, `add <word>` …) | the pen method |
+| `/legato` (`status`, `history`, `passage <id>` …) | smooth, connected speech |
+| `/fde-learn` (`today`, `hint`, `ship <link>` …) | the daily learning track |
+| `/fde-impromptu-coach` | set-up, settings, Google, the passage library, troubleshooting |
+
+A command missing? `fde-coach doctor` checks the skills, and `bash fde-impromptu-coach/link_skills.sh` links them.
+[`AGENTS.md`](AGENTS.md) maps what you say to the skill and command, for Claude Code and other coding agents.
 
 Then, if you want, keep going:
 
