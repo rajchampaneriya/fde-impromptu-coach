@@ -23,7 +23,8 @@ SKILLS="fde-impromptu-coach:fde-impromptu-coach
 fde-learn:fde-learn
 impromptu:skills/impromptu
 pronunciation:skills/pronunciation
-legato:skills/legato"
+legato:skills/legato
+stage:skills/stage"
 
 real() { (cd "$1" 2>/dev/null && pwd -P); }
 

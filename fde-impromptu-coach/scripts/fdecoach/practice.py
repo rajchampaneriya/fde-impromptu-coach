@@ -1,12 +1,15 @@
-"""Shared engine for the audio-only practices that run a timed deck while the
-voice is recorded: pronunciation (pen method) and legato (connected speech).
+"""Shared engine for the practices that run a timed deck while they record:
+pronunciation (pen method) and legato (connected speech), both audio only and
+daily, and Weekend Stage (a TED talk a weekend), on camera and weekly.
 
 Each practice is described by a `Practice` spec (state file, file names,
 calendar prefix, and hooks for content, deck, video frames, chapters and
-metadata). The flows here are the same for all of them: daily build,
-recorded session, slides+voice video, private YouTube upload, missed-practice
-calendar alerts, status and history. The .m4a is always kept and a failure in
-any step never breaks a streak.
+metadata). The flows here are the same for all of them: scheduled build,
+recorded session, private YouTube upload, missed-practice calendar alerts,
+status and history. An audio practice's .m4a becomes a slides+voice video; a
+video practice (media "video") uploads its camera recording as it is. A weekly
+practice (cadence "weekly") files each session under its weekend's Saturday.
+The recording is always kept and a failure in any step never breaks a streak.
 
 Lock order (as in app.py): session -> generate -> history; upload -> history.
 """
@@ -23,7 +26,7 @@ from typing import Any, Callable, Dict, List, Optional, Tuple
 
 from . import audio, gcal, macos, youtube
 from .config import APP_NAME, Paths
-from .state import History, LockBusy, file_lock, lock_is_held, now, streaks, today
+from .state import History, LockBusy, file_lock, lock_is_held, now, period_start, streaks, today
 
 log = logging.getLogger("fdecoach")
 
@@ -51,10 +54,14 @@ class Practice:
     feedback: Optional[Callable[[Any, dt.date], None]] = None
     describe: Optional[Callable[[Dict[str, Any]], Dict[str, Any]]] = None
     next_key: str = ""                       # practice offered after this one ("legato")
+    media: str = "audio"                     # "video": the camera records (recorder.py), uploaded as it is
+    cadence: str = "daily"                   # "weekly": one session per weekend, a streak in weeks
+    timeline: Optional[Callable[[Dict[str, Any], Dict[str, Any]], List[int]]] = None  # per-session slide seconds
+    on_ready: Optional[Callable[[Any, Dict[str, Any]], None]] = None  # scheduled run, before the start prompt
     extra: Dict[str, Any] = field(default_factory=dict)
 
 
-_MODULES = {"pronunciation": "pronounce_session", "legato": "legato_session"}
+_MODULES = {"pronunciation": "pronounce_session", "legato": "legato_session", "stage": "stage_session"}
 
 
 def spec_for(key: str) -> Practice:
@@ -76,7 +83,20 @@ def enabled(cfg: Dict[str, Any], spec: Practice) -> bool:
 
 
 def history(paths: Paths, spec: Practice) -> History:
-    return History(paths, file=getattr(paths, spec.state_attr))
+    return History(paths, file=getattr(paths, spec.state_attr), cadence=spec.cadence)
+
+
+def period(spec: Practice, date: Optional[dt.date] = None) -> dt.date:
+    """The date this practice files a session under: today, or this weekend's Saturday."""
+    return period_start(date or today(), spec.cadence)
+
+
+def unit(spec: Practice) -> str:
+    return "Week" if spec.cadence == "weekly" else "Day"
+
+
+def media_path(session: Dict[str, Any]) -> Optional[str]:
+    return session.get("audio_path") or session.get("video_path")
 
 
 def recordings_dir(paths: Paths, cfg: Dict[str, Any], spec: Practice, create: bool = True) -> Path:
@@ -90,15 +110,17 @@ def reminder_title(spec: Practice, date: dt.date) -> str:
     return f"Record {spec.title.lower()} practice ({date.isoformat()})"
 
 
-def session_seconds(cfg: Dict[str, Any], spec: Practice) -> int:
+def session_seconds(cfg: Dict[str, Any], spec: Practice, session: Optional[Dict[str, Any]] = None) -> int:
+    if session is not None and spec.timeline:
+        return sum(spec.timeline(session, cfg))
     return sum(spec.durations(cfg))
 
 
 def pending_uploads(hist: History) -> List[Dict[str, Any]]:
-    """Audio practices keep audio_path (not video_path), so History.pending_uploads
-    never saw them; this is the audio-aware version."""
+    """Audio practices keep audio_path and video practices video_path; History.pending_uploads
+    only ever saw the FDE video, so this is the version that knows both."""
     return [s for _, s in sorted(hist.sessions.items())
-            if s.get("recorded") and s.get("audio_path")
+            if s.get("recorded") and media_path(s)
             and (s.get("youtube") or {}).get("status") in ("pending", "failed")]
 
 
@@ -106,12 +128,13 @@ def pending_uploads(hist: History) -> List[Dict[str, Any]]:
 
 def ensure_today(ctx, spec: Practice, replace: bool = False, **options: Any) -> Tuple[Dict[str, Any], bool]:
     paths, cfg = ctx.paths, ctx.cfg
-    date = today()
+    date = period(spec)
     with file_lock(paths, "generate", blocking=True):
         hist = history(paths, spec)
         existing = hist.get(date)
         if existing and existing.get("recorded") and replace:
-            raise RuntimeError(f"Today's {spec.title.lower()} session is already recorded; it can't be replaced.")
+            when = "This week's" if spec.cadence == "weekly" else "Today's"
+            raise RuntimeError(f"{when} {spec.title.lower()} session is already recorded; it can't be replaced.")
         if existing and not replace:
             if not Path(existing.get("deck_path", "")).exists():
                 pptx, ppsx = spec.build_deck(existing, streaks(hist, date), cfg, paths.decks)
@@ -133,7 +156,7 @@ def ensure_today(ctx, spec: Practice, replace: bool = False, **options: Any) -> 
         pptx, ppsx = spec.build_deck(session, streaks(hist, date), cfg, paths.decks)
         with file_lock(paths, "history", blocking=True):
             _put(hist, session, pptx, ppsx)
-        log.info("Built %s Day %s deck (source %s)", spec.title, session["day_number"], session["source"])
+        log.info("Built %s %s %s deck (source %s)", spec.title, unit(spec), session["day_number"], session["source"])
         return session, True
 
 
@@ -152,24 +175,32 @@ def daily(ctx, spec: Practice, from_prompt: bool = False) -> Dict[str, Any]:
         log.exception("Could not build today's %s deck", spec.title.lower())
         macos.notify(APP_NAME, f"Couldn't build the {spec.title.lower()} deck: {exc}. Run: fde-coach doctor")
         return {"ok": False, "error": str(exc)}
-    date = today()
-    stats = streaks(history(ctx.paths, spec), date)
+    date = period(spec)
+    stats = streaks(history(ctx.paths, spec), today())
     if session.get("recorded"):
         return {"ok": True, "already_recorded": True}
     if ctx.cfg.get("open_deck_when_ready", True):
         macos.powerpoint_open(Path(session["deck_path"]), ctx.cfg.get("presentation_app"))
+    if spec.on_ready:
+        try:
+            spec.on_ready(ctx, session)
+        except Exception:  # noqa: BLE001 - a prep page must never stop the practice
+            log.exception("%s on_ready failed", spec.key)
+    u = unit(spec)
     macos.notify(f"{spec.title} practice ready", spec.ready_body,
-                 subtitle=f"Day {session['day_number']} · {stats['current']}-day streak")
+                 subtitle=f"{u} {session['day_number']} · {stats['current']}-{u.lower()} streak")
     rem = ctx.cfg.get("reminders", {})
     if rem.get("use_reminders_app", True):
         title = reminder_title(spec, date)
         macos.reminders_prune(rem.get("reminders_list", "FDE Practice"), spec.reminder_tag, title)
+        # a weekend practice starts with ~25 minutes of study: its reminder falls due in the evening
+        due_h, due_m = (18, 0) if spec.cadence == "weekly" else (7, 0)
         macos.reminders_create(rem.get("reminders_list", "FDE Practice"), title,
-                               f"{spec.reminder_tag} Run: fde-coach {spec.cli} session", 7, 0)
+                               f"{spec.reminder_tag} Run: fde-coach {spec.cli} session", due_h, due_m)
     calendar_sync_safe(ctx, spec)
     if not from_prompt and not lock_is_held(ctx.paths, "session"):
         answer = macos.dialog(
-            f"{spec.title} practice, Day {session['day_number']} is ready.\n\n{spec.prompt_body}",
+            f"{spec.title} practice, {u} {session['day_number']} is ready.\n\n{spec.prompt_body}",
             APP_NAME, ["Later", "Start now"], "Start now", timeout_seconds=900)
         log.info("%s prompt -> %s", spec.key, answer or "error")
         if answer == "Start now":
@@ -204,7 +235,21 @@ def _audio_device(cfg: Dict[str, Any], spec: Practice) -> str:
     return str(section(cfg, spec).get("audio_device") or cfg.get("pronunciation", {}).get("audio_device", ""))
 
 
+def _record_video(session: Dict[str, Any], cfg: Dict[str, Any], paths: Paths, spec: Practice) -> Dict[str, Any]:
+    """Camera + microphone through QuickTime while the deck plays (the impromptu recorder,
+    pointed at this practice's folder, length and minimum)."""
+    from . import recorder
+    sec = section(cfg, spec)
+    dest = (recordings_dir(paths, cfg, spec)
+            / f"{session['date']}_{spec.file_stem}_{unit(spec)}{session.get('day_number', 0)}.mov")
+    min_secs = int(sec.get("min_video_seconds", cfg.get("recording", {}).get("min_video_seconds", 150)))
+    return recorder.record(session, cfg, paths, total=session_seconds(cfg, spec, session), dest=dest,
+                           min_secs=min_secs)
+
+
 def _record_once(session: Dict[str, Any], cfg: Dict[str, Any], paths: Paths, spec: Practice) -> Dict[str, Any]:
+    if spec.media == "video":
+        return _record_video(session, cfg, paths, spec)
     sec = section(cfg, spec)
     folder = recordings_dir(paths, cfg, spec)
     dest = folder / f"{session['date']}_{spec.file_stem}_Day{session.get('day_number', 0)}.m4a"
@@ -281,12 +326,15 @@ def _run_session_locked(ctx, spec: Practice, force: bool, max_tries: int) -> Dic
             break
         if result.get("error") == "cancelled":
             return result
-        buttons = ["Later", "Keep this audio", "Try again"] if result.get("audio") else ["Later", "Try again"]
+        kept = result.get("audio") or result.get("video")
+        keep = "Keep this video" if spec.media == "video" else "Keep this audio"
+        buttons = ["Later", keep, "Try again"] if kept else ["Later", "Try again"]
+        safe = "Your streak is safe until Sunday night." if spec.cadence == "weekly" else \
+            "Your streak is safe until midnight."
         answer = macos.dialog(
-            f"The {spec.title.lower()} recording didn't finish cleanly: {result.get('error')}.\n\n"
-            "Your streak is safe until midnight.", APP_NAME, buttons, "Try again",
-            timeout_seconds=300, icon="caution")
-        if answer == "Keep this audio" and result.get("audio"):
+            f"The {spec.title.lower()} recording didn't finish cleanly: {result.get('error')}.\n\n{safe}",
+            APP_NAME, buttons, "Try again", timeout_seconds=300, icon="caution")
+        if answer == keep and kept:
             result["ok"] = True
             break
         if answer != "Try again" or attempt == max_tries:
@@ -311,13 +359,14 @@ def offer(ctx, spec: Practice, after: str) -> None:
     if not enabled(ctx.cfg, spec) or (flag and not section(ctx.cfg, spec).get(flag, True)):
         return
     try:
-        s = history(ctx.paths, spec).get(today())
+        s = history(ctx.paths, spec).get(period(spec))
         if s and s.get("recorded"):
             return
     except Exception:  # noqa: BLE001 - never disturb the finished practice
         return
     mins = max(1, round(session_seconds(ctx.cfg, spec) / 60))
-    answer = macos.dialog(f"{after} practice saved. {spec.title} practice next? ({mins} min, audio only)",
+    kind = "on camera" if spec.media == "video" else "audio only"
+    answer = macos.dialog(f"{after} practice saved. {spec.title} practice next? ({mins} min, {kind})",
                           APP_NAME, ["Later", "Start now"], "Start now", timeout_seconds=300)
     log.info("offer %s -> %s", spec.key, answer or "error")
     if answer == "Start now":
@@ -325,14 +374,18 @@ def offer(ctx, spec: Practice, after: str) -> None:
 
 
 def mark_recorded(ctx, spec: Practice, date: dt.date, result: Dict[str, Any]) -> None:
-    yt_enabled = bool(ctx.cfg.get("youtube", {}).get("enabled", True)) and bool(result.get("audio"))
+    media = result.get("video") if spec.media == "video" else result.get("audio")
+    yt_enabled = bool(ctx.cfg.get("youtube", {}).get("enabled", True)) and bool(media)
     with file_lock(ctx.paths, "history", blocking=True):
         hist = history(ctx.paths, spec)
         session = hist.get(date)
         if session is None:
             raise RuntimeError(f"No {spec.title.lower()} session for {date.isoformat()}")
+        if spec.media == "video":
+            session.update(video_path=media, video_duration=result.get("duration"))
+        else:
+            session.update(audio_path=media, audio_duration=result.get("duration"))
         session.update(recorded=True, recorded_at=now().isoformat(timespec="seconds"),
-                       audio_path=result.get("audio"), audio_duration=result.get("duration"),
                        chapter_offset=result.get("offset"), record_method=result.get("method", ""),
                        ended_early=bool(result.get("ended_early")))
         session["youtube"] = {"status": "pending" if yt_enabled else "disabled", "attempts": 0}
@@ -345,11 +398,14 @@ def mark_recorded(ctx, spec: Practice, date: dt.date, result: Dict[str, Any]) ->
     hist = history(ctx.paths, spec)
     stats = streaks(hist, date)
     day = (hist.get(date) or {}).get("day_number", "?")
+    u = unit(spec)
     best = " · new personal best!" if stats["current"] >= stats["best"] and stats["current"] > 1 else ""
-    macos.notify(f"{spec.title} Day {day} done — {stats['current']}-day streak{best}",
-                 "Audio saved. Assembling the video and uploading privately." if yt_enabled else "Audio saved.",
-                 sound="Hero")
-    log.info("Marked %s %s recorded (%s); streak %s", date, spec.key, result.get("audio"), stats["current"])
+    if spec.media == "video":
+        body = "Video saved. Uploading privately." if yt_enabled else "Video saved."
+    else:
+        body = "Audio saved. Assembling the video and uploading privately." if yt_enabled else "Audio saved."
+    macos.notify(f"{spec.title} {u} {day} done — {stats['current']}-{u.lower()} streak{best}", body, sound="Hero")
+    log.info("Marked %s %s recorded (%s); streak %s", date, spec.key, media, stats["current"])
 
 
 # --------------------------------------------------------------------------- video + upload
@@ -421,7 +477,15 @@ def upload_pending(ctx, spec: Practice, interactive: bool = False) -> List[str]:
                 date = dt.date.fromisoformat(s["date"])
                 if int((s.get("youtube") or {}).get("attempts", 0)) >= max_attempts and not interactive:
                     continue
-                video = assemble_video(s, ctx.cfg, ctx.paths, spec)
+                if spec.media == "video":
+                    # the camera recording goes up as it is: nothing else is mixed into it
+                    video = Path(s["video_path"]) if Path(s["video_path"]).exists() else None
+                    if video is None:
+                        _set_yt(ctx, spec, date, status="failed", last_error="recording not found")
+                        out.append(f"{s['date']}: recording not found at {s['video_path']}")
+                        continue
+                else:
+                    video = assemble_video(s, ctx.cfg, ctx.paths, spec)
                 if video is None:
                     _set_yt(ctx, spec, date, status="failed",
                             last_error="video assembly failed (ffmpeg missing or errored)")
@@ -487,6 +551,12 @@ def passage_credit(passage: Optional[Dict[str, Any]]) -> str:
 
 # --------------------------------------------------------------------------- calendar
 
+def _alert_day(spec: Practice, key: dt.date) -> dt.date:
+    """The day the missed-practice alert sits on: the session's own day, or for a weekly
+    practice the Sunday of its weekend (the last chance to record it)."""
+    return key + dt.timedelta(days=1) if spec.cadence == "weekly" else key
+
+
 def calendar_sync(ctx, spec: Practice, clear: bool = False) -> List[str]:
     gc = ctx.cfg.get("google_calendar", {})
     on = bool(gc.get("enabled", True)) and enabled(ctx.cfg, spec) and not clear
@@ -499,15 +569,17 @@ def calendar_sync(ctx, spec: Practice, clear: bool = False) -> List[str]:
             want: Dict[str, str] = {}
             if on:
                 for i in range(int(gc.get("days_ahead", 2)) + 1):
-                    d = date + dt.timedelta(days=i)
+                    d = period(spec, date + dt.timedelta(days=i))
+                    if d.isoformat() in want:
+                        continue
                     s = hist.get(d)
                     if s and s.get("recorded"):
                         want[d.isoformat()] = "deleted"
-                    elif gcal.event_window(d, ctx.cfg)[0].replace(tzinfo=None) > t:
+                    elif gcal.event_window(_alert_day(spec, d), ctx.cfg)[0].replace(tzinfo=None) > t:
                         want[d.isoformat()] = "created"
             else:
                 for iso, st in state.items():
-                    if st == "created" and iso >= date.isoformat():
+                    if st == "created" and iso >= period(spec, date).isoformat():
                         want[iso] = "deleted"
             out: List[str] = []
             cal = str(gc.get("calendar_id", "primary"))
@@ -518,14 +590,16 @@ def calendar_sync(ctx, spec: Practice, clear: bool = False) -> List[str]:
                 eid = gcal.event_id(d, spec.gcal_prefix)
                 try:
                     if want[iso] == "created":
-                        start, end = gcal.event_window(d, ctx.cfg)
+                        day = _alert_day(spec, d)
+                        start, end = gcal.event_window(day, ctx.cfg)
+                        when = "this weekend's" if spec.cadence == "weekly" else "today's"
                         body = {
                             "id": eid, "summary": spec.event_summary,
-                            "description": (f"You haven't recorded today's {spec.title.lower()} practice yet.\n\n"
+                            "description": (f"You haven't recorded {when} {spec.title.lower()} practice yet.\n\n"
                                             f"On your Mac: fde-coach {spec.cli} session\n\n"
                                             "Created by FDE Impromptu Coach."),
                             "start": {"dateTime": start.isoformat()}, "end": {"dateTime": end.isoformat()},
-                            "reminders": {"useDefault": False, "overrides": gcal.alert_overrides(d, ctx.cfg)},
+                            "reminders": {"useDefault": False, "overrides": gcal.alert_overrides(day, ctx.cfg)},
                             "colorId": str(gc.get("color_id", "11")), "transparency": "transparent",
                             "visibility": "private",
                             "extendedProperties": {"private": {spec.gcal_prefix: iso}},
@@ -559,8 +633,8 @@ def calendar_sync_safe(ctx, spec: Practice) -> None:
 
 
 def tick(ctx) -> None:
-    """Called by the 15-minute reminder agent: keeps every audio practice's
-    calendar alerts rolling forward and retries failed uploads. No prompts."""
+    """Called by the 15-minute reminder agent: keeps every practice's calendar
+    alerts rolling forward and retries failed uploads. No prompts."""
     for spec in all_specs():
         calendar_sync_safe(ctx, spec)
         try:
@@ -573,18 +647,23 @@ def tick(ctx) -> None:
 # --------------------------------------------------------------------------- views
 
 def status(ctx, spec: Practice) -> Dict[str, Any]:
+    """`today` is this period's session: today's, or this weekend's for a weekly practice."""
     hist = history(ctx.paths, spec)
     date = today()
-    s = hist.get(date)
+    s = hist.get(period(spec, date))
     today_info = None
     if s:
         today_info = {"day_number": s.get("day_number"), "recorded": bool(s.get("recorded")),
                       "source": s.get("source"), "deck": s.get("deck_path"), "audio": s.get("audio_path"),
                       "youtube": s.get("youtube")}
+        if spec.media == "video":
+            today_info["video"] = s.get("video_path")
         if spec.describe:
             today_info.update(spec.describe(s))
     return {
         "date": date.isoformat(),
+        "period": period(spec, date).isoformat(),
+        "cadence": spec.cadence,
         "enabled": enabled(ctx.cfg, spec),
         "streak": streaks(hist, date),
         "today": today_info,
@@ -593,13 +672,13 @@ def status(ctx, spec: Practice) -> Dict[str, Any]:
 
 
 def history_rows(ctx, spec: Practice, limit: int = 14, reveal_today: bool = False) -> List[Dict[str, Any]]:
-    """Recent sessions. Today's text stays hidden until recorded (cold read)."""
+    """Recent sessions. This period's text stays hidden until recorded (cold read)."""
     hist = history(ctx.paths, spec)
     rows = []
     for key in sorted(hist.sessions, reverse=True)[:limit]:
         s = hist.sessions[key]
         yt = s.get("youtube") or {}
-        hide = key == today().isoformat() and not s.get("recorded") and not reveal_today
+        hide = key == period(spec).isoformat() and not s.get("recorded") and not reveal_today
         text = s.get("paragraph", "")
         row = {"date": key, "day": s.get("day_number"), "recorded": bool(s.get("recorded")),
                "youtube": yt.get("url") or yt.get("status"),

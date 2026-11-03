@@ -79,7 +79,7 @@ FDE_COACH_HOME="$DATA_DIR" "$VENV/bin/python" "$SRC_DIR/scripts/fde_coach.py" se
 mkdir -p "$HOME/.local/bin"
 ln -sf "$DATA_DIR/bin/fde-coach" "$HOME/.local/bin/fde-coach"
 
-# Claude Code finds a skill only at ~/.claude/skills/<name>/SKILL.md. Link all five skills of this repo
+# Claude Code finds a skill only at ~/.claude/skills/<name>/SKILL.md. Link all six skills of this repo
 # (this one, fde-learn and the one-practice skills impromptu, pronunciation, legato) so /impromptu,
 # /pronunciation, /legato and /fde-learn work in every session. Never overwrites a real folder.
 say "Linking the Claude Code skills into ~/.claude/skills"

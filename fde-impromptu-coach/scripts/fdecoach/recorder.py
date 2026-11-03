@@ -76,13 +76,18 @@ def _run_show(deck: Path, show: Path, cfg: Dict[str, Any], total: float, grace: 
     return ended_early, t_show
 
 
-def record(session: Dict[str, Any], cfg: Dict[str, Any], paths: Paths) -> Dict[str, Any]:
+def record(session: Dict[str, Any], cfg: Dict[str, Any], paths: Paths, total: Optional[float] = None,
+           dest: Optional[Path] = None, min_secs: Optional[int] = None) -> Dict[str, Any]:
+    """Record the camera while the session's deck plays. The impromptu defaults apply unless
+    another video practice (Weekend Stage) passes its own length, file and minimum."""
     rec_cfg = cfg.get("recording", {})
-    folder = paths.recordings_dir(cfg)
-    dest = folder / f"{session['date']}_FDE-Impromptu_Day{session.get('day_number', 0)}.mov"
+    if dest is None:
+        dest = paths.recordings_dir(cfg) / f"{session['date']}_FDE-Impromptu_Day{session.get('day_number', 0)}.mov"
+    folder = dest.parent
+    folder.mkdir(parents=True, exist_ok=True)
     deck = Path(session["deck_path"])
     show = Path(session.get("show_path") or deck)
-    total = session_seconds(cfg, session)
+    total = session_seconds(cfg, session) if total is None else total
     grace = int(rec_cfg.get("stop_grace_seconds", 4))
     mode = rec_cfg.get("mode", "auto")
     result: Dict[str, Any] = {"ok": False, "video": None, "offset": None, "method": mode, "ended_early": False}
@@ -139,7 +144,7 @@ def record(session: Dict[str, Any], cfg: Dict[str, Any], paths: Paths) -> Dict[s
     result["video"] = str(video)
     duration = macos.video_duration_seconds(video)
     result["duration"] = duration
-    min_secs = int(rec_cfg.get("min_video_seconds", 150))
+    min_secs = int(rec_cfg.get("min_video_seconds", 150) if min_secs is None else min_secs)
     if duration is not None and duration < min_secs:
         result["error"] = f"recording too short ({int(duration)} s < {min_secs} s)"
         return result

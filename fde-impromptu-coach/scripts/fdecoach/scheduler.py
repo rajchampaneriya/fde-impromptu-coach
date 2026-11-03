@@ -1,5 +1,6 @@
 """launchd LaunchAgents: the daily 05:30 FDE run, the 05:45 pronunciation and 06:00 legato
-runs, the 05:50 learning-topic drop, and a 15-minute reminder/self-heal tick."""
+runs, the 05:50 learning-topic drop, the weekend 08:00 Weekend Stage run (Saturday, and
+Sunday to catch a missed Saturday), and a 15-minute reminder/self-heal tick."""
 from __future__ import annotations
 
 import os
@@ -17,9 +18,26 @@ REMIND_LABEL = "com.fdecoach.reminder"
 PRON_LABEL = "com.fdecoach.pronounce"
 LEGATO_LABEL = "com.fdecoach.legato"
 LEARN_LABEL = "com.fdecoach.learn"
+STAGE_LABEL = "com.fdecoach.stage"
 ALL_LABELS = ("com.fdecoach.daily", "com.fdecoach.reminder", "com.fdecoach.pronounce", "com.fdecoach.legato",
-              "com.fdecoach.learn")
+              "com.fdecoach.learn", "com.fdecoach.stage")
 REMIND_INTERVAL = 900
+WEEKDAYS = {"sun": 0, "mon": 1, "tue": 2, "wed": 3, "thu": 4, "fri": 5, "sat": 6}  # launchd: 0 = Sunday
+
+
+def stage_intervals(cfg: Dict[str, Any]) -> List[Dict[str, int]]:
+    """One StartCalendarInterval per weekend day in stage.days (Sat, Sun by default)."""
+    st = cfg.get("stage", {})
+    hour, minute = parse_hhmm(st.get("time", "08:00"))
+    out: List[Dict[str, int]] = []
+    for day in st.get("days") or ["Sat", "Sun"]:
+        n = WEEKDAYS.get(str(day).strip().lower()[:3])
+        if n is None:
+            raise ValueError(f"stage.days: unknown day {day!r} (use Sat, Sun, Mon ...)")
+        item = {"Weekday": n, "Hour": hour, "Minute": minute}
+        if item not in out:
+            out.append(item)
+    return out
 
 
 def agents_dir() -> Path:
@@ -97,7 +115,17 @@ def build_plists(cfg: Dict[str, Any], paths: Paths, python: str = "") -> Dict[st
         "StandardOutPath": str(paths.logs / "learn.out.log"),
         "StandardErrorPath": str(paths.logs / "learn.err.log"),
     })
-    return {DAILY_LABEL: daily, REMIND_LABEL: remind, PRON_LABEL: pron, LEGATO_LABEL: leg, LEARN_LABEL: learn}
+    stage = dict(common)
+    stage.update({
+        "Label": STAGE_LABEL,
+        "ProgramArguments": [python, str(ENTRY_SCRIPT), "stage", "daily"],
+        "StartCalendarInterval": stage_intervals(cfg),
+        "RunAtLoad": False,
+        "StandardOutPath": str(paths.logs / "stage.out.log"),
+        "StandardErrorPath": str(paths.logs / "stage.err.log"),
+    })
+    return {DAILY_LABEL: daily, REMIND_LABEL: remind, PRON_LABEL: pron, LEGATO_LABEL: leg, LEARN_LABEL: learn,
+            STAGE_LABEL: stage}
 
 
 def _launchctl(*args: str) -> Tuple[int, str]:

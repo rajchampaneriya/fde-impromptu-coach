@@ -184,6 +184,12 @@ def cmd_status(args) -> int:
             "recorded today" if (leg.get("today") or {}).get("recorded") else "not recorded today")
         print(f"Legato: {ls['current']} day(s)  |  best {ls['best']}  |  total {ls['total']}  |  "
               f"flow level {leg.get('next_flow_level', 1)}/3  |  {state}")
+    stg = st.get("stage")
+    if stg:
+        ss = stg["streak"]
+        state = "off" if not stg.get("enabled", True) else (
+            "recorded this weekend" if (stg.get("today") or {}).get("recorded") else f"due by Sunday {stg['due']}")
+        print(f"Weekend Stage: {ss['current']} week(s)  |  best {ss['best']}  |  total {ss['total']}  |  {state}")
     try:
         from fdecoach import learn
         ls = learn.status(_ctx(args))
@@ -346,7 +352,7 @@ def cmd_doctor(args) -> int:
     missing = missing_claude_skills(skills_dir)
     linker = (skills_dir / "fde-impromptu-coach").resolve() / "link_skills.sh"
     fix = f"bash {linker}" if linker.is_file() else "run install.sh (or link_skills.sh) from your clone of the repo"
-    line(not missing, "Claude Code skills (/impromptu /pronunciation /legato /fde-learn)",
+    line(not missing, "Claude Code skills (/impromptu /pronunciation /legato /stage /fde-learn)",
          f"all linked in {skills_dir}" if not missing
          else f"not found in {skills_dir}: {', '.join(missing)} - {fix}, then start a new Claude Code session")
     line(macos.is_macos() or macos.dry_run(), "macOS", os.uname().sysname)
@@ -467,8 +473,15 @@ def cmd_config(args) -> int:
                 print(f"bad --set {item!r}; use key=value (dotted keys for nested values, JSON for lists/bools)")
                 return 2
             value = _coerce(raw)
-            if key == "daily_time" or key.endswith(".daily_time") or key == "learn.drop_time":
+            if key == "daily_time" or key.endswith(".daily_time") or key in ("learn.drop_time", "stage.time"):
                 parse_hhmm(str(value))
+                reinstall = True
+            if key == "stage.days":
+                try:
+                    scheduler.stage_intervals({"stage": {"days": value}})
+                except (ValueError, AttributeError, TypeError) as exc:
+                    print(f"bad stage.days {raw!r}: {exc}; for example: --set 'stage.days=[\"Sat\",\"Sun\"]'")
+                    return 2
                 reinstall = True
             node = user
             parts = key.split(".")
@@ -660,6 +673,99 @@ def cmd_legato(args) -> int:
         return 0
     if c == "upload":
         for line in legato_session.upload_pending(ctx, interactive=True):
+            print(line)
+        return 0
+    return 2
+
+
+def cmd_stage(args) -> int:
+    from fdecoach import app, stage, stage_session
+    ctx = _ctx(args)
+    c = args.stage_command
+    if c == "session":
+        if args.detach:
+            app.spawn_detached(["stage", "session"] + (["--force"] if args.force else []))
+            print("Weekend Stage started in the background: camera recording + slide show, three takes "
+                  "(about 10 minutes). Check progress with: fde-coach stage status")
+            return 0
+        res = stage_session.run_session(ctx, force=args.force)
+        _print(res)
+        return 0 if res.get("ok") else 1
+    if c == "daily":
+        _print(stage_session.daily(ctx))
+        return 0
+    if c == "prep":
+        out = stage_session.prep(ctx, open_page=not args.no_open)
+        if args.json:
+            _print(out)
+            return 0
+        print(f"Week {out['week']} (weekend of {out['weekend']}): {out['talk']}")
+        print(f"  segment: {out['segment']}")
+        print(f"  prep page: {out['page']}")
+        print("Watch three times, write your beat sheet, shadow it, then: fde-coach stage session")
+        return 0
+    if c == "generate":
+        try:
+            session, created = stage_session.ensure_week(ctx, replace=args.replace, talk_id=args.talk)
+        except (KeyError, RuntimeError) as exc:
+            print(str(exc).strip("'\""))
+            return 2
+        if args.talk and session["talk_id"] != args.talk:
+            print(f"This weekend's deck already uses {session['talk_id']}; add --replace to switch to {args.talk}.")
+            return 2
+        _print({"weekend": session["date"], "week": session["day_number"], "created": created,
+                "deck": session["deck_path"], "talk": stage.short_credit(session["talk"]),
+                "talk_id": session["talk_id"], "segment": stage.segment_text(session["segment"]),
+                "take_c": "hidden until its slide", "notes": session.get("notes", [])})
+        return 0
+    if c == "segment":
+        try:
+            _print(stage_session.save_segment(ctx, args.start, args.end, talk_id=args.talk))
+        except (KeyError, ValueError) as exc:
+            print(str(exc).strip("'\""))
+            return 2
+        return 0
+    if c == "status":
+        st = stage_session.status(ctx)
+        if args.json:
+            _print(st)
+            return 0
+        s = st["streak"]
+        print(f"Weekend Stage streak: {s['current']} week(s)  |  best {s['best']}  |  total {s['total']}")
+        if not st.get("enabled", True):
+            print("Weekend Stage is off (turn on: fde-coach config --set stage.enabled=true)")
+        t = st["today"]
+        if not t:
+            print(f"Weekend of {st['period']}: no deck yet. Next talk: {st['next_talk']} (fde-coach stage prep)")
+        else:
+            state = "RECORDED" if t["recorded"] else f"NOT RECORDED YET (due by Sunday {st['due']})"
+            print(f"Weekend of {st['period']}: Week {t['day_number']}  |  {state}  |  {t.get('talk') or '-'}")
+            print(f"  segment: {t.get('segment')}")
+            if t.get("video"):
+                print(f"  video: {t['video']}")
+            if t["recorded"]:
+                yt = t.get("youtube") or {}
+                print(f"  youtube: {yt.get('url') or yt.get('status')}")
+        if st["pending_uploads"]:
+            print(f"Pending uploads: {', '.join(st['pending_uploads'])}")
+        return 0
+    if c == "history":
+        rows = stage_session.history_rows(ctx, limit=args.limit)
+        if args.json:
+            _print(rows)
+            return 0
+        if not rows:
+            print("No Weekend Stage sessions yet.")
+        for r in rows:
+            mark = "✓" if r["recorded"] else "✗"
+            print(f"{mark} {r['date']}  Week {r['day']}  {r.get('talk') or ''}  youtube: {r['youtube']}")
+        return 0
+    if c == "talks":
+        for t in stage.talks():
+            print(f"Week {t['week']:>2}  {t['id']:<28} {t['speaker']} · {t['title']} ({t['length']})  [{t['subject']}]")
+        return 0
+    if c == "upload":
+        for line in stage_session.upload_pending(ctx, interactive=True):
             print(line)
         return 0
     return 2
@@ -970,6 +1076,37 @@ def build_parser() -> argparse.ArgumentParser:
     lh.add_argument("--reveal", action="store_true", help="also show today's passage before recording")
     lh.set_defaults(func=cmd_legato)
     lsub.add_parser("upload", help="assemble + upload pending legato videos").set_defaults(func=cmd_legato)
+
+    s = sub.add_parser("stage", help="Weekend Stage: one famous TED talk a weekend, three takes on camera")
+    ssub = s.add_subparsers(dest="stage_command", required=True)
+    sp = ssub.add_parser("prep", help="open this weekend's prep page (TED's player, the segment, the passes)")
+    sp.add_argument("--no-open", action="store_true", help="write the page without opening it")
+    sp.add_argument("--json", action="store_true")
+    sp.set_defaults(func=cmd_stage)
+    ss = ssub.add_parser("session", help="record this weekend's three takes (camera + slide show)")
+    ss.add_argument("--force", action="store_true", help="record again although this weekend is recorded")
+    ss.add_argument("--detach", action="store_true")
+    ss.set_defaults(func=cmd_stage)
+    ssub.add_parser("daily", help="scheduled run (Sat/Sun): build the deck, open the prep page, ask to start") \
+        .set_defaults(func=cmd_stage)
+    sg = ssub.add_parser("generate", help="build this weekend's deck (keeps an existing one unless --replace)")
+    sg.add_argument("--replace", action="store_true", help="rebuild it (only before recording)")
+    sg.add_argument("--talk", metavar="ID", help="use this talk instead of the next one (ids: assets/talks.json)")
+    sg.set_defaults(func=cmd_stage)
+    sseg = ssub.add_parser("segment", help="save the segment's start and end, found on your first watch")
+    sseg.add_argument("--start", required=True, metavar="M:SS")
+    sseg.add_argument("--end", required=True, metavar="M:SS")
+    sseg.add_argument("--talk", metavar="ID", help="another talk than this weekend's")
+    sseg.set_defaults(func=cmd_stage)
+    sst = ssub.add_parser("status", help="week streak and this weekend's state")
+    sst.add_argument("--json", action="store_true")
+    sst.set_defaults(func=cmd_stage)
+    sh = ssub.add_parser("history", help="past weekends")
+    sh.add_argument("--limit", type=int, default=14)
+    sh.add_argument("--json", action="store_true")
+    sh.set_defaults(func=cmd_stage)
+    ssub.add_parser("talks", help="the ten-talk curriculum").set_defaults(func=cmd_stage)
+    ssub.add_parser("upload", help="upload pending stage recordings (private)").set_defaults(func=cmd_stage)
 
     s = sub.add_parser("learn", help="daily first-principles learning track (topic drop, ship, streak)")
     lsub2 = s.add_subparsers(dest="learn_command", required=True)

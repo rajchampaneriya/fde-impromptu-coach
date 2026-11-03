@@ -1,6 +1,6 @@
 ---
 name: fde-impromptu-coach
-description: FDE Impromptu Coach for macOS, the umbrella skill for three daily speaking practices - impromptu (05:30, five surprise on-camera questions with exec slots and an exec answer key), pronunciation (05:45, pen method) and legato (06:00, connected speech), both reading verbatim passages from free public-domain books, never AI-written text. Each keeps a streak protected by Mac reminders and Google Calendar alerts. Use for installing, configuring, scheduling or troubleshooting the routine; streaks, missed practice, reminders, calendar alerts and YouTube uploads; the passage library and adding a book; exec mode and answer key settings; making practice harder or easier; or any FDE communication, leadership or speaking-practice request, even if the user does not name the skill. The impromptu, pronunciation and legato skills are shorter entry points to one practice each; fde-learn is the learning track.
+description: FDE Impromptu Coach for macOS, the umbrella skill for three daily speaking practices - impromptu (05:30, five surprise on-camera questions with exec slots and an exec answer key), pronunciation (05:45, pen method) and legato (06:00, connected speech), both reading verbatim passages from free public-domain books, never AI-written text, plus a weekly Weekend Stage (a famous TED talk, three takes on camera). Each keeps a streak protected by Mac reminders and Google Calendar alerts. Use for installing, configuring, scheduling or troubleshooting the routine; streaks, missed practice, reminders, calendar alerts and YouTube uploads; the passage library and adding a book; exec mode and answer key settings; making practice harder or easier; or any FDE communication, leadership or speaking-practice request, even if the user does not name the skill. The impromptu, pronunciation, legato and stage skills are shorter entry points to one practice each; fde-learn is the learning track.
 compatibility: macOS 12+ with Microsoft PowerPoint, QuickTime Player, Python 3.9+ and Claude Code. YouTube upload needs a Google Cloud OAuth desktop client.
 ---
 
@@ -28,11 +28,11 @@ Everything is driven by one CLI. After installation it is at
 Below, `fde-coach` means that path. If it does not exist, the skill is not
 installed yet: see **Install** below.
 
-**One skill per practice.** The repo ships five skills, all linked into
+**One skill per practice.** The repo ships six skills, all linked into
 `~/.claude/skills/` by the installer: this umbrella skill, `impromptu`,
-`pronunciation`, `legato` (short entry points for one practice each; the user
-can type `/impromptu`, `/pronunciation`, `/legato`, optionally with `status`,
-`history` and so on) and `fde-learn` (`/fde-learn`). Starting or checking one
+`pronunciation`, `legato`, `stage` (short entry points for one practice each; the
+user can type `/impromptu`, `/pronunciation`, `/legato`, `/stage`, optionally with
+`status`, `history` and so on) and `fde-learn` (`/fde-learn`). Starting or checking one
 practice belongs to its own skill; everything else (install, settings, Google,
 the library, troubleshooting) stays here. `AGENTS.md` at the repo root has the
 full intent map.
@@ -64,6 +64,10 @@ full intent map.
    today is recorded; never pass `--reveal` unless the user explicitly asks to
    see model answers first. Never write model answers into the chat for an
    unrecorded day.
+9. **Stage talks are links, not text.** Weekend Stage uses TED talks (CC BY-NC-ND
+   4.0): never download TED video or audio, never paste or summarise a
+   transcript, never put TED's words into a deck or an upload. Take C's twist
+   stays hidden until the weekend is recorded.
 
 ## What the user says → what to run
 
@@ -94,6 +98,9 @@ full intent map.
 | "Add a book", "use passages from <free book>" | Project Gutenberg: `fde-coach library import-gutenberg <ebook number>` (from gutenberg.org/ebooks/N; `--max 20 --theme speaking --year 1903`). Any text the user has the right to use: `fde-coach library import-file PATH --author A --title T [--url U]` |
 | "Show a passage / where is it from" | `fde-coach library show ID` (credit, source link, text, target words) |
 | "Flow felt choppy / too easy" (legato) | the after-session tap does it; it moves the flow level (1 short sentences … 3 long, winding ones) |
+| "TED talk practice", "this weekend's talk", "weekend practice" | Use the **stage** skill: `fde-coach stage prep` (study page with TED's player), then `fde-coach stage session --detach` (three takes on camera, ~10 min) |
+| "Weekend streak / which talks are coming" | `fde-coach stage status` / `fde-coach stage talks` |
+| "Move or stop Weekend Stage" | `fde-coach config --set stage.time=09:00` or `--set 'stage.days=["Sun"]'` (reinstalls the schedule), or `--set stage.enabled=false` |
 | "Turn legato off / move it" | `fde-coach config --set legato.enabled=false` or `--set legato.daily_time=06:15` |
 | "No camera on this Mac", "practise without video" | `fde-coach config --set recording.mode=none` — session runs the deck show only, still counts for the streak, no QuickTime/YouTube |
 | "Upload didn't happen" | `fde-coach upload` |
@@ -223,7 +230,7 @@ bash ~/Code/fde-impromptu-coach/fde-impromptu-coach/install.sh
 
 It creates a Python virtual environment in `~/FDE-Impromptu/venv`, installs
 `requirements.txt`, writes the launcher, installs the launchd agents, links all
-five skills into `~/.claude/skills/` (`link_skills.sh`: Claude Code finds a skill
+six skills into `~/.claude/skills/` (`link_skills.sh`: Claude Code finds a skill
 only at `~/.claude/skills/<name>/SKILL.md`, so a clone *inside* that folder is
 invisible to it) and triggers every macOS permission prompt (Automation for
 QuickTime, PowerPoint and Reminders; camera and microphone for QuickTime;

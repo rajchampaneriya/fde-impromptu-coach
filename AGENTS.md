@@ -1,10 +1,12 @@
 # AGENTS.md: FDE Impromptu Coach
 
-Daily practice for a Forward Deployed Engineer on macOS: three speaking practices (impromptu, pronunciation,
-legato) and a first-principles learning track (FDE Learn). Two layers:
+Daily practice for a Forward Deployed Engineer on macOS: three daily speaking practices (impromptu,
+pronunciation, legato), a weekend one (Weekend Stage: a famous TED talk, three takes on camera) and a
+first-principles learning track (FDE Learn). Two layers:
 
 - **The runtime** is one CLI, `~/FDE-Impromptu/bin/fde-coach` (also `~/.local/bin/fde-coach`), installed by
-  `fde-impromptu-coach/install.sh`. launchd runs it every morning; the learner's data lives in `~/FDE-Impromptu/`.
+  `fde-impromptu-coach/install.sh`. launchd runs it every morning (and on weekend mornings for Weekend Stage);
+  the learner's data lives in `~/FDE-Impromptu/`.
   If the CLI is missing, nothing is installed yet: see *Install* in `fde-impromptu-coach/SKILL.md`.
 - **The skills** turn what the learner says into the right `fde-coach` command. Each is linked into
   `~/.claude/skills/<name>/` by `fde-impromptu-coach/link_skills.sh`, so they work in every Claude Code session,
@@ -17,6 +19,7 @@ legato) and a first-principles learning track (FDE Learn). Two layers:
 | `impromptu` | `/impromptu [start\|status\|answers\|headlines\|harder\|easier\|brief <topic>\|history]` | 5 surprise on-camera questions (exec slots), then the exec answer key | `fde-coach session --detach` |
 | `pronunciation` | `/pronunciation [start\|status\|history\|words\|add <word>\|passage <id>]` | Pen method on hard words and a public-domain passage | `fde-coach pronounce session --detach` |
 | `legato` | `/legato [start\|status\|history\|passage <id>\|themes <theme>]` | Smooth, connected speech, then a 45-second impromptu response | `fde-coach legato session --detach` |
+| `stage` | `/stage [start\|prep\|status\|history\|segment <M:SS> <M:SS>\|talks\|upload]` | Weekend Stage: one TED talk a weekend, studied, then three takes on camera | `fde-coach stage session --detach` |
 | `fde-learn` | `/fde-learn [today\|hint\|check\|ship <link>\|next\|status]` | The 66-topic learning track, shipped in public | `fde-coach learn today --json` |
 | `fde-impromptu-coach` | `/fde-impromptu-coach` | Install, settings, Google, the passage library, troubleshooting, anything else | `fde-coach doctor` |
 
@@ -36,8 +39,10 @@ Match on meaning, not spelling: the learner often types "lagato", "pronounciatio
 | "pronunciation", "pen method", "clearer speech" | `pronunciation` | `fde-coach pronounce session --detach` |
 | "add the hard word *entrepreneur*" | `pronunciation` | `fde-coach pronounce words --add entrepreneur` |
 | "legato", "connected speech", "linking", "less choppy", "smoother" | `legato` | `fde-coach legato session --detach` |
+| "TED talk practice", "this weekend's talk", "weekend practice", "shadow a speaker" | `stage` | `fde-coach stage prep` (study first), then `fde-coach stage session --detach` |
+| "the segment starts at 2:05 and ends at 5:10" | `stage` | `fde-coach stage segment --start 2:05 --end 5:10` |
 | "read Walden today" | `legato` or `pronunciation` | `fde-coach library list`, then `fde-coach legato generate --replace --passage <id>` |
-| "what's my streak?" (no practice named) | each practice | `fde-coach status`, `fde-coach pronounce status`, `fde-coach legato status`, `fde-coach learn status` |
+| "what's my streak?" (no practice named) | each practice | `fde-coach status`, `fde-coach pronounce status`, `fde-coach legato status`, `fde-coach stage status`, `fde-coach learn status` |
 | "today's topic", "FDE learn", "what do I do today?" | `fde-learn` | `fde-coach learn today --json` |
 | "I'm stuck", "hint" | `fde-learn` | next rung of the hint ladder in `fde-learn/references/coaching.md` |
 | "ship it" | `fde-learn` | check, explain-back, then `fde-coach learn done --video <link>` |
@@ -46,8 +51,8 @@ Match on meaning, not spelling: the learner often types "lagato", "pronounciatio
 | "something's broken", "/legato does nothing" | `fde-impromptu-coach` | `fde-coach doctor` (the *Claude Code skills* line), then `bash <clone>/fde-impromptu-coach/link_skills.sh` |
 
 When the learner names no practice ("let's practise"), start impromptu: it is first in the morning chain
-(impromptu 05:30 → pronunciation 05:45 → legato 06:00) and offers the other two when it ends. Each skill's
-`SKILL.md` has its full table; follow it.
+(impromptu 05:30 → pronunciation 05:45 → legato 06:00) and offers the other two when it ends. Weekend Stage is
+separate: Saturday 08:00, with Sunday 08:00 as the catch-up. Each skill's `SKILL.md` has its full table; follow it.
 
 ## Ground rules (every skill, every time)
 
@@ -64,21 +69,25 @@ When the learner names no practice ("let's practise"), start impromptu: it is fi
 7. **FDE Learn: one task, no menus; hints, not answers; their words, lightly corrected.** Never reorder or skip
    topics, never write a TODO cell or an article paragraph for them (details in `fde-learn/SKILL.md`).
 8. **Public repo safety.** No API keys, employer code or real customer data in the learning repo.
+9. **Stage talks are links, not text.** TED talks are CC BY-NC-ND 4.0. Never download TED video or audio,
+   commit or display a transcript, or put TED's words, audio or video into a deck, a note or an upload.
+   `assets/talks.json` holds links, segment times and delivery notes in our own words; Take C's twist stays
+   hidden until the weekend is recorded.
 
 ## Repo layout
 
 ```
 AGENTS.md, CLAUDE.md            this file; CLAUDE.md imports it
-skills/impromptu|pronunciation|legato/SKILL.md   one-practice entry points (thin routers to the CLI)
+skills/impromptu|pronunciation|legato|stage/SKILL.md   one-practice entry points (thin routers to the CLI)
 fde-impromptu-coach/            umbrella skill + the runtime
   SKILL.md                      full intent table, daily flow, install
   install.sh, uninstall.sh      install (venv, launchd, permissions, skill links) / remove
-  link_skills.sh                links all five skills into ~/.claude/skills (--check, --remove)
+  link_skills.sh                links all six skills into ~/.claude/skills (--check, --remove)
   scripts/fde_coach.py          the CLI (build_parser() lists every command)
   scripts/fdecoach/             modules (app, questions, deck, answers, pronounce*, legato*, library, learn, ...)
   scripts/tests/                unittest suite + features/*.feature (BDD scenarios)
   scripts/tools/                build_curriculum.py, build_passage_library.py
-  assets/                       question bank, passages, learning path, learn starters
+  assets/                       question bank, passages, TED talk catalogue (talks.json), learning path, learn starters
   references/                   rubrics and design notes the skills load on demand
 fde-learn/                      the learning-track skill (SKILL.md, references/curriculum.md, coaching.md)
 ```
@@ -97,6 +106,9 @@ fde-learn/                      the learning-track skill (SKILL.md, references/c
 - **Adding a skill.** Create `skills/<name>/SKILL.md`, then add it to `SKILLS` in `link_skills.sh`,
   `CLAUDE_SKILLS` in `scripts/fdecoach/config.py` and the tables above. The tests fail until all four agree.
 - **Curriculum.** Edit `assets/learning_path.json`, then `python3 scripts/tools/build_curriculum.py`.
+- **Talks.** `assets/talks.json` is the Weekend Stage curriculum: links, segment labels and times, delivery
+  notes (60 words at most per talk), Take B prompts and Take C twists. `stage.validate_catalogue()` refuses a
+  transcript field; `test_stage.py` runs it.
 - **Passages.** Never hand-edit passage text; change `assets/passage_sources.json` and run
   `python3 scripts/tools/build_passage_library.py build` (`verify` re-checks every passage against its source).
 - **Shipping.** Python stays 3.9-compatible and shell scripts bash 3.2-compatible (macOS defaults). Add a
