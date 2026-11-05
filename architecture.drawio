@@ -22,7 +22,7 @@
                 <mxCell id="n2" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fontFamily=Calibri;fontSize=13;fontColor=#0B2545;fillColor=#DCE7F7;strokeColor=#1F5FBF;verticalAlign=middle;" value="fde-coach&#xa;builds deck&#xa;5 surprise questions" vertex="1">
                     <mxGeometry height="90" width="180" x="240" y="235" as="geometry"/>
                 </mxCell>
-                <mxCell id="n3" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fontFamily=Calibri;fontSize=13;fontColor=#0B2545;fillColor=#DCE7F7;strokeColor=#1F5FBF;verticalAlign=middle;" value="You speak&#xa;5 × 60 seconds&#xa;QuickTime records" vertex="1">
+                <mxCell id="n3" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fontFamily=Calibri;fontSize=13;fontColor=#0B2545;fillColor=#DCE7F7;strokeColor=#1F5FBF;verticalAlign=middle;" value="You speak&#xa;5 answers, 25–60 s each&#xa;QuickTime records" vertex="1">
                     <mxGeometry height="90" width="180" x="470" y="235" as="geometry"/>
                 </mxCell>
                 <mxCell id="n4" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fontFamily=Calibri;fontSize=13;fontColor=#0B2545;fillColor=#DCE7F7;strokeColor=#1F5FBF;verticalAlign=middle;" value="Video uploads&#xa;privately&#xa;(YouTube)" vertex="1">
@@ -46,7 +46,7 @@
                 <mxCell id="complabel" parent="1" style="text;html=1;fontFamily=Calibri;fontSize=13;fontStyle=1;fontColor=#5B6B7F;align=left;" value="MAIN COMPONENTS" vertex="1">
                     <mxGeometry height="22" width="300" x="40" y="360" as="geometry"/>
                 </mxCell>
-                <mxCell id="c1" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fontFamily=Calibri;fontSize=12;fontColor=#0B2545;fillColor=#F1F6FD;strokeColor=#8A98A9;dashed=1;verticalAlign=middle;" value="Question generator&#xa;(Claude + 132-question bank)" vertex="1">
+                <mxCell id="c1" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fontFamily=Calibri;fontSize=12;fontColor=#0B2545;fillColor=#F1F6FD;strokeColor=#8A98A9;dashed=1;verticalAlign=middle;" value="Questions + exec answer key&#xa;(Claude + 144-question bank)" vertex="1">
                     <mxGeometry height="70" width="220" x="40" y="390" as="geometry"/>
                 </mxCell>
                 <mxCell id="c2" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fontFamily=Calibri;fontSize=12;fontColor=#0B2545;fillColor=#F1F6FD;strokeColor=#8A98A9;dashed=1;verticalAlign=middle;" value="Deck builder&#xa;(PowerPoint / Keynote)" vertex="1">
@@ -70,8 +70,23 @@
                 <mxCell id="ec4" edge="1" parent="1" source="c4" style="strokeColor=#8A98A9;dashed=1;endArrow=none;fontFamily=Calibri;" target="n5">
                     <mxGeometry relative="1" as="geometry"/>
                 </mxCell>
-                <mxCell id="userband" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fontFamily=Calibri;fontSize=14;fontStyle=1;fontColor=#FFFFFF;fillColor=#1F5FBF;strokeColor=none;verticalAlign=middle;" value="YOU TALK, CLAUDE ACTS:  “start my practice”  ·  “what&#39;s my streak?”  ·  “make today harder”  ·  “I missed yesterday”" vertex="1">
-                    <mxGeometry height="60" width="1160" x="40" y="500" as="geometry"/>
+                <mxCell id="morelabel" parent="1" style="text;html=1;fontFamily=Calibri;fontSize=13;fontStyle=1;fontColor=#5B6B7F;align=left;" value="ALSO IN THE ROUTINE" vertex="1">
+                    <mxGeometry height="22" width="300" x="40" y="482" as="geometry"/>
+                </mxCell>
+                <mxCell id="p1" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fontFamily=Calibri;fontSize=12;fontColor=#0B2545;fillColor=#FFFFFF;strokeColor=#1F5FBF;verticalAlign=middle;" value="&lt;b&gt;Pronunciation · 05:45&lt;/b&gt;&#xa;pen method on a public-domain passage" vertex="1">
+                    <mxGeometry height="56" width="275" x="40" y="510" as="geometry"/>
+                </mxCell>
+                <mxCell id="p2" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fontFamily=Calibri;fontSize=12;fontColor=#0B2545;fillColor=#FFFFFF;strokeColor=#1F5FBF;verticalAlign=middle;" value="&lt;b&gt;FDE Learn · 05:50&lt;/b&gt;&#xa;a topic a morning: build it, explain it, ship it" vertex="1">
+                    <mxGeometry height="56" width="275" x="335" y="510" as="geometry"/>
+                </mxCell>
+                <mxCell id="p3" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fontFamily=Calibri;fontSize=12;fontColor=#0B2545;fillColor=#FFFFFF;strokeColor=#1F5FBF;verticalAlign=middle;" value="&lt;b&gt;Legato · 06:00&lt;/b&gt;&#xa;connected speech, then a 45-second answer" vertex="1">
+                    <mxGeometry height="56" width="275" x="630" y="510" as="geometry"/>
+                </mxCell>
+                <mxCell id="p4" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fontFamily=Calibri;fontSize=12;fontColor=#0B2545;fillColor=#FFFFFF;strokeColor=#1F5FBF;verticalAlign=middle;" value="&lt;b&gt;Weekend Stage · Saturday 08:00&lt;/b&gt;&#xa;one TED talk, three takes on camera" vertex="1">
+                    <mxGeometry height="56" width="275" x="925" y="510" as="geometry"/>
+                </mxCell>
+                <mxCell id="userband" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fontFamily=Calibri;fontSize=14;fontStyle=1;fontColor=#FFFFFF;fillColor=#1F5FBF;strokeColor=none;verticalAlign=middle;" value="YOU TALK, CLAUDE ACTS:  “start my practice”  ·  “what&#39;s my streak?”  ·  “make today harder”  ·  “I missed yesterday”&lt;br&gt;or type /impromptu  ·  /pronunciation  ·  /legato  ·  /stage  ·  /fde-learn" vertex="1">
+                    <mxGeometry height="60" width="1160" x="40" y="592" as="geometry"/>
                 </mxCell>
             </root>
         </mxGraphModel>

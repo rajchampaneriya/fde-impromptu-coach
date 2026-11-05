@@ -1,5 +1,40 @@
 # Changelog
 
+## v10 — A map for coding agents, one-command checks, and docs that stay true
+
+The last three agent sessions on this repo (v7, v8, v9) each spent 15 to 30 tool calls finding where the code
+lives, proved again that the same two tests fail off macOS, rebuilt the dry-run environment by hand, and read
+docs that had drifted (skill and agent counts, the question count in the architecture diagram). No behaviour of
+the coach changes.
+
+**New**
+
+- **`AGENTS.md` is the entry point for code work**: *Where to find X* (every module, file and folder by job),
+  *Runtime prompts* (the four `references/` files the code sends to Claude, so edits there are code changes),
+  the checklist for adding a practice (every place Weekend Stage had to touch), the full checklist for adding a
+  skill, what a clean test run looks like, and how to open a PR from Claude's cloud sandbox.
+- **`make test`** (one run; failing tests and the summary on screen, tracebacks in `.test-output.log`),
+  **`make test-one T=stage`**, **`make py39`** and **`make sandbox ARGS='…'`** from the repo root.
+- **`scripts/tools/sandbox.sh`** runs one `fde-coach` command in a throw-away dry-run home, the environment the
+  test harness builds (no launchd, QuickTime, Google or YouTube; Claude is `fake_claude.py`).
+- **BDD scenarios**: `scripts/tests/features/agent_navigation.feature` (5 scenarios, one test each in
+  `test_agent_navigation.py`): every file on the map exists, every runtime prompt is listed, no doc counts
+  skills or launchd agents, stated sizes match the question bank, passage library and learning path, and
+  `uninstall.sh` removes every agent the scheduler installs. Mutation-checked: each breakage fails its scenario.
+
+**Changed**
+
+- The two ffmpeg video tests skip when macOS's Apple Symbols font is missing (`pronounce_deck.SYMBOL_FONT`,
+  which the slides' ↗ ↘ ‿ marks need) instead of erroring on every Linux run.
+- Stale docs fixed: install.sh's skill comment and closing steps (the topic drops at 05:50; `/stage`), the skill
+  README (every skill and agent, a Weekend Stage section, where its data lives), troubleshooting (every agent,
+  Weekend Stage rows, all `FDE_COACH_*` switches), the umbrella skill's file list (now a pointer to the map),
+  the practice skills' "have their own skills" line, and the root README (its "New:" sections live here now).
+- Design notes (`plan.md`, `pronunciation_plan.md`, `legato_design.md`, `stage_design.md`) say at the top that
+  they are history and never sent to Claude.
+- `architecture.drawio` / `.png`: the 144-question bank, the exec answer key, and the rest of the routine
+  (pronunciation, FDE Learn, legato, Weekend Stage).
+
 ## v9 — Weekend Stage: one famous TED talk a weekend, on camera
 
 The daily practices build fluency; nothing trained delivery against a model speaker. Weekend Stage adds a

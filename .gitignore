@@ -1,3 +1,6 @@
 __pycache__/
 *.pyc
 .DS_Store
+# make test / make py39 (see Makefile)
+.test-output.log
+.venv-py39/

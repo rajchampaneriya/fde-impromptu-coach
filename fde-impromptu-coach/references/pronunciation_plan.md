@@ -1,5 +1,9 @@
 # Pronunciation Practice (pen method) — Implementation Plan
 
+> **A design log, not a spec.** It records the plan as built and is never sent to Claude; the prompts
+> pronunciation sends are `pronunciation_annotation.md` and `pronunciation_design.md`. For how it works now,
+> read the code and `AGENTS.md` at the repo root.
+
 > **v3 update.** The paragraph now comes from the public-domain passage library
 > by default (`pronunciation.paragraph_source=library`): a verbatim book passage
 > chosen to contain due words, hand-written coach notes, Claude used only to

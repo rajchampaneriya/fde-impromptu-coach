@@ -1,5 +1,8 @@
 # Weekend Stage — design
 
+> **A design note, not a prompt.** It explains how Weekend Stage was built and why, and is never sent to
+> Claude. Runtime prompts and the code map are listed in `AGENTS.md` at the repo root.
+
 A weekly practice (Saturday 08:00, Sunday 08:00 as the catch-up, its own streak in
 weeks), on camera, built on the shared practice engine (`fdecoach/practice.py`)
 with `media="video"` and `cadence="weekly"`: QuickTime records the camera while a

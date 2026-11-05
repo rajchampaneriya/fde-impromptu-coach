@@ -28,7 +28,7 @@ Everything is driven by one CLI. After installation it is at
 Below, `fde-coach` means that path. If it does not exist, the skill is not
 installed yet: see **Install** below.
 
-**One skill per practice.** The repo ships six skills, all linked into
+**One skill per practice.** Every skill in the repo is linked into
 `~/.claude/skills/` by the installer: this umbrella skill, `impromptu`,
 `pronunciation`, `legato`, `stage` (short entry points for one practice each; the
 user can type `/impromptu`, `/pronunciation`, `/legato`, `/stage`, optionally with
@@ -229,8 +229,8 @@ bash ~/Code/fde-impromptu-coach/fde-impromptu-coach/install.sh
 ```
 
 It creates a Python virtual environment in `~/FDE-Impromptu/venv`, installs
-`requirements.txt`, writes the launcher, installs the launchd agents, links all
-six skills into `~/.claude/skills/` (`link_skills.sh`: Claude Code finds a skill
+`requirements.txt`, writes the launcher, installs the launchd agents, links every
+skill into `~/.claude/skills/` (`link_skills.sh`: Claude Code finds a skill
 only at `~/.claude/skills/<name>/SKILL.md`, so a clone *inside* that folder is
 invisible to it) and triggers every macOS permission prompt (Automation for
 QuickTime, PowerPoint and Reminders; camera and microphone for QuickTime;
@@ -240,29 +240,18 @@ YouTube setup and an optional `pmset` wake schedule.
 
 ## Files
 
-- `../AGENTS.md` — intent map for every skill and the repo's working rules (`../CLAUDE.md` imports it)
-- `../skills/{impromptu,pronunciation,legato}/SKILL.md` — one-practice entry points; `link_skills.sh` links
-  them, this skill and `fde-learn` into `~/.claude/skills` (`--check`, `--remove`)
+- `../AGENTS.md` — intent map for every skill, the code map (*Where to find X*), the runtime prompts and the
+  repo's working rules (`../CLAUDE.md` imports it). Look there before searching the code.
+- `../skills/*/SKILL.md` — one-practice entry points (`impromptu`, `pronunciation`, `legato`, `stage`);
+  `link_skills.sh` links them, this skill and `fde-learn` into `~/.claude/skills` (`--check`, `--remove`)
 - `scripts/fde_coach.py` — CLI (`--help` lists all commands)
-- `scripts/fdecoach/` — modules: `app` (flows), `questions` (plan, listeners, exec mode), `deck`
-  (incl. exec and reply slides, `timeline`), `answers` (exec answer key), `recorder`,
-  `macos` (AppleScript), `youtube`, `gcal` (Google Calendar missed-practice alerts),
-  `scheduler` (launchd), `state`, `config`; the audio practices share
-  `practice` (build/record/video/upload/calendar engine) and `audio` (ffmpeg);
-  pronunciation: `pronounce` (words + passage), `pronounce_deck`,
-  `pronounce_session`; legato: `legato` (breath groups, links, choice),
-  `legato_deck`, `legato_session`; `library` (public-domain passages, imports)
 - `scripts/tools/build_passage_library.py` — builds and `verify`s `assets/passages.json`
   from `assets/passage_sources.json` + `assets/passage_annotations.json`
 - `scripts/tests/` — `~/FDE-Impromptu/venv/bin/python -m unittest discover -s scripts/tests` (dry-run, safe anywhere; needs the venv because the CLI imports `pptx`)
-- `scripts/tests/features/*.feature` — Gherkin scenarios for exec mode and the answer key; `test_exec_mode.py`
-  has one Given/When/Then test per scenario and fails if the two drift apart
-- `references/question_design.md` — question rubric and JSON schema (incl. listeners and exec slots)
-- `references/answer_design.md` — exec answer key rubric and JSON schema
-- `references/pronunciation_design.md` — legacy (AI-written) paragraph rubric and JSON schema
-- `references/pronunciation_annotation.md` — coach-note rubric for library mode (Claude marks up words only)
-- `references/legato_design.md` — legato practice design: drills, marks, levels, research basis
+- Prompts sent to Claude at run time: `references/question_design.md` (questions, listeners, exec slots),
+  `references/answer_design.md` (exec answer key), `references/pronunciation_annotation.md` (coach notes for
+  hard words, library mode) and `references/pronunciation_design.md` (the legacy AI-written paragraph)
 - `references/passage_sources.md` — passage library policy, sources, licences, verifying and importing
-- `references/pronunciation_plan.md` — pronunciation practice design plan
 - `references/troubleshooting.md` — symptoms → fixes
-- `references/plan.md` — design plan, risks found in validation, and fixes
+- Design notes (history, never sent to Claude): `references/plan.md`, `references/pronunciation_plan.md`,
+  `references/legato_design.md` (drills, marks, levels, research basis), `references/stage_design.md`

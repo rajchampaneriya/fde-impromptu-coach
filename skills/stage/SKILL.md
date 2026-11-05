@@ -19,9 +19,10 @@ prep page opens; Sunday 08:00 catches a missed Saturday. The streak counts weeke
    listener on the slide, Take C brings a twist they see only on its slide. Stops and saves by
    itself; the video uploads privately.
 
-The curriculum is in `fde-impromptu-coach/assets/talks.json` (`fde-coach stage talks` lists it):
-Cutts, Okamoto, Treasure, Sinek, Pink, Rosling, Robinson, Brown, Adichie, Stevenson. The
-design note is `fde-impromptu-coach/references/stage_design.md`.
+`fde-coach stage talks` lists the curriculum: Cutts, Okamoto, Treasure, Sinek, Pink, Rosling,
+Robinson, Brown, Adichie, Stevenson. Use it rather than opening the catalogue file, which holds
+every Take C twist. The design note is `~/FDE-Impromptu/src/references/stage_design.md` once
+installed.
 
 Run the CLI as `~/FDE-Impromptu/bin/fde-coach` (written `fde-coach` below). If that file does not exist, the
 coach is not installed: point the user to *Install* in the `fde-impromptu-coach` skill and stop.
