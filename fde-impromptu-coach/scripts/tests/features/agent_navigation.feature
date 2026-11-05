@@ -1,10 +1,10 @@
 Feature: A coding agent finds its way from AGENTS.md
   Every agent session starts cold and reads AGENTS.md first. Three sessions in a
-  row spent their first 15 to 30 tool calls finding where the code lives, which
-  tests already fail and how to try a command safely, and they trusted docs that
-  had gone stale: a count of skills, a count of launchd agents, the size of the
-  question bank. These scenarios keep the map true and keep numbers that drift
-  out of the docs.
+  row made about 30 tool calls before their first edit, finding where the code
+  lives, which tests already fail and how to try a command safely. They also
+  trusted docs that had gone stale: a count of skills, a count of launchd
+  agents, the size of the question bank. These scenarios keep the map true and
+  keep numbers that drift out of the docs.
 
   Scenario: Every file on the map exists
     Given the "Where to find X" section of AGENTS.md

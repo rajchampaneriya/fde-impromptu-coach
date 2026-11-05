@@ -2,10 +2,10 @@
 
 ## v10 — A map for coding agents, one-command checks, and docs that stay true
 
-The last three agent sessions on this repo (v7, v8, v9) each spent 15 to 30 tool calls finding where the code
-lives, proved again that the same two tests fail off macOS, rebuilt the dry-run environment by hand, and read
-docs that had drifted (skill and agent counts, the question count in the architecture diagram). No behaviour of
-the coach changes.
+The last three agent sessions on this repo (v7, v8, v9) each made about 30 tool calls before their first edit,
+most of them finding where the code lives. Each proved again that the same two tests fail off macOS, worked out
+the dry-run environment from the test harness and read docs that had drifted (skill and agent counts, the
+question count in the architecture diagram). No behaviour of the coach changes.
 
 **New**
 
