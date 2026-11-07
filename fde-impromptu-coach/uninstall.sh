@@ -5,7 +5,8 @@ set -euo pipefail
 DATA_DIR="${FDE_COACH_HOME:-$HOME/FDE-Impromptu}"
 SKILL_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
-# All six agents (older versions forgot com.fdecoach.pronounce, which kept firing after uninstall)
+# Every agent in scheduler.ALL_LABELS (older versions forgot com.fdecoach.pronounce, which kept firing after
+# uninstall). test_agent_navigation.py fails if a label is missing here.
 for label in com.fdecoach.daily com.fdecoach.reminder com.fdecoach.pronounce com.fdecoach.legato com.fdecoach.learn com.fdecoach.stage; do
   launchctl bootout "gui/$(id -u)/$label" >/dev/null 2>&1 || true
   rm -f "$HOME/Library/LaunchAgents/$label.plist"

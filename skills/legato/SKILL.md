@@ -1,6 +1,6 @@
 ---
 name: legato
-description: Legato practice from FDE Impromptu Coach - smooth, connected speech in a 5-minute audio drill (breath and hum, a linking drill, three reads of a public-domain passage, then a 45-second impromptu response to the author). Use when the user types /legato or says legato (also misspelt "lagato", "legatto"), connected speech, linking words, sounding less choppy or smoother, breath or fluency practice, or asks for their legato streak, status or history. Runs the fde-coach CLI on macOS. Impromptu and pronunciation have their own skills.
+description: Legato practice from FDE Impromptu Coach - smooth, connected speech in a 5-minute audio drill (breath and hum, a linking drill, three reads of a public-domain passage, then a 45-second impromptu response to the author). Use when the user types /legato or says legato (also misspelt "lagato", "legatto"), connected speech, linking words, sounding less choppy or smoother, breath or fluency practice, or asks for their legato streak, status or history. Runs the fde-coach CLI on macOS. Impromptu, pronunciation and Weekend Stage have their own skills.
 argument-hint: "[start | status | history | passage <id> | themes <theme> | upload]"
 compatibility: macOS with FDE Impromptu Coach installed (the fde-coach CLI).
 ---

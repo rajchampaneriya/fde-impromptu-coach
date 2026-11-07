@@ -21,6 +21,9 @@ from .legato import marked_tokens
 
 HEADER = "PRONUNCIATION PRACTICE"
 LEGEND = "bold = stress · ‿ = link · ↗ rise · ↘ fall · / short pause · // long pause"
+# The ↗ ↘ ‿ marks on the rendered slides need macOS's Apple Symbols. It has no fallback, so slide
+# rendering (and the ffmpeg video tests) only run where this file exists.
+SYMBOL_FONT = Path("/System/Library/Fonts/Apple Symbols.ttf")
 
 
 def _from_book(session: Dict[str, Any]) -> bool:
@@ -260,7 +263,7 @@ def _symbol_font(size: int):
     """Apple Symbols has the pitch/link glyphs (↗ ↘ ‿) that Arial lacks."""
     from PIL import ImageFont
     if size not in _SYM_CACHE:
-        _SYM_CACHE[size] = ImageFont.truetype("/System/Library/Fonts/Apple Symbols.ttf", size)
+        _SYM_CACHE[size] = ImageFont.truetype(str(SYMBOL_FONT), size)
     return _SYM_CACHE[size]
 
 

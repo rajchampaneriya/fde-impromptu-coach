@@ -11,7 +11,7 @@ If today is at risk, protect the streak first: record any way you can
 
 | Symptom | Likely cause | Fix |
 |---|---|---|
-| `/legato`, `/impromptu`, `/pronunciation` or `/fde-learn` is "unknown", or Claude doesn't recognise a practice | the skills are not in `~/.claude/skills/<name>/SKILL.md` (installed from a clone without linking, a copied folder, or the repo cloned *inside* `~/.claude/skills`, one level too deep) | `fde-coach doctor` shows the *Claude Code skills* line. From your clone: `bash fde-impromptu-coach/link_skills.sh` (`--check` to verify), then start a new Claude Code session. A clone inside `~/.claude/skills`: move it (e.g. to `~/Code/fde-impromptu-coach`) and run `install.sh` again |
+| `/legato`, `/impromptu`, `/pronunciation`, `/stage` or `/fde-learn` is "unknown", or Claude doesn't recognise a practice | the skills are not in `~/.claude/skills/<name>/SKILL.md` (installed from a clone without linking, a copied folder, or the repo cloned *inside* `~/.claude/skills`, one level too deep) | `fde-coach doctor` shows the *Claude Code skills* line. From your clone: `bash fde-impromptu-coach/link_skills.sh` (`--check` to verify), then start a new Claude Code session. A clone inside `~/.claude/skills`: move it (e.g. to `~/Code/fde-impromptu-coach`) and run `install.sh` again |
 | Nothing happened at 05:30 | Mac asleep or off | The 15-minute agent prepares everything when the Mac wakes. For on-time readiness: `sudo pmset repeat wakeorpoweron MTWRFSU 05:25:00` |
 | `doctor` shows an agent "not loaded" | agents removed or failed to load | `fde-coach install-agents` |
 | No dialogs or banners | Focus / Do Not Disturb, or notifications off for Script Editor | System Settings → Notifications → Script Editor → Allow; allow it in your Focus mode |
@@ -38,8 +38,11 @@ If today is at risk, protect the streak first: record any way you can
 | Pronunciation or legato video skipped | ffmpeg not installed | `brew install ffmpeg`; the .m4a is always kept. Retry with `fde-coach pronounce upload` / `fde-coach legato upload` (the 15-minute tick also retries) |
 | Pronunciation audio not saved | QuickTime save quirk on macOS 26 | Same fallbacks as the FDE recording; the guided dialog asks you to press ⌘S. The .m4a lands in `~/Movies/FDE-Impromptu/pronunciation/` |
 | Pronunciation words never change | every word retired (4 easy answers in a row) | `fde-coach pronounce words --add WORD` — new words enter the schedule immediately |
-| Nothing happened at 05:45 | pronouncing agent not loaded | `fde-coach install-agents` (installs all four agents); check `pronounce.err.log` |
+| Nothing happened at 05:45 | pronouncing agent not loaded | `fde-coach install-agents` (reinstalls every agent); check `pronounce.err.log` |
 | Nothing happened at 06:00 | legato agent not loaded, or legato turned off | `fde-coach install-agents`; `fde-coach legato status` says if it is off (`config --set legato.enabled=true`); check `legato.err.log` |
+| Nothing happened on Saturday at 08:00 | Mac asleep, the stage agent not loaded, or Weekend Stage turned off | Sunday 08:00 reopens the same weekend. `fde-coach install-agents`; `fde-coach stage status` says if it is off (`config --set stage.enabled=true`); check `stage.err.log` |
+| Weekend Stage prep page shows no video | offline, or the browser blocks TED's embedded player | Use *Open on ted.com* under the player; the segment, passes and prompts on the page still apply |
+| Take A says "find it on your first watch" | no start and end saved for this talk's segment yet | `fde-coach stage segment --start M:SS --end M:SS`; an unrecorded deck is rebuilt with them |
 | No "Pronunciation practice next?" after the FDE session (older versions) | the prompt checked the session lock while still holding it, so it never showed | Fixed: the next practice is offered after the lock is released (FDE → pronunciation → legato). Turn the prompts off with `pronunciation.prompt_after_fde=false` / `legato.prompt_after_pronunciation=false` |
 | Pronunciation warm-up shows words without respellings | a due word has no coach notes yet and Claude Code was unavailable | It still works; the notes are added the next time Claude Code answers. `fde-coach doctor` shows the Claude CLI |
 | Want the old AI-written work paragraphs back | — | `fde-coach config --set pronunciation.paragraph_source=claude` |
@@ -48,12 +51,15 @@ If today is at risk, protect the streak first: record any way you can
 | Imported book added 0 passages | its paragraphs are mostly dialogue, verse or very long | Try `--max 40`, or another book; prose of 50–130-word paragraphs works best |
 | Worried a built-in passage was altered | — | `python3 scripts/tools/build_passage_library.py verify` re-downloads the editions and compares every passage |
 | YouTube playlist never filled (older versions) | `add_to_playlist` raised NameError | Fixed; set `youtube.pronunciation_playlist_id` / `youtube.legato_playlist_id` |
-| Old pronunciation agent kept firing after uninstall | `uninstall.sh` skipped `com.fdecoach.pronounce` | Fixed (removes all four agents). Clean up by hand: `launchctl bootout gui/$(id -u)/com.fdecoach.pronounce` |
+| Old pronunciation agent kept firing after uninstall | `uninstall.sh` skipped `com.fdecoach.pronounce` | Fixed (removes every agent). Clean up by hand: `launchctl bootout gui/$(id -u)/com.fdecoach.pronounce` |
 | Deck file deleted | — | Any command (`fde-coach open`) rebuilds it from the saved questions |
 | Broke after a Homebrew Python upgrade | the virtual environment points at a removed Python | Re-run `install.sh` (history is kept) |
 | Want to start fresh | — | `bash uninstall.sh --purge`, then `install.sh` |
 
 ## Running the tests
+
+From your clone of the repo, `make test` runs the whole suite once and keeps the
+full output in `.test-output.log`. Without make:
 
 ```bash
 cd ~/.claude/skills/fde-impromptu-coach
@@ -62,13 +68,22 @@ cd ~/.claude/skills/fde-impromptu-coach
 
 The suite simulates macOS (`FDE_COACH_DRYRUN=1`), uses a throw-away data
 folder and a fake Claude CLI, and never records, uploads or touches your
-schedule.
+schedule. A clean run ends in `OK`; skipped tests are expected (off macOS the two
+ffmpeg video tests skip, because the slides need the Apple Symbols font).
 
 ## Useful environment variables (testing and debugging)
+
+`scripts/tools/sandbox.sh` (or `make sandbox ARGS='…'` from the clone) sets the
+test ones for you and runs one command in a throw-away home.
 
 | Variable | Effect |
 |---|---|
 | `FDE_COACH_HOME` | use another data folder |
 | `FDE_COACH_DRYRUN=1` | simulate every macOS action (no dialogs, recording or upload) |
+| `FDE_COACH_DRYRUN_ANSWERS='Start now,Later'` | with dry-run: the answers to the next dialogs, in order |
 | `FDE_COACH_NOW=2026-10-01T07:31:00` | pretend it is that time (reminder testing) |
+| `FDE_COACH_TODAY=2026-10-01` | pretend it is that day (wins over `FDE_COACH_NOW` for the date) |
 | `FDE_COACH_RECORDINGS` | use another recordings folder |
+| `FDE_COACH_AGENTS_DIR` | write the launchd agents somewhere other than `~/Library/LaunchAgents` |
+| `FDE_COACH_NO_CLAUDE_DISCOVERY=1` | use only `claude_path` from the settings; never look for the real `claude` |
+| `FDE_COACH_SKIP_NETWORK_WAIT=1` | don't wait for the network before calling Claude |

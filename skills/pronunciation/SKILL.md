@@ -1,6 +1,6 @@
 ---
 name: pronunciation
-description: Pronunciation practice from FDE Impromptu Coach - the pen method, a 5-minute audio drill on the learner's hard words and a verbatim passage from a public-domain book. Use when the user types /pronunciation or says pronunciation (also misspelt "pronounciation", "pronunciaton"), pronounce, the pen method, hard words, add a hard word, clearer speech or articulation practice, or asks for their pronunciation streak, status or history. Runs the fde-coach CLI on macOS. Impromptu and legato have their own skills.
+description: Pronunciation practice from FDE Impromptu Coach - the pen method, a 5-minute audio drill on the learner's hard words and a verbatim passage from a public-domain book. Use when the user types /pronunciation or says pronunciation (also misspelt "pronounciation", "pronunciaton"), pronounce, the pen method, hard words, add a hard word, clearer speech or articulation practice, or asks for their pronunciation streak, status or history. Runs the fde-coach CLI on macOS. Impromptu, legato and Weekend Stage have their own skills.
 argument-hint: "[start | status | history | words | add <word> | remove <word> | passage <id> | upload]"
 compatibility: macOS with FDE Impromptu Coach installed (the fde-coach CLI).
 ---

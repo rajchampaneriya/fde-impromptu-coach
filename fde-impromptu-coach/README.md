@@ -7,7 +7,9 @@ leadership side of the **Forward Deployed Engineer** role.
 Two short audio practices follow, reading **real paragraphs by human writers
 from free, public-domain books**, never AI-written text:
 **pronunciation** with the pen method (05:45) and **legato**, smooth connected
-speech (06:00). Each has its own streak.
+speech (06:00). On weekends, **Weekend Stage** (Saturday 08:00) turns one
+famous TED talk into three takes on camera. Each has its own streak. The
+**FDE Learn** track (05:50) is a separate skill: see `../fde-learn/README.md`.
 
 Every morning at **05:30** your Mac:
 
@@ -53,10 +55,11 @@ git clone https://github.com/rajchampaneriya/fde-impromptu-coach ~/Code/fde-impr
 bash ~/Code/fde-impromptu-coach/fde-impromptu-coach/install.sh
 ```
 
-The installer links all five skills into `~/.claude/skills` (`link_skills.sh`):
-this one, `fde-learn` and the one-practice skills `impromptu`, `pronunciation`
-and `legato`, so `/impromptu`, `/pronunciation`, `/legato` and `/fde-learn`
-work in every Claude Code session. Claude Code only finds a skill at
+The installer links every skill in the repo into `~/.claude/skills`
+(`link_skills.sh`): this one, `fde-learn` and one skill per practice
+(`impromptu`, `pronunciation`, `legato`, `stage`), so `/impromptu`,
+`/pronunciation`, `/legato`, `/stage` and `/fde-learn` work in every Claude
+Code session. Claude Code only finds a skill at
 `~/.claude/skills/<name>/SKILL.md`: a repo cloned *into* `~/.claude/skills` is
 one level too deep and stays invisible. Check any time with
 `bash ~/Code/fde-impromptu-coach/fde-impromptu-coach/link_skills.sh --check`.
@@ -68,8 +71,10 @@ Optional: `install.sh --time 06:00` to use a different daily time.
 
 The installer creates `~/FDE-Impromptu/` (history, decks, logs, settings), a
 Python virtual environment, the launcher `~/FDE-Impromptu/bin/fde-coach` (also
-linked to `~/.local/bin/fde-coach`), and four background jobs (launchd agents:
-05:30 FDE, 05:45 pronunciation, 06:00 legato, and a 15-minute reminder tick).
+linked to `~/.local/bin/fde-coach`), and the background jobs (launchd agents:
+05:30 FDE, 05:45 pronunciation, 05:50 FDE Learn, 06:00 legato, Saturday and
+Sunday 08:00 Weekend Stage, and a 15-minute reminder tick; `fde-coach doctor`
+shows whether each one is loaded).
 It also copies the scripts and assets to `~/FDE-Impromptu/src`, because macOS blocks
 background jobs from reading protected folders such as Downloads and Documents;
 the schedule always runs from that copy.
@@ -305,6 +310,38 @@ the book's own text; the words are never changed.
 
 More detail: `references/legato_design.md`.
 
+### Weekend Stage (one famous TED talk a weekend, on camera)
+
+A weekly practice with its own streak, counted in weekends. At **08:00 on
+Saturday** the deck is built and a prep page opens; **Sunday 08:00** reopens
+the same weekend if Saturday was missed, and a calendar alert waits on Sunday
+evening. Ten talks on ten subjects, easiest to hardest (`fde-coach stage talks`).
+
+1. **Study, off camera (about 25 minutes).** The prep page embeds TED's own
+   player and names the segment to learn. Watch it three times (normal, muted
+   for the body, eyes closed for the voice), write a beat sheet of 5–7
+   keywords, then shadow the segment twice with headphones.
+2. **Three takes, on camera (about 10 minutes).** *Take A · Mirror*: the
+   segment, as the speaker would do it. *Take B · Make it yours*: the same move
+   on your own FDE material, for the listener on the slide. *Take C ·
+   Pressure*: a twist you see only on its slide. QuickTime records, everything
+   stops and saves by itself, and the camera recording uploads privately.
+
+TED talks are CC BY-NC-ND 4.0: the coach keeps links, segment times and its
+own delivery notes, never downloads TED video or audio, and never copies a
+transcript.
+
+| You want to… | Do this |
+|---|---|
+| Study this weekend's talk | `fde-coach stage prep` |
+| Save the segment you found on the first watch | `fde-coach stage segment --start 2:05 --end 5:10` |
+| Record the three takes | `fde-coach stage session --detach` |
+| Week streak and this weekend's state | `fde-coach stage status` |
+| A different talk this weekend (before recording) | `fde-coach stage talks`, then `fde-coach stage generate --replace --talk ID` |
+| Change the time / turn it off | `fde-coach config --set stage.time=09:00` / `stage.enabled=false` |
+
+More detail: `references/stage_design.md`.
+
 ### Reading passages from real books
 
 56 built-in passages from 34 public-domain works by 29 writers: *The Art of
@@ -365,11 +402,13 @@ minute** there. PowerPoint on the Mac is the primary, fully timed experience.
 | Settings | `~/FDE-Impromptu/config.json` |
 | Question history, streak | `~/FDE-Impromptu/state/history.json` |
 | Pronunciation / legato history | `~/FDE-Impromptu/state/pronunciation.json`, `legato.json` |
+| Weekend Stage history and saved segment times | `~/FDE-Impromptu/state/stage.json` |
+| Weekend Stage prep pages | `~/FDE-Impromptu/stage/` |
 | Passages you imported | `~/FDE-Impromptu/library/passages.json` |
 | Decks and thumbnails | `~/FDE-Impromptu/decks/` |
 | Exec answer keys | `~/FDE-Impromptu/answers/` (`index.html` lists every one-breath line) |
 | Scripts the schedule runs | `~/FDE-Impromptu/src/` (refreshed by `install.sh`) |
-| Videos | `~/Movies/FDE-Impromptu/` (audio practices in `pronunciation/` and `legato/`) |
+| Videos | `~/Movies/FDE-Impromptu/` (audio practices in `pronunciation/` and `legato/`, Weekend Stage in `stage/`) |
 | Logs | `~/FDE-Impromptu/logs/` |
 | YouTube and Calendar sign-in | `~/FDE-Impromptu/secrets/` (only readable by you) |
 
@@ -377,7 +416,8 @@ Only these things leave your Mac: the question-writing and answer-key prompts
 (and, for pronunciation, the word mark-up prompt) sent through your Claude Code login, the
 private videos sent to your own YouTube channel, and the missed-practice events
 in your own Google Calendar. `library import-gutenberg` downloads a book from
-gutenberg.org; nothing is sent there.
+gutenberg.org; nothing is sent there. The Weekend Stage prep page plays the talk
+in TED's embedded player, which loads from ted.com like any TED page.
 
 ## 7. Uninstall
 

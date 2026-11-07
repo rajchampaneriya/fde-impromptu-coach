@@ -371,6 +371,9 @@ class TestLegatoVideo(unittest.TestCase):
     def test_video_duration_matches_audio(self):
         if not audio.has_ffmpeg():
             self.skipTest("ffmpeg not installed")
+        from fdecoach import pronounce_deck
+        if not pronounce_deck.SYMBOL_FONT.is_file():
+            self.skipTest("the slides need macOS's Apple Symbols font (pronounce_deck.SYMBOL_FONT)")
         from unittest import mock
         from fdecoach import legato_session as LS, practice
         tmp = Path(tempfile.mkdtemp())

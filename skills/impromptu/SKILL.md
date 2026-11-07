@@ -1,6 +1,6 @@
 ---
 name: impromptu
-description: Impromptu speaking practice from FDE Impromptu Coach - five surprise questions answered on camera (exec slots with a 25-second headline window), then the exec answer key to practise the correct response. Use when the user types /impromptu or says impromptu (also misspelt "impromptue", "impromtu"), impromptu response practice, start or record my practice, today's questions, did I practise, my streak, how should I have answered, model or exec answers, say it back, my one-breath headlines, too easy or too hard. Runs the fde-coach CLI on macOS. Pronunciation and legato have their own skills.
+description: Impromptu speaking practice from FDE Impromptu Coach - five surprise questions answered on camera (exec slots with a 25-second headline window), then the exec answer key to practise the correct response. Use when the user types /impromptu or says impromptu (also misspelt "impromptue", "impromtu"), impromptu response practice, start or record my practice, today's questions, did I practise, my streak, how should I have answered, model or exec answers, say it back, my one-breath headlines, too easy or too hard. Runs the fde-coach CLI on macOS. Pronunciation, legato and Weekend Stage have their own skills.
 argument-hint: "[start | status | answers | headlines | harder | easier | brief <topic> | history]"
 compatibility: macOS with FDE Impromptu Coach installed (the fde-coach CLI).
 ---

@@ -1,5 +1,9 @@
 # FDE Impromptu Coach — Design Plan
 
+> **A design log, not a spec.** Each section records a version as it shipped, so its facts are as of
+> that version: the v2 fallback bank held 132 questions, for example, and it has grown since. It is never
+> sent to Claude. For how things work now, read the code and `AGENTS.md` at the repo root.
+
 ## 1. Goal
 
 A daily, controlled practice routine that builds impromptu communication and
