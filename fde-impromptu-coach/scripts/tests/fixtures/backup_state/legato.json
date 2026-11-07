@@ -1,0 +1,305 @@
+{
+ "version": 1,
+ "flow_adjust": -2,
+ "sessions": {
+  "2026-10-09": {
+   "date": "2026-10-09",
+   "day_number": 1,
+   "source": "library",
+   "recorded": true,
+   "passage_id": "aps-take-time",
+   "flow_level": 1,
+   "feedback": "Choppy",
+   "response_prompt": "Give the passage's message in three sentences, then one question it raises."
+  },
+  "2026-10-10": {
+   "date": "2026-10-10",
+   "day_number": 2,
+   "source": "library",
+   "recorded": true,
+   "passage_id": "tagore-cabuliwallah",
+   "flow_level": 1,
+   "feedback": "Mostly smooth",
+   "response_prompt": "Retell the passage to a colleague who has not read it."
+  },
+  "2026-10-11": {
+   "date": "2026-10-11",
+   "day_number": 3,
+   "source": "library",
+   "recorded": true,
+   "passage_id": "douglass-twelve",
+   "flow_level": 1,
+   "feedback": "Mostly smooth",
+   "response_prompt": "What would you say back to the author?"
+  },
+  "2026-10-12": {
+   "date": "2026-10-12",
+   "day_number": 4,
+   "source": "library",
+   "recorded": true,
+   "passage_id": "walden-drummer",
+   "flow_level": 1,
+   "feedback": "Mostly smooth",
+   "response_prompt": "Give the passage's message in three sentences, then one question it raises."
+  },
+  "2026-10-13": {
+   "date": "2026-10-13",
+   "day_number": 5,
+   "source": "library",
+   "recorded": true,
+   "passage_id": "woolf-flowers",
+   "flow_level": 1,
+   "feedback": "Mostly smooth",
+   "response_prompt": "What would you say back to the author?"
+  },
+  "2026-10-14": {
+   "date": "2026-10-14",
+   "day_number": 6,
+   "source": "library",
+   "recorded": true,
+   "passage_id": "bennett-daily-miracle",
+   "flow_level": 1,
+   "feedback": "Mostly smooth",
+   "response_prompt": "Agree or disagree with the author. One reason, one example."
+  },
+  "2026-10-15": {
+   "date": "2026-10-15",
+   "day_number": 7,
+   "source": "library",
+   "recorded": true,
+   "passage_id": "jacobs-tiger",
+   "flow_level": 1,
+   "feedback": "Mostly smooth",
+   "response_prompt": "In your own words: what is the author asking of the reader?"
+  },
+  "2026-10-16": {
+   "date": "2026-10-16",
+   "day_number": 8,
+   "source": "library",
+   "recorded": true,
+   "passage_id": "doyle-the-woman",
+   "flow_level": 1,
+   "feedback": "Mostly smooth",
+   "response_prompt": "Give the passage's message in three sentences, then one question it raises."
+  },
+  "2026-10-17": {
+   "date": "2026-10-17",
+   "day_number": 9,
+   "source": "library",
+   "recorded": true,
+   "passage_id": "douglass-sheridan",
+   "flow_level": 1,
+   "feedback": "Choppy",
+   "response_prompt": "Describe a moment from your own life this passage reminds you of."
+  },
+  "2026-10-18": {
+   "date": "2026-10-18",
+   "day_number": 10,
+   "source": "library",
+   "recorded": true,
+   "passage_id": "muir-sierra-day",
+   "flow_level": 1,
+   "feedback": "Choppy",
+   "response_prompt": "Retell the passage to a colleague who has not read it."
+  },
+  "2026-10-19": {
+   "date": "2026-10-19",
+   "day_number": 11,
+   "source": "library",
+   "recorded": true,
+   "passage_id": "aps-silence",
+   "flow_level": 1,
+   "feedback": "Mostly smooth",
+   "response_prompt": "Agree or disagree with the author. One reason, one example."
+  },
+  "2026-10-20": {
+   "date": "2026-10-20",
+   "day_number": 12,
+   "source": "library",
+   "recorded": true,
+   "passage_id": "twain-saturday",
+   "flow_level": 1,
+   "feedback": "Mostly smooth",
+   "response_prompt": "Retell the passage to a colleague who has not read it."
+  },
+  "2026-10-21": {
+   "date": "2026-10-21",
+   "day_number": 13,
+   "source": "library",
+   "recorded": true,
+   "passage_id": "washington-idea-per-word",
+   "flow_level": 1,
+   "feedback": "Mostly smooth",
+   "response_prompt": "What would you say back to the author?"
+  },
+  "2026-10-22": {
+   "date": "2026-10-22",
+   "day_number": 14,
+   "source": "library",
+   "recorded": true,
+   "passage_id": "bacon-studies",
+   "flow_level": 1,
+   "feedback": "Choppy",
+   "response_prompt": "In your own words: what is the author asking of the reader?"
+  },
+  "2026-10-23": {
+   "date": "2026-10-23",
+   "day_number": 15,
+   "source": "library",
+   "recorded": true,
+   "passage_id": "dickens-scrooge",
+   "flow_level": 1,
+   "feedback": "Choppy",
+   "response_prompt": "Describe a moment from your own life this passage reminds you of."
+  },
+  "2026-10-24": {
+   "date": "2026-10-24",
+   "day_number": 16,
+   "source": "library",
+   "recorded": true,
+   "passage_id": "walden-simplicity",
+   "flow_level": 1,
+   "feedback": "Mostly smooth",
+   "response_prompt": "Where would this idea help you at work this week?"
+  },
+  "2026-10-25": {
+   "date": "2026-10-25",
+   "day_number": 17,
+   "source": "library",
+   "recorded": true,
+   "passage_id": "washington-bucket",
+   "flow_level": 1,
+   "feedback": "Mostly smooth",
+   "response_prompt": "Retell the passage to a colleague who has not read it."
+  },
+  "2026-10-26": {
+   "date": "2026-10-26",
+   "day_number": 18,
+   "source": "library",
+   "recorded": true,
+   "passage_id": "aps-practise",
+   "flow_level": 1,
+   "feedback": "Mostly smooth",
+   "response_prompt": "Agree or disagree with the author. One reason, one example."
+  },
+  "2026-10-27": {
+   "date": "2026-10-27",
+   "day_number": 19,
+   "source": "library",
+   "recorded": true,
+   "passage_id": "gitanjali-13",
+   "flow_level": 1,
+   "feedback": "Mostly smooth",
+   "response_prompt": "Give the passage's message in three sentences, then one question it raises."
+  },
+  "2026-10-28": {
+   "date": "2026-10-28",
+   "day_number": 20,
+   "source": "library",
+   "recorded": true,
+   "passage_id": "chekhov-seafront",
+   "flow_level": 1,
+   "feedback": "Choppy",
+   "response_prompt": "Agree or disagree with the author. One reason, one example."
+  },
+  "2026-10-29": {
+   "date": "2026-10-29",
+   "day_number": 21,
+   "source": "library",
+   "recorded": true,
+   "passage_id": "twain-coyote",
+   "flow_level": 1,
+   "feedback": "Mostly smooth",
+   "response_prompt": "Describe a moment from your own life this passage reminds you of."
+  },
+  "2026-10-30": {
+   "date": "2026-10-30",
+   "day_number": 22,
+   "source": "library",
+   "recorded": true,
+   "passage_id": "melville-ishmael",
+   "flow_level": 2,
+   "feedback": "Mostly smooth",
+   "response_prompt": "In your own words: what is the author asking of the reader?"
+  },
+  "2026-10-31": {
+   "date": "2026-10-31",
+   "day_number": 23,
+   "source": "library",
+   "recorded": true,
+   "passage_id": "aps-deep-breath",
+   "flow_level": 2,
+   "feedback": "Mostly smooth",
+   "response_prompt": "Where would this idea help you at work this week?"
+  },
+  "2026-11-01": {
+   "date": "2026-11-01",
+   "day_number": 24,
+   "source": "library",
+   "recorded": true,
+   "passage_id": "baum-kansas",
+   "flow_level": 2,
+   "feedback": "Mostly smooth",
+   "response_prompt": "Where would this idea help you at work this week?"
+  },
+  "2026-11-02": {
+   "date": "2026-11-02",
+   "day_number": 25,
+   "source": "library",
+   "recorded": true,
+   "passage_id": "franklin-spectator",
+   "flow_level": 2,
+   "feedback": "Mostly smooth",
+   "response_prompt": "Describe a moment from your own life this passage reminds you of."
+  },
+  "2026-11-03": {
+   "date": "2026-11-03",
+   "day_number": 26,
+   "source": "library",
+   "recorded": true,
+   "passage_id": "prophet-truth-within",
+   "flow_level": 2,
+   "feedback": "Mostly smooth",
+   "response_prompt": "Retell the passage to a colleague who has not read it."
+  },
+  "2026-11-04": {
+   "date": "2026-11-04",
+   "day_number": 27,
+   "source": "library",
+   "recorded": true,
+   "passage_id": "aps-plunge",
+   "flow_level": 2,
+   "feedback": "Mostly smooth",
+   "response_prompt": "Agree or disagree with the author. One reason, one example."
+  },
+  "2026-11-05": {
+   "date": "2026-11-05",
+   "day_number": 28,
+   "source": "library",
+   "recorded": true,
+   "passage_id": "washington-twenty-minutes",
+   "flow_level": 2,
+   "feedback": "Mostly smooth",
+   "response_prompt": "In your own words: what is the author asking of the reader?"
+  },
+  "2026-11-06": {
+   "date": "2026-11-06",
+   "day_number": 29,
+   "source": "library",
+   "recorded": false,
+   "passage_id": "tagore-vermilion",
+   "flow_level": 3,
+   "response_prompt": "Give the passage's message in three sentences, then one question it raises."
+  },
+  "2026-11-07": {
+   "date": "2026-11-07",
+   "day_number": 29,
+   "source": "library",
+   "recorded": true,
+   "passage_id": "carroll-rabbit",
+   "flow_level": 3,
+   "feedback": "Mostly smooth",
+   "response_prompt": "Describe a moment from your own life this passage reminds you of."
+  }
+ }
+}

@@ -1,5 +1,26 @@
 # Changelog
 
+## Unreleased — passage-rotation evals (test first)
+
+Learners saw the same reading passage again and again. The logs showed why: legato and pronunciation each
+remembered only their own reads, so a passage read in one practice was fresh to the other (12 of 60 reads
+in the backup, 43% in the last week). These evals come first; the fix lands step by step against them.
+
+**New**
+
+- **`scripts/tests/features/passage_rotation.feature`** (21 scenarios) and **`test_passage_rotation.py`**:
+  no near-term repeats, fair rotation, feedback honoured, state persists, bank size and coverage, content
+  quality, schema validity, no audio treatment, regression. 16 are marked `@pending(<fix step>)`: red until
+  that step lands, reported as a skip with the reason, and a failure once they pass so the marker comes off.
+  `FDE_EVALS_STRICT=1` runs them as plain tests.
+- **`scripts/tests/passage_evals.py`**: text-only checkers and an in-process driver that runs a year of
+  sessions through `practice.ensure_today` in about 15 seconds.
+- **`TestEvalHarness`**: every checker is proven on the learner's real logs, on known-bad selectors and on a
+  reference selector built to the fix plan before it is trusted.
+- **Fixtures**: a sanitised copy of the learner's legato and pronunciation history (passage ids, dates, flow
+  taps; no paths, links or notes) and a regression baseline recorded before any fix.
+- **Skill evals 9 and 10** (`repeated-passage`, `passage-too-easy`).
+
 ## v9 — Weekend Stage: one famous TED talk a weekend, on camera
 
 The daily practices build fluency; nothing trained delivery against a model speaker. Weekend Stage adds a

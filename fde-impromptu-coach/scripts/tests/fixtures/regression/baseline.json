@@ -1,0 +1,667 @@
+{
+ "recorded_on_commit": "798feed",
+ "impromptu": {
+  "2026-10-01": [
+   {
+    "id": "TRU-03",
+    "category": "trust_ethics",
+    "format": "roleplay",
+    "difficulty": 2,
+    "audience": "business",
+    "constraint": "",
+    "text": "A customer asks you to copy their production customer data into a quick test environment “just for today.” Respond."
+   },
+   {
+    "id": "PSH-05",
+    "category": "pushback",
+    "format": "roleplay",
+    "difficulty": 3,
+    "audience": "exec",
+    "constraint": "",
+    "text": "Your executive sponsor asks you to commit to a launch date that your engineers say is impossible. Respond in the meeting."
+   },
+   {
+    "id": "AMB-06",
+    "category": "ambiguity",
+    "format": "opinion",
+    "difficulty": 3,
+    "audience": "interviewer",
+    "constraint": "",
+    "text": "You have 48 hours to decide whether to build a custom solution or wait for an official product feature. Make the call and justify it."
+   },
+   {
+    "id": "DIS-06",
+    "category": "discovery",
+    "format": "opinion",
+    "difficulty": 3,
+    "audience": "business",
+    "constraint": "",
+    "text": "The customer has defined success as “users like it.” Explain why that is risky and propose better success criteria."
+   },
+   {
+    "id": "INF-09",
+    "category": "influence",
+    "format": "roleplay",
+    "difficulty": 4,
+    "audience": "account_leader",
+    "constraint": "",
+    "text": "Sales wants you to commit engineering time to a prospect you believe is a poor fit. The sales VP outranks you. Respond to him."
+   }
+  ],
+  "2026-10-02": [
+   {
+    "id": "CRI-03",
+    "category": "crisis",
+    "format": "roleplay",
+    "difficulty": 2,
+    "audience": "business",
+    "constraint": "",
+    "text": "A bug in your deployment sent incorrect summaries to 30 users this morning. Say, out loud, your first message to the customer’s project lead."
+   },
+   {
+    "id": "EXE-12",
+    "category": "exec_comm",
+    "format": "explain",
+    "difficulty": 2,
+    "audience": "account_leader",
+    "constraint": "",
+    "text": "Your account executive has two minutes before a call with the customer’s CIO and asks: “Where are we, really?” Brief him."
+   },
+   {
+    "id": "PRI-09",
+    "category": "prioritization",
+    "format": "opinion",
+    "difficulty": 4,
+    "audience": "exec",
+    "constraint": "",
+    "text": "You are asked to cut your deployment budget by 40% and keep the same outcomes. What do you cut, and how do you explain it?"
+   },
+   {
+    "id": "LEA-12",
+    "category": "leadership",
+    "format": "explain",
+    "difficulty": 2,
+    "audience": "account_leader",
+    "constraint": "",
+    "text": "A new account executive asks how she should work with Forward Deployed Engineers to win and keep customers. Give her your advice."
+   },
+   {
+    "id": "TEC-09",
+    "category": "tech_translation",
+    "format": "roleplay",
+    "difficulty": 4,
+    "audience": "exec",
+    "constraint": "",
+    "text": "A board member with no technical background asks you to explain, in one minute, how you know the AI system is safe to use with customer data. Answer him."
+   }
+  ],
+  "2026-10-03": [
+   {
+    "id": "TEC-12",
+    "category": "tech_translation",
+    "format": "explain",
+    "difficulty": 3,
+    "audience": "account_leader",
+    "constraint": "",
+    "text": "Your account director asks why the customer’s accuracy dropped after the model update, because the customer will ask her tomorrow. Explain it so she can repeat it."
+   },
+   {
+    "id": "OWN-03",
+    "category": "ownership",
+    "format": "story",
+    "difficulty": 2,
+    "audience": "interviewer",
+    "constraint": "",
+    "text": "Tell me about a project that failed. What was your part in it?"
+   },
+   {
+    "id": "PSH-06",
+    "category": "pushback",
+    "format": "roleplay",
+    "difficulty": 3,
+    "audience": "business",
+    "constraint": "",
+    "text": "Your own sales team promised a customer a capability the product doesn’t have. The customer brings it up with you. Respond to the customer."
+   },
+   {
+    "id": "COM-07",
+    "category": "commercial",
+    "format": "roleplay",
+    "difficulty": 3,
+    "audience": "business",
+    "constraint": "",
+    "text": "Your champion at the customer is leaving the company next month. Talk to her about how to protect the project."
+   },
+   {
+    "id": "LEA-08",
+    "category": "leadership",
+    "format": "opinion",
+    "difficulty": 4,
+    "audience": "interviewer",
+    "constraint": "",
+    "text": "If you were building an FDE team from scratch next year, what would you do differently from how most teams operate today?"
+   }
+  ],
+  "2026-10-04": [
+   {
+    "id": "TRU-04",
+    "category": "trust_ethics",
+    "format": "roleplay",
+    "difficulty": 2,
+    "audience": "business",
+    "constraint": "",
+    "text": "The customer asks whether your AI system is “unbiased.” Give an honest answer."
+   },
+   {
+    "id": "INF-03",
+    "category": "influence",
+    "format": "pitch",
+    "difficulty": 2,
+    "audience": "technical_peer",
+    "constraint": "",
+    "text": "Pitch your product team, in one minute, on building a feature three of your customers keep asking for."
+   },
+   {
+    "id": "DIS-12",
+    "category": "discovery",
+    "format": "roleplay",
+    "difficulty": 3,
+    "audience": "account_leader",
+    "constraint": "",
+    "text": "Your account executive wants you to scope a big expansion from one enthusiastic email. You think the real need is unclear. Tell her what you need before anyone quotes a price."
+   },
+   {
+    "id": "PRI-06",
+    "category": "prioritization",
+    "format": "opinion",
+    "difficulty": 3,
+    "audience": "business",
+    "constraint": "",
+    "text": "A customer wants 12 use cases in the first quarter. Explain how you would pick the first two."
+   },
+   {
+    "id": "EXE-09",
+    "category": "exec_comm",
+    "format": "roleplay",
+    "difficulty": 4,
+    "audience": "exec",
+    "constraint": "",
+    "text": "You have one minute with a new CTO who inherited your project and is skeptical of every vendor her predecessor chose. Win her attention."
+   }
+  ],
+  "2026-10-05": [
+   {
+    "id": "OWN-04",
+    "category": "ownership",
+    "format": "story",
+    "difficulty": 2,
+    "audience": "interviewer",
+    "constraint": "",
+    "text": "Describe a time you received tough feedback. What did you do with it?"
+   },
+   {
+    "id": "CRI-04",
+    "category": "crisis",
+    "format": "roleplay",
+    "difficulty": 2,
+    "audience": "exec",
+    "constraint": "",
+    "text": "The demo you’re giving to the customer’s leadership crashes in the first minute. Say what you say next."
+   },
+   {
+    "id": "PRI-11",
+    "category": "prioritization",
+    "format": "roleplay",
+    "difficulty": 5,
+    "audience": "exec",
+    "constraint": "",
+    "text": "The customer’s executive says: “Everything on this list is priority one.” Push her to force-rank it, in the meeting."
+   },
+   {
+    "id": "AMB-05",
+    "category": "ambiguity",
+    "format": "roleplay",
+    "difficulty": 3,
+    "audience": "account_leader",
+    "constraint": "",
+    "text": "The customer’s project lead and your own account executive give you conflicting instructions. Decide what you’ll do and tell both."
+   },
+   {
+    "id": "COM-08",
+    "category": "commercial",
+    "format": "roleplay",
+    "difficulty": 4,
+    "audience": "exec",
+    "constraint": "",
+    "text": "Renewal is in three weeks, usage is down 40%, and your executive sponsor has gone quiet. You get her on the phone. What do you say?"
+   }
+  ],
+  "2026-10-06": [
+   {
+    "id": "PSH-12",
+    "category": "pushback",
+    "format": "roleplay",
+    "difficulty": 4,
+    "audience": "account_leader",
+    "constraint": "",
+    "text": "Your account director asks you to promise the customer a custom integration by quarter end to close the renewal. It can’t be done well in that time. Respond to her."
+   },
+   {
+    "id": "TRU-01",
+    "category": "trust_ethics",
+    "format": "opinion",
+    "difficulty": 1,
+    "audience": "interviewer",
+    "constraint": "",
+    "text": "What does it mean to be a trusted advisor to a customer rather than just a vendor?"
+   },
+   {
+    "id": "EXE-07",
+    "category": "exec_comm",
+    "format": "pitch",
+    "difficulty": 3,
+    "audience": "exec",
+    "constraint": "",
+    "text": "Your pilot succeeded with one team. Make the case to the CIO for rolling it out to five more teams next quarter."
+   },
+   {
+    "id": "TEC-05",
+    "category": "tech_translation",
+    "format": "explain",
+    "difficulty": 3,
+    "audience": "business",
+    "constraint": "",
+    "text": "Explain to a skeptical legal team how their data flows through the system: what is stored, where, and for how long, without drowning them in detail."
+   },
+   {
+    "id": "AMB-09",
+    "category": "ambiguity",
+    "format": "opinion",
+    "difficulty": 4,
+    "audience": "business",
+    "constraint": "",
+    "text": "Your product changes monthly, and the customer wants a 12-month roadmap commitment. Respond with a plan."
+   }
+  ],
+  "2026-10-07": [
+   {
+    "id": "OWN-02",
+    "category": "ownership",
+    "format": "story",
+    "difficulty": 1,
+    "audience": "interviewer",
+    "constraint": "",
+    "text": "Tell me about a time you went beyond your role to help a customer or teammate succeed."
+   },
+   {
+    "id": "CRI-12",
+    "category": "crisis",
+    "format": "roleplay",
+    "difficulty": 3,
+    "audience": "account_leader",
+    "constraint": "",
+    "text": "A production incident hit the customer an hour before your account executive’s renewal call. He calls you: “What do I tell them?” Answer him."
+   },
+   {
+    "id": "LEA-06",
+    "category": "leadership",
+    "format": "opinion",
+    "difficulty": 3,
+    "audience": "interviewer",
+    "constraint": "",
+    "text": "Take a position: should Forward Deployed Engineers specialize by industry or stay generalists? Defend it."
+   },
+   {
+    "id": "COM-04",
+    "category": "commercial",
+    "format": "pitch",
+    "difficulty": 2,
+    "audience": "exec",
+    "constraint": "",
+    "text": "Your pilot saved one team 10 hours a week. Turn that into an expansion pitch for the customer’s operations leader."
+   },
+   {
+    "id": "INF-12",
+    "category": "influence",
+    "format": "roleplay",
+    "difficulty": 2,
+    "audience": "account_leader",
+    "constraint": "",
+    "text": "You want your account executive to bring the customer’s operations leader into the next meeting, because that is where the value is. Ask him."
+   }
+  ]
+ },
+ "pinned": {
+  "legato": {
+   "dickens-best-of-times": {
+    "paragraph": "It was the best of times, it was the worst of times, it was the age of wisdom, it was the age of foolishness, it was the epoch of belief, it was the epoch of incredulity, it was the season of Light, it was the season of Darkness, it was the spring of hope, it was the winter of despair, we had everything before us, we had nothing before us, we were all going direct to Heaven, we were all going direct the other way—in short, the period was so far like the present period, that some of its noisiest authorities insisted on its being received, for good or for evil, in the superlative degree of comparison only.",
+    "chains": [
+     {
+      "tokens": [
+       3,
+       4
+      ],
+      "phrase": "best of",
+      "flow": "bes-tof"
+     },
+     {
+      "tokens": [
+       9,
+       10
+      ],
+      "phrase": "worst of",
+      "flow": "wors-tof"
+     },
+     {
+      "tokens": [
+       33,
+       34,
+       35
+      ],
+      "phrase": "epoch of incredulity",
+      "flow": ""
+     },
+     {
+      "tokens": [
+       61,
+       62
+      ],
+      "phrase": "had everything",
+      "flow": "ha-deverything"
+     },
+     {
+      "tokens": [
+       100,
+       101,
+       102,
+       103,
+       104
+      ],
+      "phrase": "noisiest authorities insisted on its",
+      "flow": ""
+     },
+     {
+      "tokens": [
+       117,
+       118
+      ],
+      "phrase": "comparison only",
+      "flow": ""
+     }
+    ],
+    "level": 3
+   },
+   "aps-take-time": {
+    "paragraph": "Take time, you have just as much of it as our richest multimillionaire. Your audience will wait for you. It is a sign of smallness to hurry. The great redwood trees of California had burst through the soil five hundred years before Socrates drank his cup of hemlock poison, and are only in their prime today. Nature shames us with our petty haste. Silence is one of the most eloquent things in the world. Master it, and use it through pause.",
+    "chains": [
+     {
+      "tokens": [
+       4,
+       5
+      ],
+      "phrase": "just as",
+      "flow": "jus-tas"
+     },
+     {
+      "tokens": [
+       6,
+       7,
+       8,
+       9,
+       10
+      ],
+      "phrase": "much of it as our",
+      "flow": ""
+     },
+     {
+      "tokens": [
+       13,
+       14
+      ],
+      "phrase": "Your audience",
+      "flow": "you-raudience"
+     },
+     {
+      "tokens": [
+       22,
+       23
+      ],
+      "phrase": "sign of",
+      "flow": "sig-nof"
+     },
+     {
+      "tokens": [
+       49,
+       50,
+       51
+      ],
+      "phrase": "and are only",
+      "flow": ""
+     },
+     {
+      "tokens": [
+       68,
+       69
+      ],
+      "phrase": "most eloquent",
+      "flow": "mos-teloquent"
+     }
+    ],
+    "level": 1
+   },
+   "woolf-flowers": {
+    "paragraph": "Mrs. Dalloway said she would buy the flowers herself. For Lucy had her work cut out for her. The doors would be taken off their hinges; Rumpelmayer’s men were coming. And then, thought Clarissa Dalloway, what a morning—fresh as if issued to children on a beach. What a lark! What a plunge! For so it had always seemed to her, when, with a little squeak of the hinges, which she could hear now, she had burst open the French windows and plunged at Bourton into the open air.",
+    "chains": [
+     {
+      "tokens": [
+       22,
+       23
+      ],
+      "phrase": "taken off",
+      "flow": "take-noff"
+     },
+     {
+      "tokens": [
+       35,
+       36
+      ],
+      "phrase": "what a",
+      "flow": "wha-ta"
+     },
+     {
+      "tokens": [
+       38,
+       39,
+       40,
+       41
+      ],
+      "phrase": "fresh as if issued",
+      "flow": ""
+     },
+     {
+      "tokens": [
+       43,
+       44,
+       45
+      ],
+      "phrase": "children on a",
+      "flow": ""
+     },
+     {
+      "tokens": [
+       56,
+       57
+      ],
+      "phrase": "had always",
+      "flow": "ha-dalways"
+     },
+     {
+      "tokens": [
+       76,
+       77
+      ],
+      "phrase": "burst open",
+      "flow": "burs-topen"
+     }
+    ],
+    "level": 1
+   }
+  },
+  "pronunciation": {
+   "douglass-twelve": {
+    "paragraph": "I was now about twelve years old, and the thought of being a slave for life began to bear heavily upon my heart. Just about this time, I got hold of a book entitled “The Columbian Orator.” Every opportunity I got, I used to read this book. Among much of other interesting matter, I found in it a dialogue between a master and his slave. The slave was represented as having run away from his master three times. The dialogue represented the conversation which took place between them, when the slave was retaken the third time.",
+    "words": [
+     "twelve",
+     "entitled",
+     "orator",
+     "opportunity",
+     "dialogue"
+    ],
+    "target_words": [
+     {
+      "word": "twelve",
+      "respelling": "TWELV",
+      "stress": "TWELV",
+      "tip": "t + w together; end on a buzzing v.",
+      "in_text": true
+     },
+     {
+      "word": "entitled",
+      "respelling": "in-TY-tuld",
+      "stress": "in-TY-tuld",
+      "tip": "Stress TY; a dark l before the d.",
+      "in_text": true
+     },
+     {
+      "word": "orator",
+      "respelling": "OR-uh-ter",
+      "stress": "OR-uh-ter",
+      "tip": "Stress OR; three beats.",
+      "in_text": true
+     },
+     {
+      "word": "opportunity",
+      "respelling": "op-er-TOO-nih-tee",
+      "stress": "op-er-TOO-nih-tee",
+      "tip": "Stress TOO; five beats.",
+      "in_text": true
+     },
+     {
+      "word": "dialogue",
+      "respelling": "DY-uh-log",
+      "stress": "DY-uh-log",
+      "tip": "Stress DY; the '-ue' is silent.",
+      "in_text": true
+     }
+    ],
+    "focus_sounds": [
+     "v",
+     "silent letters"
+    ]
+   },
+   "carroll-rabbit": {
+    "paragraph": "Alice was beginning to get very tired of sitting by her sister on the bank, and of having nothing to do: once or twice she had peeped into the book her sister was reading, but it had no pictures or conversations in it, “and what is the use of a book,” thought Alice “without pictures or conversations?” So she was considering in her own mind (as well as she could, for the hot day made her feel very sleepy and stupid), whether the pleasure of making a daisy-chain would be worth the trouble of getting up and picking the daisies, when suddenly a White Rabbit with pink eyes ran close by her.",
+    "words": [
+     "peeped",
+     "pictures",
+     "considering",
+     "trouble",
+     "daisies"
+    ],
+    "target_words": [
+     {
+      "word": "peeped",
+      "respelling": "PEEPT",
+      "stress": "PEEPT",
+      "tip": "One beat; the -ed is a crisp t.",
+      "in_text": true
+     },
+     {
+      "word": "pictures",
+      "respelling": "PIK-cherz",
+      "stress": "PIK-cherz",
+      "tip": "The t becomes ch: PIK-cherz.",
+      "in_text": true
+     },
+     {
+      "word": "considering",
+      "respelling": "kun-SID-er-ing",
+      "stress": "kun-SID-er-ing",
+      "tip": "Stress SID; four beats.",
+      "in_text": true
+     },
+     {
+      "word": "trouble",
+      "respelling": "TRUB-ul",
+      "stress": "TRUB-ul",
+      "tip": "The 'ou' is a short u; a dark l.",
+      "in_text": true
+     },
+     {
+      "word": "daisies",
+      "respelling": "DAY-zeez",
+      "stress": "DAY-zeez",
+      "tip": "Both s sounds buzz: DAY-zeez.",
+      "in_text": true
+     }
+    ],
+    "focus_sounds": [
+     "-ed endings",
+     "z"
+    ]
+   },
+   "muir-sierra-day": {
+    "paragraph": "Another glorious Sierra day in which one seems to be dissolved and absorbed and sent pulsing onward we know not where. Life seems neither long nor short, and we take no more heed to save time or make haste than do the trees and stars. This is true freedom, a good practical sort of immortality. Yonder rises another white skyland. How sharply the yellow pine spires and the palm-like crowns of the sugar pines are outlined on its smooth white domes. And hark! the grand thunder billows booming, rolling from ridge to ridge, followed by the faithful shower.",
+    "words": [
+     "glorious",
+     "dissolved",
+     "immortality",
+     "sugar",
+     "faithful"
+    ],
+    "target_words": [
+     {
+      "word": "glorious",
+      "respelling": "GLOR-ee-us",
+      "stress": "GLOR-ee-us",
+      "tip": "Stress GLOR; three beats.",
+      "in_text": true
+     },
+     {
+      "word": "dissolved",
+      "respelling": "dih-ZOLVD",
+      "stress": "dih-ZOLVD",
+      "tip": "The ss is z; end on 'lvd'.",
+      "in_text": true
+     },
+     {
+      "word": "immortality",
+      "respelling": "im-or-TAL-ih-tee",
+      "stress": "im-or-TAL-ih-tee",
+      "tip": "Stress TAL; five beats.",
+      "in_text": true
+     },
+     {
+      "word": "sugar",
+      "respelling": "SHUUG-er",
+      "stress": "SHUUG-er",
+      "tip": "The s is 'sh'; 'uu' as in 'book'.",
+      "in_text": true
+     },
+     {
+      "word": "faithful",
+      "respelling": "FAYTH-ful",
+      "stress": "FAYTH-ful",
+      "tip": "Tongue out for th, then 'ful'.",
+      "in_text": true
+     }
+    ],
+    "focus_sounds": [
+     "z spellings",
+     "th"
+    ]
+   }
+  }
+ },
+ "skill_evals_1_8_sha256": "b28adb693525c735f58b8f78a1ac7a68112da9fb69493ba5927023ae58da5164"
+}
