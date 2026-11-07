@@ -1,0 +1,14 @@
+{
+ "legato": {
+  "themes": [],
+  "include_user_passages": true,
+  "start_level": 1,
+  "sessions_per_level": 7,
+  "audio_clean_preset": "light"
+ },
+ "pronunciation": {
+  "paragraph_source": "library",
+  "themes": [],
+  "audio_clean_preset": "light"
+ }
+}

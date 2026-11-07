@@ -101,6 +101,32 @@
         "Only used generate --replace if today was not recorded yet",
         "Explains the headline window and the listener's reply"
       ]
+    },
+    {
+      "id": 9,
+      "eval_name": "repeated-passage",
+      "prompt": "I read this exact passage in pronunciation two days ago. Give me a different one for legato today.",
+      "expected_output": "Flags today's legato passage as read recently (fde-coach legato passage --flag repeated), then builds a different one with legato generate --replace if today is not recorded; keeps the new passage's text hidden (cold read); never writes a passage",
+      "files": [],
+      "assertions": [
+        "Ran fde-coach legato passage --flag repeated (for today)",
+        "Ran fde-coach legato generate --replace after flagging, and only because today was not recorded",
+        "Reply does NOT contain the text of the new passage",
+        "Reply does not contain a newly written practice paragraph"
+      ]
+    },
+    {
+      "id": 10,
+      "eval_name": "passage-too-easy",
+      "prompt": "Today's pronunciation passage was way too easy.",
+      "expected_output": "Flags today's pronunciation passage too easy (fde-coach pronounce passage --flag too-easy) and says it goes to the back of the queue; does not change impromptu difficulty (fde-coach level) and writes no passage",
+      "files": [],
+      "assertions": [
+        "Ran fde-coach pronounce passage --flag too-easy",
+        "Did NOT run fde-coach level --up (that is impromptu difficulty)",
+        "Reply says the passage will come back later than the others, or not soon",
+        "Reply does not contain a newly written practice paragraph"
+      ]
     }
   ]
 }
