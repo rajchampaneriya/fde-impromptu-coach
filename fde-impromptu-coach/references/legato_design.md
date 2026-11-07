@@ -34,7 +34,9 @@ and sure. Three habits make legato speech:
 | 8 | Closing | – | Full credit: author, work, year, section, translator, source link |
 
 Total 310 s; `min_audio_seconds` 180 with the same Keep / Try-again loop.
-After recording: "How did the flow feel?" → **Choppy / Mostly smooth / Smooth**.
+After recording: "How did the flow feel?" → **Choppy / Mostly smooth / Smooth**, then an optional
+"Anything about today's passage?" list: Too easy, Too hard, Read it recently, Not useful
+(`passages.ask_feedback`; `fde-coach legato passage --flag …` does the same later).
 
 ## Reading marks (computed, never generated)
 
@@ -60,12 +62,25 @@ to match the original text exactly: marks never change the words.
 
 ## Choosing the passage and the flow level
 
-* Passages never read before come first; after a full cycle, the least
-  recently read third returns (re-reading is good practice).
-* **Flow level** 1–3 = average sentence length of the passage (< 17 words,
-  ≤ 26, longer). The learner starts at `start_level` 1 and moves up one level
-  every `sessions_per_level` 7 recorded sessions; *Choppy* / *Smooth* adjust it
-  (bounded ±2). The nearest level wins among fresh passages.
+* **One reading history** for legato and pronunciation (`library.read_log`, both state
+  files). `library.choose` takes the first non-empty tier: T0 never read anywhere; T1 never
+  read here and 30+ days since its last read anywhere (`passages.cooldown_days`); T2 cooled
+  and 60+ sessions since its last read here (`passages.recent_sessions`); T3 cooled; T4 the
+  rest. Within it: the passages this practice has served least (fair rotation), a passage
+  flagged too easy / too hard waits behind the others, the authors of the last 4 reads in
+  either practice are skipped when possible, then the nearest flow level. "Read it recently"
+  keeps a passage out of both practices for 120 days, "Not useful" for 365
+  (`passages.exclude_days`). Sessions record `selection.tier` (`pinned` for `--passage`).
+* `generate --replace` lists the old passage in the session's `replaced` (it counts as
+  served) and never picks it again that day.
+* **Flow level** 1–3 = average sentence length of the passage (< 17 words, ≤ 26, longer).
+  It starts at `start_level` 1 and follows the recorded taps: *Choppy* steps down at once,
+  *Smooth* steps up, `sessions_per_level` 7 sessions at one level step up on their own, and it
+  never rises while a Choppy is among the last 3 taps. `fde-coach migrate` keeps an existing
+  learner's level (`flow` in legato.json).
+* **Respond prompt**: one of 42 in `assets/legato_prompts.json` (7 types × 3 levels), none
+  from the last `prompt_cooldown_sessions` 14 sessions, the level nearest the flow level, not
+  yesterday's type when possible; sessions store `response_prompt_id`.
 * `legato.themes` narrows the pool (`speaking`, `story`, `reflection`,
   `india`, `nature`, or a theme given to imported books). An unknown theme
   never empties the pool.
@@ -76,7 +91,9 @@ to match the original text exactly: marks never change the words.
 `enabled`, `daily_time` (06:00), `prompt_after_pronunciation`, `audio_device`
 (empty = pronunciation's), `themes`, `include_user_passages`, `start_level`,
 `sessions_per_level`, the seven `*_seconds`, `min_audio_seconds`,
-`audio_clean_preset`; `youtube.legato_playlist_id`.
+`audio_clean_preset` (`none`: legato takes no audio treatment), `prompt_cooldown_sessions`;
+`passages.cooldown_days`, `recent_sessions`, `exclude_days`, `ask_feedback`;
+`youtube.legato_playlist_id`.
 
 ## Files
 

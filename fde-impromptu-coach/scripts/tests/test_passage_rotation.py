@@ -150,7 +150,6 @@ class PassageRotationFeature(CoachCase):
         bad = E.near_term_repeats(c.reads(), since=start)
         self.assertEqual(bad, [], f"{len(bad)} near-term repeats in 730 sessions: {summary(bad)}")
 
-    @pending("2-3 (one seen-log, tiered pick)")
     def test_a_small_pool_is_read_in_full_before_anything_repeats(self):
         # Given both practices read only the 6 India-themed passages
         pool = india()
@@ -165,7 +164,6 @@ class PassageRotationFeature(CoachCase):
 
     # ----------------------------------------------------------------------- E2 fair rotation
 
-    @pending("3 (fair rotation in the tiered pick)")
     def test_every_passage_gets_its_turn(self):
         # Given a new learner who gives no feedback
         c = self.coach()
@@ -180,7 +178,6 @@ class PassageRotationFeature(CoachCase):
                 unfair.append(f"{key}: {spread_text(s)}")
         self.assertEqual(unfair, [], "; ".join(unfair))
 
-    @pending("3 and 5 (fair rotation; feedback effects)")
     def test_fair_rotation_survives_feedback_and_level_changes(self):
         # Given a new learner who taps Choppy, Mostly smooth or Smooth at random
         # And flags 3% of passages read recently, 3% not useful and 10% too easy
@@ -208,7 +205,6 @@ class PassageRotationFeature(CoachCase):
 
     # ----------------------------------------------------------------------- E3 feedback
 
-    @pending("3 (flags exclude passages in the pick)")
     def test_read_it_recently_and_not_useful_keep_a_passage_away(self):
         # Given the learner's backed-up history
         c = self.coach(state_from=BACKUP)
@@ -226,7 +222,6 @@ class PassageRotationFeature(CoachCase):
                         for f, r in bad[:3])
         self.assertEqual(bad, [], f"{len(bad)} serves inside an exclusion window ({leg}, {pron}): {msg}")
 
-    @pending("3 (too-easy penalty in the pick)")
     def test_a_too_easy_passage_goes_to_the_back_of_the_queue(self):
         # Given pronunciation reads only the 6 India-themed passages and has read all 6 once
         pool = india()
@@ -247,7 +242,6 @@ class PassageRotationFeature(CoachCase):
                          f"{flagged} was flagged too easy; the next cycle served {second}")
         self.assertEqual(sorted(second[:5]), sorted(set(pool) - {flagged}), f"next cycle: {second}")
 
-    @pending("4 (replace carries replaced, exclude and attempt)")
     def test_a_replaced_passage_does_not_come_straight_back(self):
         h = self.home()
         day = "2026-10-01"
@@ -267,7 +261,6 @@ class PassageRotationFeature(CoachCase):
         served = {r.pid for r in E.reads_from_sessions({"legato": home_state(h, "legato")["sessions"]})}
         self.assertEqual(served, {first, second, third})
 
-    @pending("6 (feedback-driven flow level)")
     def test_choppy_flow_never_raises_the_legato_level(self):
         # Given a learner who taps Choppy after every legato session for 25 days
         c = self.coach()
@@ -279,7 +272,6 @@ class PassageRotationFeature(CoachCase):
         bad = E.flow_rises_after_choppy(ss)
         self.assertEqual(bad, [], f"{bad[:1]}; levels {[s.get('flow_level') for s in ss]}")
 
-    @pending("5 (passage feedback dialog and passage --flag)")
     def test_passage_feedback_is_captured_from_the_dialog_and_the_command_line(self):
         h = self.home()
         # Given a legato session ends with the taps Choppy and Read it recently
@@ -297,7 +289,6 @@ class PassageRotationFeature(CoachCase):
 
     # ----------------------------------------------------------------------- E4 state persists
 
-    @pending("2-3 (one seen-log across files; selection tier recorded)")
     def test_one_practice_sees_what_the_other_already_served(self):
         h = self.home()
         h.run("config", "--set", 'legato.themes=["india"]', "--set", 'pronunciation.themes=["india"]',
@@ -317,7 +308,6 @@ class PassageRotationFeature(CoachCase):
         # And legato.json records the passage id and the selection tier T0
         self.assertEqual((s.get("selection") or {}).get("tier"), "T0")
 
-    @pending("11 (fde-coach migrate) with 9 (legato_prompts.json) and 10 (audio preset)")
     def test_migration_keeps_every_existing_session(self):
         h = self.home()
         root = h.dir / "home"
@@ -388,7 +378,6 @@ class PassageRotationFeature(CoachCase):
         problems += E.bank_problems(lib)
         self.assertEqual(problems, [], "; ".join(problems[:6]))
 
-    @pending("9 (legato_prompts.json and prompt rotation)")
     def test_the_legato_prompt_bank_is_big_enough_and_rotates(self):
         # When the legato prompt bank is loaded
         self.assertTrue(PROMPTS.exists(), "assets/legato_prompts.json is missing")
@@ -479,7 +468,6 @@ class PassageRotationFeature(CoachCase):
 
     # ----------------------------------------------------------------------- E8 no audio treatment
 
-    @pending("10 (audio_clean_preset none for legato and pronunciation)")
     def test_legato_and_pronunciation_apply_no_audio_filter(self):
         # Given the default settings
         c = self.coach()

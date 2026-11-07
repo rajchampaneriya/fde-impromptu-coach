@@ -42,6 +42,7 @@ Match on meaning, not spelling: the learner often types "lagato", "pronounciatio
 | "TED talk practice", "this weekend's talk", "weekend practice", "shadow a speaker" | `stage` | `fde-coach stage prep` (study first), then `fde-coach stage session --detach` |
 | "the segment starts at 2:05 and ends at 5:10" | `stage` | `fde-coach stage segment --start 2:05 --end 5:10` |
 | "read Walden today" | `legato` or `pronunciation` | `fde-coach library list`, then `fde-coach legato generate --replace --passage <id>` |
+| "I've read this passage before", "this passage was too easy" | `legato` or `pronunciation` | `fde-coach legato passage --flag repeated` (`too-easy`, `too-hard`, `unhelpful`), then `fde-coach legato generate --replace` if not recorded |
 | "what's my streak?" (no practice named) | each practice | `fde-coach status`, `fde-coach pronounce status`, `fde-coach legato status`, `fde-coach stage status`, `fde-coach learn status` |
 | "today's topic", "FDE learn", "what do I do today?" | `fde-learn` | `fde-coach learn today --json` |
 | "I'm stuck", "hint" | `fde-learn` | next rung of the hint ladder in `fde-learn/references/coaching.md` |

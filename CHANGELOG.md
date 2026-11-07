@@ -1,5 +1,31 @@
 # Changelog
 
+## Unreleased — one reading history, passage feedback, 42 legato prompts
+
+Pronunciation and legato no longer serve the passage you read in the other practice a few days
+ago. 12 of the 16 passage-rotation evals turn green; the 4 left wait for the bigger passage bank.
+
+**Changed**
+
+- **One reading history** (`library.read_log`, `library.choose`): both practices read both state
+  files. Never-read passages first; none within 30 days across practices or 60 sessions of the same
+  practice while anything else is left; fair rotation; author variety across both practices.
+  Sessions record `selection.tier`. Settings: `passages.cooldown_days`, `recent_sessions`.
+- **Replace moves on**: `generate --replace` lists the old passage in `replaced` and never returns it.
+- **Passage feedback**: after legato's flow tap an optional list (Too easy, Too hard, Read it
+  recently, Not useful); in pronunciation the same four ride in the hard-words list as
+  "Passage: …" lines. Or later: `fde-coach legato|pronounce passage --flag too-easy|too-hard|repeated|unhelpful`.
+  Read recently keeps a passage out of both practices for 120 days, not useful for 365, too easy /
+  too hard sends it to the back of the queue (`passages.exclude_days`, `ask_feedback`).
+- **Legato flow level follows the taps**: Choppy steps down, Smooth steps up, 7 calm sessions step up,
+  never up while a Choppy is among the last 3 taps (it used to climb with session count regardless).
+- **42 legato response prompts** (`assets/legato_prompts.json`, 7 types × 3 levels), none repeated
+  within 14 sessions (`legato.prompt_cooldown_sessions`); sessions store `response_prompt_id`.
+- **No audio treatment for legato and pronunciation**: `audio_clean_preset` defaults to `none`.
+- **`fde-coach migrate`** (also run by `setup`, so by install.sh): backs up the changed state files to
+  `state.backup-<time>/`, names each past legato prompt, keeps the current flow level, sets the two
+  audio presets to `none`. Only adds fields; safe to repeat.
+
 ## Unreleased — passage-rotation evals (test first)
 
 Learners saw the same reading passage again and again. The logs showed why: legato and pronunciation each

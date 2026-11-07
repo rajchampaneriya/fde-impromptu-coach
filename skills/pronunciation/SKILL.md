@@ -29,6 +29,9 @@ user's own words. Take the first row that fits.
 | `add <word>`, "add a hard word" | `fde-coach pronounce words --add <word>` (once per word) | |
 | `remove <word>` | `fde-coach pronounce words --remove <word>` | |
 | `passage <id>`, "read Walden today" | `fde-coach library list` (filter with `--theme` or `--level`), then `fde-coach pronounce generate --replace --passage <id>` before recording | The passage's author and work, not its text. |
+| "I've read this passage before", "same passage again", "skip this passage" | `fde-coach pronounce passage --flag repeated`, then `fde-coach pronounce generate --replace` if today is not recorded | That it stays away from both practices for 120 days. Not the new passage's text. |
+| "this passage was too easy / too hard" (the passage, not the questions) | `fde-coach pronounce passage --flag too-easy` (or `too-hard`) | That it goes to the back of the queue. |
+| "this passage was useless", "never show it again" | `fde-coach pronounce passage --flag unhelpful` | That it stays away from both practices for a year. |
 | `upload`, "the upload didn't happen" | `fde-coach pronounce upload` | |
 | anything else | the table in the `fde-impromptu-coach` skill | |
 
