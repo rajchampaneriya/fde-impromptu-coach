@@ -35,16 +35,18 @@ REPO = SKILL_DIR.parent               # the clone's root
 LINKER = SKILL_DIR / "link_skills.sh"
 IN_CLONE = (REPO / "AGENTS.md").is_file() and LINKER.is_file()
 
-PRACTICES = ("impromptu", "pronunciation", "legato")
+PRACTICES = ("impromptu", "pronunciation", "legato", "stage")
 FOLDERS = {"fde-impromptu-coach": "fde-impromptu-coach", "fde-learn": "fde-learn",
            **{p: f"skills/{p}" for p in PRACTICES}}
 LEADS = {"fde-impromptu-coach": "impromptu", "fde-learn": "fde learn",
-         "impromptu": "impromptu", "pronunciation": "pronunciation", "legato": "legato"}
+         "impromptu": "impromptu", "pronunciation": "pronunciation", "legato": "legato", "stage": "stage"}
 MISSPELT = {"impromptu": "impromptue", "pronunciation": "pronounciation", "legato": "lagato"}
 START = {"impromptu": "fde-coach session --detach",
          "pronunciation": "fde-coach pronounce session --detach",
-         "legato": "fde-coach legato session --detach"}
-HIDDEN_RULE = {"impromptu": "Keep the surprise", "pronunciation": "Cold read", "legato": "Cold read"}
+         "legato": "fde-coach legato session --detach",
+         "stage": "fde-coach stage session --detach"}
+HIDDEN_RULE = {"impromptu": "Keep the surprise", "pronunciation": "Cold read", "legato": "Cold read",
+               "stage": "Keep the twist hidden"}
 
 
 def scenarios() -> list:
@@ -101,7 +103,7 @@ class SkillRoutingFeature(unittest.TestCase):
         # Given the skills in this repo / When Claude Code reads their names
         names = {n: frontmatter(skill_file(n)).get("name") for n in FOLDERS}
         # Then each practice has a skill named after its folder, the umbrella included
-        for n in ("impromptu", "pronunciation", "legato", "fde-learn", "fde-impromptu-coach"):
+        for n in ("impromptu", "pronunciation", "legato", "stage", "fde-learn", "fde-impromptu-coach"):
             self.assertEqual(names[n], Path(FOLDERS[n]).name, f"{n}: name must match its folder")
             self.assertEqual(names[n], n)
         # And each one-practice skill shows an argument hint after its slash command
@@ -158,7 +160,7 @@ class SkillRoutingFeature(unittest.TestCase):
 
     def test_starting_a_practice_runs_detached(self):
         for p in PRACTICES:
-            # Given the impromptu, pronunciation and legato skills
+            # Given the impromptu, pronunciation, legato and stage skills
             text = skill_file(p).read_text(encoding="utf-8")
             # When Claude starts a practice with no arguments (the first row of the table starts with "empty")
             row = next(line for line in text.splitlines() if line.startswith("| empty"))
@@ -171,7 +173,7 @@ class SkillRoutingFeature(unittest.TestCase):
 
     def test_the_surprise_and_the_cold_read_survive_the_shortcuts(self):
         for p in PRACTICES:
-            # Given the impromptu, pronunciation and legato skills
+            # Given the impromptu, pronunciation, legato and stage skills
             text = skill_file(p).read_text(encoding="utf-8")
             # Then none of them tells Claude to pass --reveal
             self.assertNotIn("--reveal", text, p)

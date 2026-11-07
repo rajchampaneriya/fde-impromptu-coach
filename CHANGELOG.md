@@ -1,5 +1,37 @@
 # Changelog
 
+## v9 — Weekend Stage: one famous TED talk a weekend, on camera
+
+The daily practices build fluency; nothing trained delivery against a model speaker. Weekend Stage adds a
+weekly practice: study one segment of a famous TED talk off camera, then perform three takes on camera.
+
+**New**
+
+- **Ten talks, ten subjects, easiest to hardest** (`assets/talks.json`): Cutts, Okamoto, Treasure, Sinek, Pink,
+  Rosling, Robinson, Brown, Adichie, Stevenson. Each has the move to steal, three watch-for notes, a segment,
+  a Take B prompt for your own FDE material (with its listener) and a Take C twist.
+- **The prep page** (`fde-coach stage prep`): TED's embedded player, the segment, three watch passes (normal, muted,
+  eyes closed), the beat-sheet rules, shadowing, and Take B's prompt. Take C stays hidden until its slide.
+- **Three takes on camera** (`fde-coach stage session`): Take A · Mirror, Take B · Make it yours, Take C · Pressure,
+  with resets between; QuickTime records, it stops and saves by itself, and the video uploads privately with
+  chapters per take and a TED credit line.
+- **A weekly streak**: sessions are filed under their weekend's Saturday; the schedule runs Saturday 08:00 and
+  again Sunday 08:00 (same week, never a new one); one calendar alert on Sunday evening.
+- **Saved segment times** (`fde-coach stage segment --start M:SS --end M:SS`): shown on the prep page and Take A.
+- **`/stage`** skill, in `link_skills.sh`, `CLAUDE_SKILLS`, AGENTS.md (ground rule 9: stage talks are links, not
+  text) and the umbrella skill.
+- **BDD scenarios**: `scripts/tests/features/stage.feature` (9 scenarios, one test each in `test_stage.py`).
+
+**Changed**
+
+- `practice.py` serves video practices (`media="video"`, recorded by `recorder.record`, uploaded as recorded)
+  and weekly ones (`cadence="weekly"`); `state.weekly_streaks` and `period_start`; the calendar sync files a
+  weekly practice's alert on its Sunday. Pronunciation and legato behave as before.
+- `recorder.record` takes the length, file and minimum from the caller (impromptu keeps its defaults).
+- A sixth launchd agent, `com.fdecoach.stage`; `uninstall.sh` removes it. `fde-coach status` shows the week streak.
+- TED talks are CC BY-NC-ND 4.0: nothing is downloaded, no transcript is stored, and nothing from TED reaches an
+  upload (`references/stage_design.md`).
+
 ## v8 — One slash command per practice, and AGENTS.md
 
 The practices could only be reached through the umbrella skill, and only when it happened to be linked into

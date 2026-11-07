@@ -540,7 +540,7 @@ def calendar_sync(ctx: Ctx, clear: bool = False) -> List[str]:
 
 
 def calendar_sync_all(ctx: Ctx, clear: bool = False) -> List[str]:
-    """FDE alerts plus the audio practices' alerts (pronunciation, legato)."""
+    """FDE alerts plus every practice's alerts (pronunciation, legato, Weekend Stage)."""
     from . import practice
     out = calendar_sync(ctx, clear=clear)
     for spec in practice.all_specs():
@@ -685,11 +685,18 @@ def status(ctx: Ctx) -> Dict[str, Any]:
     except Exception as exc:  # noqa: BLE001 - legato must never break the FDE status
         log.debug("legato status unavailable: %s", exc)
         leg = None
+    try:
+        from . import stage_session
+        stg = stage_session.status(ctx)
+    except Exception as exc:  # noqa: BLE001 - Weekend Stage must never break the FDE status
+        log.debug("stage status unavailable: %s", exc)
+        stg = None
     return {
         "date": date.isoformat(),
         "streak": stats,
         "pronunciation": pron,
         "legato": leg,
+        "stage": stg,
         "level": s.get("level") if s else plan_slots(history, rt, ctx.cfg, date)["level"],
         "level_adjust": rt.data.get("level_adjust", 0),
         "today": None if not s else {

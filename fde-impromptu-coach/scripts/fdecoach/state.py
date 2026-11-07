@@ -88,13 +88,24 @@ def lock_is_held(paths: Paths, name: str) -> bool:
 
 # --------------------------------------------------------------------------- history
 
+def period_start(date: dt.date, cadence: str = "daily") -> dt.date:
+    """The date a session is filed under. Daily practices: the day itself. Weekly practices
+    (Weekend Stage): the Saturday of that Monday-to-Sunday week, so a Sunday catch-up or a
+    midweek take lands on the same weekend as Saturday."""
+    if cadence == "weekly":
+        return date + dt.timedelta(days=5 - date.weekday())
+    return date
+
+
 class History:
     """sessions keyed by ISO date. A session is 'recorded' once a video is saved.
-    `file` points the same store at another state file (pronunciation practice)."""
+    `file` points the same store at another state file (pronunciation practice);
+    `cadence` "weekly" keys sessions by their weekend and counts the streak in weeks."""
 
-    def __init__(self, paths: Paths, file: Optional[Path] = None):
+    def __init__(self, paths: Paths, file: Optional[Path] = None, cadence: str = "daily"):
         self.paths = paths
         self.file = file or paths.history
+        self.cadence = cadence
         self.data: Dict[str, Any] = _read_json(self.file, {"version": 1, "sessions": {}})
         self.data.setdefault("sessions", {})
 
@@ -154,8 +165,11 @@ class History:
 
 def streaks(history: History, on: Optional[dt.date] = None) -> Dict[str, Any]:
     """current: consecutive recorded days ending today, or ending yesterday if today
-    is not recorded yet (the streak is still alive until midnight)."""
+    is not recorded yet (the streak is still alive until midnight). A weekly history
+    counts weekends instead (weekly_streaks)."""
     on = on or today()
+    if getattr(history, "cadence", "daily") == "weekly":
+        return weekly_streaks(history, on)
     days = set(history.recorded_dates())
     cursor = on if on in days else on - dt.timedelta(days=1)
     current = 0
@@ -175,6 +189,36 @@ def streaks(history: History, on: Optional[dt.date] = None) -> Dict[str, Any]:
         "best": best,
         "total": len(days),
         "recorded_today": on in days,
+        "broken": broken,
+    }
+
+
+def weekly_streaks(history: History, on: Optional[dt.date] = None) -> Dict[str, Any]:
+    """current: consecutive recorded weekends ending this one, or ending last weekend while
+    this week is still open (Monday to Sunday). Sessions are keyed by their Saturday."""
+    on = on or today()
+    week = period_start(on, "weekly")
+    step = dt.timedelta(days=7)
+    weeks = {period_start(d, "weekly") for d in history.recorded_dates()}
+    cursor = week if week in weeks else week - step
+    current = 0
+    while cursor in weeks:
+        current += 1
+        cursor -= step
+    best = run = 0
+    prev: Optional[dt.date] = None
+    for w in sorted(weeks):
+        run = run + 1 if prev and w - prev == step else 1
+        best = max(best, run)
+        prev = w
+    broken = bool(weeks) and week not in weeks and (week - step) not in weeks and current == 0
+    return {
+        "current": current,
+        "best": best,
+        "total": len(weeks),
+        "unit": "week",
+        "recorded_today": week in weeks,       # same key as the daily streak: "this period is done"
+        "recorded_this_week": week in weeks,
         "broken": broken,
     }
 

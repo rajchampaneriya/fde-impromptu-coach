@@ -1,5 +1,5 @@
 Feature: Every practice is one command away in Claude Code
-  The learner types /impromptu, /pronunciation, /legato or /fde-learn, or just
+  The learner types /impromptu, /pronunciation, /legato, /stage or /fde-learn, or just
   says what they want ("start lagato", "how should I have answered?"), and
   Claude Code runs the right fde-coach command. Claude Code finds a skill only
   at ~/.claude/skills/<name>/SKILL.md and reads its name and description on
@@ -8,7 +8,7 @@ Feature: Every practice is one command away in Claude Code
   Scenario: Each practice has its own slash command
     Given the skills in this repo
     When Claude Code reads their names
-    Then impromptu, pronunciation, legato and fde-learn each have a skill named after its folder
+    Then impromptu, pronunciation, legato, stage and fde-learn each have a skill named after its folder
     And the umbrella fde-impromptu-coach skill is still there
     And each one-practice skill shows an argument hint after its slash command
 
@@ -34,13 +34,13 @@ Feature: Every practice is one command away in Claude Code
     Then none is rejected
 
   Scenario: Starting a practice runs detached
-    Given the impromptu, pronunciation and legato skills
+    Given the impromptu, pronunciation, legato and stage skills
     When Claude starts a practice with no arguments
     Then it runs that practice's session with --detach
     And every session command in those skills is detached
 
   Scenario: The surprise and the cold read survive the shortcuts
-    Given the impromptu, pronunciation and legato skills
+    Given the impromptu, pronunciation, legato and stage skills
     Then none of them tells Claude to pass --reveal
     And each states its keep-it-hidden rule
 

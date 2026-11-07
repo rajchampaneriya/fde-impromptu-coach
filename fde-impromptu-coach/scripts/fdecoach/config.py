@@ -24,7 +24,7 @@ TAG = "[fde-impromptu-coach]"
 
 # The repo's Claude Code skills. Claude Code finds a skill only at ~/.claude/skills/<name>/SKILL.md;
 # link_skills.sh links each of these there. Keep this, link_skills.sh and AGENTS.md in sync (the tests check).
-CLAUDE_SKILLS = ("fde-impromptu-coach", "fde-learn", "impromptu", "pronunciation", "legato")
+CLAUDE_SKILLS = ("fde-impromptu-coach", "fde-learn", "impromptu", "pronunciation", "legato", "stage")
 
 
 def claude_skills_dir() -> Path:
@@ -128,6 +128,18 @@ DEFAULTS: Dict[str, Any] = {
         "min_audio_seconds": 180,
         "audio_clean_preset": "light",
     },
+    # Weekend Stage: one famous TED talk a weekend (assets/talks.json), studied off camera,
+    # then three takes on camera. Weekly streak; the deck opens on the first of `days`.
+    "stage": {
+        "enabled": True,
+        "days": ["Sat", "Sun"],             # the scheduled run fires on each; Sunday catches a missed Saturday
+        "time": "08:00",
+        "intro_seconds": 15,
+        "reset_seconds": 20,
+        "wrap_up_cue_seconds": 20,          # "Wrap up" appears this long before each take ends
+        "min_video_seconds": 240,
+        "open_prep_when_ready": True,       # the scheduled run opens the prep page with the deck
+    },
     "learn": {
         "enabled": True,
         "repo_path": "",                    # your local clone of the public learning repo (learn init sets it)
@@ -174,7 +186,8 @@ DEFAULTS: Dict[str, Any] = {
         "max_attempts": 12,
         "pronunciation_playlist_id": "",
         "legato_playlist_id": "",
-        "learn_playlist_id": "",            # optional: learning-track videos are added here when you ship
+        "stage_playlist_id": "",
+        "learn_playlist_id": "",           # optional: learning-track videos are added here when you ship
     },
 }
 
@@ -200,6 +213,8 @@ class Paths:
         self.history = self.state_dir / "history.json"
         self.pron_state = self.state_dir / "pronunciation.json"
         self.legato_state = self.state_dir / "legato.json"
+        self.stage_state = self.state_dir / "stage.json"
+        self.stage = root / "stage"                      # weekly prep pages
         self.library = root / "library"
         self.runtime = self.state_dir / "runtime.json"
         self.incoming = self.state_dir / "incoming"

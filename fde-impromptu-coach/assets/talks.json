@@ -1,0 +1,298 @@
+{
+  "version": 1,
+  "about": "Weekend Stage curriculum: ten famous TED talks, one per weekend, easiest to hardest. Links, times and our own delivery notes only: never a transcript, never TED audio or video (CC BY-NC-ND 4.0, see references/stage_design.md).",
+  "license": {
+    "name": "CC BY-NC-ND 4.0",
+    "url": "https://creativecommons.org/licenses/by-nc-nd/4.0/",
+    "holder": "TED Conferences, LLC",
+    "policy": "https://www.ted.com/about/programs-initiatives/ted-talks/ted-talks-usage-policy"
+  },
+  "phases": [
+    {"name": "Find your voice", "weeks": [1, 3]},
+    {"name": "Structure and persuasion", "weeks": [4, 6]},
+    {"name": "Story and connection", "weeks": [7, 9]},
+    {"name": "Gravitas", "weeks": [10, 10]}
+  ],
+  "talks": [
+    {
+      "id": "cutts-30-days",
+      "week": 1,
+      "title": "Try something new for 30 days",
+      "speaker": "Matt Cutts",
+      "event": "TED2011",
+      "year": 2011,
+      "length": "3:10",
+      "subject": "Habits",
+      "ted_url": "https://www.ted.com/talks/matt_cutts_try_something_new_for_30_days",
+      "embed_url": "https://embed.ted.com/talks/lang/en/matt_cutts_try_something_new_for_30_days",
+      "youtube_url": "",
+      "move": "One idea, short sentences, light personal evidence, a crisp close",
+      "watch_for": [
+        "How short each sentence is, and how each one lands before the next starts",
+        "Where he lets a laugh happen instead of rushing past it",
+        "The close: one direct question to the room, then he stops"
+      ],
+      "segment": {"label": "The whole talk", "start": "0:00", "end": "3:10"},
+      "take_a_seconds": 190,
+      "take_b": {
+        "listener": "Account leader",
+        "cares": "a low-risk way to say yes",
+        "prompt": "Pitch a 30-day pilot of an AI agent: what you will try, what you will measure, and what happens on day 31.",
+        "seconds": 150
+      },
+      "take_c": {"twist": "The same pitch in 90 seconds. Cut, don't rush.", "seconds": 90}
+    },
+    {
+      "id": "okamoto-introduce-yourself",
+      "week": 2,
+      "title": "How to introduce yourself — and get hired",
+      "speaker": "Rebecca Okamoto",
+      "event": "TEDxNorthwesternU",
+      "year": 2025,
+      "length": "9:29",
+      "subject": "Careers",
+      "ted_url": "https://www.ted.com/talks/rebecca_okamoto_how_to_introduce_yourself_and_get_hired",
+      "embed_url": "https://embed.ted.com/talks/lang/en/rebecca_okamoto_how_to_introduce_yourself_and_get_hired",
+      "youtube_url": "https://youtu.be/d1yfb93beSI",
+      "move": "An introduction of 20 words or fewer, built so the listener asks for more; then silence",
+      "watch_for": [
+        "The before-and-after story she opens with, told in under a minute",
+        "Each formula is said once, plainly, then shown with an example",
+        "The pause after each example introduction: she lets it land"
+      ],
+      "segment": {"label": "Where she lays out the introduction formulas", "start": null, "end": null},
+      "take_a_seconds": 120,
+      "take_b": {
+        "listener": "Hiring panel",
+        "cares": "what you can do for them, in one breath",
+        "prompt": "Three introductions of 20 words or fewer: a Principal Engineer interview, a customer kickoff, an executive in a lift. Pause after each.",
+        "seconds": 150
+      },
+      "take_c": {"twist": "They say: “Tell me more.” Give 30 seconds of detail on your best introduction, then stop and hold the silence.", "seconds": 45}
+    },
+    {
+      "id": "treasure-speak-listen",
+      "week": 3,
+      "title": "How to speak so that people want to listen",
+      "speaker": "Julian Treasure",
+      "event": "TEDGlobal 2013",
+      "year": 2013,
+      "length": "9:44",
+      "subject": "Voice",
+      "ted_url": "https://www.ted.com/talks/julian_treasure_how_to_speak_so_that_people_want_to_listen",
+      "embed_url": "https://embed.ted.com/talks/lang/en/julian_treasure_how_to_speak_so_that_people_want_to_listen",
+      "youtube_url": "",
+      "move": "Deliberate shifts in register, pace, pitch and volume; silence as a tool",
+      "watch_for": [
+        "He demonstrates each voice tool as he names it: listen for the change",
+        "How quiet he gets when he wants attention",
+        "His pace just before a key line, and just after it"
+      ],
+      "segment": {"label": "The voice toolbox section", "start": null, "end": null},
+      "take_a_seconds": 180,
+      "take_b": {
+        "listener": "CFO",
+        "cares": "what the outage cost and whether it happens again",
+        "prompt": "Explain an outage you handled with three planned voice shifts: slow down for the cost, drop your pitch for the fix, go quiet for the ask.",
+        "seconds": 150
+      },
+      "take_c": {"twist": "Say it twice: first completely flat, one pitch and one pace; then with the full toolbox. Hear the difference.", "seconds": 120}
+    },
+    {
+      "id": "sinek-inspire-action",
+      "week": 4,
+      "title": "How great leaders inspire action",
+      "speaker": "Simon Sinek",
+      "event": "TEDxPuget Sound",
+      "year": 2009,
+      "length": "17:47",
+      "subject": "Leadership",
+      "ted_url": "https://www.ted.com/talks/simon_sinek_how_great_leaders_inspire_action",
+      "embed_url": "https://embed.ted.com/talks/lang/en/simon_sinek_how_great_leaders_inspire_action",
+      "youtube_url": "",
+      "move": "Teach one simple model while drawing it; repeat the core line; stay unhurried",
+      "watch_for": [
+        "He draws the model as he explains it, so the audience watches it grow",
+        "One core line comes back several times, in the same words each time",
+        "A calm, conversational pace, even at the biggest claims"
+      ],
+      "segment": {"label": "The core model explanation", "start": null, "end": null},
+      "take_a_seconds": 180,
+      "take_b": {
+        "listener": "CIO",
+        "cares": "why this change, before what it costs",
+        "prompt": "Your architecture recommendation, starting with why. Draw it on paper, on camera, as you go.",
+        "seconds": 150
+      },
+      "take_c": {"twist": "No notes and no paper: the same recommendation in 2 minutes, the model drawn in the air.", "seconds": 120}
+    },
+    {
+      "id": "pink-motivation",
+      "week": 5,
+      "title": "The puzzle of motivation",
+      "speaker": "Dan Pink",
+      "event": "TEDGlobal 2009",
+      "year": 2009,
+      "length": "18:22",
+      "subject": "Business science",
+      "ted_url": "https://www.ted.com/talks/dan_pink_the_puzzle_of_motivation",
+      "embed_url": "https://embed.ted.com/talks/lang/en/dan_pink_the_puzzle_of_motivation",
+      "youtube_url": "",
+      "move": "Argue like a lawyer: claim, evidence, pause, conclusion",
+      "watch_for": [
+        "He frames the talk as a case put to a jury, and keeps that frame",
+        "Each piece of evidence gets a short pause before the conclusion",
+        "Humour about himself early buys trust for the hard claim later"
+      ],
+      "segment": {"label": "The opening case", "start": null, "end": null},
+      "take_a_seconds": 180,
+      "take_b": {
+        "listener": "VP Engineering",
+        "cares": "evidence, not enthusiasm",
+        "prompt": "Make the case for evals before scale: one claim, three pieces of evidence, one conclusion.",
+        "seconds": 150
+      },
+      "take_c": {"twist": "They interrupt: “What's the biggest risk?” Answer one level deeper, then stop.", "seconds": 60}
+    },
+    {
+      "id": "rosling-best-stats",
+      "week": 6,
+      "title": "The best stats you've ever seen",
+      "speaker": "Hans Rosling",
+      "event": "TED2006",
+      "year": 2006,
+      "length": "19:36",
+      "subject": "Data and global health",
+      "ted_url": "https://www.ted.com/talks/hans_rosling_the_best_stats_you_ve_ever_seen",
+      "embed_url": "https://embed.ted.com/talks/lang/en/hans_rosling_the_best_stats_you_ve_ever_seen",
+      "youtube_url": "",
+      "move": "Narrate data like live sport: point, build suspense, react to the numbers",
+      "watch_for": [
+        "He tells you where to look before the data moves",
+        "His energy rises with the chart: he reacts like a commentator",
+        "Each chart ends on one plain sentence about what it means"
+      ],
+      "segment": {"label": "One animated-chart narration", "start": null, "end": null},
+      "take_a_seconds": 150,
+      "take_b": {
+        "listener": "Head of Operations",
+        "cares": "what the numbers mean for next quarter",
+        "prompt": "Narrate a real chart from your work (eval results, a dashboard): where to look, what moved, what it means.",
+        "seconds": 150
+      },
+      "take_c": {"twist": "The 60-second exec version: the headline number first, one reason, one ask.", "seconds": 60}
+    },
+    {
+      "id": "robinson-creativity",
+      "week": 7,
+      "title": "Do schools kill creativity?",
+      "speaker": "Sir Ken Robinson",
+      "event": "TED2006",
+      "year": 2006,
+      "length": "19:11",
+      "subject": "Education",
+      "ted_url": "https://www.ted.com/talks/sir_ken_robinson_do_schools_kill_creativity",
+      "embed_url": "https://embed.ted.com/talks/lang/en/sir_ken_robinson_do_schools_kill_creativity",
+      "youtube_url": "",
+      "move": "Comic timing: understatement, and the pause before and after the laugh",
+      "watch_for": [
+        "How flat his voice stays on the funny lines",
+        "The pause he leaves for the laugh, and how he waits it out",
+        "Asides that sound unplanned but land every time"
+      ],
+      "segment": {"label": "The opening", "start": null, "end": null},
+      "take_a_seconds": 180,
+      "take_b": {
+        "listener": "Customer workshop room",
+        "cares": "whether today will be worth their time",
+        "prompt": "Open a customer workshop with a light, true story about a deployment that went wrong, and what it taught you.",
+        "seconds": 150
+      },
+      "take_c": {"twist": "Cold open: no warm-up and no notes. The first take counts.", "seconds": 90}
+    },
+    {
+      "id": "brown-vulnerability",
+      "week": 8,
+      "title": "The power of vulnerability",
+      "speaker": "Brené Brown",
+      "event": "TEDxHouston",
+      "year": 2010,
+      "length": "20:02",
+      "subject": "Psychology",
+      "ted_url": "https://www.ted.com/talks/brene_brown_the_power_of_vulnerability",
+      "embed_url": "https://embed.ted.com/talks/lang/en/brene_brown_the_power_of_vulnerability",
+      "youtube_url": "",
+      "move": "Turn from research to a personal admission, and slow down at the turn",
+      "watch_for": [
+        "Humour about herself early lowers the room's guard",
+        "Where she slows down: the moment the research becomes personal",
+        "She names an uncomfortable feeling plainly instead of explaining it away"
+      ],
+      "segment": {"label": "The turn from research to her own story", "start": null, "end": null},
+      "take_a_seconds": 180,
+      "take_b": {
+        "listener": "Interviewer",
+        "cares": "self-awareness, not a polished success story",
+        "prompt": "Tell me about a mistake you made as an architect: what happened, what you felt, what you changed.",
+        "seconds": 150
+      },
+      "take_c": {"twist": "The same story with no notes, in one take. If you stumble, keep going.", "seconds": 120}
+    },
+    {
+      "id": "adichie-single-story",
+      "week": 9,
+      "title": "The danger of a single story",
+      "speaker": "Chimamanda Ngozi Adichie",
+      "event": "TEDGlobal 2009",
+      "year": 2009,
+      "length": "18:32",
+      "subject": "Literature and culture",
+      "ted_url": "https://www.ted.com/talks/chimamanda_ngozi_adichie_the_danger_of_a_single_story",
+      "embed_url": "https://embed.ted.com/talks/lang/en/chimamanda_ngozi_adichie_the_danger_of_a_single_story",
+      "youtube_url": "",
+      "move": "Calm, warm storytelling with concrete detail; land the point quietly",
+      "watch_for": [
+        "Small, concrete details carry each story, not adjectives",
+        "She almost never raises her voice, and the room leans in",
+        "The big point arrives quietly, after the stories have earned it"
+      ],
+      "segment": {"label": "The opening story", "start": null, "end": null},
+      "take_a_seconds": 180,
+      "take_b": {
+        "listener": "New team",
+        "cares": "how you judge people and situations",
+        "prompt": "A customer story where your first read of a stakeholder was wrong: the detail that changed your mind.",
+        "seconds": 150
+      },
+      "take_c": {"twist": "Seated, at half volume: presence without energy tricks.", "seconds": 90}
+    },
+    {
+      "id": "stevenson-injustice",
+      "week": 10,
+      "title": "We need to talk about an injustice",
+      "speaker": "Bryan Stevenson",
+      "event": "TED2012",
+      "year": 2012,
+      "length": "23:24",
+      "subject": "Justice",
+      "ted_url": "https://www.ted.com/talks/bryan_stevenson_we_need_to_talk_about_an_injustice",
+      "embed_url": "https://embed.ted.com/talks/lang/en/bryan_stevenson_we_need_to_talk_about_an_injustice",
+      "youtube_url": "",
+      "move": "Gravitas: low pitch, slow pace, long pauses; persuade without pushing",
+      "watch_for": [
+        "Stories come first; the argument arrives only after them",
+        "Low, steady pitch and long pauses, even at the strongest moments",
+        "He never raises his voice to make a hard point"
+      ],
+      "segment": {"label": "A story, then the close", "start": null, "end": null},
+      "take_a_seconds": 240,
+      "take_b": {
+        "listener": "Your own audience",
+        "cares": "an idea worth acting on",
+        "prompt": "Capstone: a 5-minute talk on your own idea for FDE work, using moves from weeks 1 to 9.",
+        "seconds": 300
+      },
+      "take_c": {"twist": "Encore: your capstone's first minute again, standing, no notes, one take. Then watch week 1 beside it.", "seconds": 60}
+    }
+  ]
+}

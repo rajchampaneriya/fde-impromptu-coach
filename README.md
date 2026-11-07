@@ -33,6 +33,7 @@ This skill removes the discipline tax. It builds the deck, runs the timer, recor
 | `/impromptu` (`status`, `answers`, `harder`, `brief <topic>` …) | 5 surprise on-camera questions, then the exec answer key |
 | `/pronunciation` (`status`, `words`, `add <word>` …) | the pen method |
 | `/legato` (`status`, `history`, `passage <id>` …) | smooth, connected speech |
+| `/stage` (`prep`, `status`, `segment <M:SS> <M:SS>`, `talks` …) | Weekend Stage: a famous TED talk, three takes on camera |
 | `/fde-learn` (`today`, `hint`, `ship <link>` …) | the daily learning track |
 | `/fde-impromptu-coach` | set-up, settings, Google, the passage library, troubleshooting |
 
@@ -44,8 +45,34 @@ Then, if you want, keep going:
 6. **Pronunciation (05:45)**: your hard words plus a passage from Thoreau, Twain, Tagore, Franklin… read three times, once with a pen between your teeth
 7. **Legato (06:00)**: breath and hum, a linking drill from the passage (*turn it off → tur-ni-toff*), three reads with breath marks, then a 45-second impromptu response to the author
 8. **Add any free book**: `fde-coach library import-gutenberg <number>`
+9. **Weekend Stage (Saturday 08:00)**: one famous TED talk a weekend, studied, then three takes on camera
 
 Miss a day? Reminders escalate on your Mac, iPhone, and calendar until you record.
+
+## New: Weekend Stage, one famous TED talk a weekend
+
+Reciting a talk trains memory. Stealing **one delivery move a week** and using it on your own material trains
+delivery. Ten talks on ten subjects, easiest to hardest: Matt Cutts, Rebecca Okamoto, Julian Treasure, Simon Sinek,
+Dan Pink, Hans Rosling, Sir Ken Robinson, Brené Brown, Chimamanda Ngozi Adichie and Bryan Stevenson.
+
+- **Study, off camera (about 25 minutes).** At 08:00 on Saturday a prep page opens with TED's own player, the
+  segment to learn and three passes over it: normal, muted (watch the body), eyes closed (hear the voice). Write a
+  beat sheet of 5–7 keywords, then shadow the segment twice with headphones.
+- **Three takes, on camera (about 10 minutes).** *Take A · Mirror*: the segment, as the speaker would do it.
+  *Take B · Make it yours*: the same move on your own FDE material, for the listener on the slide. *Take C ·
+  Pressure*: a twist you see only on its slide. QuickTime records, everything stops and saves by itself, and the
+  video uploads privately.
+- **A weekly streak.** Sunday 08:00 catches a missed Saturday; a calendar alert waits on Sunday evening.
+
+TED talks are licensed CC BY-NC-ND 4.0, so the coach keeps links, segment times and delivery notes in its own
+words: it never downloads TED video, never copies a transcript, and your upload is your camera recording with a
+credit line.
+
+```bash
+fde-coach stage prep                                  # this weekend's talk and its prep page
+fde-coach stage segment --start 2:05 --end 5:10       # save the segment you found on the first watch
+fde-coach stage session --detach                      # the three takes
+```
 
 ## New: exec slots and the exec answer key
 
@@ -90,6 +117,7 @@ fde-coach learn init --repo ~/Code/continuous-learning
 - YouTube — private uploads only
 - ffmpeg for the audio practices' videos (`brew install ffmpeg`)
 - Standard Ebooks and Project Gutenberg for the reading passages (public domain)
+- TED.com for Weekend Stage: TED's embedded player and links only (CC BY-NC-ND 4.0; nothing is downloaded)
 - Apple Reminders + Google Calendar for streak protection
 - For FDE Learn: git (a clone of your public learning repo), Ollama, uv, VS Code + Jupyter, Excalidraw
 - **macOS only**
