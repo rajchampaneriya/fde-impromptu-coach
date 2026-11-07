@@ -291,9 +291,12 @@ offers it straight away. An 8-slide deck:
    one reason, one example", "Retell it to a colleague", …).
 
 After the session tap **Choppy / Mostly smooth / Smooth**. Passages get longer,
-more winding sentences as your *flow level* rises (1–3: up one level every 7
-sessions, nudged by your taps). The breath marks and joins are computed from
-the book's own text; the words are never changed.
+more winding sentences as your *flow level* rises (1–3): Choppy steps down,
+Smooth steps up, and seven calm sessions at a level step up on their own. Then
+an optional list flags the passage (too easy, too hard, read it recently, not
+useful). Both practices share one reading history, so a passage you read in
+pronunciation won't turn up in legato days later. The breath marks and joins
+are computed from the book's own text; the words are never changed.
 
 | You want to… | Do this |
 |---|---|

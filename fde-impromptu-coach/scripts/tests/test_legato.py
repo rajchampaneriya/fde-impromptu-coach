@@ -77,18 +77,20 @@ class TestPassageLibrary(unittest.TestCase):
     def test_choose_fresh_first_then_least_recent(self):
         ps = _lib()[:6]
         d = dt.date(2026, 10, 1)
-        used = [p["id"] for p in ps[:5]]
-        self.assertEqual(library.choose(ps, used, d, "t")["id"], ps[5]["id"])
-        everything = [p["id"] for p in ps]
-        again = library.choose(ps, everything, d, "t")
-        self.assertIn(again["id"], everything[:2], "after a full cycle the least recently read come back")
+        reads = [library.Read(d - dt.timedelta(days=6 - i), "legato", p["id"]) for i, p in enumerate(ps[:5])]
+        picked, tier = library.choose(ps, reads, "legato", d)
+        self.assertEqual((picked["id"], tier), (ps[5]["id"], "T0"))
+        everything = reads + [library.Read(d - dt.timedelta(days=1), "legato", ps[5]["id"])]
+        again, _ = library.choose(ps, everything, "legato", d)
+        self.assertIn(again["id"], [p["id"] for p in ps[:2]], "after a full cycle the least recently read come back")
 
     def test_choose_avoids_same_author_consecutively(self):
         ps = [p for p in _lib() if p["author"] == "Frederick Douglass"][:2] + \
              [p for p in _lib() if p["author"] == "Virginia Woolf"][:1]
         d = dt.date(2026, 10, 12)
-        picked = library.choose(ps, [ps[0]["id"]], d, "legato")
-        self.assertEqual(picked["author"], "Virginia Woolf")
+        picked, _ = library.choose(ps, [library.Read(d - dt.timedelta(days=1), "pronunciation", ps[0]["id"])],
+                                   "legato", d)
+        self.assertEqual(picked["author"], "Virginia Woolf", "the other practice's author counts too")
 
     def test_import_gutenberg_offline(self):
         para = ("It was a quiet morning in the valley, and the river ran slowly under the old stone bridge. "
@@ -193,7 +195,6 @@ class TestLegatoEndToEnd(unittest.TestCase):
         self.assertTrue(Path(s["audio_path"]).exists())
         self.assertEqual(s["youtube"]["status"], "uploaded")
         self.assertEqual(s["feedback"], "Smooth")
-        self.assertEqual(data["flow_adjust"], 1)
         self.assertEqual(s["flow_level"], 1, "the first day starts at flow level 1")
         self.assertTrue(list((self.h.dir / "movies" / "legato").glob("*.mp4")))
         st = json.loads(self.h.run("status", "--json", now="2026-10-01T08:00:00").stdout)
@@ -231,14 +232,17 @@ class TestLegatoEndToEnd(unittest.TestCase):
         self.assertNotIn("hidden", rows[0]["paragraph"])
 
     def test_passages_do_not_repeat_and_flow_adapts(self):
-        seen = []
+        seen, levels = [], []
         for day in range(1, 9):
             now = f"2026-10-{day:02d}T06:00:00"
             answer = "Choppy" if day <= 3 else "Smooth"
             self.h.run("legato", "session", now=now, answers=answer)
-            seen.append(self.leg()["sessions"][f"2026-10-{day:02d}"]["passage_id"])
+            s = self.leg()["sessions"][f"2026-10-{day:02d}"]
+            seen.append(s["passage_id"])
+            levels.append(s["flow_level"])
         self.assertEqual(len(seen), len(set(seen)), "no passage twice in a cycle")
-        self.assertEqual(self.leg()["flow_adjust"], 2, "bounded calibration: -2 after Choppy, +4 Smooth -> +2")
+        # Choppy holds level 1; Smooth raises it only once the last 3 taps hold no Choppy (days 6, 7).
+        self.assertEqual(levels, [1, 1, 1, 1, 1, 1, 2, 3])
 
     def test_disabled_and_launchd(self):
         plist = plistlib.loads((self.h.dir / "agents" / "com.fdecoach.legato.plist").read_bytes())

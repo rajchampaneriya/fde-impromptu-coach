@@ -9,7 +9,7 @@ from typing import Any, Dict, List, Optional, Tuple
 
 from . import macos, practice, youtube
 from .config import APP_NAME, Paths
-from .legato import apply_feedback, generate_content, phrase_map
+from .legato import generate_content, phrase_map
 from .legato_deck import build_deck, chapters, render_slide_pngs, slide_durations
 from .library import credit_line
 from .state import History, file_lock
@@ -28,6 +28,8 @@ def _session_fields(content: Dict[str, Any]) -> Dict[str, Any]:
         "flow_level": content.get("flow_level", 1),
         "chains": content.get("chains", []),
         "response_prompt": content.get("response_prompt", ""),
+        "response_prompt_id": content.get("response_prompt_id", ""),
+        "selection": content.get("selection", {}),
     }
 
 
@@ -37,7 +39,8 @@ def _describe(s: Dict[str, Any]) -> Dict[str, Any]:
 
 
 def ask_flow_feedback(ctx, date: dt.date) -> None:
-    """One tap tunes tomorrow's passage: Choppy -> shorter sentences, Smooth -> longer."""
+    """One tap tunes tomorrow's passage: Choppy -> shorter sentences, Smooth -> longer (the tap is
+    stored on the session; legato.flow_level reads it). Then an optional list flags the passage."""
     answer = macos.dialog("How did the flow feel today?", APP_NAME, FEEDBACK, "Mostly smooth", timeout_seconds=120)
     if answer not in FEEDBACK:
         return
@@ -47,9 +50,14 @@ def ask_flow_feedback(ctx, date: dt.date) -> None:
         if s is not None:
             s["feedback"] = answer
             hist.put(s)
-        apply_feedback(hist, answer)
         hist.save()
     log.info("Legato feedback: %s", answer)
+    if practice.ask_passage_feedback(ctx.cfg):
+        picked = macos.choose_from_list("Anything about today's passage? (optional)", APP_NAME,
+                                        list(practice.PASSAGE_CHOICES))
+        labels = [practice.PASSAGE_CHOICES[p] for p in picked if p in practice.PASSAGE_CHOICES]
+        if labels:
+            practice.flag_passage(ctx, SPEC, date, labels)
 
 
 def build_metadata(session: Dict[str, Any], cfg: Dict[str, Any], marks: Optional[List[Tuple[int, str]]],

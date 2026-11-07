@@ -27,9 +27,12 @@ user's own words. Take the first row that fits.
 | `status`, `streak` | `fde-coach legato status` | |
 | `history` | `fde-coach legato history` | |
 | `passage <id>`, "read Walden today" | `fde-coach library list` (filter with `--theme` or `--level`), then `fde-coach legato generate --replace --passage <id>` before recording | The passage's author and work, not its text. |
+| "I've read this passage before", "same passage again", "skip this passage" | `fde-coach legato passage --flag repeated`, then `fde-coach legato generate --replace` if today is not recorded | That it stays away from both practices for 120 days. Not the new passage's text. |
+| "this passage was too easy / too hard" (the passage, not the questions) | `fde-coach legato passage --flag too-easy` (or `too-hard`) | That it goes to the back of the queue. |
+| "this passage was useless", "never show it again" | `fde-coach legato passage --flag unhelpful` | That it stays away from both practices for a year. |
 | `themes <theme>`, "only speeches" | `fde-coach config --set 'legato.themes=["speaking"]'` (themes: speaking, story, reflection, india, nature) | |
 | `upload`, "the upload didn't happen" | `fde-coach legato upload` | |
-| "felt choppy" / "too easy" | nothing to run: the Choppy / Smooth tap after the session moves the flow level | |
+| "felt choppy" / "flow too easy" | nothing to run: the Choppy / Smooth tap after the session moves the flow level | |
 | anything else | the table in the `fde-impromptu-coach` skill | |
 
 Legato is the last practice of the morning chain; the impromptu answer key opens when it ends.

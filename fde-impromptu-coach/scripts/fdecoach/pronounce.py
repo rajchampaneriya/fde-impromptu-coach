@@ -205,7 +205,8 @@ def generate_content(history: History, cfg: Dict[str, Any], paths: Paths,
     """Returns (content, notes). Content is always produced."""
     if str(cfg.get("pronunciation", {}).get("paragraph_source", "library")) == "claude":
         return claude_content(history, cfg, paths, date)
-    return library_content(history, cfg, paths, date, passage_id=options.get("passage_id"))
+    return library_content(history, cfg, paths, date, passage_id=options.get("passage_id"),
+                           exclude=options.get("exclude") or (), attempt=int(options.get("attempt") or 0))
 
 
 def claude_content(history: History, cfg: Dict[str, Any], paths: Paths,
@@ -318,24 +319,28 @@ def library_claude_ok(cfg: Dict[str, Any]) -> bool:
 
 
 def library_content(history: History, cfg: Dict[str, Any], paths: Paths, date: dt.date,
-                    passage_id: Optional[str] = None) -> Tuple[Dict[str, Any], List[str]]:
+                    passage_id: Optional[str] = None, exclude: Sequence[str] = (),
+                    attempt: int = 0) -> Tuple[Dict[str, Any], List[str]]:
     pron = cfg.get("pronunciation", {})
     notes: List[str] = []
     due = due_words(history, cfg, date)
     passages = library.by_theme(library.all_passages(paths, bool(pron.get("include_user_passages", True))),
                                 pron.get("themes") or [])
     annotated = [p for p in passages if (p.get("pronunciation") or {}).get("target_words")]
+    reads = library.read_log(paths, current=("pronunciation", history.sessions))
+    pick = dict(exclude=exclude, attempt=attempt, **library.selection_settings(cfg))
     if passage_id:
         chosen = library.get(paths, passage_id)
         if chosen is None:
             raise ValueError(f"no passage with id {passage_id!r} (see: fde-coach library list)")
+        tier = "pinned"
     else:
         def score(p: Dict[str, Any]) -> float:
             return sum(1.0 for w in due if _uses(p["text"], w)) + (0.5 if p in annotated else 0.0)
-        chosen = library.choose(passages, used_passages(history), date, "pronunciation", score=score)
+        chosen, tier = library.choose(passages, reads, "pronunciation", date, score=score, **pick)
     ann = _passage_notes(chosen, cfg, paths, notes)
     if ann is None:
-        chosen = library.choose(annotated or library.builtin(), used_passages(history), date, "pronunciation")
+        chosen, tier = library.choose(annotated or library.builtin(), reads, "pronunciation", date, **pick)
         ann = chosen.get("pronunciation") or {"target_words": [], "focus_sounds": []}
     text = chosen["text"]
 
@@ -367,4 +372,5 @@ def library_content(history: History, cfg: Dict[str, Any], paths: Paths, date: d
     meta = {k: chosen.get(k) for k in ("id", "author", "work", "year", "section", "translator", "source", "level")
             if chosen.get(k) is not None}
     return {"paragraph": text, "target_words": targets, "focus_sounds": list(ann.get("focus_sounds") or []),
-            "passage": meta, "source": "library" if chosen.get("origin") != "user" else "library-user"}, notes
+            "passage": meta, "source": "library" if chosen.get("origin") != "user" else "library-user",
+            "selection": {"tier": tier, "attempt": attempt} if attempt else {"tier": tier}}, notes

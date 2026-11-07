@@ -1,0 +1,56 @@
+{
+ "version": 1,
+ "about": "Legato 45-second response prompts (coach-written, text only, passage-agnostic). The first seven ids keep the exact text of legato.RESPONSE_PROMPTS so existing sessions back-fill to an id. level follows the legato flow level (1 one move, 2 two-part, 3 constraint or audience switch). Selection: no prompt within the last 14 legato sessions, no type twice in a row, level = today's flow level when available.",
+ "types": ["restate", "respond", "apply", "exec", "story", "challenge", "teach"],
+ "prompts": [
+  {"id": "lp-001", "type": "restate", "level": 1, "text": "In your own words: what is the author asking of the reader?"},
+  {"id": "lp-002", "type": "respond", "level": 2, "text": "Agree or disagree with the author. One reason, one example."},
+  {"id": "lp-003", "type": "teach", "level": 1, "text": "Retell the passage to a colleague who has not read it."},
+  {"id": "lp-004", "type": "apply", "level": 1, "text": "Where would this idea help you at work this week?"},
+  {"id": "lp-005", "type": "respond", "level": 1, "text": "What would you say back to the author?"},
+  {"id": "lp-006", "type": "story", "level": 1, "text": "Describe a moment from your own life this passage reminds you of."},
+  {"id": "lp-007", "type": "restate", "level": 2, "text": "Give the passage's message in three sentences, then one question it raises."},
+
+  {"id": "lp-008", "type": "restate", "level": 1, "text": "Sum up the passage in one sentence, then say why it matters."},
+  {"id": "lp-009", "type": "restate", "level": 2, "text": "Name the author's main point, then the line that best supports it."},
+  {"id": "lp-010", "type": "restate", "level": 3, "text": "Give the message in exactly two sentences: the claim, then the reason."},
+  {"id": "lp-011", "type": "restate", "level": 3, "text": "Say the author's point three ways: one word, one sentence, one example."},
+
+  {"id": "lp-012", "type": "respond", "level": 1, "text": "Which sentence in the passage do you agree with most, and why?"},
+  {"id": "lp-013", "type": "respond", "level": 2, "text": "Which line do you push back on? Say why, then what you would say instead."},
+  {"id": "lp-014", "type": "respond", "level": 3, "text": "Argue the author is right for 20 seconds, then wrong for 20 seconds."},
+  {"id": "lp-015", "type": "respond", "level": 3, "text": "Agree with the author, then name the one situation where this advice fails."},
+
+  {"id": "lp-016", "type": "apply", "level": 1, "text": "Name one habit this passage asks you to start tomorrow."},
+  {"id": "lp-017", "type": "apply", "level": 2, "text": "Which customer conversation this month would have gone better with this idea, and how?"},
+  {"id": "lp-018", "type": "apply", "level": 2, "text": "Turn the passage into one rule for your team, and give the reason behind it."},
+  {"id": "lp-019", "type": "apply", "level": 3, "text": "Apply this to a project you are on: one risk it reveals, one action you will take."},
+  {"id": "lp-020", "type": "apply", "level": 3, "text": "Use this idea to rescue a meeting that is going badly. What do you say first?"},
+
+  {"id": "lp-021", "type": "exec", "level": 1, "text": "Give the author's point as a one-breath headline for an executive."},
+  {"id": "lp-022", "type": "exec", "level": 1, "text": "In one sentence, tell a busy manager why this idea is worth a minute."},
+  {"id": "lp-023", "type": "exec", "level": 2, "text": "Headline first for a CFO: what this idea saves or costs, then offer detail."},
+  {"id": "lp-024", "type": "exec", "level": 2, "text": "Tell an account leader in two sentences why this idea matters to the customer."},
+  {"id": "lp-025", "type": "exec", "level": 3, "text": "A CTO gives you 30 seconds: headline, one proof point, one ask."},
+  {"id": "lp-026", "type": "exec", "level": 3, "text": "An executive says, 'This is old advice.' Answer with a headline, then one fact."},
+
+  {"id": "lp-027", "type": "story", "level": 1, "text": "Who in your life would agree with this author? Say why."},
+  {"id": "lp-028", "type": "story", "level": 2, "text": "Tell a 30-second story where you saw this idea work, or fail."},
+  {"id": "lp-029", "type": "story", "level": 2, "text": "Describe someone who lives this passage. What do they do differently?"},
+  {"id": "lp-030", "type": "story", "level": 3, "text": "Tell a story from your work that proves the author wrong, then what you learned."},
+  {"id": "lp-031", "type": "story", "level": 3, "text": "Retell the passage as a software project story: situation, choice, result."},
+
+  {"id": "lp-032", "type": "challenge", "level": 1, "text": "What question would you ask the author if you could?"},
+  {"id": "lp-033", "type": "challenge", "level": 1, "text": "What is one thing the author leaves out?"},
+  {"id": "lp-034", "type": "challenge", "level": 2, "text": "Give the strongest objection to this passage, then answer it."},
+  {"id": "lp-035", "type": "challenge", "level": 2, "text": "What would a sceptical engineer say about this, and how would you reply?"},
+  {"id": "lp-036", "type": "challenge", "level": 3, "text": "Steelman the opposite view for 20 seconds, then say where you land."},
+  {"id": "lp-037", "type": "challenge", "level": 3, "text": "Find the hidden assumption in the passage and test it with an example."},
+
+  {"id": "lp-038", "type": "teach", "level": 1, "text": "Explain the passage to a ten-year-old in three sentences."},
+  {"id": "lp-039", "type": "teach", "level": 2, "text": "Explain this passage to a new engineer, with one example from tech."},
+  {"id": "lp-040", "type": "teach", "level": 2, "text": "Teach the idea as three steps someone could follow today."},
+  {"id": "lp-041", "type": "teach", "level": 3, "text": "Teach the idea to a sceptical customer without quoting the passage."},
+  {"id": "lp-042", "type": "teach", "level": 3, "text": "Give a 45-second mini-talk on this idea: hook, point, example, close."}
+ ]
+}
