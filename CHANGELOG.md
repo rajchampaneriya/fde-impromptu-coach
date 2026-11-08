@@ -1,5 +1,33 @@
 # Changelog
 
+## Unreleased — 96 new impromptu questions (house voice)
+
+The offline question bank grows from 144 to 240: 8 new questions per competency (`-13` to `-20`), written
+so the fallback stops feeling like the same few scenarios with new job titles. The 144 existing questions
+are unchanged, so history ids still resolve. Daily questions are still written by Claude from the rubric;
+these improve the fallback and set the house style.
+
+**Changed**
+
+- **A new scenario every time**: 96 different trigger → listener → tension → ask shapes, none matching an
+  existing question with only the nouns changed, and none flagged by `is_duplicate` against the bank or
+  each other.
+- **Named settings**: 89 of 96 name an industry and a moment, across 20 industries (none in more than 7):
+  ports, hospitals, schools, public agencies, utilities, airlines, factories, pharmacy chains, banks,
+  newsrooms, NGOs, farms, hotels, sports clubs, law firms and more. Fictional organisations only.
+- **Fewer tired motifs**: no renewal, go-live, pilot or demo; no "your account executive" listener (account
+  directors, partner managers, a regional sales VP, a bid director instead); no "The customer…" openers.
+- **Balanced listeners and formats**: 28 exec, 14 account leader, 18 technical peer, 23 business,
+  13 interviewer; roleplay 45 of 96 (47%), with every competency getting an opinion, an explain and a
+  story or pitch. Difficulty per competency 1, 2, 2, 3, 3, 4, 4, 5. Exec and account-leader items fit the
+  25-second headline window.
+- **Smart humour in about 1 in 4** (26): jargon taken literally, an outsider noticing an unwritten rule,
+  gentle exaggeration of a familiar work moment. Never about identity, never where people were harmed;
+  `crisis` and `trust_ethics` stay straight at difficulty 4–5.
+- **Regression baseline re-recorded (intended)**: the E9 scenario *Impromptu questions are chosen as
+  before* pins 7 days of bank picks, which change with a bigger bank. Only `impromptu` was re-recorded;
+  the pinned passages and the evals digest are byte-identical (see `scripts/tests/fixtures/regression/README.md`).
+
 ## Unreleased — one reading history, passage feedback, 42 legato prompts
 
 Pronunciation and legato no longer serve the passage you read in the other practice a few days

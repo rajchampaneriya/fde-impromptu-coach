@@ -1642,6 +1642,966 @@
       "audience": "account_leader",
       "listener": "Account director",
       "cares": "getting the invoice paid"
+    },
+    {
+      "id": "EXE-13",
+      "category": "exec_comm",
+      "difficulty": 1,
+      "format": "explain",
+      "text": "A water utility’s chief executive has read your status report twice and still can’t find the news in it. Give him the same update again, headline first.",
+      "audience": "exec",
+      "listener": "Utility chief executive",
+      "cares": "the one thing that changed this week"
+    },
+    {
+      "id": "EXE-14",
+      "category": "exec_comm",
+      "difficulty": 2,
+      "format": "opinion",
+      "text": "“Should the AI write our headlines or only check them?” The editor-in-chief of a regional paper says her section editors are split down the middle. Give her your answer.",
+      "audience": "exec",
+      "listener": "Editor-in-chief",
+      "cares": "speed without a correction on the front page"
+    },
+    {
+      "id": "EXE-15",
+      "category": "exec_comm",
+      "difficulty": 2,
+      "format": "explain",
+      "text": "22 slides, four of them titled “Architecture (cont.)”: that is what a senior engineer on your team plans to show a hospital board on Friday. Explain to him which slide survives, and why.",
+      "audience": "technical_peer",
+      "listener": "Your senior engineer",
+      "cares": "not being picked apart by the board"
+    },
+    {
+      "id": "EXE-16",
+      "category": "exec_comm",
+      "difficulty": 3,
+      "format": "roleplay",
+      "text": "The CFO of a 60-store pharmacy chain reads the first line of every email and nothing else. Yours has to carry a 12% cost overrun and the fix. Say that first line.",
+      "audience": "exec",
+      "listener": "Pharmacy chain CFO",
+      "cares": "the overrun, the fix and whether to worry"
+    },
+    {
+      "id": "EXE-17",
+      "category": "exec_comm",
+      "difficulty": 3,
+      "format": "explain",
+      "text": "Your regional sales VP forwards a 46-message thread from a freight forwarder with one word: “Summary?” Buried in message 31 is a clause that could sink the contract. Give him the summary.",
+      "audience": "account_leader",
+      "listener": "Regional sales VP",
+      "cares": "whether the freight contract is in danger"
+    },
+    {
+      "id": "EXE-18",
+      "category": "exec_comm",
+      "difficulty": 4,
+      "format": "roleplay",
+      "text": "“Yes or no: does this go to every claims handler on Monday?” For this insurer, the honest answer is yes for motor claims and no for home claims. Answer the chief risk officer.",
+      "audience": "exec",
+      "listener": "Chief risk officer",
+      "cares": "a clean decision he can stand behind"
+    },
+    {
+      "id": "EXE-19",
+      "category": "exec_comm",
+      "difficulty": 4,
+      "format": "pitch",
+      "text": "A trustee has told a university’s chancellor that your student-advice assistant is “a solution looking for a problem”. She faces him at Thursday’s board and asks you for her reply. Give it to her.",
+      "audience": "exec",
+      "listener": "University chancellor",
+      "cares": "a reply that holds up at the board"
+    },
+    {
+      "id": "EXE-20",
+      "category": "exec_comm",
+      "difficulty": 5,
+      "format": "roleplay",
+      "text": "At a public council meeting, a councillor reads out a wrong answer your permits assistant gave a resident, and the city manager hands you the microphone. Answer the councillor.",
+      "audience": "exec",
+      "listener": "City councillor",
+      "cares": "residents getting straight answers from the city"
+    },
+    {
+      "id": "TEC-13",
+      "category": "tech_translation",
+      "difficulty": 1,
+      "format": "explain",
+      "text": "A dairy cooperative’s herd manager asks, fairly, whether the “knowledge base” everyone keeps mentioning is just the binder by the milking shed. Explain it to him, starting from the binder.",
+      "audience": "business",
+      "listener": "Herd manager",
+      "cares": "whether it beats the binder at 5 a.m."
+    },
+    {
+      "id": "TEC-14",
+      "category": "tech_translation",
+      "difficulty": 2,
+      "format": "explain",
+      "text": "A hotel’s head of housekeeping notices the assistant chats easily with guests in four languages, yet keeps getting the hotel’s own room codes wrong. Explain why to her.",
+      "audience": "business",
+      "listener": "Head of housekeeping",
+      "cares": "guests sent to the right room"
+    },
+    {
+      "id": "TEC-15",
+      "category": "tech_translation",
+      "difficulty": 2,
+      "format": "opinion",
+      "text": "“It’s clever enough, so let it query the bookings database directly.” An airline’s data engineer means it. Do you agree? Give him your view and your reason.",
+      "audience": "technical_peer",
+      "listener": "Airline data engineer",
+      "cares": "fewer moving parts in his pipeline"
+    },
+    {
+      "id": "TEC-16",
+      "category": "tech_translation",
+      "difficulty": 3,
+      "format": "explain",
+      "text": "At a container port, the harbour master hears your berth-planning model is “probabilistic” and asks if that is a polite word for guessing. Explain it so he can repeat it to the shipping lines.",
+      "audience": "exec",
+      "listener": "Harbour master",
+      "cares": "a berth plan the shipping lines will trust"
+    },
+    {
+      "id": "TEC-17",
+      "category": "tech_translation",
+      "difficulty": 3,
+      "format": "roleplay",
+      "text": "“It read a 300-page lease in four seconds, so it must have skimmed.” A senior paralegal at a law firm is sure of it. Tell her what really happened and what she must still check herself.",
+      "audience": "business",
+      "listener": "Senior paralegal",
+      "cares": "not missing a clause that costs a client"
+    },
+    {
+      "id": "TEC-18",
+      "category": "tech_translation",
+      "difficulty": 4,
+      "format": "pitch",
+      "text": "Your partner manager wants to tell a telecoms reseller that the assistant “never forgets a conversation”. It forgets on purpose, for privacy. Pitch him a way to sell the forgetting instead.",
+      "audience": "account_leader",
+      "listener": "Partner manager",
+      "cares": "a promise the reseller won’t regret"
+    },
+    {
+      "id": "TEC-19",
+      "category": "tech_translation",
+      "difficulty": 4,
+      "format": "roleplay",
+      "text": "The chief medical officer of a clinic network asks why you need ten hours of her nurses’ time for testing when the vendor “already tested the model”. Answer her.",
+      "audience": "exec",
+      "listener": "Chief medical officer",
+      "cares": "her nurses’ time and her patients’ safety"
+    },
+    {
+      "id": "TEC-20",
+      "category": "tech_translation",
+      "difficulty": 5,
+      "format": "roleplay",
+      "text": "At a factory’s engineering review, the controls lead puts up a log where the assistant invented a part number, then asks why it should go anywhere near the maintenance manuals. Answer him in front of his team.",
+      "audience": "technical_peer",
+      "listener": "Controls lead",
+      "cares": "nothing invented reaching a maintenance crew"
+    },
+    {
+      "id": "DIS-13",
+      "category": "discovery",
+      "difficulty": 1,
+      "format": "story",
+      "text": "Tell me about the best question you ever asked a customer, and what it changed about what you built.",
+      "audience": "interviewer",
+      "listener": "Interviewer",
+      "cares": "how you find the need behind a request"
+    },
+    {
+      "id": "DIS-14",
+      "category": "discovery",
+      "difficulty": 2,
+      "format": "roleplay",
+      "text": "Three hours of sticky notes every Thursday: that is how a grocery store manager describes writing the staff rota, and she wants an AI to do it. Ask her the questions that find the real problem.",
+      "audience": "business",
+      "listener": "Store manager",
+      "cares": "getting her afternoons back"
+    },
+    {
+      "id": "DIS-15",
+      "category": "discovery",
+      "difficulty": 2,
+      "format": "explain",
+      "text": "The coordinator at a food-bank charity asks why you spent your first day sorting tins with volunteers instead of talking about software. Explain what you learned and why it matters to her.",
+      "audience": "business",
+      "listener": "Volunteer coordinator",
+      "cares": "whether the project is actually moving"
+    },
+    {
+      "id": "DIS-16",
+      "category": "discovery",
+      "difficulty": 3,
+      "format": "explain",
+      "text": "An airline’s baggage manager blames lost bags on the scanners; the handlers blame tight transfer times at the hub. Explain to her the one-week test that would show who is right.",
+      "audience": "business",
+      "listener": "Baggage manager",
+      "cares": "fewer lost bags before the holidays"
+    },
+    {
+      "id": "DIS-17",
+      "category": "discovery",
+      "difficulty": 3,
+      "format": "roleplay",
+      "text": "In your first week at a port authority, you notice step 9 of its berth-approval form needs a signature from a role abolished six years ago, and someone still signs it. Ask the operations director the question nobody has asked.",
+      "audience": "exec",
+      "listener": "Port operations director",
+      "cares": "faster approvals without a compliance gap"
+    },
+    {
+      "id": "DIS-18",
+      "category": "discovery",
+      "difficulty": 4,
+      "format": "opinion",
+      "text": "A rail operator’s contract names a live dashboard. On your ride-along, the signallers never looked at a screen; they listened to the radio. Your product manager says build it anyway. Argue your position to him.",
+      "audience": "technical_peer",
+      "listener": "Your product manager",
+      "cares": "shipping what the contract promised"
+    },
+    {
+      "id": "DIS-19",
+      "category": "discovery",
+      "difficulty": 4,
+      "format": "roleplay",
+      "text": "Your account director’s proposal to a 300-bed hospital promises “AI for radiology”. Every radiologist you met asked for the scanner schedule to be fixed first. It goes out tomorrow. Tell her what to change.",
+      "audience": "account_leader",
+      "listener": "Account director",
+      "cares": "a proposal the hospital will actually sign"
+    },
+    {
+      "id": "DIS-20",
+      "category": "discovery",
+      "difficulty": 5,
+      "format": "roleplay",
+      "text": "Mid-workshop at a hotel group, the chief executive explains how check-in works. Behind him, three front-desk managers exchange looks and say nothing. Draw out the real story without embarrassing him.",
+      "audience": "business",
+      "listener": "CEO and front-desk managers",
+      "cares": "the truth told safely in front of the boss"
+    },
+    {
+      "id": "PSH-13",
+      "category": "pushback",
+      "difficulty": 1,
+      "format": "roleplay",
+      "text": "A school bursar asks whether the new assistant can also do the timetable, parents’ evening bookings and a leaving card for the head of maths. Say yes to one, no to two, and keep her smiling.",
+      "audience": "business",
+      "listener": "School bursar",
+      "cares": "less paperwork before the end of term"
+    },
+    {
+      "id": "PSH-14",
+      "category": "pushback",
+      "difficulty": 2,
+      "format": "opinion",
+      "text": "A garden-centre chain wants a plant-care assistant by Friday. Is “yes, and here is what it will cost” always a better answer than a plain “no”? Take a side and defend it.",
+      "audience": "interviewer",
+      "listener": "Interviewer",
+      "cares": "how you refuse and keep the relationship"
+    },
+    {
+      "id": "PSH-15",
+      "category": "pushback",
+      "difficulty": 2,
+      "format": "roleplay",
+      "text": "“It’s literally one line.” A grid engineer at a power utility wants your configuration change pushed straight to production, skipping staging. Respond to him.",
+      "audience": "technical_peer",
+      "listener": "Grid engineer",
+      "cares": "getting the change out before the weekend"
+    },
+    {
+      "id": "PSH-16",
+      "category": "pushback",
+      "difficulty": 3,
+      "format": "explain",
+      "text": "A football club’s marketing lead wants the ticketing assistant to also write match reports and answer transfer rumours. The chairman already announced all three on the club podcast. Explain why it does one job first.",
+      "audience": "business",
+      "listener": "Club marketing lead",
+      "cares": "not embarrassing the chairman in public"
+    },
+    {
+      "id": "PSH-17",
+      "category": "pushback",
+      "difficulty": 3,
+      "format": "story",
+      "text": "Tell me about a time you said yes when you should have said no. What did the yes cost, and who paid for it?",
+      "audience": "interviewer",
+      "listener": "Interviewer",
+      "cares": "whether you learn from a costly yes"
+    },
+    {
+      "id": "PSH-18",
+      "category": "pushback",
+      "difficulty": 4,
+      "format": "roleplay",
+      "text": "The chief executive of a regional bus company wants all 1,400 drivers on the assistant from Monday. You want one depot first, because night-shift questions still go wrong. Tell him.",
+      "audience": "exec",
+      "listener": "Bus company CEO",
+      "cares": "a rollout he can announce with confidence"
+    },
+    {
+      "id": "PSH-19",
+      "category": "pushback",
+      "difficulty": 4,
+      "format": "roleplay",
+      "text": "Your account manager has agreed that a hotel chain’s IT team can approve every prompt change, which would freeze your fixes for two weeks at a time. He signs on Friday. Push back to him.",
+      "audience": "account_leader",
+      "listener": "Account manager",
+      "cares": "closing the deal without a trap in it"
+    },
+    {
+      "id": "PSH-20",
+      "category": "pushback",
+      "difficulty": 5,
+      "format": "roleplay",
+      "text": "On a call with a bank’s CIO, your own CTO promises a date for a feature your team hasn’t started. The CIO turns to you: “You’re building it. Confirm?” Answer him.",
+      "audience": "exec",
+      "listener": "Bank CIO",
+      "cares": "a date he can plan his year around"
+    },
+    {
+      "id": "CRI-13",
+      "category": "crisis",
+      "difficulty": 1,
+      "format": "explain",
+      "text": "Explain to a new project coordinator at a construction firm what an incident “severity level” is, and why it decides who gets woken up at 3 a.m.",
+      "audience": "business",
+      "listener": "Project coordinator",
+      "cares": "knowing when to call, and whom"
+    },
+    {
+      "id": "CRI-14",
+      "category": "crisis",
+      "difficulty": 2,
+      "format": "roleplay",
+      "text": "Since breakfast, a seaside hotel’s booking assistant has signed off every guest email “Warm regards, Template 4B”. The front-desk manager has noticed, and so have the guests. Respond to her.",
+      "audience": "business",
+      "listener": "Front-desk manager",
+      "cares": "guests not laughing at the hotel"
+    },
+    {
+      "id": "CRI-15",
+      "category": "crisis",
+      "difficulty": 2,
+      "format": "pitch",
+      "text": "A water utility’s IT lead says her team is far too busy for a practice outage drill before the winter peak. Pitch her on running one anyway.",
+      "audience": "technical_peer",
+      "listener": "Utility IT lead",
+      "cares": "her team’s time in a busy quarter"
+    },
+    {
+      "id": "CRI-16",
+      "category": "crisis",
+      "difficulty": 3,
+      "format": "roleplay",
+      "text": "The results-day outage at a university is fixed, but you won’t know the cause until tomorrow. The registrar briefs the vice-chancellor at five. Tell her what she can safely say.",
+      "audience": "business",
+      "listener": "University registrar",
+      "cares": "not repeating anything that turns out false"
+    },
+    {
+      "id": "CRI-17",
+      "category": "crisis",
+      "difficulty": 3,
+      "format": "opinion",
+      "text": "Forty minutes into an outage at a mobile network’s billing service, your two best engineers ask for ten more minutes to find the bug. A rollback would end it now. Decide, and tell them.",
+      "audience": "technical_peer",
+      "listener": "Your two engineers",
+      "cares": "finding a bug they are close to"
+    },
+    {
+      "id": "CRI-18",
+      "category": "crisis",
+      "difficulty": 4,
+      "format": "roleplay",
+      "text": "At 5 a.m., an airline’s COO calls: your crew-scheduling assistant rostered a first officer on a mandatory rest day, and the first flight can’t leave. Respond.",
+      "audience": "exec",
+      "listener": "Airline COO",
+      "cares": "the first flight out and the regulator"
+    },
+    {
+      "id": "CRI-19",
+      "category": "crisis",
+      "difficulty": 4,
+      "format": "roleplay",
+      "text": "Your account director hears from the client, not from you, that last night’s export sent an insurer’s claim files to the wrong broker. She calls: “Why am I hearing this from them?” Answer her.",
+      "audience": "account_leader",
+      "listener": "Account director",
+      "cares": "never again being blindsided by her client"
+    },
+    {
+      "id": "CRI-20",
+      "category": "crisis",
+      "difficulty": 5,
+      "format": "roleplay",
+      "text": "A children’s hospital’s chief executive asks what happened after the patient app showed one family another child’s appointment notes. You don’t yet know how many families were affected. Tell her.",
+      "audience": "exec",
+      "listener": "Hospital chief executive",
+      "cares": "the families, the regulator and the truth"
+    },
+    {
+      "id": "INF-13",
+      "category": "influence",
+      "difficulty": 1,
+      "format": "opinion",
+      "text": "A school board has seen your chart twice and still said no. Next time, what works better: a sharper chart or the story of one real pupil? Pick one and defend it.",
+      "audience": "interviewer",
+      "listener": "Interviewer",
+      "cares": "how you persuade people who outrank you"
+    },
+    {
+      "id": "INF-14",
+      "category": "influence",
+      "difficulty": 2,
+      "format": "roleplay",
+      "text": "“Management’s spy” is what the most respected forklift driver at a parts warehouse calls the new assistant, and the whole shift takes his lead. Talk to him at the morning break.",
+      "audience": "business",
+      "listener": "Senior forklift driver",
+      "cares": "not being watched or replaced"
+    },
+    {
+      "id": "INF-15",
+      "category": "influence",
+      "difficulty": 2,
+      "format": "explain",
+      "text": "Your sales director wants to email a shipping line’s CEO because its IT director keeps stalling. Explain to her why going around him will backfire, and what you’ll do instead.",
+      "audience": "account_leader",
+      "listener": "Sales director",
+      "cares": "unsticking the deal this quarter"
+    },
+    {
+      "id": "INF-16",
+      "category": "influence",
+      "difficulty": 3,
+      "format": "pitch",
+      "text": "A data scientist at an energy retailer keeps rerunning your evaluation with her own metric and posting worse numbers to the project channel. Pitch her on owning the evaluation with you.",
+      "audience": "technical_peer",
+      "listener": "Customer data scientist",
+      "cares": "being right about the model’s quality"
+    },
+    {
+      "id": "INF-17",
+      "category": "influence",
+      "difficulty": 3,
+      "format": "roleplay",
+      "text": "A construction firm’s managing director likes your project but won’t sponsor it, because “IT projects are the CIO’s problem”. Persuade him it is his.",
+      "audience": "exec",
+      "listener": "Managing director",
+      "cares": "not owning a project that might fail"
+    },
+    {
+      "id": "INF-18",
+      "category": "influence",
+      "difficulty": 4,
+      "format": "roleplay",
+      "text": "In an architecture review, a principal engineer at your company calls FDEs “consultants who write throwaway code”. You need his team’s API change for a rail customer next month. Win him over.",
+      "audience": "technical_peer",
+      "listener": "Principal engineer",
+      "cares": "code his team won’t have to maintain"
+    },
+    {
+      "id": "INF-19",
+      "category": "influence",
+      "difficulty": 4,
+      "format": "pitch",
+      "text": "An airport operator’s chief executive wants IT to choose the next use case. Pitch her on letting the baggage and security teams choose it instead.",
+      "audience": "exec",
+      "listener": "Airport chief executive",
+      "cares": "a second project that clearly pays off"
+    },
+    {
+      "id": "INF-20",
+      "category": "influence",
+      "difficulty": 5,
+      "format": "roleplay",
+      "text": "At a farm cooperative’s annual meeting, the chair calls your project “money spent on a city problem” and gives you the floor before the members vote. Speak to the members.",
+      "audience": "business",
+      "listener": "Co-op members",
+      "cares": "their fees and their harvest"
+    },
+    {
+      "id": "PRI-13",
+      "category": "prioritization",
+      "difficulty": 1,
+      "format": "story",
+      "text": "Tell me about a time you chose to leave something unfinished on purpose. How did you choose, and what happened next?",
+      "audience": "interviewer",
+      "listener": "Interviewer",
+      "cares": "how you decide what not to do"
+    },
+    {
+      "id": "PRI-14",
+      "category": "prioritization",
+      "difficulty": 2,
+      "format": "pitch",
+      "text": "Every Monday you spend a full day on a 30-page report for a bank’s steering group, and you suspect nobody reads past page two. Propose to the sponsor what to drop.",
+      "audience": "exec",
+      "listener": "Programme sponsor",
+      "cares": "staying informed without the paperwork"
+    },
+    {
+      "id": "PRI-15",
+      "category": "prioritization",
+      "difficulty": 2,
+      "format": "explain",
+      "text": "Explain why every plan you write for a customer comes with a “not now” list, and how you decide what goes on it.",
+      "audience": "interviewer",
+      "listener": "Interviewer",
+      "cares": "whether you can say no on paper"
+    },
+    {
+      "id": "PRI-16",
+      "category": "prioritization",
+      "difficulty": 3,
+      "format": "opinion",
+      "text": "Six weeks into a supplier-onboarding feature for a clothing importer, you learn nobody will use it until next spring. Your tech lead asks: finish it or park it? Give her your answer.",
+      "audience": "technical_peer",
+      "listener": "Your tech lead",
+      "cares": "not throwing away six weeks of work"
+    },
+    {
+      "id": "PRI-17",
+      "category": "prioritization",
+      "difficulty": 3,
+      "format": "roleplay",
+      "text": "A water utility’s steering committee has spent its whole meeting on the chat widget’s colour and none on how long customer data is kept. The meeting is nearly over. Steer them back.",
+      "audience": "exec",
+      "listener": "Steering committee",
+      "cares": "a decision they can sign off today"
+    },
+    {
+      "id": "PRI-18",
+      "category": "prioritization",
+      "difficulty": 4,
+      "format": "pitch",
+      "text": "Your partner manager has promised a reseller you will train its 40 engineers next week, the same week your pharmacy customer freezes changes for its busiest season. Pitch him a plan that doesn’t make you choose.",
+      "audience": "account_leader",
+      "listener": "Partner manager",
+      "cares": "keeping his word to the reseller"
+    },
+    {
+      "id": "PRI-19",
+      "category": "prioritization",
+      "difficulty": 4,
+      "format": "roleplay",
+      "text": "One answer in twelve is wrong on the two crops the assistant covers today, and an agritech firm’s CEO wants four more crops before harvest. Recommend what comes first, and tell him.",
+      "audience": "exec",
+      "listener": "Agritech CEO",
+      "cares": "more crops covered before the season"
+    },
+    {
+      "id": "PRI-20",
+      "category": "prioritization",
+      "difficulty": 5,
+      "format": "roleplay",
+      "text": "At a university’s finance committee, the vice-chancellor asks you to name one project to cancel to fund the AI programme. Two of those projects’ owners are at the table. Answer her.",
+      "audience": "exec",
+      "listener": "Vice-chancellor",
+      "cares": "funding the programme without a public fight"
+    },
+    {
+      "id": "OWN-13",
+      "category": "ownership",
+      "difficulty": 1,
+      "format": "explain",
+      "text": "A port’s customs integration is failing, and the fix belongs to another team at your company. Explain what owning the problem means for you today.",
+      "audience": "interviewer",
+      "listener": "Interviewer",
+      "cares": "whether you hide behind other teams"
+    },
+    {
+      "id": "OWN-14",
+      "category": "ownership",
+      "difficulty": 2,
+      "format": "explain",
+      "text": "“temp_final_v2_REAL” is the name of a production table you created at a regional insurer, and a junior developer there asks what it means. Explain the name, own it, and say what happens next.",
+      "audience": "technical_peer",
+      "listener": "Junior developer",
+      "cares": "not inheriting a mess he can’t explain"
+    },
+    {
+      "id": "OWN-15",
+      "category": "ownership",
+      "difficulty": 2,
+      "format": "story",
+      "text": "Tell me about a time you found your own mistake before anyone else did. What did you do in the first hour?",
+      "audience": "interviewer",
+      "listener": "Interviewer",
+      "cares": "whether you disclose before you are caught"
+    },
+    {
+      "id": "OWN-16",
+      "category": "ownership",
+      "difficulty": 3,
+      "format": "roleplay",
+      "text": "Your account director forwarded your internal notes to a pharmacy chain by mistake. In them, you called their data “a swamp with a login page”. Own your part and tell her how you’ll repair it.",
+      "audience": "account_leader",
+      "listener": "Account director",
+      "cares": "the relationship surviving one bad email"
+    },
+    {
+      "id": "OWN-17",
+      "category": "ownership",
+      "difficulty": 3,
+      "format": "opinion",
+      "text": "After an outage at a ferry operator, your engineering manager proposes that whoever caused an incident should always lead the fix. Is that fair? Give her your view.",
+      "audience": "technical_peer",
+      "listener": "Engineering manager",
+      "cares": "faster fixes and fewer repeat incidents"
+    },
+    {
+      "id": "OWN-18",
+      "category": "ownership",
+      "difficulty": 4,
+      "format": "roleplay",
+      "text": "By month two you knew your estimate for a tax agency’s project was four months short, and you hoped to catch up. You didn’t. Tell the agency’s director.",
+      "audience": "exec",
+      "listener": "Agency director",
+      "cares": "what he can tell the minister"
+    },
+    {
+      "id": "OWN-19",
+      "category": "ownership",
+      "difficulty": 4,
+      "format": "roleplay",
+      "text": "On Saturday you hot-fixed a rugby club’s ticketing system without logging the change. It worked, but their head of IT found it this morning and is furious. Talk to him.",
+      "audience": "technical_peer",
+      "listener": "Club head of IT",
+      "cares": "control over his own systems"
+    },
+    {
+      "id": "OWN-20",
+      "category": "ownership",
+      "difficulty": 5,
+      "format": "roleplay",
+      "text": "At a hospital’s quarterly review, the CEO credits your system for a 20% drop in waiting times. This morning you learned the drop came from a staffing change. Respond in the room.",
+      "audience": "exec",
+      "listener": "Hospital CEO",
+      "cares": "a result he can repeat to the board"
+    },
+    {
+      "id": "TRU-13",
+      "category": "trust_ethics",
+      "difficulty": 1,
+      "format": "opinion",
+      "text": "A car-rental firm offers you its drivers’ location history “in case it helps”. When should you refuse data a customer is happy to share? Give your rule.",
+      "audience": "interviewer",
+      "listener": "Interviewer",
+      "cares": "your judgment when nobody is checking"
+    },
+    {
+      "id": "TRU-14",
+      "category": "trust_ethics",
+      "difficulty": 2,
+      "format": "roleplay",
+      "text": "Twenty five-star reviews “in the authentic voice of happy guests”: that is what a hotel’s revenue manager wants the assistant to write. Respond to her.",
+      "audience": "business",
+      "listener": "Revenue manager",
+      "cares": "the hotel’s rating before summer"
+    },
+    {
+      "id": "TRU-15",
+      "category": "trust_ethics",
+      "difficulty": 2,
+      "format": "explain",
+      "text": "Explain to a law firm’s first-year associates why “the AI said so” will never satisfy a judge, and what they must do before citing anything it gives them.",
+      "audience": "business",
+      "listener": "First-year associates",
+      "cares": "not being embarrassed in court"
+    },
+    {
+      "id": "TRU-16",
+      "category": "trust_ethics",
+      "difficulty": 3,
+      "format": "roleplay",
+      "text": "“For quality and training purposes”: a bank’s data engineer says that line in the call-recording consent lets him train on the recordings. Respond to him.",
+      "audience": "technical_peer",
+      "listener": "Bank data engineer",
+      "cares": "using data the bank already holds"
+    },
+    {
+      "id": "TRU-17",
+      "category": "trust_ethics",
+      "difficulty": 3,
+      "format": "pitch",
+      "text": "Pitch the chief executive of a housing association on telling tenants how the repairs assistant ranks their requests, when her lawyers would rather say nothing.",
+      "audience": "exec",
+      "listener": "Housing association CEO",
+      "cares": "tenant trust without legal exposure"
+    },
+    {
+      "id": "TRU-18",
+      "category": "trust_ethics",
+      "difficulty": 4,
+      "format": "roleplay",
+      "text": "A ferry operator’s procurement team accidentally shared a deck containing a rival’s confidential prices. Your sales director wants to use it in tomorrow’s offer. Respond to her.",
+      "audience": "account_leader",
+      "listener": "Sales director",
+      "cares": "winning tomorrow’s offer"
+    },
+    {
+      "id": "TRU-19",
+      "category": "trust_ethics",
+      "difficulty": 4,
+      "format": "opinion",
+      "text": "The chief executive of a pharmacy chain wants the assistant to recommend own-brand medicines first whenever a shopper asks for advice. Is that acceptable? Tell him.",
+      "audience": "exec",
+      "listener": "Pharmacy chain CEO",
+      "cares": "margin on own-brand products"
+    },
+    {
+      "id": "TRU-20",
+      "category": "trust_ethics",
+      "difficulty": 5,
+      "format": "roleplay",
+      "text": "An engineer at a benefits agency tells you privately that the eligibility rules in your system were tightened on a manager’s say-so, with no policy change behind it. Respond to her.",
+      "audience": "technical_peer",
+      "listener": "Agency engineer",
+      "cares": "doing right without losing her job"
+    },
+    {
+      "id": "LEA-13",
+      "category": "leadership",
+      "difficulty": 1,
+      "format": "story",
+      "text": "Tell me about a small habit you started on a team that kept going after you left.",
+      "audience": "interviewer",
+      "listener": "Interviewer",
+      "cares": "the mark you leave on a team"
+    },
+    {
+      "id": "LEA-14",
+      "category": "leadership",
+      "difficulty": 2,
+      "format": "roleplay",
+      "text": "900 lines of code: that is what your newest engineer on a mining company’s deployment wrote to avoid asking a colleague one question. Coach him without making him feel small.",
+      "audience": "technical_peer",
+      "listener": "Your newest engineer",
+      "cares": "looking capable in his first month"
+    },
+    {
+      "id": "LEA-15",
+      "category": "leadership",
+      "difficulty": 2,
+      "format": "explain",
+      "text": "Explain to a hotel’s night staff why their complaints, not the managers’ wish list, will decide what you fix first in the new assistant.",
+      "audience": "business",
+      "listener": "Hotel night staff",
+      "cares": "whether anyone listens to the night shift"
+    },
+    {
+      "id": "LEA-16",
+      "category": "leadership",
+      "difficulty": 3,
+      "format": "pitch",
+      "text": "Paint the shift leaders at a car-parts factory a picture of an ordinary Tuesday a year after the assistant arrives. Make them want it.",
+      "audience": "business",
+      "listener": "Shift leaders",
+      "cares": "fewer surprises on the night shift"
+    },
+    {
+      "id": "LEA-17",
+      "category": "leadership",
+      "difficulty": 3,
+      "format": "opinion",
+      "text": "A power company’s call-centre director is furious with your team. Should you shield your engineers from her anger, or let them hear it first-hand? Take a side and defend it.",
+      "audience": "interviewer",
+      "listener": "Interviewer",
+      "cares": "how you protect and grow a team"
+    },
+    {
+      "id": "LEA-18",
+      "category": "leadership",
+      "difficulty": 4,
+      "format": "roleplay",
+      "text": "On a stadium project, a new account director keeps handing your engineers tasks directly, skipping you, and two of them are now double-booked. Set the ground rules with her.",
+      "audience": "account_leader",
+      "listener": "New account director",
+      "cares": "moving fast on her first big account"
+    },
+    {
+      "id": "LEA-19",
+      "category": "leadership",
+      "difficulty": 4,
+      "format": "opinion",
+      "text": "A newspaper’s publisher asks what her newsroom should look like in three years because of AI, and her reporters are listening. Give her your answer.",
+      "audience": "exec",
+      "listener": "Newspaper publisher",
+      "cares": "a future her reporters can believe in"
+    },
+    {
+      "id": "LEA-20",
+      "category": "leadership",
+      "difficulty": 5,
+      "format": "roleplay",
+      "text": "On your first day leading a struggling deployment at a grain cooperative, the team tells you in one meeting that your predecessor was right to quit. Respond to them.",
+      "audience": "business",
+      "listener": "Your new team",
+      "cares": "whether you will fix it or flee"
+    },
+    {
+      "id": "COM-13",
+      "category": "commercial",
+      "difficulty": 1,
+      "format": "explain",
+      "text": "A rowing club’s volunteer treasurer asks why the cheapest plan might cost the club more by next spring. Explain it to her.",
+      "audience": "business",
+      "listener": "Club treasurer",
+      "cares": "every penny of members’ fees"
+    },
+    {
+      "id": "COM-14",
+      "category": "commercial",
+      "difficulty": 2,
+      "format": "pitch",
+      "text": "A university’s head of admissions asks what she could stop doing if she bought your product. You noticed her team retypes every application into a second system “because we always have”. Pitch her.",
+      "audience": "business",
+      "listener": "Head of admissions",
+      "cares": "time back in the busiest season"
+    },
+    {
+      "id": "COM-15",
+      "category": "commercial",
+      "difficulty": 2,
+      "format": "opinion",
+      "text": "Your account director wants to price a law firm per seat. After a week on site, you notice nobody there thinks in seats: every minute is billed to a matter. Make the case to her for pricing per matter.",
+      "audience": "account_leader",
+      "listener": "Account director",
+      "cares": "a price the firm says yes to"
+    },
+    {
+      "id": "COM-16",
+      "category": "commercial",
+      "difficulty": 3,
+      "format": "roleplay",
+      "text": "“It’s only twelve users, so add them for free.” A clinic group wants its new sister clinic included; last year’s “only five” became forty. Respond to its operations manager.",
+      "audience": "business",
+      "listener": "Clinic operations manager",
+      "cares": "keeping this year’s budget flat"
+    },
+    {
+      "id": "COM-17",
+      "category": "commercial",
+      "difficulty": 3,
+      "format": "roleplay",
+      "text": "Your account lead wants to bill a construction firm for the week your team spent fixing your own bug. Tell him what you would do instead.",
+      "audience": "account_leader",
+      "listener": "Account lead",
+      "cares": "hitting the quarter’s billing target"
+    },
+    {
+      "id": "COM-18",
+      "category": "commercial",
+      "difficulty": 4,
+      "format": "roleplay",
+      "text": "Your team overran a museum’s fixed-price project by 30%. Its director now wants the next phase on a fixed price too. Tell her how you would price it.",
+      "audience": "exec",
+      "listener": "Museum director",
+      "cares": "a budget her trustees will approve"
+    },
+    {
+      "id": "COM-19",
+      "category": "commercial",
+      "difficulty": 4,
+      "format": "opinion",
+      "text": "Your partner manager is about to give a reseller exclusive rights to every farming cooperative in the region in return for a bigger margin. Should he? Tell him what you would trade instead.",
+      "audience": "account_leader",
+      "listener": "Partner manager",
+      "cares": "a bigger margin from the reseller"
+    },
+    {
+      "id": "COM-20",
+      "category": "commercial",
+      "difficulty": 5,
+      "format": "roleplay",
+      "text": "On the quarterly call, a media group’s CFO says you billed for three months of features her team couldn’t even log into. She asks what you are refunding. Answer her.",
+      "audience": "exec",
+      "listener": "Media group CFO",
+      "cares": "money back and an honest explanation"
+    },
+    {
+      "id": "AMB-13",
+      "category": "ambiguity",
+      "difficulty": 1,
+      "format": "opinion",
+      "text": "A theatre company wants your answer by Friday, and you have about 70% of the facts. Is deciding now brave or reckless? Take a side and give an example.",
+      "audience": "interviewer",
+      "listener": "Interviewer",
+      "cares": "how you act without all the facts"
+    },
+    {
+      "id": "AMB-14",
+      "category": "ambiguity",
+      "difficulty": 2,
+      "format": "roleplay",
+      "text": "“Make it more intuitive.” That is the whole requirement from a council planning officer. Call her and find out what she actually means.",
+      "audience": "business",
+      "listener": "Planning officer",
+      "cares": "fewer confused calls from applicants"
+    },
+    {
+      "id": "AMB-15",
+      "category": "ambiguity",
+      "difficulty": 2,
+      "format": "explain",
+      "text": "Your engineer at an offshore wind operator finds three customer documents describing three different data formats for the same turbine. Explain how you will decide which one to trust.",
+      "audience": "technical_peer",
+      "listener": "Your engineer",
+      "cares": "not building on the wrong format"
+    },
+    {
+      "id": "AMB-16",
+      "category": "ambiguity",
+      "difficulty": 3,
+      "format": "opinion",
+      "text": "A shipping line’s chief executive asks whether to wait six months for the next generation of AI models before starting anything. Nobody knows what they will do. Advise her.",
+      "audience": "exec",
+      "listener": "Shipping line CEO",
+      "cares": "not paying twice for the same project"
+    },
+    {
+      "id": "AMB-17",
+      "category": "ambiguity",
+      "difficulty": 3,
+      "format": "story",
+      "text": "Tell me about a time a customer’s request had two reasonable readings and you built the wrong one. What do you do differently now?",
+      "audience": "interviewer",
+      "listener": "Interviewer",
+      "cares": "how you test an assumption early"
+    },
+    {
+      "id": "AMB-18",
+      "category": "ambiguity",
+      "difficulty": 4,
+      "format": "roleplay",
+      "text": "A rail operator’s tender has one requirement nobody on your side can interpret, and the question window closed yesterday. Your bid director asks whether you should bid. Answer her.",
+      "audience": "account_leader",
+      "listener": "Bid director",
+      "cares": "a winnable bid, not a costly gamble"
+    },
+    {
+      "id": "AMB-19",
+      "category": "ambiguity",
+      "difficulty": 4,
+      "format": "explain",
+      "text": "Mid-integration at a veterinary lab, you find an undocumented field that seems to flag urgent samples. Nobody on site knows, and the lab manager is away until Monday. Explain to your engineer what you’ll do.",
+      "audience": "technical_peer",
+      "listener": "Your integration engineer",
+      "cares": "not shipping on a guess"
+    },
+    {
+      "id": "AMB-20",
+      "category": "ambiguity",
+      "difficulty": 5,
+      "format": "roleplay",
+      "text": "One undefined word in a draft aviation rule could ban half of what you’ve built for an airline, or none of it. Its chief digital officer wants to know today whether to pause. Answer him.",
+      "audience": "exec",
+      "listener": "Chief digital officer",
+      "cares": "not wasting a quarter or breaking a rule"
     }
   ]
 }

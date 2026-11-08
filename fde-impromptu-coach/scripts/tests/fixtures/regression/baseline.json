@@ -1,15 +1,15 @@
 {
- "recorded_on_commit": "798feed",
+ "recorded_on_commit": "798feed (passages, evals); impromptu re-recorded on feat/question-bank-voice",
  "impromptu": {
   "2026-10-01": [
    {
-    "id": "TRU-03",
+    "id": "TRU-04",
     "category": "trust_ethics",
     "format": "roleplay",
     "difficulty": 2,
     "audience": "business",
     "constraint": "",
-    "text": "A customer asks you to copy their production customer data into a quick test environment “just for today.” Respond."
+    "text": "The customer asks whether your AI system is “unbiased.” Give an honest answer."
    },
    {
     "id": "PSH-05",
@@ -21,13 +21,13 @@
     "text": "Your executive sponsor asks you to commit to a launch date that your engineers say is impossible. Respond in the meeting."
    },
    {
-    "id": "AMB-06",
+    "id": "AMB-17",
     "category": "ambiguity",
-    "format": "opinion",
+    "format": "story",
     "difficulty": 3,
     "audience": "interviewer",
     "constraint": "",
-    "text": "You have 48 hours to decide whether to build a custom solution or wait for an official product feature. Make the call and justify it."
+    "text": "Tell me about a time a customer’s request had two reasonable readings and you built the wrong one. What do you do differently now?"
    },
    {
     "id": "DIS-06",
@@ -50,49 +50,49 @@
   ],
   "2026-10-02": [
    {
-    "id": "CRI-03",
+    "id": "CRI-04",
     "category": "crisis",
     "format": "roleplay",
     "difficulty": 2,
-    "audience": "business",
+    "audience": "exec",
     "constraint": "",
-    "text": "A bug in your deployment sent incorrect summaries to 30 users this morning. Say, out loud, your first message to the customer’s project lead."
+    "text": "The demo you’re giving to the customer’s leadership crashes in the first minute. Say what you say next."
    },
    {
-    "id": "EXE-12",
+    "id": "EXE-15",
     "category": "exec_comm",
     "format": "explain",
     "difficulty": 2,
-    "audience": "account_leader",
+    "audience": "technical_peer",
     "constraint": "",
-    "text": "Your account executive has two minutes before a call with the customer’s CIO and asks: “Where are we, really?” Brief him."
+    "text": "22 slides, four of them titled “Architecture (cont.)”: that is what a senior engineer on your team plans to show a hospital board on Friday. Explain to him which slide survives, and why."
    },
    {
-    "id": "PRI-09",
+    "id": "PRI-12",
     "category": "prioritization",
+    "format": "roleplay",
+    "difficulty": 3,
+    "audience": "account_leader",
+    "constraint": "",
+    "text": "Your account leader owns three of your customers and wants all three escalations fixed this week. You can fix one properly. Tell her which one and why."
+   },
+   {
+    "id": "LEA-19",
+    "category": "leadership",
     "format": "opinion",
     "difficulty": 4,
     "audience": "exec",
     "constraint": "",
-    "text": "You are asked to cut your deployment budget by 40% and keep the same outcomes. What do you cut, and how do you explain it?"
+    "text": "A newspaper’s publisher asks what her newsroom should look like in three years because of AI, and her reporters are listening. Give her your answer."
    },
    {
-    "id": "LEA-12",
-    "category": "leadership",
-    "format": "explain",
-    "difficulty": 2,
+    "id": "TEC-18",
+    "category": "tech_translation",
+    "format": "pitch",
+    "difficulty": 4,
     "audience": "account_leader",
     "constraint": "",
-    "text": "A new account executive asks how she should work with Forward Deployed Engineers to win and keep customers. Give her your advice."
-   },
-   {
-    "id": "TEC-09",
-    "category": "tech_translation",
-    "format": "roleplay",
-    "difficulty": 4,
-    "audience": "exec",
-    "constraint": "",
-    "text": "A board member with no technical background asks you to explain, in one minute, how you know the AI system is safe to use with customer data. Answer him."
+    "text": "Your partner manager wants to tell a telecoms reseller that the assistant “never forgets a conversation”. It forgets on purpose, for privacy. Pitch him a way to sell the forgetting instead."
    }
   ],
   "2026-10-03": [
@@ -106,31 +106,31 @@
     "text": "Your account director asks why the customer’s accuracy dropped after the model update, because the customer will ask her tomorrow. Explain it so she can repeat it."
    },
    {
-    "id": "OWN-03",
+    "id": "OWN-18",
     "category": "ownership",
+    "format": "roleplay",
+    "difficulty": 4,
+    "audience": "exec",
+    "constraint": "",
+    "text": "By month two you knew your estimate for a tax agency’s project was four months short, and you hoped to catch up. You didn’t. Tell the agency’s director."
+   },
+   {
+    "id": "PSH-17",
+    "category": "pushback",
     "format": "story",
-    "difficulty": 2,
+    "difficulty": 3,
     "audience": "interviewer",
     "constraint": "",
-    "text": "Tell me about a project that failed. What was your part in it?"
+    "text": "Tell me about a time you said yes when you should have said no. What did the yes cost, and who paid for it?"
    },
    {
-    "id": "PSH-06",
-    "category": "pushback",
-    "format": "roleplay",
-    "difficulty": 3,
-    "audience": "business",
-    "constraint": "",
-    "text": "Your own sales team promised a customer a capability the product doesn’t have. The customer brings it up with you. Respond to the customer."
-   },
-   {
-    "id": "COM-07",
+    "id": "COM-17",
     "category": "commercial",
     "format": "roleplay",
     "difficulty": 3,
-    "audience": "business",
+    "audience": "account_leader",
     "constraint": "",
-    "text": "Your champion at the customer is leaving the company next month. Talk to her about how to protect the project."
+    "text": "Your account lead wants to bill a construction firm for the week your team spent fixing your own bug. Tell him what you would do instead."
    },
    {
     "id": "LEA-08",
@@ -144,22 +144,22 @@
   ],
   "2026-10-04": [
    {
-    "id": "TRU-04",
+    "id": "TRU-17",
     "category": "trust_ethics",
-    "format": "roleplay",
-    "difficulty": 2,
-    "audience": "business",
+    "format": "pitch",
+    "difficulty": 3,
+    "audience": "exec",
     "constraint": "",
-    "text": "The customer asks whether your AI system is “unbiased.” Give an honest answer."
+    "text": "Pitch the chief executive of a housing association on telling tenants how the repairs assistant ranks their requests, when her lawyers would rather say nothing."
    },
    {
-    "id": "INF-03",
+    "id": "INF-15",
     "category": "influence",
-    "format": "pitch",
+    "format": "explain",
     "difficulty": 2,
-    "audience": "technical_peer",
+    "audience": "account_leader",
     "constraint": "",
-    "text": "Pitch your product team, in one minute, on building a feature three of your customers keep asking for."
+    "text": "Your sales director wants to email a shipping line’s CEO because its IT director keeps stalling. Explain to her why going around him will backfire, and what you’ll do instead."
    },
    {
     "id": "DIS-12",
@@ -171,51 +171,51 @@
     "text": "Your account executive wants you to scope a big expansion from one enthusiastic email. You think the real need is unclear. Tell her what you need before anyone quotes a price."
    },
    {
-    "id": "PRI-06",
+    "id": "PRI-16",
     "category": "prioritization",
     "format": "opinion",
     "difficulty": 3,
-    "audience": "business",
+    "audience": "technical_peer",
     "constraint": "",
-    "text": "A customer wants 12 use cases in the first quarter. Explain how you would pick the first two."
+    "text": "Six weeks into a supplier-onboarding feature for a clothing importer, you learn nobody will use it until next spring. Your tech lead asks: finish it or park it? Give her your answer."
    },
    {
-    "id": "EXE-09",
+    "id": "EXE-19",
     "category": "exec_comm",
-    "format": "roleplay",
+    "format": "pitch",
     "difficulty": 4,
     "audience": "exec",
     "constraint": "",
-    "text": "You have one minute with a new CTO who inherited your project and is skeptical of every vendor her predecessor chose. Win her attention."
+    "text": "A trustee has told a university’s chancellor that your student-advice assistant is “a solution looking for a problem”. She faces him at Thursday’s board and asks you for her reply. Give it to her."
    }
   ],
   "2026-10-05": [
    {
-    "id": "OWN-04",
+    "id": "OWN-15",
     "category": "ownership",
     "format": "story",
     "difficulty": 2,
     "audience": "interviewer",
     "constraint": "",
-    "text": "Describe a time you received tough feedback. What did you do with it?"
+    "text": "Tell me about a time you found your own mistake before anyone else did. What did you do in the first hour?"
    },
    {
-    "id": "CRI-04",
+    "id": "CRI-15",
     "category": "crisis",
-    "format": "roleplay",
+    "format": "pitch",
     "difficulty": 2,
-    "audience": "exec",
+    "audience": "technical_peer",
     "constraint": "",
-    "text": "The demo you’re giving to the customer’s leadership crashes in the first minute. Say what you say next."
+    "text": "A water utility’s IT lead says her team is far too busy for a practice outage drill before the winter peak. Pitch her on running one anyway."
    },
    {
-    "id": "PRI-11",
+    "id": "PRI-17",
     "category": "prioritization",
     "format": "roleplay",
-    "difficulty": 5,
+    "difficulty": 3,
     "audience": "exec",
     "constraint": "",
-    "text": "The customer’s executive says: “Everything on this list is priority one.” Push her to force-rank it, in the meeting."
+    "text": "A water utility’s steering committee has spent its whole meeting on the chat widget’s colour and none on how long customer data is kept. The meeting is nearly over. Steer them back."
    },
    {
     "id": "AMB-05",
@@ -227,13 +227,13 @@
     "text": "The customer’s project lead and your own account executive give you conflicting instructions. Decide what you’ll do and tell both."
    },
    {
-    "id": "COM-08",
+    "id": "COM-19",
     "category": "commercial",
-    "format": "roleplay",
+    "format": "opinion",
     "difficulty": 4,
-    "audience": "exec",
+    "audience": "account_leader",
     "constraint": "",
-    "text": "Renewal is in three weeks, usage is down 40%, and your executive sponsor has gone quiet. You get her on the phone. What do you say?"
+    "text": "Your partner manager is about to give a reseller exclusive rights to every farming cooperative in the region in return for a bigger margin. Should he? Tell him what you would trade instead."
    }
   ],
   "2026-10-06": [
@@ -247,13 +247,13 @@
     "text": "Your account director asks you to promise the customer a custom integration by quarter end to close the renewal. It can’t be done well in that time. Respond to her."
    },
    {
-    "id": "TRU-01",
+    "id": "TRU-15",
     "category": "trust_ethics",
-    "format": "opinion",
-    "difficulty": 1,
-    "audience": "interviewer",
+    "format": "explain",
+    "difficulty": 2,
+    "audience": "business",
     "constraint": "",
-    "text": "What does it mean to be a trusted advisor to a customer rather than just a vendor?"
+    "text": "Explain to a law firm’s first-year associates why “the AI said so” will never satisfy a judge, and what they must do before citing anything it gives them."
    },
    {
     "id": "EXE-07",
@@ -265,13 +265,13 @@
     "text": "Your pilot succeeded with one team. Make the case to the CIO for rolling it out to five more teams next quarter."
    },
    {
-    "id": "TEC-05",
+    "id": "TEC-06",
     "category": "tech_translation",
     "format": "explain",
     "difficulty": 3,
     "audience": "business",
     "constraint": "",
-    "text": "Explain to a skeptical legal team how their data flows through the system: what is stored, where, and for how long, without drowning them in detail."
+    "text": "The head of sales asks why the model can’t “just learn from our CRM overnight.” Explain retrieval, fine-tuning and prompting in plain language."
    },
    {
     "id": "AMB-09",
@@ -285,49 +285,49 @@
   ],
   "2026-10-07": [
    {
-    "id": "OWN-02",
+    "id": "OWN-03",
     "category": "ownership",
     "format": "story",
-    "difficulty": 1,
+    "difficulty": 2,
     "audience": "interviewer",
     "constraint": "",
-    "text": "Tell me about a time you went beyond your role to help a customer or teammate succeed."
+    "text": "Tell me about a project that failed. What was your part in it?"
    },
    {
-    "id": "CRI-12",
+    "id": "CRI-03",
     "category": "crisis",
     "format": "roleplay",
-    "difficulty": 3,
-    "audience": "account_leader",
-    "constraint": "",
-    "text": "A production incident hit the customer an hour before your account executive’s renewal call. He calls you: “What do I tell them?” Answer him."
-   },
-   {
-    "id": "LEA-06",
-    "category": "leadership",
-    "format": "opinion",
-    "difficulty": 3,
-    "audience": "interviewer",
-    "constraint": "",
-    "text": "Take a position: should Forward Deployed Engineers specialize by industry or stay generalists? Defend it."
-   },
-   {
-    "id": "COM-04",
-    "category": "commercial",
-    "format": "pitch",
     "difficulty": 2,
+    "audience": "business",
+    "constraint": "",
+    "text": "A bug in your deployment sent incorrect summaries to 30 users this morning. Say, out loud, your first message to the customer’s project lead."
+   },
+   {
+    "id": "LEA-16",
+    "category": "leadership",
+    "format": "pitch",
+    "difficulty": 3,
+    "audience": "business",
+    "constraint": "",
+    "text": "Paint the shift leaders at a car-parts factory a picture of an ordinary Tuesday a year after the assistant arrives. Make them want it."
+   },
+   {
+    "id": "COM-08",
+    "category": "commercial",
+    "format": "roleplay",
+    "difficulty": 4,
     "audience": "exec",
     "constraint": "",
-    "text": "Your pilot saved one team 10 hours a week. Turn that into an expansion pitch for the customer’s operations leader."
+    "text": "Renewal is in three weeks, usage is down 40%, and your executive sponsor has gone quiet. You get her on the phone. What do you say?"
    },
    {
-    "id": "INF-12",
+    "id": "INF-19",
     "category": "influence",
-    "format": "roleplay",
-    "difficulty": 2,
-    "audience": "account_leader",
+    "format": "pitch",
+    "difficulty": 4,
+    "audience": "exec",
     "constraint": "",
-    "text": "You want your account executive to bring the customer’s operations leader into the next meeting, because that is where the value is. Ask him."
+    "text": "An airport operator’s chief executive wants IT to choose the next use case. Pitch her on letting the baggage and security teams choose it instead."
    }
   ]
  },
