@@ -12,7 +12,11 @@ these improve the fallback and set the house style.
 - **A new scenario every time**: 96 different trigger → listener → tension → ask shapes, none matching an
   existing question with only the nouns changed, and none flagged by `is_duplicate` against the bank or
   each other.
-- **Named settings**: 89 of 96 name an industry and a moment, across 20 industries (none in more than 7):
+- **Checked against the learner's history**: all 96 pass `is_duplicate` against the 220 questions in
+  `history.json`, but a scenario-level review (grouping the history by trigger → listener → tension → ask)
+  found 21 that re-skinned a past scenario. Those 21 were rewritten with new scenarios, keeping their id,
+  competency, difficulty, format and audience.
+- **Named settings**: 89 of 96 name an industry and a moment, across 21 industries (none in more than 8):
   ports, hospitals, schools, public agencies, utilities, airlines, factories, pharmacy chains, banks,
   newsrooms, NGOs, farms, hotels, sports clubs, law firms and more. Fictional organisations only.
 - **Fewer tired motifs**: no renewal, go-live, pilot or demo; no "your account executive" listener (account
@@ -21,7 +25,7 @@ these improve the fallback and set the house style.
   13 interviewer; roleplay 45 of 96 (47%), with every competency getting an opinion, an explain and a
   story or pitch. Difficulty per competency 1, 2, 2, 3, 3, 4, 4, 5. Exec and account-leader items fit the
   25-second headline window.
-- **Smart humour in about 1 in 4** (26): jargon taken literally, an outsider noticing an unwritten rule,
+- **Smart humour in about 1 in 4** (27): jargon taken literally, an outsider noticing an unwritten rule,
   gentle exaggeration of a familiar work moment. Never about identity, never where people were harmed;
   `crisis` and `trust_ethics` stay straight at difficulty 4–5.
 - **Regression baseline re-recorded (intended)**: the E9 scenario *Impromptu questions are chosen as

@@ -1698,10 +1698,10 @@
       "category": "exec_comm",
       "difficulty": 4,
       "format": "roleplay",
-      "text": "“Yes or no: does this go to every claims handler on Monday?” For this insurer, the honest answer is yes for motor claims and no for home claims. Answer the chief risk officer.",
+      "text": "The chief operating officer of a brewery wants every update as one chart and no words. This week the news is bad. Describe the chart you would put in front of him, then say the one sentence beneath it.",
       "audience": "exec",
-      "listener": "Chief risk officer",
-      "cares": "a clean decision he can stand behind"
+      "listener": "Brewery COO",
+      "cares": "seeing the problem at a single glance"
     },
     {
       "id": "EXE-19",
@@ -1718,10 +1718,10 @@
       "category": "exec_comm",
       "difficulty": 5,
       "format": "roleplay",
-      "text": "At a public council meeting, a councillor reads out a wrong answer your permits assistant gave a resident, and the city manager hands you the microphone. Answer the councillor.",
+      "text": "In a mining company’s executive meeting, the CFO and the head of safety start arguing about your project in front of you. The chief executive turns to you and says, “Well?” Answer him.",
       "audience": "exec",
-      "listener": "City councillor",
-      "cares": "residents getting straight answers from the city"
+      "listener": "Mining company CEO",
+      "cares": "a way forward both of them can accept"
     },
     {
       "id": "TEC-13",
@@ -1798,10 +1798,10 @@
       "category": "tech_translation",
       "difficulty": 5,
       "format": "roleplay",
-      "text": "At a factory’s engineering review, the controls lead puts up a log where the assistant invented a part number, then asks why it should go anywhere near the maintenance manuals. Answer him in front of his team.",
+      "text": "In front of her whole team, a stock exchange’s security engineer hands you the marker and asks you to explain how a prompt injection could get past your guardrails, and why you still sleep at night.",
       "audience": "technical_peer",
-      "listener": "Controls lead",
-      "cares": "nothing invented reaching a maintenance crew"
+      "listener": "Security engineer",
+      "cares": "an honest threat model, not a sales pitch"
     },
     {
       "id": "DIS-13",
@@ -1858,20 +1858,20 @@
       "category": "discovery",
       "difficulty": 4,
       "format": "opinion",
-      "text": "A rail operator’s contract names a live dashboard. On your ride-along, the signallers never looked at a screen; they listened to the radio. Your product manager says build it anyway. Argue your position to him.",
+      "text": "Twelve interviews at a national parks service, and your product manager says that’s plenty. You notice all twelve were with office staff and none with rangers. Is it enough? Argue your position to him.",
       "audience": "technical_peer",
       "listener": "Your product manager",
-      "cares": "shipping what the contract promised"
+      "cares": "starting the build without more delay"
     },
     {
       "id": "DIS-19",
       "category": "discovery",
       "difficulty": 4,
       "format": "roleplay",
-      "text": "Your account director’s proposal to a 300-bed hospital promises “AI for radiology”. Every radiologist you met asked for the scanner schedule to be fixed first. It goes out tomorrow. Tell her what to change.",
+      "text": "At a supermarket group’s quarterly review, its CIO mentions in passing that she has hired an in-house AI team. Your account director wants to pretend nobody heard. Tell her what you would ask the CIO, and why.",
       "audience": "account_leader",
       "listener": "Account director",
-      "cares": "a proposal the hospital will actually sign"
+      "cares": "not unsettling a happy customer"
     },
     {
       "id": "DIS-20",
@@ -1908,10 +1908,10 @@
       "category": "pushback",
       "difficulty": 2,
       "format": "roleplay",
-      "text": "“It’s literally one line.” A grid engineer at a power utility wants your configuration change pushed straight to production, skipping staging. Respond to him.",
+      "text": "“Oopsie! Our database is having a little nap.” A pensions provider’s lead developer wants every error message to sound that cheerful. Respond to him.",
       "audience": "technical_peer",
-      "listener": "Grid engineer",
-      "cares": "getting the change out before the weekend"
+      "listener": "Lead developer",
+      "cares": "an app that feels friendly, not stiff"
     },
     {
       "id": "PSH-16",
@@ -1938,10 +1938,10 @@
       "category": "pushback",
       "difficulty": 4,
       "format": "roleplay",
-      "text": "The chief executive of a regional bus company wants all 1,400 drivers on the assistant from Monday. You want one depot first, because night-shift questions still go wrong. Tell him.",
+      "text": "The manager of a regional radio station wants your assistant answering listeners’ calls live on air during tomorrow’s storm coverage. Push back without killing his ambition.",
       "audience": "exec",
-      "listener": "Bus company CEO",
-      "cares": "a rollout he can announce with confidence"
+      "listener": "Radio station manager",
+      "cares": "being first with help for listeners"
     },
     {
       "id": "PSH-19",
@@ -1958,10 +1958,10 @@
       "category": "pushback",
       "difficulty": 5,
       "format": "roleplay",
-      "text": "On a call with a bank’s CIO, your own CTO promises a date for a feature your team hasn’t started. The CIO turns to you: “You’re building it. Confirm?” Answer him.",
+      "text": "Over dinner, the chief executive of a parcel company asks you to name which of his eight dispatchers the assistant will make unnecessary. His head of dispatch is sitting beside you. Answer him.",
       "audience": "exec",
-      "listener": "Bank CIO",
-      "cares": "a date he can plan his year around"
+      "listener": "Parcel company CEO",
+      "cares": "cutting costs without a revolt"
     },
     {
       "id": "CRI-13",
@@ -1998,10 +1998,10 @@
       "category": "crisis",
       "difficulty": 3,
       "format": "roleplay",
-      "text": "The results-day outage at a university is fixed, but you won’t know the cause until tomorrow. The registrar briefs the vice-chancellor at five. Tell her what she can safely say.",
+      "text": "Since Friday, a cinema chain’s booking assistant has been offering a two-for-one deal that doesn’t exist, and 400 families have booked on the strength of it. Tell the operations manager what you would do for them.",
       "audience": "business",
-      "listener": "University registrar",
-      "cares": "not repeating anything that turns out false"
+      "listener": "Cinema operations manager",
+      "cares": "goodwill without giving the weekend away"
     },
     {
       "id": "CRI-17",
@@ -2028,20 +2028,20 @@
       "category": "crisis",
       "difficulty": 4,
       "format": "roleplay",
-      "text": "Your account director hears from the client, not from you, that last night’s export sent an insurer’s claim files to the wrong broker. She calls: “Why am I hearing this from them?” Answer her.",
+      "text": "Twenty minutes into a payments outage at an online grocer, your account director joins the engineers’ call and asks for an ETA every few minutes. Tell her how she will get what she needs.",
       "audience": "account_leader",
       "listener": "Account director",
-      "cares": "never again being blindsided by her client"
+      "cares": "something solid to tell the grocer’s chief executive"
     },
     {
       "id": "CRI-20",
       "category": "crisis",
       "difficulty": 5,
       "format": "roleplay",
-      "text": "A children’s hospital’s chief executive asks what happened after the patient app showed one family another child’s appointment notes. You don’t yet know how many families were affected. Tell her.",
+      "text": "Your overnight migration overwrote three weeks of coursework marks at a secondary school, and the only backup predates half-term. Marks go to the exam board on Friday. Tell the principal.",
       "audience": "exec",
-      "listener": "Hospital chief executive",
-      "cares": "the families, the regulator and the truth"
+      "listener": "School principal",
+      "cares": "every pupil’s marks reaching the exam board"
     },
     {
       "id": "INF-13",
@@ -2058,10 +2058,10 @@
       "category": "influence",
       "difficulty": 2,
       "format": "roleplay",
-      "text": "“Management’s spy” is what the most respected forklift driver at a parts warehouse calls the new assistant, and the whole shift takes his lead. Talk to him at the morning break.",
+      "text": "The office manager at a law firm controls the only room big enough for your training, and she has given it to the party committee for three weeks. Win the room.",
       "audience": "business",
-      "listener": "Senior forklift driver",
-      "cares": "not being watched or replaced"
+      "listener": "Office manager",
+      "cares": "keeping every partner happy at once"
     },
     {
       "id": "INF-15",
@@ -2098,10 +2098,10 @@
       "category": "influence",
       "difficulty": 4,
       "format": "roleplay",
-      "text": "In an architecture review, a principal engineer at your company calls FDEs “consultants who write throwaway code”. You need his team’s API change for a rail customer next month. Win him over.",
+      "text": "A power distributor’s engineers say writing test cases for the assistant is “QA’s job”, and QA is two people. You need fifty before the March review. Get the engineers to write the first ten.",
       "audience": "technical_peer",
-      "listener": "Principal engineer",
-      "cares": "code his team won’t have to maintain"
+      "listener": "Distributor’s engineers",
+      "cares": "their own backlog, not someone else’s tests"
     },
     {
       "id": "INF-19",
@@ -2118,10 +2118,10 @@
       "category": "influence",
       "difficulty": 5,
       "format": "roleplay",
-      "text": "At a farm cooperative’s annual meeting, the chair calls your project “money spent on a city problem” and gives you the floor before the members vote. Speak to the members.",
+      "text": "Your bid to a city’s library service scored second because the panel misread one criterion. You have a few minutes with the panel chair before the final vote. Change her mind without sounding like a sore loser.",
       "audience": "business",
-      "listener": "Co-op members",
-      "cares": "their fees and their harvest"
+      "listener": "Panel chair",
+      "cares": "a fair process nobody can challenge"
     },
     {
       "id": "PRI-13",
@@ -2178,20 +2178,20 @@
       "category": "prioritization",
       "difficulty": 4,
       "format": "pitch",
-      "text": "Your partner manager has promised a reseller you will train its 40 engineers next week, the same week your pharmacy customer freezes changes for its busiest season. Pitch him a plan that doesn’t make you choose.",
+      "text": "A reseller that serves estate agents wants its own branding on the assistant, and its CEO has twice asked for the logo to be “more purple”. Your partner manager wants that before your security fixes. Pitch him the order you’d work in.",
       "audience": "account_leader",
       "listener": "Partner manager",
-      "cares": "keeping his word to the reseller"
+      "cares": "keeping the reseller’s boss happy this month"
     },
     {
       "id": "PRI-19",
       "category": "prioritization",
       "difficulty": 4,
       "format": "roleplay",
-      "text": "One answer in twelve is wrong on the two crops the assistant covers today, and an agritech firm’s CEO wants four more crops before harvest. Recommend what comes first, and tell him.",
+      "text": "At a reinsurance firm, most claims queries are routine, but a handful of complex ones cause nearly all the losses. The COO wants the routine ones automated first, for the headline number. Recommend your order and tell him.",
       "audience": "exec",
-      "listener": "Agritech CEO",
-      "cares": "more crops covered before the season"
+      "listener": "Reinsurance COO",
+      "cares": "a headline number for the board"
     },
     {
       "id": "PRI-20",
@@ -2228,10 +2228,10 @@
       "category": "ownership",
       "difficulty": 2,
       "format": "story",
-      "text": "Tell me about a time you found your own mistake before anyone else did. What did you do in the first hour?",
+      "text": "Tell me about a promise someone else made on your behalf that you chose to keep anyway. What did it cost you, and why did you keep it?",
       "audience": "interviewer",
       "listener": "Interviewer",
-      "cares": "whether you disclose before you are caught"
+      "cares": "whether you own outcomes you didn’t choose"
     },
     {
       "id": "OWN-16",
@@ -2268,10 +2268,10 @@
       "category": "ownership",
       "difficulty": 4,
       "format": "roleplay",
-      "text": "On Saturday you hot-fixed a rugby club’s ticketing system without logging the change. It worked, but their head of IT found it this morning and is furious. Talk to him.",
+      "text": "At a ski resort’s incident review, the customer’s engineer who approved your code is taking the blame for a bug you wrote. She hasn’t said a word. Speak up.",
       "audience": "technical_peer",
-      "listener": "Club head of IT",
-      "cares": "control over his own systems"
+      "listener": "Incident review panel",
+      "cares": "a fair record of what happened"
     },
     {
       "id": "OWN-20",
@@ -2338,10 +2338,10 @@
       "category": "trust_ethics",
       "difficulty": 4,
       "format": "roleplay",
-      "text": "A ferry operator’s procurement team accidentally shared a deck containing a rival’s confidential prices. Your sales director wants to use it in tomorrow’s offer. Respond to her.",
+      "text": "Your sales director wants the assistant to slow down quietly once a dental chain goes over its plan’s limit, so they “discover” they need the bigger plan. Respond to her.",
       "audience": "account_leader",
       "listener": "Sales director",
-      "cares": "winning tomorrow’s offer"
+      "cares": "upgrades without a hard sell"
     },
     {
       "id": "TRU-19",
@@ -2478,10 +2478,10 @@
       "category": "commercial",
       "difficulty": 3,
       "format": "roleplay",
-      "text": "“It’s only twelve users, so add them for free.” A clinic group wants its new sister clinic included; last year’s “only five” became forty. Respond to its operations manager.",
+      "text": "A hospital pharmacy manager wants to keep the assistant, but her finance team asks why she shouldn’t hire one more technician instead. Help her make the case she will take upstairs.",
       "audience": "business",
-      "listener": "Clinic operations manager",
-      "cares": "keeping this year’s budget flat"
+      "listener": "Pharmacy manager",
+      "cares": "keeping the assistant without losing a hire"
     },
     {
       "id": "COM-17",
@@ -2548,10 +2548,10 @@
       "category": "ambiguity",
       "difficulty": 2,
       "format": "explain",
-      "text": "Your engineer at an offshore wind operator finds three customer documents describing three different data formats for the same turbine. Explain how you will decide which one to trust.",
+      "text": "The only documentation for a fishing cooperative’s catch system is a 2014 video of someone’s screen, with a dog barking. Explain to your engineer where you would start.",
       "audience": "technical_peer",
       "listener": "Your engineer",
-      "cares": "not building on the wrong format"
+      "cares": "a first step that isn’t a guess"
     },
     {
       "id": "AMB-16",
