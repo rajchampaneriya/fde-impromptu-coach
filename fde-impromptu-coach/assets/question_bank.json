@@ -1698,10 +1698,10 @@
       "category": "exec_comm",
       "difficulty": 4,
       "format": "roleplay",
-      "text": "The chief operating officer of a brewery wants every update as one chart and no words. This week the news is bad. Describe the chart you would put in front of him, then say the one sentence beneath it.",
+      "text": "The CIO of a hospital group asks you straight out whether its radiology team should buy a rival’s product instead of yours. For radiology, it may well be the better fit. Answer her.",
       "audience": "exec",
-      "listener": "Brewery COO",
-      "cares": "seeing the problem at a single glance"
+      "listener": "Hospital group CIO",
+      "cares": "the right tool, not loyalty to a vendor"
     },
     {
       "id": "EXE-19",
@@ -1878,10 +1878,10 @@
       "category": "discovery",
       "difficulty": 5,
       "format": "roleplay",
-      "text": "Mid-workshop at a hotel group, the chief executive explains how check-in works. Behind him, three front-desk managers exchange looks and say nothing. Draw out the real story without embarrassing him.",
+      "text": "Your discovery at a family-owned winery points to one root cause: the founder insists on approving every order himself. You present to the management team with him at the head of the table. Present the root cause.",
       "audience": "business",
-      "listener": "CEO and front-desk managers",
-      "cares": "the truth told safely in front of the boss"
+      "listener": "Winery management team",
+      "cares": "growth without upsetting the founder"
     },
     {
       "id": "PSH-13",
@@ -1998,10 +1998,10 @@
       "category": "crisis",
       "difficulty": 3,
       "format": "roleplay",
-      "text": "Since Friday, a cinema chain’s booking assistant has been offering a two-for-one deal that doesn’t exist, and 400 families have booked on the strength of it. Tell the operations manager what you would do for them.",
+      "text": "The day before a ferry operator’s timetable change, the only engineer on your team who knows its integration resigns, effective immediately. Its project manager has already heard. Respond to her.",
       "audience": "business",
-      "listener": "Cinema operations manager",
-      "cares": "goodwill without giving the weekend away"
+      "listener": "Ferry project manager",
+      "cares": "the timetable change going ahead safely"
     },
     {
       "id": "CRI-17",
@@ -2038,10 +2038,10 @@
       "category": "crisis",
       "difficulty": 5,
       "format": "roleplay",
-      "text": "Your overnight migration overwrote three weeks of coursework marks at a secondary school, and the only backup predates half-term. Marks go to the exam board on Friday. Tell the principal.",
+      "text": "An hour after a forklift collision at a bottling plant, a shift supervisor tells the plant director your scheduling assistant caused it by pushing pick rates up. Nobody knows yet whether that’s true. Answer the director.",
       "audience": "exec",
-      "listener": "School principal",
-      "cares": "every pupil’s marks reaching the exam board"
+      "listener": "Plant director",
+      "cares": "his people safe and the facts established"
     },
     {
       "id": "INF-13",
@@ -2098,10 +2098,10 @@
       "category": "influence",
       "difficulty": 4,
       "format": "roleplay",
-      "text": "A power distributor’s engineers say writing test cases for the assistant is “QA’s job”, and QA is two people. You need fifty before the March review. Get the engineers to write the first ten.",
+      "text": "On a gas network’s project, the customer engineer who built most of the integration refuses to present it at Thursday’s steering meeting. You think her leadership needs to hear it from her. Persuade her.",
       "audience": "technical_peer",
-      "listener": "Distributor’s engineers",
-      "cares": "their own backlog, not someone else’s tests"
+      "listener": "Customer engineer",
+      "cares": "staying out of the spotlight"
     },
     {
       "id": "INF-19",
@@ -2188,10 +2188,10 @@
       "category": "prioritization",
       "difficulty": 4,
       "format": "roleplay",
-      "text": "At a reinsurance firm, most claims queries are routine, but a handful of complex ones cause nearly all the losses. The COO wants the routine ones automated first, for the headline number. Recommend your order and tell him.",
+      "text": "A hotel chain’s COO wants your 40 open issues ranked by how loudly each general manager complains. Propose a better way to rank them, and tell him why.",
       "audience": "exec",
-      "listener": "Reinsurance COO",
-      "cares": "a headline number for the board"
+      "listener": "Hotel chain COO",
+      "cares": "fewer angry calls from his managers"
     },
     {
       "id": "PRI-20",
@@ -2268,10 +2268,10 @@
       "category": "ownership",
       "difficulty": 4,
       "format": "roleplay",
-      "text": "At a ski resort’s incident review, the customer’s engineer who approved your code is taking the blame for a bug you wrote. She hasn’t said a word. Speak up.",
+      "text": "The open-source library you chose for a ski resort’s integration has just been abandoned by its maintainer, and the resort’s engineers will be left holding it. Their tech lead asks what you will do about it.",
       "audience": "technical_peer",
-      "listener": "Incident review panel",
-      "cares": "a fair record of what happened"
+      "listener": "Resort tech lead",
+      "cares": "not inheriting code nobody maintains"
     },
     {
       "id": "OWN-20",
@@ -2548,10 +2548,10 @@
       "category": "ambiguity",
       "difficulty": 2,
       "format": "explain",
-      "text": "The only documentation for a fishing cooperative’s catch system is a 2014 video of someone’s screen, with a dog barking. Explain to your engineer where you would start.",
+      "text": "A music festival’s site rules change every day as the event gets closer, and your engineer wants to wait until they settle. Explain how you would build so the changes don’t hurt.",
       "audience": "technical_peer",
       "listener": "Your engineer",
-      "cares": "a first step that isn’t a guess"
+      "cares": "not rebuilding the same thing every day"
     },
     {
       "id": "AMB-16",

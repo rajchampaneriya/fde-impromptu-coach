@@ -14,8 +14,10 @@ these improve the fallback and set the house style.
   each other.
 - **Checked against the learner's history**: all 96 pass `is_duplicate` against the 220 questions in
   `history.json`, but a scenario-level review (grouping the history by trigger → listener → tension → ask)
-  found 21 that re-skinned a past scenario. Those 21 were rewritten with new scenarios, keeping their id,
-  competency, difficulty, format and audience.
+  found 21 that re-skinned a past scenario. Those were rewritten; a second review against the full
+  41-family catalogue of the history then caught 6 rewrites that still matched (4 history families, 2 twins
+  of other new items) plus 2 close calls (DIS-20, OWN-19), and those 8 were rewritten again. Every rewrite
+  keeps its id, competency, difficulty, format and audience.
 - **Named settings**: 89 of 96 name an industry and a moment, across 21 industries (none in more than 8):
   ports, hospitals, schools, public agencies, utilities, airlines, factories, pharmacy chains, banks,
   newsrooms, NGOs, farms, hotels, sports clubs, law firms and more. Fictional organisations only.
