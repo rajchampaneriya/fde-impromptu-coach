@@ -59,6 +59,11 @@ def cmd_setup(args) -> int:
         parse_hhmm(args.time)
         cfg["daily_time"] = args.time
     save_config(paths, cfg)
+    from fdecoach.migrate import migrate
+    moved = migrate(paths)
+    if moved["migrated"]:
+        print("Upgraded the legato and pronunciation state: " + ("; ".join(moved["changes"]) or "version only"))
+    ctx.cfg = cfg = load_config(paths)
 
     paths.bin_dir.mkdir(parents=True, exist_ok=True)
     wrapper = paths.bin_dir / "fde-coach"
@@ -514,6 +519,23 @@ def cmd_level(args) -> int:
     return 0
 
 
+def _flag_passage(ctx, spec, args) -> int:
+    import datetime as dt
+    from fdecoach import practice
+    from fdecoach.state import today
+    date = dt.date.fromisoformat(args.date) if args.date else today()
+    session = practice.flag_passage(ctx, spec, date, [practice.FLAG_VALUES[f] for f in args.flag])
+    _print({"date": session["date"], "passage_id": session["passage_id"],
+            "passage_feedback": session.get("passage_feedback", [])})
+    return 0
+
+
+def cmd_migrate(args) -> int:
+    from fdecoach.migrate import migrate
+    _print(migrate(_ctx(args).paths))
+    return 0
+
+
 def cmd_pronounce(args) -> int:
     from fdecoach import app, pronounce_session
     ctx = _ctx(args)
@@ -526,6 +548,8 @@ def cmd_pronounce(args) -> int:
         res = pronounce_session.run_session(ctx, force=args.force)
         _print(res)
         return 0 if res.get("ok") else 1
+    if args.pron_command == "passage":
+        return _flag_passage(ctx, pronounce_session.SPEC, args)
     if args.pron_command == "daily":
         _print(pronounce_session.daily(ctx))
         return 0
@@ -621,6 +645,8 @@ def cmd_legato(args) -> int:
         res = legato_session.run_session(ctx, force=args.force)
         _print(res)
         return 0 if res.get("ok") else 1
+    if c == "passage":
+        return _flag_passage(ctx, legato_session.SPEC, args)
     if c == "daily":
         _print(legato_session.daily(ctx))
         return 0
@@ -1010,6 +1036,8 @@ def build_parser() -> argparse.ArgumentParser:
     s.add_argument("--clear", action="store_true", help="delete all upcoming alerts created by this tool")
     s.set_defaults(func=cmd_calendar_sync)
 
+    sub.add_parser("migrate", help="upgrade the legato and pronunciation state files (safe to repeat)"
+                   ).set_defaults(func=cmd_migrate)
     s = sub.add_parser("doctor", help="check installation, permissions and recent errors")
     s.add_argument("--warmup", action="store_true", help="trigger every macOS permission prompt now")
     s.set_defaults(func=cmd_doctor)
@@ -1054,6 +1082,10 @@ def build_parser() -> argparse.ArgumentParser:
     pw.add_argument("--remove", action="append", metavar="WORD")
     pw.set_defaults(func=cmd_pronounce)
     psub.add_parser("upload", help="assemble + upload pending pronunciation videos").set_defaults(func=cmd_pronounce)
+    pp = psub.add_parser("passage", help="flag today's passage (too easy, too hard, read recently, not useful)")
+    pp.add_argument("--flag", action="append", required=True, choices=["too-easy", "too-hard", "repeated", "unhelpful"])
+    pp.add_argument("--date", metavar="YYYY-MM-DD", help="another day's session (default: today)")
+    pp.set_defaults(func=cmd_pronounce)
 
     s = sub.add_parser("legato", help="daily legato practice (smooth, connected speech)")
     lsub = s.add_subparsers(dest="leg_command", required=True)
@@ -1076,6 +1108,10 @@ def build_parser() -> argparse.ArgumentParser:
     lh.add_argument("--reveal", action="store_true", help="also show today's passage before recording")
     lh.set_defaults(func=cmd_legato)
     lsub.add_parser("upload", help="assemble + upload pending legato videos").set_defaults(func=cmd_legato)
+    lp = lsub.add_parser("passage", help="flag today's passage (too easy, too hard, read recently, not useful)")
+    lp.add_argument("--flag", action="append", required=True, choices=["too-easy", "too-hard", "repeated", "unhelpful"])
+    lp.add_argument("--date", metavar="YYYY-MM-DD", help="another day's session (default: today)")
+    lp.set_defaults(func=cmd_legato)
 
     s = sub.add_parser("stage", help="Weekend Stage: one famous TED talk a weekend, three takes on camera")
     ssub = s.add_subparsers(dest="stage_command", required=True)

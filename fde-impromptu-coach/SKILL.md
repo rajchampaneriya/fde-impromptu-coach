@@ -98,6 +98,9 @@ full intent map.
 | "Add a book", "use passages from <free book>" | Project Gutenberg: `fde-coach library import-gutenberg <ebook number>` (from gutenberg.org/ebooks/N; `--max 20 --theme speaking --year 1903`). Any text the user has the right to use: `fde-coach library import-file PATH --author A --title T [--url U]` |
 | "Show a passage / where is it from" | `fde-coach library show ID` (credit, source link, text, target words) |
 | "Flow felt choppy / too easy" (legato) | the after-session tap does it; it moves the flow level (1 short sentences … 3 long, winding ones) |
+| "I've read this passage before", "same passage again" (legato or pronunciation) | `fde-coach legato passage --flag repeated` (or `pronounce passage …`), then `generate --replace` for that practice if today is not recorded; the passage stays away from both practices for 120 days |
+| "This passage was too easy / too hard / useless" | `fde-coach legato passage --flag too-easy` (`too-hard`, `unhelpful`; or `pronounce passage …`). Too easy / hard sends it to the back of the queue; unhelpful keeps it away for a year. Not `fde-coach level`, which is impromptu's difficulty |
+| "Upgrade my data" after an update | `fde-coach migrate` (install.sh runs it too; safe to repeat; backs up to `state.backup-*`) |
 | "TED talk practice", "this weekend's talk", "weekend practice" | Use the **stage** skill: `fde-coach stage prep` (study page with TED's player), then `fde-coach stage session --detach` (three takes on camera, ~10 min) |
 | "Weekend streak / which talks are coming" | `fde-coach stage status` / `fde-coach stage talks` |
 | "Move or stop Weekend Stage" | `fde-coach config --set stage.time=09:00` or `--set 'stage.days=["Sun"]'` (reinstalls the schedule), or `--set stage.enabled=false` |
@@ -179,10 +182,20 @@ an offer to go into detail**.
   `library import-gutenberg` / `import-file` (stored in `~/FDE-Impromptu/library/`).
   `scripts/tools/build_passage_library.py verify` re-downloads the source
   editions and checks every built-in passage is verbatim.
-- **Legato**: never-read passages first (then the least recently read third),
-  nearest to the learner's flow level (starts at 1, +1 every 7 recorded
-  sessions, nudged by the Choppy/Smooth tap). Breath marks and linking chains
-  are computed from the text (`fdecoach/legato.py`), not generated.
+- **One reading history for both practices** (`library.choose`): a passage read
+  in pronunciation counts as read in legato, and the other way round. Never-read
+  passages come first; then none within 30 days of its last read in either
+  practice or within 60 sessions of the same practice; each practice serves
+  every passage equally often; a replaced passage never comes straight back.
+  The after-session list (or `passage --flag`) flags a passage: read it recently
+  keeps it away for 120 days, not useful for a year, too easy / too hard sends
+  it to the back of the queue. Each session records its `selection.tier`.
+- **Legato**: the passage nearest the learner's flow level (starts at 1; Choppy
+  steps down, Smooth steps up, +1 after 7 sessions at a level, never up while a
+  Choppy is among the last 3 taps). The 45-second response prompt comes from
+  42 (`assets/legato_prompts.json`), none repeated within 14 sessions. Breath
+  marks and linking chains are computed from the text (`fdecoach/legato.py`),
+  not generated. No audio clean-up for legato or pronunciation.
 - **Pronunciation** (default `paragraph_source=library`): prefers a passage that
   contains the learner's due words; up to 3 due words lead the warm-up list,
   then the passage's own hard words (6 words total). Coach notes come from the

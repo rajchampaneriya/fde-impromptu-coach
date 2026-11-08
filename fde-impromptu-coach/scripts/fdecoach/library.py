@@ -21,6 +21,7 @@ import logging
 import random
 import re
 import urllib.request
+from dataclasses import dataclass
 from pathlib import Path
 from typing import Any, Callable, Dict, Iterable, List, Optional, Sequence, Tuple
 
@@ -179,35 +180,151 @@ def add_user(paths: Paths, new: List[Dict[str, Any]]) -> Tuple[int, int]:
 
 # --------------------------------------------------------------------------- choosing
 
-def choose(passages: List[Dict[str, Any]], used: Sequence[str], date: dt.date, salt: str,
-           target_level: Optional[int] = None,
-           score: Optional[Callable[[Dict[str, Any]], float]] = None) -> Dict[str, Any]:
-    """Fresh passages first (never read before); once all are read, the least
-    recently read third comes back. Among candidates: highest score, then the
-    level closest to target_level, then a date-seeded shuffle for variety."""
+PRACTICES = ("legato", "pronunciation")
+STATE_ATTR = {"legato": "legato_state", "pronunciation": "pron_state"}
+# Same-day order of the morning chain: pronunciation (05:45) runs before legato (06:00).
+_PRACTICE_ORDER = {"pronunciation": 0, "legato": 1}
+FEEDBACK_LABELS = ("too_easy", "too_hard", "repeated", "unhelpful")
+TIERS = ("T0", "T1", "T2", "T3", "T4")
+DEFAULT_SELECTION = {"cooldown_days": 30, "recent_sessions": 60,
+                     "exclude_days": {"repeated": 120, "unhelpful": 365}}
+
+
+@dataclass(frozen=True)
+class Read:
+    """One passage put in front of the learner, in either practice. A passage replaced the same
+    day still counts as read; so does a session that was built but never recorded."""
+    date: dt.date
+    practice: str
+    passage_id: str
+    recorded: bool = True
+    replaced: bool = False
+    feedback: Tuple[str, ...] = ()
+
+
+def reads_from_sessions(practice: str, sessions: Dict[str, Dict[str, Any]]) -> List[Read]:
+    out: List[Read] = []
+    for key, s in sessions.items():
+        day = dt.date.fromisoformat(s.get("date", key))
+        for pid in s.get("replaced") or []:
+            out.append(Read(day, practice, pid, False, True))
+        if s.get("passage_id"):
+            out.append(Read(day, practice, s["passage_id"], bool(s.get("recorded")), False,
+                            tuple(s.get("passage_feedback") or ())))
+    return out
+
+
+def read_log(paths: Paths, current: Optional[Tuple[str, Dict[str, Dict[str, Any]]]] = None) -> List[Read]:
+    """Every passage either practice has served, oldest first: the one seen-history both share.
+    `current` = (practice, sessions) replaces that practice's file with the caller's in-memory
+    copy (the History being edited under the generate lock)."""
+    reads: List[Read] = []
+    for practice in PRACTICES:
+        if current and current[0] == practice:
+            sessions = current[1]
+        else:
+            f = getattr(paths, STATE_ATTR[practice])
+            try:
+                sessions = json.loads(f.read_text(encoding="utf-8")).get("sessions", {}) if f.exists() else {}
+            except (OSError, ValueError) as exc:
+                log.warning("could not read %s for the seen-history: %s", f.name, exc)
+                sessions = {}
+        reads += reads_from_sessions(practice, sessions)
+    return sorted(reads, key=lambda r: (r.date, _PRACTICE_ORDER.get(r.practice, 9), not r.replaced))
+
+
+def practices_of(passage: Dict[str, Any]) -> Tuple[str, ...]:
+    """The practices a passage suits (passages.json `practices`; both when absent)."""
+    return tuple(passage.get("practices") or PRACTICES)
+
+
+def selection_settings(cfg: Dict[str, Any]) -> Dict[str, Any]:
+    got = dict(DEFAULT_SELECTION)
+    got.update({k: v for k, v in (cfg.get("passages") or {}).items() if k in DEFAULT_SELECTION})
+    return got
+
+
+def choose(passages: List[Dict[str, Any]], reads: Sequence[Read], practice: str, date: dt.date, *,
+           cooldown_days: int = 30, recent_sessions: int = 60, exclude_days: Optional[Dict[str, int]] = None,
+           target_level: Optional[int] = None, score: Optional[Callable[[Dict[str, Any]], float]] = None,
+           exclude: Iterable[str] = (), attempt: int = 0) -> Tuple[Dict[str, Any], str]:
+    """Pick today's passage for `practice` from one seen-history shared by both practices.
+
+    1. Eligible: the passage suits this practice and was not replaced today (`exclude`).
+    2. Flags: "repeated" keeps a passage out of both practices for 120 days, "unhelpful" for 365
+       (ignored only if that would leave nothing).
+    3. Tiers, first non-empty wins: T0 never read anywhere; T1 never read in this practice and
+       last read anywhere `cooldown_days` ago or more; T2 cooled and `recent_sessions` sessions
+       since its last read here; T3 cooled; T4 everything left.
+    4. Fair rotation: only the passages this practice has served least often.
+    5. Back of the queue: a passage flagged too easy or too hard here waits while any other
+       candidate is left.
+    6. Variety: skip the authors of the last 4 reads across both practices, when possible.
+    7. Order: `score`, then the level closest to `target_level`, then the longest unread; a
+       date-seeded shuffle (with `attempt`, so a replace moves on) breaks ties.
+    Returns (passage, tier)."""
     if not passages:
         raise ValueError("the passage library is empty")
-    seen = set(used)
-    pool = [p for p in passages if p["id"] not in seen]
-    if not pool:
-        last_read = {pid: i for i, pid in enumerate(used)}
-        pool = sorted(passages, key=lambda p: last_read.get(p["id"], -1))[:max(1, len(passages) // 3)]
-    recent_ids = used[-3:]
-    author_of = {p["id"]: p["author"] for p in passages}
-    recent_authors = {author_of[i] for i in recent_ids if i in author_of}
-    if recent_authors:
-        varied = [p for p in pool if p["author"] not in recent_authors]
-        if varied:
-            pool = varied
-    rng = random.Random(f"{date.isoformat()}:{salt}")
+    exclude_days = exclude_days if exclude_days is not None else DEFAULT_SELECTION["exclude_days"]
+    skip = set(exclude)
+    reads = [r for r in reads if not (r.date >= date and r.practice == practice and not r.replaced)]
+    eligible = [p for p in passages if practice in practices_of(p) and p["id"] not in skip]
+    if not eligible:
+        eligible = [p for p in passages if p["id"] not in skip] or list(passages)
+    blocked = {r.passage_id for r in reads for label, days in exclude_days.items()
+               if label in r.feedback and (date - r.date).days < int(days)}
+    eligible = [p for p in eligible if p["id"] not in blocked] or eligible
+
+    last_any: Dict[str, dt.date] = {}
+    for r in reads:
+        last_any[r.passage_id] = max(r.date, last_any.get(r.passage_id, r.date))
+    mine = sorted({r.date for r in reads if r.practice == practice and r.date < date})
+    session_no = {d: i for i, d in enumerate(mine)}
+    last_here: Dict[str, int] = {}
+    served_here: Dict[str, int] = {}
+    penalised = set()
+    for r in reads:
+        if r.practice != practice:
+            continue
+        if r.date in session_no:
+            last_here[r.passage_id] = session_no[r.date]
+        if not r.replaced:
+            served_here[r.passage_id] = served_here.get(r.passage_id, 0) + 1
+        if {"too_easy", "too_hard"} & set(r.feedback):
+            penalised.add(r.passage_id)
+
+    def cooled(p: Dict[str, Any]) -> bool:
+        d = last_any.get(p["id"])
+        return d is None or (date - d).days >= int(cooldown_days)
+
+    def rested(p: Dict[str, Any]) -> bool:
+        i = last_here.get(p["id"])
+        return i is None or len(mine) - i >= int(recent_sessions)
+
+    tiers = (
+        ("T0", [p for p in eligible if p["id"] not in last_any]),
+        ("T1", [p for p in eligible if p["id"] not in last_here and cooled(p)]),
+        ("T2", [p for p in eligible if cooled(p) and rested(p)]),
+        ("T3", [p for p in eligible if cooled(p)]),
+        ("T4", eligible),
+    )
+    tier, pool = next((t, ps) for t, ps in tiers if ps)
+    fewest = min(served_here.get(p["id"], 0) for p in pool)
+    pool = [p for p in pool if served_here.get(p["id"], 0) == fewest]
+    pool = [p for p in pool if p["id"] not in penalised] or pool
+    author_of = {p["id"]: p.get("author") for p in passages}
+    recent_authors = {author_of.get(r.passage_id) for r in reads[-4:]} - {None}
+    varied = [p for p in pool if p.get("author") not in recent_authors]
+    pool = varied or pool
+    rng = random.Random(f"{date.isoformat()}:{practice}:{attempt}")
     rng.shuffle(pool)
 
-    def key(p: Dict[str, Any]) -> Tuple[float, int]:
-        s = score(p) if score else 0.0
-        dist = abs(int(p.get("level", 2)) - target_level) if target_level else 0
-        return (-s, dist)
+    def key(p: Dict[str, Any]) -> Tuple[float, int, int, dt.date]:
+        level_gap = abs(int(p.get("level", 2)) - target_level) if target_level else 0
+        return (-(score(p) if score else 0.0), level_gap, last_here.get(p["id"], -1),
+                last_any.get(p["id"], dt.date.min))
 
-    return sorted(pool, key=key)[0]
+    return sorted(pool, key=key)[0], tier
 
 
 # --------------------------------------------------------------------------- importing

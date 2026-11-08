@@ -18,6 +18,7 @@ from .state import History, file_lock, today
 log = logging.getLogger("fdecoach")
 
 GCAL_PREFIX = "fdepron"  # event ids: a-v and 0-9 only
+PASSAGE_LINE = "Passage: "  # list items that flag the passage rather than a word
 
 
 def _session_fields(content: Dict[str, Any]) -> Dict[str, Any]:
@@ -30,6 +31,8 @@ def _session_fields(content: Dict[str, Any]) -> Dict[str, Any]:
     if content.get("passage"):
         fields["passage"] = content["passage"]
         fields["passage_id"] = content["passage"].get("id")
+    if content.get("selection"):
+        fields["selection"] = content["selection"]
     return fields
 
 
@@ -45,14 +48,22 @@ def ask_words_feedback(ctx, date: dt.date) -> None:
     session = history.get(date)
     if not session or not session.get("words"):
         return
-    picked = macos.choose_from_list("Which words still felt hard? (unselected ones get easier)",
-                                    "Pronunciation practice", session["words"])
+    ask_passage = practice.ask_passage_feedback(ctx.cfg) and bool(session.get("passage_id"))
+    passage_lines = {PASSAGE_LINE + c: label for c, label in practice.PASSAGE_CHOICES.items()} if ask_passage else {}
+    message = "Which words still felt hard? (unselected ones get easier)"
+    if passage_lines:
+        message += " Tick a Passage line to flag today's passage."
+    picked = macos.choose_from_list(message, "Pronunciation practice", list(session["words"]) + list(passage_lines))
+    words = [w for w in picked if w in session["words"]]
     with file_lock(ctx.paths, "history", blocking=True):
         history = pron_history(ctx.paths)
-        update_after_session(history, ctx.cfg, date, session["words"], picked)
+        update_after_session(history, ctx.cfg, date, session["words"], words)
         history.save()
-    if picked:
-        log.info("Hard words (back tomorrow): %s", ", ".join(picked))
+    if words:
+        log.info("Hard words (back tomorrow): %s", ", ".join(words))
+    labels = [passage_lines[p] for p in picked if p in passage_lines]
+    if labels:
+        practice.flag_passage(ctx, SPEC, date, labels)
 
 
 def build_metadata(session: Dict[str, Any], cfg: Dict[str, Any], marks: Optional[List[Tuple[int, str]]],

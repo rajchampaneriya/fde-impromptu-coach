@@ -22,7 +22,7 @@ import subprocess
 import time
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import Any, Callable, Dict, List, Optional, Tuple
+from typing import Any, Callable, Dict, List, Optional, Sequence, Tuple
 
 from . import audio, gcal, macos, youtube
 from .config import APP_NAME, Paths
@@ -124,6 +124,38 @@ def pending_uploads(hist: History) -> List[Dict[str, Any]]:
             and (s.get("youtube") or {}).get("status") in ("pending", "failed")]
 
 
+# --------------------------------------------------------------------------- passage feedback
+
+# The after-session list ("Anything about today's passage?") and `passage --flag` both store
+# session["passage_feedback"]; library.choose reads it from either practice's state file.
+PASSAGE_CHOICES = {"Too easy": "too_easy", "Too hard": "too_hard", "Read it recently": "repeated",
+                   "Not useful": "unhelpful"}
+FLAG_VALUES = {"too-easy": "too_easy", "too-hard": "too_hard", "repeated": "repeated", "unhelpful": "unhelpful"}
+
+
+def ask_passage_feedback(cfg: Dict[str, Any]) -> bool:
+    return bool((cfg.get("passages") or {}).get("ask_feedback", True))
+
+
+def flag_passage(ctx, spec: Practice, date: dt.date, labels: Sequence[str]) -> Dict[str, Any]:
+    """Add passage feedback labels to the session on `date` (kept on top of earlier ones)."""
+    labels = [label for label in labels if label in PASSAGE_CHOICES.values()]
+    with file_lock(ctx.paths, "history", blocking=True):
+        hist = history(ctx.paths, spec)
+        session = hist.get(date)
+        if session is None:
+            raise RuntimeError(f"no {spec.title.lower()} session on {date.isoformat()}")
+        if not session.get("passage_id"):
+            raise RuntimeError(f"the {spec.title.lower()} session on {date.isoformat()} has no library passage")
+        if labels:
+            session["passage_feedback"] = sorted(set(session.get("passage_feedback") or []) | set(labels))
+            hist.put(session)
+            hist.save()
+    if labels:
+        log.info("%s passage %s flagged: %s", spec.title, session["passage_id"], ", ".join(labels))
+    return session
+
+
 # --------------------------------------------------------------------------- daily build
 
 def ensure_today(ctx, spec: Practice, replace: bool = False, **options: Any) -> Tuple[Dict[str, Any], bool]:
@@ -140,8 +172,15 @@ def ensure_today(ctx, spec: Practice, replace: bool = False, **options: Any) -> 
                 pptx, ppsx = spec.build_deck(existing, streaks(hist, date), cfg, paths.decks)
                 _put(hist, existing, pptx, ppsx)
             return existing, False
+        replaced: List[str] = []
         if existing:
+            # A replaced passage counts as served today and must not come straight back.
+            replaced = list(existing.get("replaced") or [])
+            if existing.get("passage_id") and existing["passage_id"] not in replaced:
+                replaced.append(existing["passage_id"])
             hist.remove(date)
+            if replaced and not options.get("passage_id"):
+                options = dict(options, exclude=tuple(replaced), attempt=len(replaced))
         content, notes = spec.generate(hist, cfg, paths, date, **options)
         session: Dict[str, Any] = {
             "date": date.isoformat(),
@@ -153,6 +192,8 @@ def ensure_today(ctx, spec: Practice, replace: bool = False, **options: Any) -> 
             "youtube": {"status": "none"},
         }
         session.update(spec.session_fields(content))
+        if replaced:
+            session["replaced"] = replaced
         pptx, ppsx = spec.build_deck(session, streaks(hist, date), cfg, paths.decks)
         with file_lock(paths, "history", blocking=True):
             _put(hist, session, pptx, ppsx)

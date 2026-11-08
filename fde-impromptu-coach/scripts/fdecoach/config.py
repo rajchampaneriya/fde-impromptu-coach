@@ -107,7 +107,7 @@ DEFAULTS: Dict[str, Any] = {
         "round3_seconds": 60,
         "words_seconds": 30,
         "min_audio_seconds": 180,
-        "audio_clean_preset": "light",
+        "audio_clean_preset": "none",
     },
     "legato": {
         "enabled": True,
@@ -126,7 +126,15 @@ DEFAULTS: Dict[str, Any] = {
         "round3_seconds": 60,
         "respond_seconds": 45,
         "min_audio_seconds": 180,
-        "audio_clean_preset": "light",
+        "audio_clean_preset": "none",   # legato and pronunciation take no audio treatment
+        "prompt_cooldown_sessions": 14,  # a response prompt never returns within this many sessions
+    },
+    # Reading passages, shared by pronunciation and legato: one seen-history across both practices.
+    "passages": {
+        "cooldown_days": 30,      # no passage in either practice within this many days of its last read
+        "recent_sessions": 60,    # nor within this many sessions of the same practice
+        "exclude_days": {"repeated": 120, "unhelpful": 365},  # "Read it recently" / "Not useful" flags
+        "ask_feedback": True,     # after-session "Anything about today's passage?" list
     },
     # Weekend Stage: one famous TED talk a weekend (assets/talks.json), studied off camera,
     # then three takes on camera. Weekly streak; the deck opens on the first of `days`.

@@ -18,12 +18,13 @@ e and so on are handled); they are coaching cues, not phonetics.
 from __future__ import annotations
 
 import datetime as dt
+import json
 import random
 import re
 from typing import Any, Dict, List, Optional, Sequence, Tuple
 
 from . import library
-from .config import Paths
+from .config import ASSETS_DIR, Paths
 from .state import History
 
 MIN_GROUP = 5          # words before a comma counts as a breath point
@@ -252,31 +253,78 @@ def phrase_map(text: str) -> str:
 
 # --------------------------------------------------------------------------- level + choice
 
+def _flow_start(history: History, cfg: Dict[str, Any]) -> Tuple[int, str]:
+    """(level, first session to replay). The level is the one that session was built at: the state
+    `fde-coach migrate` saved, else the last session built before this controller existed (it has
+    no `selection`), else start_level from the first session on."""
+    saved = history.data.get("flow") or {}
+    if saved.get("level"):
+        return int(saved["level"]), str(saved.get("since", ""))
+    legacy = [(k, s) for k, s in sorted(history.sessions.items()) if s.get("flow_level") and "selection" not in s]
+    if legacy:
+        return int(legacy[-1][1]["flow_level"]), legacy[-1][0]
+    return int(cfg.get("legato", {}).get("start_level", 1)), ""
+
+
 def flow_level(history: History, cfg: Dict[str, Any], date: dt.date) -> int:
-    leg = cfg.get("legato", {})
-    done = history.completed_before(date)
-    base = int(leg.get("start_level", 1)) + done // max(1, int(leg.get("sessions_per_level", 7)))
-    adjust = int(history.data.get("flow_adjust", 0))
-    return max(1, min(3, base + adjust))
-
-
-def apply_feedback(history: History, answer: str) -> None:
-    """'Choppy' eases tomorrow's passage, 'Smooth' raises it (bounded ±2)."""
-    delta = {"Choppy": -1, "Smooth": 1}.get(answer, 0)
-    history.data["flow_adjust"] = max(-2, min(2, int(history.data.get("flow_adjust", 0)) + delta))
+    """Tomorrow's sentence length follows the flow taps of recorded sessions:
+    Choppy steps down at once; Smooth steps up; after `sessions_per_level` sessions at one level
+    it steps up on its own. Never up while a Choppy is among the last 3 taps."""
+    per = max(1, int(cfg.get("legato", {}).get("sessions_per_level", 7)))
+    level, since = _flow_start(history, cfg)
+    recorded = [(k, s) for k, s in sorted(history.sessions.items()) if s.get("recorded") and k < date.isoformat()]
+    taps: List[str] = [s.get("feedback") or "" for k, s in recorded if k < since][-2:]
+    at_level = 0
+    for key, s in recorded:
+        if key < since:
+            continue
+        tap = s.get("feedback") or ""
+        taps.append(tap)
+        at_level += 1
+        calm = "Choppy" not in taps[-3:]
+        if tap == "Choppy":
+            level, at_level = max(1, level - 1), 0
+        elif calm and (tap == "Smooth" or at_level >= per):
+            level, at_level = min(3, level + 1), 0
+    return max(1, min(3, level))
 
 
 def used_passages(history: History) -> List[str]:
     return [s["passage_id"] for _, s in sorted(history.sessions.items()) if s.get("passage_id")]
 
 
-def response_prompt(date: dt.date, passage_id: str) -> str:
+_PROMPTS: Optional[List[Dict[str, Any]]] = None
+
+
+def prompt_bank() -> List[Dict[str, Any]]:
+    """assets/legato_prompts.json: id, type, level (1-3) and text for each response prompt."""
+    global _PROMPTS
+    if _PROMPTS is None:
+        _PROMPTS = json.loads((ASSETS_DIR / "legato_prompts.json").read_text(encoding="utf-8"))["prompts"]
+    return _PROMPTS
+
+
+def response_prompt(date: dt.date, passage_id: str, history: Optional[History] = None,
+                    level: int = 1, cooldown: int = 14) -> Tuple[str, str]:
+    """(id, text) of today's 45-second response prompt: none of the last `cooldown` sessions'
+    prompts, the level closest to today's flow level, and not yesterday's type when possible."""
+    bank = prompt_bank()
+    by_text = {p["text"]: p["id"] for p in bank}
+    past = [s for k, s in sorted((history.sessions if history else {}).items()) if k < date.isoformat()]
+    recent = [s.get("response_prompt_id") or by_text.get(s.get("response_prompt", ""), "") for s in past]
+    recent = recent[-max(0, cooldown):] if cooldown else []
+    by_id = {p["id"]: p for p in bank}
+    last_type = by_id.get(recent[-1], {}).get("type") if recent else None
+    pool = [p for p in bank if p["id"] not in set(recent)] or list(bank)
     rng = random.Random(f"{date.isoformat()}:{passage_id}:respond")
-    return RESPONSE_PROMPTS[(date.toordinal() + rng.randrange(len(RESPONSE_PROMPTS))) % len(RESPONSE_PROMPTS)]
+    rng.shuffle(pool)
+    pick = sorted(pool, key=lambda p: (abs(int(p.get("level", 1)) - level), p.get("type") == last_type))[0]
+    return pick["id"], pick["text"]
 
 
 def generate_content(history: History, cfg: Dict[str, Any], paths: Paths, date: dt.date,
-                     passage_id: Optional[str] = None, **_: Any) -> Tuple[Dict[str, Any], List[str]]:
+                     passage_id: Optional[str] = None, exclude: Sequence[str] = (), attempt: int = 0,
+                     **_: Any) -> Tuple[Dict[str, Any], List[str]]:
     leg = cfg.get("legato", {})
     notes: List[str] = []
     level = flow_level(history, cfg, date)
@@ -284,10 +332,16 @@ def generate_content(history: History, cfg: Dict[str, Any], paths: Paths, date: 
         chosen = library.get(paths, passage_id)
         if chosen is None:
             raise ValueError(f"no passage with id {passage_id!r} (see: fde-coach library list)")
+        selection: Dict[str, Any] = {"tier": "pinned"}
     else:
         pool = library.by_theme(library.all_passages(paths, bool(leg.get("include_user_passages", True))),
                                 leg.get("themes") or [])
-        chosen = library.choose(pool, used_passages(history), date, "legato", target_level=level)
+        reads = library.read_log(paths, current=("legato", history.sessions))
+        chosen, tier = library.choose(pool, reads, "legato", date, target_level=level, exclude=exclude,
+                                      attempt=attempt, **library.selection_settings(cfg))
+        selection = {"tier": tier, "attempt": attempt} if attempt else {"tier": tier}
+    prompt_id, prompt_text = response_prompt(date, chosen["id"], history, level,
+                                             int(leg.get("prompt_cooldown_sessions", 14)))
     text = chosen["text"]
     meta = {k: chosen.get(k) for k in ("id", "author", "work", "year", "section", "translator", "source", "level")
             if chosen.get(k) is not None}
@@ -296,7 +350,9 @@ def generate_content(history: History, cfg: Dict[str, Any], paths: Paths, date: 
         "passage": meta,
         "flow_level": level,
         "chains": drill_chains(text),
-        "response_prompt": response_prompt(date, chosen["id"]),
+        "response_prompt": prompt_text,
+        "response_prompt_id": prompt_id,
+        "selection": selection,
         "source": "library" if chosen.get("origin") != "user" else "library-user",
     }
     if not content["chains"]:
