@@ -89,6 +89,9 @@ DEFAULTS: Dict[str, Any] = {
         "camera_warmup_seconds": 2,
         "stop_grace_seconds": 4,
         "min_video_seconds": 150,
+        # "ffmpeg": raw AVFoundation capture (default); "quicktime": QuickTime's
+        # processed chain first (mic mode, AGC, noise suppression), ffmpeg fallback
+        "audio_recorder": "ffmpeg",
     },
     "pronunciation": {
         "daily_time": "05:45",

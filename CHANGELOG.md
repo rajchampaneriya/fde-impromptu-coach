@@ -1,5 +1,19 @@
 # Changelog
 
+## Unreleased — QuickTime audio recording for the audio practices
+
+Pronunciation and legato captured straight from the AVFoundation device: no macOS audio processing, so
+a quiet desk mic recorded a weak signal with the full noise floor, and any level lift brought the hiss
+up with it. The learner's manual screen recordings proved the same mic sounds fine through QuickTime,
+whose chain applies the system mic mode, AGC and noise suppression before the file is written.
+
+**Added**
+
+- `recording.audio_recorder` (default `ffmpeg`): set to `quicktime` to record the audio practices
+  through QuickTime's processed chain first (the one the impromptu videos and manual screen
+  recordings already use), with the raw ffmpeg capture kept as the fallback when QuickTime
+  automation fails. Scenarios in `scripts/tests/features/recording.feature`.
+
 ## Unreleased — 96 new impromptu questions (house voice)
 
 The offline question bank grows from 144 to 240: 8 new questions per competency (`-13` to `-20`), written

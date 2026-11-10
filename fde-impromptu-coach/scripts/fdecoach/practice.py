@@ -301,32 +301,48 @@ def _record_once(session: Dict[str, Any], cfg: Dict[str, Any], paths: Paths, spe
     result: Dict[str, Any] = {"ok": False, "audio": None, "offset": None, "ended_early": False}
     min_secs = int(sec.get("min_audio_seconds", 180))
 
-    # Preferred: capture straight from the AVFoundation input. QuickTime's own
-    # input selection goes stale when devices are reconnected and records silence.
-    cap = audio.AudioCapture(dest, _audio_device(cfg, spec))
-    if cap.start():
+    # Default: capture straight from the AVFoundation input (QuickTime's own input
+    # selection goes stale when devices are reconnected and records silence).
+    # recording.audio_recorder=quicktime flips the order: QuickTime's chain applies
+    # the system mic mode, AGC and noise suppression, which carries a quiet desk
+    # mic that the raw device records too softly.
+    def ffmpeg_take() -> Optional[Dict[str, Any]]:
+        cap = audio.AudioCapture(dest, _audio_device(cfg, spec))
+        if not cap.start():
+            return None
         t_rec = time.time()
         t_show = _run_show(deck, show, cfg, total, grace)
-        result["offset"] = round(t_show - t_rec, 1)
         out = cap.stop()
         if out is None:
-            result["error"] = "audio was not saved"
-            return result
-        result.update(audio=str(out), method="ffmpeg")
-    else:
-        # Fallback: QuickTime audio recording (needs its own microphone permission)
-        t_rec = time.time()
+            return {"error": "audio was not saved"}
+        return {"audio": str(out), "method": "ffmpeg", "offset": round(t_show - t_rec, 1)}
+
+    def quicktime_take() -> Optional[Dict[str, Any]]:
+        # needs its own microphone permission
         if not macos.quicktime_start_audio_recording(float(cfg.get("recording", {}).get("camera_warmup_seconds", 2))):
-            result["error"] = "audio capture did not start (ffmpeg AVFoundation failed and QuickTime fallback failed)"
-            return result
+            return None
+        t_rec = time.time()
         t_show = _run_show(deck, show, cfg, total, grace)
-        result["offset"] = round(t_show - t_rec, 1)
         saved, how = macos.quicktime_stop_audio_save(dest, since=t_rec)
         macos.quit_app("QuickTime Player")
         if not saved:
-            result["error"] = "audio was not saved"
-            return result
-        result.update(audio=str(dest), method=f"quicktime:{how}")
+            return {"error": "audio was not saved"}
+        return {"audio": str(dest), "method": f"quicktime:{how}", "offset": round(t_show - t_rec, 1)}
+
+    prefer_quicktime = str(cfg.get("recording", {}).get("audio_recorder", "ffmpeg")).lower() == "quicktime"
+    order = (quicktime_take, ffmpeg_take) if prefer_quicktime else (ffmpeg_take, quicktime_take)
+    take: Optional[Dict[str, Any]] = None
+    for capture in order:
+        take = capture()
+        if take is not None:
+            break
+    if take is None:
+        result["error"] = "audio capture did not start (neither ffmpeg AVFoundation nor QuickTime could record)"
+        return result
+    if take.get("error"):
+        result["error"] = take["error"]
+        return result
+    result.update(take)
     duration = audio.audio_duration_seconds(Path(result["audio"]))
     result["duration"] = duration
     if duration is not None and duration < min_secs:
