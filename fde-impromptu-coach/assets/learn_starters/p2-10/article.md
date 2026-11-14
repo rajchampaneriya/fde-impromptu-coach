@@ -38,7 +38,18 @@ tags: ["fde", "rag", "embeddings", "search", "first-principles"]
 
 …
 
-## Five places RAG goes wrong, and the number that catches each
+## Ontology, vectors or both? The ablation
+
+| Context | Pass rate (± 2 se) |
+|---|---|
+| oracle | … |
+| retrieved | … |
+| ontology | … |
+| hybrid | … |
+
+…
+
+## Five places grounding goes wrong, and the number that catches each
 
 …
 

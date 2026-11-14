@@ -61,8 +61,8 @@ class TestCurriculum(unittest.TestCase):
         spec.loader.exec_module(tool)
         self.assertEqual(tool.main(["--check"]), 0, "run scripts/tools/build_curriculum.py")
         s = tool.summary(json.loads((ASSETS / "learning_path.json").read_text()))
-        # the realistic range the plan promises: about 4-5 months at 8 hours a week
-        self.assertTrue(3.5 <= s["months_fast"] <= s["months_schedule"] <= 6, s)
+        # the realistic range the plan promises: about 3-4 months at 8 hours a week
+        self.assertTrue(3 <= s["months_fast"] <= s["months_schedule"] <= 6, s)
 
 
 class TestLearnFlow(unittest.TestCase):

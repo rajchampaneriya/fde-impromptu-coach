@@ -14,20 +14,22 @@ deadline: the drop after the topic's last morning (1 to 3 mornings); a missed to
 end of each project: fde-coach learn done --article <live link on rajc.work>  ──►  the project's finish line
 ```
 
-**Pace.** 8 hours a week (80 minutes a morning, Monday to Saturday). About 128 hours of work in total, estimated
-topic by topic from its content: 16 weeks if you pull topics forward when you finish early, 21 weeks if you use
-every morning the schedule allows. Plan on 4 to 5 months. The method is in the curriculum.
+**Pace.** 8 hours a week (80 minutes a morning, Monday to Saturday). About 114 hours of work in total, estimated
+topic by topic from its content: 14 weeks if you pull topics forward when you finish early, 18 weeks if you use
+every morning the schedule allows. Plan on 3 to 4 months. The method is in the curriculum.
 
-## The track: 66 topics in 6 projects
+## The track: 53 topics in 6 projects
 
 | # | Project | What you build | Maths you meet |
 |---|---|---|---|
 | 1 | Measure before you believe | A support assistant for a fictional broadband company, three ways (rules, one call, an agent loop from scratch), measured with error bars | fractions, error bars, percentiles |
-| 2 | Meaning as numbers | Semantic search in NumPy, recall@k, chunking, a vector DB comparison, RAG measured | vectors, dot product, cosine |
-| 3 | Learn a formula from data | Your hosting-cost formula and a yes/no classifier by gradient descent | slopes, loss, derivatives, sigmoid |
-| 4 | Backprop by hand | micrograd: an autograd engine and a tiny neural-net library | the chain rule |
-| 5 | Tiny GPT | From counting letters to a Transformer, plus tokens and cost in Indian languages | probability, log, softmax, attention |
-| 6 | Back to the customer | Root causes, a final run with a stronger model, tool calls, context, prompt injection, human-in-the-loop, the final recommendation | paired differences |
+| 2 | Grounding: meaning as numbers and enterprise context | Semantic search in NumPy, recall@k, chunking, a vector DB comparison, RAG in versions B and C, and an ontology vs. vectors vs. hybrid ablation | vectors, dot product, cosine |
+| 3 | Evals that run without you | An LLM judge calibrated against your labels, paired comparisons, simulated customers, broken tools, OpenTelemetry traces, a pytest-bdd CI gate, drift alerts, a vendor eval comparison | kappa, bootstrap, McNemar, PSI |
+| 4 | A production-shaped full-stack agent | An MCP server, an Agent Skill and `AGENTS.md`, a managed cloud runtime, a React approval console, agent identity and Cedar policy, a red-team, a capped frontier run | paired differences |
+| 5 | Inside the model | Tokens and cost, softmax and temperature, attention and long context, hallucinations, what training changes, a build vs. tune vs. retrieve calculator: six executive diagrams | ratios, softmax, gradient descent |
+| 6 | The 6-week enterprise engagement | Discovery, a security review pack, the final ADR, a headline-first readout, a handover kit, a recorded 45-minute live rehearsal | none new |
+
+micrograd and the tiny GPT moved to an optional, unscheduled track listed at the end of the curriculum.
 
 Every project ends with an **article**: about 300 words from memory first (no notes, no AI), then 800 to 1,500
 words with your real numbers, published on rajc.work from a Hugo-ready starter.
@@ -35,9 +37,11 @@ words with your real numbers, published on rajc.work from a Hugo-ready starter.
 The full map with every resource and time estimate: [references/curriculum.md](references/curriculum.md).
 Resources are free and chosen for clear English and visuals: 3Blue1Brown (lessons have text versions), Andrej
 Karpathy's lectures (split into ~20-minute chapters), Google's ML Crash Course and Technical Writing One,
-Anthropic's engineering posts, Hamel Husain on evals. Models run locally with Ollama. The only optional cost is
-project 6's final run on a stronger model: set a hard monthly spending cap first, estimate before you run, dry-run
-the API path for free against your own Ollama, and cached answers make re-runs free.
+Anthropic's engineering posts, Hamel Husain on evals, and the vendor docs for MCP, Agent Skills, OpenTelemetry,
+Azure AI Foundry and Cedar. Models run locally with Ollama by default. From project 3, each project may use one
+cloud budget (a managed runtime, a cloud evaluator, the frontier run): set a hard monthly spending cap first,
+estimate under a fifth of it before you run, dry-run the API path for free against your own Ollama, and cached
+answers make re-runs free.
 
 ## Setup
 

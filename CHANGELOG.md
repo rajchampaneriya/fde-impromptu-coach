@@ -1,5 +1,32 @@
 # Changelog
 
+## Unreleased — FDE Learn curriculum aligned with the November 2026 review
+
+The learning track follows the *FDE curriculum review — November 2026*: keep the measurement spine, move the
+hours from training models from scratch to what U.S. FDE and full-stack AI roles hire for. 66 topics and about
+128 hours become 53 topics and about 114 hours (3 to 4 months at 8 hours a week). Project 1 keeps its ids and
+days, so open progress carries over.
+
+**Changed**
+
+- **Project 1**: day 10 attributes every gain to one cause (model, grader or design) and checks the held-out
+  cases for leakage; day 11's ADR cites the attribution and adds rollback triggers.
+- **Project 2 · Grounding**: vectors and cosine merge into one topic; retrieval goes into versions B and C; a
+  new ontology vs. vectors vs. hybrid ablation (`data/acme/ontology.json`).
+- **Project 3 · Evals that run without you** (new): a calibrated LLM judge (kappa), paired comparisons
+  (`lab/stats.py`), simulated customers, fault injection, OpenTelemetry traces with run provenance
+  (`lab/tracing.py`), a pytest-bdd CI gate, drift alerts and a vendor eval comparison.
+- **Project 4 · A production-shaped full-stack agent** (new): an MCP server with idempotent refunds, an Agent
+  Skill and `AGENTS.md`, a managed runtime port, a Next.js approval console, Cedar policy and agent identity,
+  a 10-attack red-team, and the capped frontier run.
+- **Project 5 · Inside the model**: six decision-driving topics with executive diagrams, a one-notebook training
+  overview and a build vs. tune vs. retrieve calculator.
+- **Project 6 · The 6-week enterprise engagement**: discovery, a security review pack, the final ADR, a
+  headline-first readout, a handover kit and a recorded 45-minute live rehearsal.
+- **Rules**: quarterly platform re-checks replace "skip cloud deployment"; one capped cloud budget per project
+  from project 3; provenance on every run; lab depth as its own step; a market radar at each project boundary.
+- micrograd, makemore and the tiny GPT move to an unscheduled optional track at the end of `curriculum.md`.
+
 ## Unreleased — QuickTime audio recording for the audio practices
 
 Pronunciation and legato captured straight from the AVFoundation device: no macOS audio processing, so

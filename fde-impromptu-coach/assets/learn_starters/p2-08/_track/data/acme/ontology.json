@@ -1,0 +1,24 @@
+{
+ "about": "Acme Fibre's own words: what each term means and which offers an agent may make. Fill in every intent.",
+ "plans": {
+  "Basic": {"speed_mbps": 100, "price_inr": 699},
+  "Plus": {"speed_mbps": 300, "price_inr": 999},
+  "Pro": {"speed_mbps": 1000, "price_inr": 1499}
+ },
+ "intents": {
+  "billing": {
+   "means": "Questions about a bill, a charge, a late fee or a payment.",
+   "synonyms": ["bill", "charge", "late fee", "extra amount", "paisa kata", "double payment"],
+   "kb": ["KB01", "KB02", "KB04"],
+   "allowed_offers": ["explain the charge", "waive the late fee once a year if tenure > 12 months",
+                      "refund or credit up to ₹500"],
+   "never": ["approve a refund or credit above ₹500", "ask for a card number or OTP"]
+  },
+  "outage": {"means": "", "synonyms": [], "kb": ["KB05", "KB06"], "allowed_offers": [], "never": []},
+  "speed": {"means": "", "synonyms": [], "kb": ["KB07", "KB08"], "allowed_offers": [], "never": []},
+  "cancel": {"means": "", "synonyms": [], "kb": ["KB10", "KB11"], "allowed_offers": [], "never": []},
+  "upgrade": {"means": "", "synonyms": [], "kb": ["KB09"], "allowed_offers": [], "never": []},
+  "relocation": {"means": "", "synonyms": [], "kb": ["KB12"], "allowed_offers": [], "never": []},
+  "other": {"means": "", "synonyms": [], "kb": ["KB13", "KB15", "KB16"], "allowed_offers": [], "never": []}
+ }
+}

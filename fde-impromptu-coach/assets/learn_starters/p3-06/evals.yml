@@ -1,0 +1,19 @@
+# Copy this file to .github/workflows/evals.yml at the root of your learning repo.
+name: evals
+on:
+  pull_request:
+  push:
+    branches: [main]
+jobs:
+  gate:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: fde-first-principles
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - run: pip install pytest pytest-bdd numpy requests
+      - run: python -m pytest tests/test_eval_gate.py -v
