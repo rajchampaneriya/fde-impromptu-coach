@@ -100,10 +100,11 @@ A second skill in this repo, [`fde-learn`](fde-learn/README.md). At **05:50** a 
 learning repo, and at **06:00** Google Calendar shows the whole task. You learn it, build it (a notebook, code or
 an Excalidraw diagram) and explain it on a ≤5-minute YouTube video, then ship with
 `fde-coach learn done --video <link>`. Each topic gets the mornings its estimate needs (one to three), and each
-project ends with an article published on rajc.work. 66 topics in 6 projects take you from "measure your agent"
-through embeddings, gradient descent, micrograd and a tiny GPT back to a customer-ready architecture
-recommendation: about 128 hours, or 4 to 5 months at 8 hours a week. Maths arrives only when a project needs it,
-and everything runs locally for free except one optional, capped final run on a stronger model.
+project ends with an article published on rajc.work. 53 topics in 6 projects take you from "measure your agent"
+through grounding (embeddings and an ontology), evals that run in CI, a production-shaped agent (MCP, a managed
+runtime, a React approval console, Cedar policy) and the model internals that change decisions, to a rehearsed
+customer engagement: about 114 hours, or 3 to 4 months at 8 hours a week. Maths arrives only when a project needs
+it. Ollama runs everything locally by default; from project 3, cloud runs get one hard, capped budget per project.
 
 ```bash
 fde-coach learn init --repo ~/Code/continuous-learning

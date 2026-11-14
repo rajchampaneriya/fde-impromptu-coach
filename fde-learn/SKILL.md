@@ -17,8 +17,8 @@ At 05:50 a topic drops into their public repo (`fde-first-principles/` inside th
 clone) and a 06:00 Google Calendar event carries the whole task. Each topic gets the mornings its time estimate
 needs (most notebooks two, most diagrams one, an article three); it is due at the drop after its last morning.
 Each project ends with an **article on rajc.work**: that is the project's finish line. The repo is the memory:
-`.learn/` (`progress.json`, `TODAY.md`, `later.md`), one folder per topic with a journal `README.md`. 66 topics, 6 projects, about 128
-hours at 8 hours a week (4 to 5 months): `references/curriculum.md`.
+`.learn/` (`progress.json`, `TODAY.md`, `later.md`), one folder per topic with a journal `README.md`. 53 topics, 6 projects, about 114
+hours at 8 hours a week (3 to 4 months): `references/curriculum.md`.
 
 Everything runs through the FDE Impromptu Coach CLI: `~/FDE-Impromptu/bin/fde-coach learn …`
 (also `fde-coach` on the PATH). If it is missing, the coach is not installed: see its README.
@@ -121,7 +121,7 @@ live"; `next`, `status`, `pause <YYYY-MM-DD>` → their rows. Anything else: rea
 
 ## Files
 
-- `references/curriculum.md`: the 66 topics with their main resource, maths, artifact and time, the pace and the
+- `references/curriculum.md`: the 53 topics with their main resource, maths, artifact and time, the pace and the
   rules (generated from `fde-impromptu-coach/assets/learning_path.json`, the source of truth, by
   `fde-impromptu-coach/scripts/tools/build_curriculum.py`; re-run it after any change).
 - `references/coaching.md`: hint ladder, explain-back script, maths-on-demand pattern, video tips, article

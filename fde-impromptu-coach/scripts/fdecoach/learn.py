@@ -512,15 +512,15 @@ TRACK_README = """# FDE First Principles
 
 A public learning log. A topic drops in the morning at 06:00 (IST) and gets one to three mornings, depending on
 its size. I learn it, build it (a notebook, code or an Excalidraw diagram) and explain it on video. Each project
-ends with an article on my site. The goal: understand AI systems from first principles, the way a Forward
-Deployed Engineer needs to: measure before believing, know what is inside the model, and recommend the simplest
-design the evidence supports.
+ends with an article on my site. The goal: build and ship AI systems the way a Forward Deployed Engineer needs
+to: measure before believing, ground agents in the customer's context, make the evals run without me, ship a
+production-shaped agent, know what inside the model changes a decision, and hand it over.
 
 Six projects, {n} topics: {projects}.
 
-Maths shows up only on the day a project needs it. Almost everything runs on my own Mac (Ollama) for free; one
-final evaluation uses a stronger model under a hard spending cap. The drops, deadlines and this table are managed
-by [fde-coach learn](https://github.com/rajchampaneriya/fde-impromptu-coach).
+Maths shows up only on the day a project needs it. Most work runs on my own Mac (Ollama) for free; from project 3
+each project may use one capped cloud budget (a managed runtime, a cloud evaluator, a frontier model run). The
+drops, deadlines and this table are managed by [fde-coach learn](https://github.com/rajchampaneriya/fde-impromptu-coach).
 
 ## Progress
 <!-- learn:progress -->

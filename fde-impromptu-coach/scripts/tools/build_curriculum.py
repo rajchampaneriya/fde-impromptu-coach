@@ -64,10 +64,11 @@ def summary(data: Dict[str, Any]) -> Dict[str, Any]:
 
 def about(data: Dict[str, Any]) -> str:
     s = summary(data)
-    return ("A project-based path from software architect to first-principles AI engineer for the Forward "
-            "Deployed Engineer role. A topic drops in the morning and gets one to three mornings, depending on "
-            "its size: you learn it, build it and explain it on video. Each project ends with an article on "
-            f"rajc.work. Maths appears only when a project needs it. About {s['hours']:.0f} hours of work: at "
+    return ("A project-based path from software architect to production-ready Forward Deployed Engineer: "
+            "measure, ground, evaluate, ship and hand over AI systems for customers. A topic drops in the morning "
+            "and gets one to three mornings, depending on its size: you learn it, build it and explain it on "
+            "video. Each project ends with an article on rajc.work. Maths appears only when a decision needs it. "
+            f"About {s['hours']:.0f} hours of work: at "
             f"{data['pace']['hours_per_week']} hours a week, plan on {round(s['months_fast'])} to "
             f"{round(s['months_schedule'])} months.")
 
@@ -97,8 +98,10 @@ def render(data: Dict[str, Any]) -> str:
         f"{s['topics']} topics in {len(data['projects'])} projects. Every project ends with an article on "
         "[rajc.work](https://rajc.work): that is the finish line, not a date.",
         "",
-        "Why this order: it starts from what you already do (calling models, building agents) and goes one layer "
-        "deeper each time a project raises a question. Maths arrives only on the day a project needs it.",
+        "Why this order: it follows what U.S. employers hire Forward Deployed and full-stack AI engineers for. "
+        "Measure first, ground the agent in the customer's context, make the evals run without you, ship a "
+        "production-shaped agent, open the model only where it changes a decision, then rehearse the whole "
+        "customer engagement. Maths arrives only on the day a project needs it.",
         "",
         f"## Pace: plan on {round(s['months_fast'])} to {round(s['months_schedule'])} months",
         "",
@@ -142,11 +145,21 @@ def render(data: Dict[str, Any]) -> str:
         "starts with about 300 words written from memory, without notes: if you can't write them, that is the "
         "part to revisit.",
         "- **Courses are references, not syllabi.** Each topic names the exact section to read or watch.",
-        "- **Skip what you know** (API integration, orchestration, cloud deployment) and **postpone** "
-        "eigenvectors, advanced calculus, training large models and most research papers.",
-        "- **Keep it cheap.** All resources are free. Everything runs on your Mac with Ollama, and the GPT "
-        "project can use free Colab time. The only paid step is the final run in project 6: a hard monthly "
-        "spending cap first, an estimate before the run, cached answers so re-runs are free.",
+        "- **Re-check the platforms every quarter.** Managed agent runtimes, MCP gateways and cloud eval "
+        "services changed the deployment baseline in 2026, so cloud deployment is part of the path, not "
+        "something to skip. **Postpone** eigenvectors, advanced calculus, pretraining and most research papers: "
+        "the from-scratch builds are in the optional track below.",
+        "- **One capped cloud budget per project, from project 3.** Ollama on your Mac stays the default for "
+        "fast iteration. Managed runtimes, cloud evaluators and the frontier run each get a hard monthly "
+        "spending cap first, an estimate under a fifth of the cap before the run, and cached answers so re-runs "
+        "are free.",
+        "- **Provenance on every run.** Every script writes `model_id`, `prompt_sha`, `grader_sha` and "
+        "`dataset_sha` into the run file automatically. A number you cannot trace back is not evidence.",
+        "- **Lab depth is a topic, not a miss.** When an experiment grows beyond the day's topic, park the "
+        "scheduled topic and log the lab work as its own step with a merged pull request and a 2-minute "
+        "walkthrough, so the tracker shows the real work.",
+        "- **A 30-minute market radar at every project boundary.** Read the release notes from Microsoft "
+        "Foundry, AWS Bedrock, Google Cloud, OpenAI and Anthropic, and adjust the next project before it starts.",
     ]
     for p in data["projects"]:
         ps = s["projects"][p["n"]]
@@ -161,6 +174,10 @@ def render(data: Dict[str, Any]) -> str:
             tm = t["time"]
             out.append(f"| {t['day']} | {t['title']} | [{main['title']}]({main['url']}) | {maths} | "
                        f"{t['artifact']} | {tm['total']} min · {_plural(tm['mornings'], 'morning')} |")
+    opt = data.get("optional")
+    if opt:
+        out += ["", f"## {opt['title']}", "", opt["about"], "", "| Build | Why |", "|---|---|"]
+        out += [f"| [{i['title']}]({i['url']}) | {i['why']} |" for i in opt["items"]]
     return "\n".join(out) + "\n"
 
 

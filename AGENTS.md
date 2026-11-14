@@ -20,7 +20,7 @@ first-principles learning track (FDE Learn). Two layers:
 | `pronunciation` | `/pronunciation [start\|status\|history\|words\|add <word>\|passage <id>]` | Pen method on hard words and a public-domain passage | `fde-coach pronounce session --detach` |
 | `legato` | `/legato [start\|status\|history\|passage <id>\|themes <theme>]` | Smooth, connected speech, then a 45-second impromptu response | `fde-coach legato session --detach` |
 | `stage` | `/stage [start\|prep\|status\|history\|segment <M:SS> <M:SS>\|talks\|upload]` | Weekend Stage: one TED talk a weekend, studied, then three takes on camera | `fde-coach stage session --detach` |
-| `fde-learn` | `/fde-learn [today\|hint\|check\|ship <link>\|next\|status]` | The 66-topic learning track, shipped in public | `fde-coach learn today --json` |
+| `fde-learn` | `/fde-learn [today\|hint\|check\|ship <link>\|next\|status]` | The 53-topic learning track, shipped in public | `fde-coach learn today --json` |
 | `fde-impromptu-coach` | `/fde-impromptu-coach` | Install, settings, Google, the passage library, troubleshooting, anything else | `fde-coach doctor` |
 
 A slash command with no arguments means *start* (for `fde-learn`: *today's topic*).
