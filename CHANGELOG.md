@@ -1,5 +1,12 @@
 # Changelog
 
+## Unreleased — installer deploys evals
+
+**Fixed**
+
+- `install.sh` now deploys `evals/` to `~/FDE-Impromptu/src`; the installed self-tests failed on
+  `test_skill_evals_1_to_8_are_unchanged` because the file was missing.
+
 ## Unreleased — FDE Learn curriculum aligned with the November 2026 review
 
 The learning track follows the *FDE curriculum review — November 2026*: keep the measurement spine, move the
